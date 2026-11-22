@@ -1365,10 +1365,10 @@ else init();
             'flex-direction': 'row', 'overflow': 'visible',
             'border': dark ? '1px solid rgba(255,255,255,.17)' : '1px solid rgba(255,255,255,.75)',
             'border-radius': '999px',
-            'background': dark ? 'rgba(30,30,30,.6)' : 'rgba(255,255,255,.45)',
-            'box-shadow': '0 8px 28px rgba(0,0,0,.12)',
-            'backdrop-filter': 'blur(20px) saturate(180%)',
-            '-webkit-backdrop-filter': 'blur(20px) saturate(180%)',
+            'background': dark ? 'rgba(30,30,30,.38)' : 'rgba(255,255,255,.22)',
+            'box-shadow': '0 8px 28px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.65)',
+            'backdrop-filter': 'blur(14px) saturate(200%)',
+            '-webkit-backdrop-filter': 'blur(14px) saturate(200%)',
             'transform': 'none', 'filter': 'none', 'z-index': '2147483646'
         });
         document.body.classList.add('slk-footer-only-active');
@@ -1850,6 +1850,92 @@ else init();
     const start = () => {
         scan();
         new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();
+
+// v1.4.52 — 받은 확장 설정: 토글 스위치·세그먼트 버튼을 구조로 찾아서 슬랙 모양으로
+(function slkExtensionControls() {
+    const ROOT = '#rm_extensions_block';
+    const shown = (el) => !!el && el.getClientRects().length > 0;
+    const isHiddenInput = (el) => {
+        const cs = getComputedStyle(el);
+        const r = el.getBoundingClientRect();
+        return cs.opacity === '0' || cs.visibility === 'hidden' || cs.display === 'none' || r.width <= 2 || r.height <= 2;
+    };
+
+    const markSwitches = (root) => {
+        root.querySelectorAll('.inline-drawer-content input[type="checkbox"]:not([data-slk-sw])').forEach(input => {
+            const host = input.parentElement;
+            if (!shown(host)) return; // 펼쳐졌을 때 다시
+            const r = input.getBoundingClientRect();
+            // (1) 체크박스 자체가 스위치 모양
+            if (!isHiddenInput(input) && r.width >= 28 && r.width > r.height * 1.3) {
+                input.dataset.slkSw = 'self';
+                input.classList.add('slk-switch-input');
+                return;
+            }
+            // (2) 체크박스는 숨겨져 있고 옆에 확장이 그린 손잡이/트랙 → 우리 스위치로 교체
+            if (!isHiddenInput(input)) { input.dataset.slkSw = 'none'; return; }
+            const sib = input.nextElementSibling;
+            const looksLikeKnob = (el) => el && el.tagName !== 'INPUT' && !(el.textContent || '').trim() && el.querySelectorAll('*').length <= 3;
+            if (!looksLikeKnob(sib)) { input.dataset.slkSw = 'none'; return; }
+            input.dataset.slkSw = 'track';
+            sib.classList.add('slk-sw-orig');
+            const sw = document.createElement('span');
+            sw.className = 'slk-sw';
+            sw.setAttribute('aria-hidden', 'true');
+            sib.insertAdjacentElement('afterend', sw);
+            // 래퍼(label 등)가 스위치 크기로 고정돼 있으면 풀어줌
+            if (!(host.textContent || '').trim()) host.classList.add('slk-sw-host');
+            const sync = () => sw.classList.toggle('slk-on', input.checked);
+            sync();
+            input.addEventListener('change', sync);
+            new MutationObserver(sync).observe(input, { attributes: true, attributeFilter: ['checked'] });
+            setInterval(() => { if (sw.isConnected) sync(); }, 700);
+            if (!input.closest('label')) {
+                sw.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); input.click(); });
+            }
+        });
+    };
+
+    const OPT = 'button, [role="radio"], [role="button"], label, .menu_button, [class*="btn"], [class*="option"]';
+    const isSelected = (el) => el.matches('.active, .selected, .is-active, .on, .checked, [aria-pressed="true"], [aria-selected="true"], [aria-checked="true"]') ||
+        !!el.querySelector('input:checked');
+    const markSegments = (root) => {
+        root.querySelectorAll('.inline-drawer-content *:not([data-slk-seg])').forEach(box => {
+            const kids = [...box.children];
+            if (kids.length < 2 || kids.length > 5) return;
+            if (!kids.every(k => k.matches(OPT))) return;
+            if (kids.some(k => /tab/i.test(String(k.className) + ' ' + (k.getAttribute('role') || '')))) return;
+            if (kids.some(k => (k.textContent || '').trim().length > 24)) return;
+            const hasRadio = kids.some(k => k.querySelector('input[type="radio"]'));
+            if (!hasRadio && kids.filter(isSelected).length !== 1) return; // 일반 버튼 줄은 제외
+            box.dataset.slkSeg = '1';
+            box.classList.add('slk-seg');
+            const sync = () => kids.forEach(k => k.classList.toggle('slk-seg-on', isSelected(k)));
+            sync();
+            new MutationObserver(sync).observe(box, { subtree: true, attributes: true, attributeFilter: ['class', 'aria-pressed', 'aria-selected', 'aria-checked'] });
+            box.addEventListener('click', () => setTimeout(sync, 0));
+            box.addEventListener('change', () => setTimeout(sync, 0));
+        });
+    };
+
+    let t = null;
+    const run = () => {
+        t = null;
+        if (!document.body?.classList.contains('slk-ui')) return;
+        const root = document.querySelector(ROOT);
+        if (!shown(root)) return;
+        markSwitches(root);
+        markSegments(root);
+    };
+    const schedule = () => { if (!t) t = setTimeout(run, 150); };
+    const start = () => {
+        new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
+        document.addEventListener('click', schedule, true);
+        schedule();
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
