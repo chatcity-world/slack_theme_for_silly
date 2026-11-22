@@ -205,6 +205,16 @@ function openDrawer(selector) {
     else toggle.click();
 }
 
+// Route extension/header navigation through the same mobile page history as the footer.
+// Desktop and disabled Slack UI keep SillyTavern's original drawer behavior.
+function navigateSlackPanel(selector) {
+    if (SLK_UI_SETTINGS.enabled && window.matchMedia('(max-width: 1000px)').matches && window.__slkPanelNavigation) {
+        window.__slkPanelNavigation.navigate(selector);
+    } else {
+        openDrawer(selector);
+    }
+}
+
 function buildHeader() {
     if (document.getElementById('slk-header')) return;
 
@@ -245,7 +255,7 @@ function buildHeader() {
 
     header.querySelector('#slk-ws').addEventListener('click', () => {
         closeMenu();
-        openDrawer(DRAWERS.character);
+        navigateSlackPanel(DRAWERS.character);
     });
 
     header.querySelector('#slk-settings-btn').addEventListener('click', (e) => {
@@ -257,7 +267,7 @@ function buildHeader() {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             closeMenu();
-            openDrawer(DRAWERS[btn.dataset.target]);
+            navigateSlackPanel(DRAWERS[btn.dataset.target]);
         });
     });
 
@@ -649,11 +659,23 @@ function setupComposer() {
     let keyboardDismissed = false;
     let pendingFocus = false;
 
+    // v1.4.21: 접힌 입력창에서 native textarea의 마지막 줄/스크롤 위치가
+    // 표시되지 않도록, 실제 값은 그대로 두고 첫 줄만 표시하는 읽기 전용 미리보기.
+    // 줄바꿈이 있거나 첫 줄이 긴 경우 말줄임표(…)를 표시합니다.
+    const preview = document.createElement('span');
+    preview.className = 'slk-compose-first-line';
+    preview.setAttribute('aria-hidden', 'true');
+    ta.insertAdjacentElement('afterend', preview);
+
     const updateDisplay = () => {
         // 프로그램에서 입력 내용이 바뀌거나 번역/생성 중이어도 확장을 유지하지 않음.
         const focused = document.activeElement === ta;
         const open = focused && !keyboardDismissed && (keyboardVisible || pendingFocus);
+        const content = ta.value;
+        const firstLine = content.split(/\r\n|\n|\r/, 1)[0];
+        preview.textContent = firstLine + (/[\r\n]/.test(content) ? '…' : '');
         form.classList.toggle('slk-compose-open', open);
+        form.classList.toggle('slk-compose-previewing', !open && content.length > 0);
         document.body.classList.toggle('slk-composing', open);
     };
 
@@ -774,7 +796,7 @@ function buildChatHead() {
         btn?.click();
     });
     head.querySelector('#slk-chat-title').addEventListener('click', () => {
-        if (typeof DRAWERS !== 'undefined' && DRAWERS.character) openDrawer(DRAWERS.character);
+        if (typeof DRAWERS !== 'undefined' && DRAWERS.character) navigateSlackPanel(DRAWERS.character);
     });
 }
 
@@ -981,14 +1003,19 @@ function buildPanelBack() {
     if (ws) ws.insertAdjacentElement('beforebegin', btn);
     else header.prepend(btn);
     btn.addEventListener('click', () => {
-        // 원래 실리태번 드로어 토글을 눌러 패널만 닫습니다.
-        const selectors = [...new Set([...TABS.map(([selector]) => selector), DRAWERS.userSettings, DRAWERS.backgrounds])];
-        for (const selector of selectors) {
-            const drawer = document.querySelector(selector);
-            if (drawer?.querySelector('.drawer-icon.openIcon, .drawer-content.openDrawer') || drawer?.classList.contains('openDrawer')) {
-                openDrawer(selector);
-            }
+        // Close the top drawer. Revealing the lower layer is a side effect of closing.
+        if (SLK_UI_SETTINGS.enabled && window.matchMedia('(max-width: 1000px)').matches && window.__slkPanelNavigation) {
+            window.__slkPanelNavigation.back();
+            return;
         }
+        // Native fallback: close only the currently active drawer.
+        const selectors = [...new Set([...TABS.map(([selector]) => selector), DRAWERS.userSettings, DRAWERS.backgrounds])];
+        const active = selectors.find(selector => {
+            const drawer = document.querySelector(selector);
+            return drawer && (drawer.classList.contains('openDrawer') ||
+                drawer.querySelector('.drawer-icon.openIcon, .drawer-content.openDrawer'));
+        });
+        if (active) openDrawer(active);
         setTimeout(recomputeHeaderCompact, 80);
     });
 }
@@ -1090,33 +1117,53 @@ else init();
     let composerObserver = null;
     let footerSwitchSerial = 0;
 
-    // SillyTavern 드로어는 열린 탭이 있을 때 다른 토글을 누르면
-    // 기존 탭만 닫고 새 탭을 열지 않는 경우가 있습니다.
-    // 같은 탭을 다시 눌러도 닫지 않고, 다른 탭으로 이동할 때만 순서대로 전환합니다.
+    // Each visited drawer is a logical page layer. SillyTavern only displays one
+    // native drawer at a time, so back navigation restores the previous layer.
+    const panelHistory = [];
+    const managedSelectors = [...new Set([...TABS.map(([s]) => s), DRAWERS.userSettings, DRAWERS.backgrounds])];
+    let transitioning = false;
+
     function isFooterDrawerOpen(drawer) {
         return !!drawer && (drawer.classList.contains('openDrawer') ||
             !!drawer.querySelector('.drawer-icon.openIcon, .drawer-content.openDrawer'));
     }
 
-    function switchFooterDrawer(selector) {
-        const target = document.querySelector(selector);
-        if (!target) return;
+    function openManagedSelectors() {
+        return managedSelectors.filter(s => isFooterDrawerOpen(document.querySelector(s)));
+    }
+
+    function rememberScroll(layer) {
+        if (!layer) return;
+        const root = document.querySelector(layer.selector);
+        if (!root) return;
+        const nodes = [root, ...root.querySelectorAll('.drawer-content, .scrollableInner, .scrollable, .right_menu, #WorldInfo')];
+        layer.scroll = nodes.filter(node => node.scrollTop > 0).map(node => ({ node, top: node.scrollTop }));
+    }
+
+    function restoreScroll(layer) {
+        if (!layer?.scroll?.length) return;
+        const restore = () => layer.scroll.forEach(({node, top}) => {
+            if (node.isConnected) node.scrollTop = top;
+        });
+        requestAnimationFrame(restore);
+        setTimeout(restore, 90);
+    }
+
+    function transitionTo(selector, layer) {
         const serial = ++footerSwitchSerial;
-        if (isFooterDrawerOpen(target)) {
-            updateActive(); // 재탭은 닫기가 아님. 뒤로가기만 닫습니다.
-            return;
-        }
+        transitioning = true;
+        const target = selector ? document.querySelector(selector) : null;
+        // Keep the existing purple header until the next drawer has appeared.
+        if (target && !isFooterDrawerOpen(target)) primePanelHeader(selector);
+        const close = openManagedSelectors().filter(s => s !== selector);
+        close.forEach(s => openDrawer(s));
 
-        // 화면이 잠시 일반 헤더로 바뀌는 깜빡임을 방지합니다.
-        primePanelHeader(selector);
-        const selectors = [...new Set([...TABS.map(([s]) => s), DRAWERS.userSettings, DRAWERS.backgrounds])];
-        const previous = selectors.filter(s => s !== selector && isFooterDrawerOpen(document.querySelector(s)));
-        previous.forEach(s => openDrawer(s)); // 먼저 이전 패널 닫기
-
-        const openTarget = () => {
+        const finish = () => {
             if (serial !== footerSwitchSerial) return;
-            if (!isFooterDrawerOpen(target)) openDrawer(selector);
-            requestAnimationFrame(updateActive);
+            transitioning = false;
+            restoreScroll(layer);
+            updateActive();
+            recomputeHeaderCompact();
             setTimeout(() => {
                 if (serial === footerSwitchSerial) {
                     updateActive();
@@ -1124,21 +1171,84 @@ else init();
                 }
             }, 100);
         };
-        if (!previous.length) {
-            openTarget();
-            return;
-        }
-        // 기존 패널이 닫힌 뒤 다음 프레임에 목표 패널을 엽니다.
-        // 빠르게 여러 탭을 눌러도 가장 마지막 선택만 실행합니다.
+
         let frames = 0;
         const awaitClose = () => {
             if (serial !== footerSwitchSerial) return;
-            const stillOpen = previous.some(s => isFooterDrawerOpen(document.querySelector(s)));
-            if (!stillOpen || ++frames >= 24) requestAnimationFrame(openTarget);
-            else requestAnimationFrame(awaitClose);
+            const anyOtherOpen = openManagedSelectors().some(s => s !== selector);
+            if (anyOtherOpen && ++frames < 35) {
+                requestAnimationFrame(awaitClose);
+                return;
+            }
+            if (target && !isFooterDrawerOpen(target)) openDrawer(selector);
+            requestAnimationFrame(finish);
         };
         requestAnimationFrame(awaitClose);
     }
+
+    function reconcileHistory() {
+        // The user may close a drawer with a native SillyTavern control.
+        // Do not restore stale pages after such an external navigation.
+        if (transitioning) return;
+        const open = openManagedSelectors();
+        if (!open.length) {
+            panelHistory.length = 0;
+            return;
+        }
+        const top = panelHistory[panelHistory.length - 1];
+        if (top && !open.includes(top.selector)) {
+            panelHistory.length = 0;
+        }
+    }
+
+    function navigate(selector) {
+        if (!managedSelectors.includes(selector) || !document.querySelector(selector)) return;
+        if (!mq.matches || !SLK_UI_SETTINGS.enabled) {
+            openDrawer(selector);
+            return;
+        }
+        reconcileHistory();
+        const top = panelHistory[panelHistory.length - 1];
+        // A second tap CLOSES the visible tab, whether our layer history owns
+        // the opening or SillyTavern opened the drawer independently.
+        if (top?.selector === selector || isFooterDrawerOpen(document.querySelector(selector))) {
+            back();
+            return;
+        }
+        if (top) rememberScroll(top);
+        else {
+            // Preserve a drawer that was opened through SillyTavern itself.
+            const underlying = openManagedSelectors().find(s => s !== selector);
+            if (underlying) {
+                const layer = {selector: underlying};
+                rememberScroll(layer);
+                panelHistory.push(layer);
+            }
+        }
+        const layer = { selector };
+        panelHistory.push(layer);
+        transitionTo(selector, layer);
+    }
+
+    // Both the header Back control and the active footer tab close the same
+    // top layer. If a layer was underneath, it becomes visible again.
+    function back() {
+        if (!mq.matches || !SLK_UI_SETTINGS.enabled) return;
+        reconcileHistory();
+        if (panelHistory.length) {
+            panelHistory.pop();
+            const previous = panelHistory[panelHistory.length - 1];
+            transitionTo(previous?.selector ?? null, previous);
+        } else {
+            // A native drawer can be open without an entry in our history.
+            transitionTo(null, null);
+        }
+    }
+
+    window.__slkPanelNavigation = {
+        navigate, back,
+        getHistory: () => panelHistory.map(layer => layer.selector),
+    };
 
     function updateActive() {
         const footer = document.getElementById('slk-mobile-footer');
@@ -1199,7 +1309,7 @@ else init();
                     'cursor': 'pointer'
                 });
                 btn.addEventListener('click', () => {
-                    switchFooterDrawer(drawer);
+                    navigate(drawer);
                 });
                 footer.appendChild(btn);
             }
@@ -1209,7 +1319,7 @@ else init();
             footerObserver = new MutationObserver(updateActive);
             const holder = document.getElementById('top-settings-holder');
             if (holder) footerObserver.observe(holder, { attributes: true, subtree: true, attributeFilter: ['class'] });
-            window.__slkMobileFooterVersion = '1.4.20';
+            window.__slkMobileFooterVersion = '1.4.23';
         }
         // Keep an existing footer out of any clipped/transformed body containing block.
         if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);

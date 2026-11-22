@@ -11872,3 +11872,47 @@ body.slk-ui.slk-dark {
         background-color: #4A154B !important;
     }
 }
+
+
+/* ========================================================================
+   v1.4.21 — 키보드 닫힘: 입력창 첫 줄 미리보기 + 말줄임표
+   - 실제 textarea 값과 커서 위치는 수정하지 않습니다.
+   - 접힌 상태에서 native textarea의 마지막 줄이 비쳐 보이는 현상 방지.
+   - 새 줄이 있다면 첫 줄 뒤에 …, 첫 줄이 길면 CSS ellipsis.
+   ======================================================================== */
+@media screen and (max-width: 1000px) {
+    body.slk-ui #form_sheld #send_form .slk-compose-first-line {
+        display: none !important;
+    }
+    html body.slk-ui #form_sheld #send_form:not(.slk-compose-open).slk-compose-previewing #send_textarea {
+        color: transparent !important;
+        -webkit-text-fill-color: transparent !important;
+        caret-color: transparent !important;
+    }
+    html body.slk-ui #form_sheld #send_form:not(.slk-compose-open).slk-compose-previewing .slk-compose-first-line {
+        display: block !important;
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+        align-self: center !important;
+        position: relative !important;
+        z-index: 3 !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 40px !important;
+        padding: 8px 4px !important;
+        margin: 0 !important;
+        font-family: var(--slk-font) !important;
+        font-size: 16px !important;
+        font-weight: 400 !important;
+        line-height: 24px !important;
+        color: var(--slk-text) !important;
+        -webkit-text-fill-color: var(--slk-text) !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        text-align: left !important;
+        pointer-events: none !important;
+        user-select: none !important;
+    }
+}
