@@ -10675,3 +10675,15 @@ body.slk-ui {
         grid-column: 1 !important;
     }
 }
+
+
+/* === MOBILE FOOTER-ONLY FIX v1.4.5 === */
+@media screen and (max-width: 1000px) {
+    body.slk-footer-only-active #top-settings-holder::before {
+        display: none !important;
+    }
+    body.slk-footer-only-active #top-settings-holder > .drawer > .drawer-toggle {
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+}

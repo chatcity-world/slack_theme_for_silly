@@ -795,3 +795,98 @@ function init() {
 if (window.jQuery) window.jQuery(init);
 else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
 else init();
+
+
+// === MOBILE FOOTER-ONLY FIX v1.4.5 ===
+// 모바일에서 원본 드로어 DOM을 옮기거나 삭제하지 않고, 독립 바텀바만 표시합니다.
+(function mountSlackMobileFooter() {
+    const mq = window.matchMedia('(max-width: 1000px)');
+    const setImportant = (el, styles) => {
+        for (const [key, value] of Object.entries(styles)) el.style.setProperty(key, value, 'important');
+    };
+    let footerObserver = null;
+
+    function updateActive() {
+        const footer = document.getElementById('slk-mobile-footer');
+        if (!footer) return;
+        for (const btn of footer.querySelectorAll('.slk-footer-tab')) {
+            const drawer = document.querySelector(btn.dataset.drawer);
+            const isOpen = !!drawer?.querySelector('.drawer-icon.openIcon, .drawer-content.openDrawer');
+            btn.setAttribute('aria-pressed', String(isOpen));
+            btn.style.setProperty('background', isOpen ? '#EFEAF0' : 'transparent', 'important');
+            btn.style.setProperty('color', isOpen ? '#4A154B' : '#616061', 'important');
+        }
+    }
+
+    function mount() {
+        if (!document.body) return;
+        const mobile = mq.matches;
+        let footer = document.getElementById('slk-mobile-footer');
+        if (!mobile) {
+            if (footer) footer.style.setProperty('display', 'none', 'important');
+            document.body.classList.remove('slk-footer-only-active');
+            return;
+        }
+        if (!footer) {
+            footer = document.createElement('nav');
+            footer.id = 'slk-mobile-footer';
+            footer.setAttribute('aria-label', '실리태번 모바일 하단 탭');
+            // 기존 7개 탭과 SVG 아이콘 재사용. 홈 탭 추가 없음.
+            for (const [drawer, icon, label] of TABS) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'slk-footer-tab';
+                btn.dataset.drawer = drawer;
+                btn.setAttribute('aria-label', label);
+                btn.title = label;
+                btn.innerHTML = ICONS[icon];
+                setImportant(btn, {
+                    'display': 'grid', 'place-items': 'center', 'flex': '1 1 0',
+                    'min-width': '0', 'max-width': '52px', 'height': '44px',
+                    'margin': '0', 'padding': '0', 'border': '0',
+                    'border-radius': '999px', 'background': 'transparent',
+                    'color': '#616061', 'box-shadow': 'none',
+                    'appearance': 'none', '-webkit-appearance': 'none',
+                    'opacity': '1', 'visibility': 'visible', 'pointer-events': 'auto',
+                    'cursor': 'pointer'
+                });
+                btn.addEventListener('click', () => {
+                    openDrawer(drawer); // ST 원본 클릭 핸들러 실행
+                    requestAnimationFrame(updateActive);
+                    setTimeout(updateActive, 100);
+                });
+                footer.appendChild(btn);
+            }
+            document.body.appendChild(footer);
+            footerObserver = new MutationObserver(updateActive);
+            const holder = document.getElementById('top-settings-holder');
+            if (holder) footerObserver.observe(holder, { attributes: true, subtree: true, attributeFilter: ['class'] });
+            window.__slkMobileFooterVersion = '1.4.5';
+        }
+        // 모바일의 위치·표시를 인라인 !important로 고정. 외부 테마의 선택자보다 우선합니다.
+        setImportant(footer, {
+            'position': 'fixed', 'display': 'flex', 'visibility': 'visible',
+            'opacity': '1', 'pointer-events': 'auto', 'box-sizing': 'border-box',
+            'left': '12px', 'right': '12px', 'width': 'auto', 'top': 'auto',
+            'bottom': 'calc(10px + env(safe-area-inset-bottom, 0px))',
+            'height': '60px', 'min-height': '60px', 'max-height': '60px',
+            'margin': '0', 'padding': '0 6px',
+            'align-items': 'center', 'justify-content': 'space-around',
+            'flex-direction': 'row', 'overflow': 'visible',
+            'border': '1px solid rgba(255,255,255,.75)',
+            'border-radius': '999px',
+            'background': 'rgba(255,255,255,.82)',
+            'box-shadow': '0 8px 28px rgba(0,0,0,.12)',
+            'backdrop-filter': 'blur(20px) saturate(180%)',
+            '-webkit-backdrop-filter': 'blur(20px) saturate(180%)',
+            'transform': 'none', 'filter': 'none', 'z-index': '2147483646'
+        });
+        document.body.classList.add('slk-footer-only-active');
+        updateActive();
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true });
+    else mount();
+    mq.addEventListener?.('change', mount);
+    window.addEventListener('pageshow', mount);
+})();
