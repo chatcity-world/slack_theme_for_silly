@@ -8345,13 +8345,7 @@ body.slk-ui {
         box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
     }
 
-    /* 입력 중에는 바텀 탭바를 숨기고 입력창을 맨 아래로 */
-    body.slk-ui.slk-composing #top-settings-holder::before,
-    body.slk-ui.slk-composing #top-settings-holder > .drawer > .drawer-toggle {
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-    }
+    /* 바텀 탭바는 입력 상태와 관계없이 표시 */
 
     /* 키보드가 아래 안전 영역을 덮으므로 여백 없이 바로 붙임 */
     body.slk-ui.slk-composing #sheld {
