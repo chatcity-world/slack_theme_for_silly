@@ -226,7 +226,7 @@ function buildHeader() {
         <button id="slk-ws" type="button" title="캐릭터 목록">
             <span class="slk-ws-avatar has-img"><img src="img/logo.png" alt="" onerror="this.parentElement.classList.remove('has-img')" /><span class="slk-ws-initial">S</span></span>
             <span class="slk-ws-text">
-                <span class="slk-ws-name">SillyTavern</span>
+                <span class="slk-ws-name">Slack</span>
                 <span class="slk-ws-ver"></span>
                 <span class="slk-ws-branch" hidden></span>
             </span>
@@ -1867,6 +1867,7 @@ else init();
 
     const markSwitches = (root) => {
         root.querySelectorAll('.inline-drawer-content input[type="checkbox"]:not([data-slk-sw])').forEach(input => {
+            if (input.closest('#slk-extension-settings')) { input.dataset.slkSw = 'own'; return; }
             const host = input.parentElement;
             if (!shown(host)) return; // 펼쳐졌을 때 다시
             const r = input.getBoundingClientRect();
@@ -1905,7 +1906,11 @@ else init();
         !!el.querySelector('input:checked');
     const markSegments = (root) => {
         root.querySelectorAll('.inline-drawer-content *:not([data-slk-seg])').forEach(box => {
+            if (box.closest('#slk-extension-settings')) return; // Slack UI 자체 설정은 건드리지 않음
             const kids = [...box.children];
+            // 모든 칸에 글자가 있어야 하고, 토글(체크박스) 줄은 제외
+            if (kids.some(k => !(k.textContent || '').trim())) return;
+            if (box.querySelector('input[type="checkbox"]')) return;
             if (kids.length < 2 || kids.length > 5) return;
             if (!kids.every(k => k.matches(OPT))) return;
             if (kids.some(k => /tab/i.test(String(k.className) + ' ' + (k.getAttribute('role') || '')))) return;
