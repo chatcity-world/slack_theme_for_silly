@@ -252,6 +252,12 @@ function buildHeader() {
 
     document.body.appendChild(header);
     document.body.appendChild(menu);
+    // SillyTavern auto-closes drawers on html mousedown/touchstart.
+    // Keep header navigation inside the Slack-managed layer flow.
+    for (const type of ['touchstart', 'mousedown']) {
+        header.addEventListener(type, (event) => event.stopPropagation());
+        menu.addEventListener(type, (event) => event.stopPropagation());
+    }
     SLK.header = header;
     SLK.menu = menu;
 
@@ -1004,6 +1010,9 @@ function buildPanelBack() {
     const ws = document.getElementById('slk-ws');
     if (ws) ws.insertAdjacentElement('beforebegin', btn);
     else header.prepend(btn);
+    for (const type of ['touchstart', 'mousedown']) {
+        btn.addEventListener(type, (event) => event.stopPropagation());
+    }
     btn.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -1121,21 +1130,28 @@ else init();
     let composerObserver = null;
     let footerSwitchSerial = 0;
 
-    // v1.4.24: Slack navigation owns its stack. ST may momentarily change
-    // openIcon/openDrawer during drawer animations; do NOT use that to clear it.
+    // v1.4.25: A single, synchronous controller for mobile drawers.
+    // SillyTavern's doNavbarIconClick() is async: when a different drawer is
+    // open it waits animation_duration before opening the next one. Calling
+    // native toggles repeatedly during this wait caused persona/character
+    // flicker and reopened an unrelated drawer after Back.
     const panelHistory = [];
-    const managedSelectors = [...new Set([...TABS.map(([s]) => s), DRAWERS.userSettings, DRAWERS.backgrounds])];
+    const managedSelectors = [...new Set([...TABS.map(([selector]) => selector), DRAWERS.userSettings, DRAWERS.backgrounds])];
     let navigationUsed = false;
     let desiredSelector = null;
-    const nativePending = new Map(); // Prevent double toggles while ST is animating.
 
-    function isFooterDrawerOpen(drawer) {
-        return !!drawer && (drawer.classList.contains('openDrawer') ||
-            !!drawer.querySelector(':scope > .drawer-content.openDrawer, :scope > .drawer-toggle .drawer-icon.openIcon'));
+    function getDrawerParts(selector) {
+        const root = document.querySelector(selector);
+        if (!root) return null;
+        const content = root.querySelector(':scope > .drawer-content');
+        const icon = root.querySelector(':scope > .drawer-toggle .drawer-icon');
+        if (!content || !icon) return null;
+        return {root, content, icon};
     }
 
-    function nativeOpenSelectors() {
-        return managedSelectors.filter(s => isFooterDrawerOpen(document.querySelector(s)));
+    function isFooterDrawerOpen(root) {
+        if (!root) return false;
+        return !!root.querySelector(':scope > .drawer-content.openDrawer');
     }
 
     function rememberScroll(layer) {
@@ -1152,97 +1168,72 @@ else init();
             if (node.isConnected) node.scrollTop = top;
         });
         requestAnimationFrame(restore);
-        setTimeout(restore, 100);
     }
 
     function applyManagedVisibility() {
         if (!navigationUsed || !mq.matches || !SLK_UI_SETTINGS.enabled) {
             document.body.classList.remove('slk-managed-navigation', 'slk-no-panel');
-            for (const s of managedSelectors) {
-                document.querySelector(s)?.querySelector(':scope > .drawer-content')?.classList.remove('slk-nav-hidden');
+            for (const selector of managedSelectors) {
+                getDrawerParts(selector)?.content.classList.remove('slk-nav-hidden');
             }
             return;
         }
         document.body.classList.add('slk-managed-navigation');
         document.body.classList.toggle('slk-no-panel', !desiredSelector);
         for (const selector of managedSelectors) {
-            const content = document.querySelector(selector)?.querySelector(':scope > .drawer-content');
-            content?.classList.toggle('slk-nav-hidden', selector !== desiredSelector);
+            getDrawerParts(selector)?.content.classList.toggle('slk-nav-hidden', selector !== desiredSelector);
         }
     }
 
-    // Native click is still needed for ST side effects. We immediately guard
-    // which panel may actually be visible so a native fallback character panel
-    // never replaces the desired page or a closed-to-chat state.
-    function syncNativeToDesired(serial) {
-        if (serial !== footerSwitchSerial || !mq.matches || !SLK_UI_SETTINGS.enabled) return;
-        applyManagedVisibility();
-        const ensureNative = (selector, shouldOpen) => {
-            const drawer = document.querySelector(selector);
-            if (!drawer) return;
-            const isOpen = isFooterDrawerOpen(drawer);
-            if (isOpen === shouldOpen) { nativePending.delete(selector); return; }
-            const pending = nativePending.get(selector);
-            // A native toggle may take several frames to apply .openDrawer.
-            // Never click again on the next frame and accidentally undo it.
-            if (pending && performance.now() - pending.time < 540) return;
-            nativePending.set(selector, {want:shouldOpen, time:performance.now()});
-            openDrawer(selector);
-        };
-        for (const selector of managedSelectors) {
-            if (selector !== desiredSelector) ensureNative(selector, false);
+    function setNativeDrawerState(selector, shouldOpen) {
+        const parts = getDrawerParts(selector);
+        if (!parts) return;
+        const { content, icon } = parts;
+        // Update both flags in the same JS task; never call the native async
+        // toggle here, and never create delayed callbacks that can undo state.
+        content.classList.toggle('openDrawer', shouldOpen);
+        content.classList.toggle('closedDrawer', !shouldOpen);
+        icon.classList.toggle('openIcon', shouldOpen);
+        icon.classList.toggle('closedIcon', !shouldOpen);
+        if (shouldOpen && selector === DRAWERS.character) {
+            document.getElementById('rm_print_characters_block')?.dispatchEvent(new Event('scroll'));
         }
-        if (desiredSelector) ensureNative(desiredSelector, true);
-        applyManagedVisibility();
-        updateActive();
-        recomputeHeaderCompact();
     }
 
     function transitionTo(selector, layer) {
-        const serial = ++footerSwitchSerial;
         navigationUsed = true;
         desiredSelector = selector;
-        // Suppress the previous panel before any asynchronous ST click/animation.
+        // Clear any legacy delayed header-transition indicator. Only the
+        // selected panel receives native open flags; no other panel is opened.
+        document.body.classList.remove('slk-panel-opening');
+        for (const item of managedSelectors) {
+            setNativeDrawerState(item, item === selector);
+        }
         applyManagedVisibility();
-        if (selector) primePanelHeader(selector);
-        syncNativeToDesired(serial);
-        requestAnimationFrame(() => {
-            if (serial !== footerSwitchSerial) return;
-            syncNativeToDesired(serial);
-            restoreScroll(layer);
-        });
-        // Handle ST transitions that finish a frame or two after the click.
-        setTimeout(() => syncNativeToDesired(serial), 110);
-        setTimeout(() => syncNativeToDesired(serial), 350);
-        setTimeout(() => syncNativeToDesired(serial), 650);
-        setTimeout(() => syncNativeToDesired(serial), 980);
+        document.body.classList.remove('slk-header-compact');
+        updateActive();
+        restoreScroll(layer);
+        // Compact state will be calculated from the selected visible panel.
+        requestAnimationFrame(recomputeHeaderCompact);
     }
 
     function navigate(selector) {
-        if (!managedSelectors.includes(selector) || !document.querySelector(selector)) return;
+        if (!managedSelectors.includes(selector) || !getDrawerParts(selector)) return;
         if (!mq.matches || !SLK_UI_SETTINGS.enabled) {
             openDrawer(selector);
             return;
         }
         const top = panelHistory.at(-1);
-        // The button is a toggle: tapping the CURRENT tab must pop it.
         if (top?.selector === selector) {
-            back();
-            return;
-        }
-        // ST can open a panel natively before Slack has navigation history.
-        if (!navigationUsed && isFooterDrawerOpen(document.querySelector(selector))) {
-            transitionTo(null, null);
+            back(); // Clicking the active tab closes the current layer.
             return;
         }
         rememberScroll(top);
-        const layer = { selector };
+        const layer = {selector};
         panelHistory.push(layer);
         transitionTo(selector, layer);
     }
 
-    // Back and a second tap both close one layer, returning to the previous
-    // Slack page, or to the chat if no earlier Slack page exists.
     function back() {
         if (!mq.matches || !SLK_UI_SETTINGS.enabled) return;
         if (panelHistory.length) panelHistory.pop();
@@ -1325,10 +1316,14 @@ else init();
             // Keep the footer outside <body>: some SillyTavern themes make <body>
             // a zero-height containing block for position:fixed elements.
             document.documentElement.appendChild(footer);
+            // Prevent native html-level auto-close before navigation.click.
+            for (const type of ['touchstart', 'mousedown']) {
+                footer.addEventListener(type, event => event.stopPropagation());
+            }
             footerObserver = new MutationObserver(updateActive);
             const holder = document.getElementById('top-settings-holder');
             if (holder) footerObserver.observe(holder, { attributes: true, subtree: true, attributeFilter: ['class'] });
-            window.__slkMobileFooterVersion = '1.4.24';
+            window.__slkMobileFooterVersion = '1.4.25';
         }
         // Keep an existing footer out of any clipped/transformed body containing block.
         if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);
