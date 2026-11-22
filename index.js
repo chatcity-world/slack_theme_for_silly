@@ -1646,3 +1646,99 @@ else init();
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
 })();
+
+// v1.4.40 — 로어북 항목 '캐릭터/태그 필터', '생성 트리거 필터'도 한 줄 드롭다운(여러 개 선택)
+(function slkEntryFilterDropdowns() {
+    const CONF = {
+        characterFilter: '전체 캐릭터 (필터 없음)',
+        triggers: '전체 생성 유형 (필터 없음)',
+    };
+    const SEL = Object.keys(CONF).map(n => `#WorldInfo select[name="${n}"][multiple]`).join(',');
+
+    const fire = (sel) => {
+        const $ = window.jQuery || window.$;
+        if ($) { $(sel).trigger('input').trigger('change'); }
+        else {
+            sel.dispatchEvent(new Event('input', { bubbles: true }));
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    };
+
+    const attach = (sel) => {
+        if (sel.dataset.slkDd) return;
+        sel.dataset.slkDd = '1';
+        const placeholder = CONF[sel.name] || '선택 안 됨';
+        const wrap = document.createElement('div');
+        wrap.className = 'slk-dd';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'slk-dd-btn';
+        const label = document.createElement('span');
+        label.className = 'slk-dd-label';
+        btn.appendChild(label);
+        const menu = document.createElement('div');
+        menu.className = 'slk-dd-menu';
+        wrap.append(btn, menu);
+        const s2 = sel.nextElementSibling && sel.nextElementSibling.classList.contains('select2-container') ? sel.nextElementSibling : sel;
+        s2.insertAdjacentElement('afterend', wrap);
+
+        const opts = () => [...sel.options].filter(o => o.value !== '' && !o.disabled);
+        const renderLabel = () => {
+            const picked = opts().filter(o => o.selected).map(o => o.text.trim());
+            label.textContent = picked.length ? picked.join(', ') : placeholder;
+            label.classList.toggle('is-empty', !picked.length);
+        };
+        const renderMenu = () => {
+            menu.textContent = '';
+            const list = opts();
+            const anyOn = list.some(o => o.selected);
+            [null, ...list].forEach(o => {
+                const it = document.createElement('button');
+                it.type = 'button';
+                const on = o ? o.selected : !anyOn;
+                it.className = 'slk-dd-item' + (on ? ' is-on' : '') + (o ? '' : ' is-none');
+                it.textContent = o ? o.text.trim() : placeholder;
+                it.addEventListener('click', ev => {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    if (o) o.selected = !o.selected;
+                    else [...sel.options].forEach(x => { x.selected = false; });
+                    fire(sel);
+                    renderLabel();
+                    renderMenu();
+                });
+                menu.appendChild(it);
+            });
+        };
+        btn.addEventListener('click', ev => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const open = !wrap.classList.contains('is-open');
+            document.querySelectorAll('.slk-dd.is-open').forEach(x => x.classList.remove('is-open'));
+            wrap.classList.toggle('is-open', open);
+            if (open) renderMenu();
+        });
+        sel.addEventListener('change', renderLabel);
+        const $ = window.jQuery || window.$;
+        if ($) $(sel).on('change.slkdd', renderLabel);
+        new MutationObserver(() => { renderLabel(); if (wrap.classList.contains('is-open')) renderMenu(); })
+            .observe(sel, { childList: true, subtree: true, attributes: true });
+        renderLabel();
+        // ST가 선택값을 나중에 채우는 경우 대비
+        setTimeout(renderLabel, 300);
+        setTimeout(renderLabel, 1200);
+    };
+
+    const scan = () => document.querySelectorAll(SEL).forEach(attach);
+    document.addEventListener('click', ev => {
+        document.querySelectorAll('.slk-dd.is-open').forEach(w => { if (!w.contains(ev.target)) w.classList.remove('is-open'); });
+    }, true);
+    const start = () => {
+        scan();
+        let t = null;
+        new MutationObserver(() => { if (t) return; t = setTimeout(() => { t = null; scan(); }, 120); })
+            .observe(document.body, { childList: true, subtree: true });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();
