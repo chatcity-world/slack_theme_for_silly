@@ -11667,3 +11667,208 @@ body.slk-ui.slk-dark {
         border-color: #68446C !important;
     }
 }
+
+
+/* ==============================================================
+   v1.4.20 — Extensions manager inner controls and reliable toasts
+   Only the extension-manager popup, existing notification container,
+   and collapsed chat composer are affected.
+   ============================================================== */
+@media screen and (max-width: 1000px) {
+    /* SillyTavern generates these as .menu_button controls inside .extension_actions.
+       Override the native square black-outline style at the actual button level. */
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions > button.menu_button {
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        display: grid !important;
+        place-items: center !important;
+        flex: 0 0 36px !important;
+        width: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+        height: 36px !important;
+        min-height: 36px !important;
+        max-height: 36px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 1px solid var(--slk-border, #E3E3E3) !important;
+        border-radius: 10px !important;
+        background: #F7F7F8 !important;
+        background-image: none !important;
+        color: var(--slk-muted, #616061) !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+        transform: none !important;
+        outline-offset: 2px !important;
+        cursor: pointer !important;
+        line-height: 1 !important;
+        font-size: 16px !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions > button.menu_button > i {
+        display: block !important;
+        color: inherit !important;
+        font-size: 16px !important;
+        line-height: 1 !important;
+        filter: none !important;
+        text-shadow: none !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions > button.menu_button:active {
+        background: #EFEAF0 !important;
+        color: #4A154B !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions > button.menu_button:disabled {
+        opacity: .45 !important;
+        cursor: default !important;
+    }
+    /* Keep ST's displayNone functionality even when there is a forced display:grid above. */
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions > button.menu_button.displayNone {
+        display: none !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions {
+        display: flex !important;
+        flex-flow: row nowrap !important;
+        justify-content: flex-end !important;
+        gap: 6px !important;
+        flex: 0 0 auto !important;
+    }
+    /* Native checkbox is reset only within the manager popup. */
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_toggle {
+        display: grid !important;
+        place-items: center !important;
+        flex: 0 0 24px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_toggle > input[type="checkbox"] {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        display: block !important;
+        position: relative !important;
+        width: 22px !important;
+        min-width: 22px !important;
+        height: 22px !important;
+        min-height: 22px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 1.5px solid #C9C9CE !important;
+        border-radius: 6px !important;
+        background: #FFFFFF !important;
+        background-image: none !important;
+        box-shadow: none !important;
+        filter: none !important;
+        opacity: 1 !important;
+        cursor: pointer !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_toggle > input[type="checkbox"]:checked {
+        border-color: #4A154B !important;
+        background-color: #4A154B !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' d='m5 12 4.5 4.5L19 7'/%3E%3C/svg%3E") !important;
+        background-size: 16px 16px !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_toggle > input[type="checkbox"]:disabled {
+        border-color: #DDDDE1 !important;
+        background-color: #F5F5F6 !important;
+        opacity: .55 !important;
+        cursor: not-allowed !important;
+    }
+    /* Mobile rows: full extension title on top, action buttons beneath.
+       Prevents controls eating the entire 303–390px row. */
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block {
+        display: grid !important;
+        grid-template-columns: 24px 22px minmax(0, 1fr) !important;
+        grid-template-rows: auto auto !important;
+        align-items: center !important;
+        gap: 6px 10px !important;
+        min-width: 0 !important;
+        padding: 10px 12px !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_toggle {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_icon {
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+        width: 22px !important;
+        margin: 0 !important;
+        text-align: center !important;
+        color: var(--slk-muted, #616061) !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_text_block {
+        grid-column: 3 !important;
+        grid-row: 1 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_actions {
+        grid-column: 1 / -1 !important;
+        grid-row: 2 !important;
+        justify-self: end !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_actions:empty {
+        display: none !important;
+    }
+    html body.slk-ui.slk-dark dialog.popup:has(.extensions_info) .extensions_info .extension_actions > button.menu_button {
+        background: #343136 !important;
+        color: #D9D4DA !important;
+        border-color: #57515A !important;
+    }
+    html body.slk-ui.slk-dark dialog.popup:has(.extensions_info) .extension_toggle > input[type="checkbox"]:not(:checked) {
+        background: #2A272B !important;
+        border-color: #766B78 !important;
+    }
+}
+
+/* Notices are appended by toastr, sometimes outside <body>. 
+   Match through <html> instead of assuming #toast-container is a body descendant. */
+@media screen and (max-width: 1000px) {
+    html:has(body.slk-ui) #toast-container {
+        max-width: calc(100vw - 24px) !important;
+        z-index: 2147483647 !important;
+    }
+    html:has(body.slk-ui) #toast-container > :is(.toast, div.toast, .toast-info, .toast-success, .toast-warning, .toast-error),
+    html:has(body.slk-ui) #toast-container > div {
+        position: relative !important;
+        box-sizing: border-box !important;
+        max-width: min(370px, calc(100vw - 28px)) !important;
+        min-width: 0 !important;
+        margin: 0 0 10px !important;
+        padding: 13px 38px 13px 15px !important;
+        border: 1px solid #E3E3E3 !important;
+        border-radius: 14px !important;
+        background: rgba(255,255,255,.97) !important;
+        background-color: rgba(255,255,255,.97) !important;
+        background-image: none !important;
+        color: #1D1C1D !important;
+        font: 500 13px/1.5 var(--slk-font, sans-serif) !important;
+        box-shadow: 0 6px 24px rgba(0,0,0,.12) !important;
+        text-shadow: none !important;
+        opacity: 1 !important;
+    }
+    html:has(body.slk-ui) #toast-container :is(.toast-title, .toast-message) {
+        color: #1D1C1D !important;
+        text-shadow: none !important;
+        font: 500 13px/1.5 var(--slk-font, sans-serif) !important;
+    }
+    html:has(body.slk-ui) #toast-container .toast-close-button {
+        position: absolute !important;
+        top: 8px !important;
+        right: 9px !important;
+        width: 24px !important;
+        height: 24px !important;
+        color: #616061 !important;
+        font-size: 18px !important;
+        text-shadow: none !important;
+        box-shadow: none !important;
+        opacity: 1 !important;
+    }
+    html:has(body.slk-ui) #toast-container .toast-progress {
+        border-radius: 0 0 13px 13px !important;
+        background-color: #4A154B !important;
+    }
+}

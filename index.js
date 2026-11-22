@@ -634,59 +634,91 @@ function setupComposer() {
     if (!form || !ta || form.dataset.slkComposer) return;
     form.dataset.slkComposer = '1';
 
-    // iOS에서 키보드의 완료/내리기 동작은 textarea의 focus를 유지할 수 있습니다.
-    // 따라서 입력값이나 생성 중 아이콘이 아닌, 실제 키보드 높이 변화를 우선합니다.
+    // v1.4.20: 키보드가 닫혀도 iOS는 textarea 포커스를 계속 유지할 수 있습니다.
+    // 입력 내용/생성 상태는 배치 결정에 사용하지 않고, 뷰포트 높이의
+    // 감소(키보드 열림) 및 증가(키보드 닫힘)를 추적합니다.
     const viewport = window.visualViewport;
-    const visibleHeight = () => {
+    const measure = () => {
         const layout = window.innerHeight || document.documentElement.clientHeight;
         const visual = viewport?.height;
-        return Number.isFinite(visual) && visual > 0 ? Math.min(layout, visual) : layout;
+        return Number.isFinite(visual) && visual > 0 ? visual : layout;
     };
-    let fullHeight = visibleHeight();
-    let keyboardWasVisible = false;
+    let lastHeight = measure();
+    let maximumHeight = lastHeight;
+    let keyboardVisible = false;
     let keyboardDismissed = false;
+    let pendingFocus = false;
 
-    const sync = () => {
-        const height = visibleHeight();
-        // 브라우저 상/하단 UI의 작은 높이 변화는 키보드로 오인하지 않습니다.
-        if (height > fullHeight) fullHeight = height;
-        const keyboardVisible = fullHeight - height > Math.max(130, fullHeight * 0.16);
-        if (keyboardVisible) {
-            keyboardWasVisible = true;
-            keyboardDismissed = false;
-        } else if (keyboardWasVisible) {
-            // 키보드가 닫혔지만 textarea에 focus가 남아 있어도 무조건 접습니다.
-            keyboardDismissed = true;
-        }
-        // 값이 남아 있거나 다른 확장의 생성 버튼이 돌아가도 펼치지 않습니다.
-        const open = document.activeElement === ta && !keyboardDismissed;
+    const updateDisplay = () => {
+        // 프로그램에서 입력 내용이 바뀌거나 번역/생성 중이어도 확장을 유지하지 않음.
+        const focused = document.activeElement === ta;
+        const open = focused && !keyboardDismissed && (keyboardVisible || pendingFocus);
         form.classList.toggle('slk-compose-open', open);
         document.body.classList.toggle('slk-composing', open);
     };
 
-    ta.addEventListener('focus', () => {
-        // 사용자가 다시 입력을 시작하면 다음 키보드 표시 주기를 추적합니다.
-        keyboardWasVisible = false;
+    const syncHeight = () => {
+        const height = measure();
+        const delta = height - lastHeight;
+        const threshold = Math.max(105, maximumHeight * 0.13);
+
+        // 중요: 첫 높이가 키보드 열린 상태였더라도, 커지는 변화만으로 닫힘 감지.
+        if (delta > 100) {
+            keyboardVisible = false;
+            keyboardDismissed = true;
+            pendingFocus = false;
+        } else if (delta < -100) {
+            keyboardVisible = true;
+            keyboardDismissed = false;
+            pendingFocus = false;
+        } else if (maximumHeight - height > threshold && document.activeElement === ta) {
+            keyboardVisible = true;
+            keyboardDismissed = false;
+            pendingFocus = false;
+        } else if (keyboardVisible && maximumHeight - height < threshold / 2) {
+            keyboardVisible = false;
+            keyboardDismissed = true;
+            pendingFocus = false;
+        }
+
+        if (height > maximumHeight) maximumHeight = height;
+        lastHeight = height;
+        updateDisplay();
+    };
+
+    const requestExpand = () => {
+        pendingFocus = true;
         keyboardDismissed = false;
-        sync();
+        updateDisplay();
+        requestAnimationFrame(syncHeight);
+    };
+    // 키보드를 내린 후에도 동일 textarea에 포커스가 남았다면, 다음 직접 터치로 재확장.
+    ta.addEventListener('pointerdown', requestExpand);
+    ta.addEventListener('focus', requestExpand);
+    ta.addEventListener('blur', () => {
+        keyboardVisible = false;
+        keyboardDismissed = true;
+        pendingFocus = false;
+        updateDisplay();
     });
-    ta.addEventListener('blur', () => setTimeout(sync, 0));
-    ta.addEventListener('input', sync);
-    // iOS의 키보드 내리기는 blur 없이 visualViewport.resize만 발생할 수 있습니다.
-    viewport?.addEventListener('resize', sync);
-    window.addEventListener('resize', sync);
-    // 화면을 돌렸을 때 이전 세로 높이가 키보드로 오인되는 것을 방지합니다.
+    ta.addEventListener('input', updateDisplay);
+    viewport?.addEventListener('resize', syncHeight);
+    viewport?.addEventListener('scroll', syncHeight);
+    window.addEventListener('resize', syncHeight);
+    window.addEventListener('pageshow', syncHeight);
     window.addEventListener('orientationchange', () => {
-        fullHeight = visibleHeight();
-        keyboardWasVisible = false;
-        keyboardDismissed = false;
-        requestAnimationFrame(sync);
+        keyboardVisible = false;
+        keyboardDismissed = true;
+        pendingFocus = false;
+        lastHeight = measure();
+        maximumHeight = lastHeight;
+        requestAnimationFrame(syncHeight);
     });
     form.addEventListener('mousedown', (e) => {
         if (document.activeElement === ta && !e.target.closest('#send_textarea')) e.preventDefault();
     });
-    form.addEventListener('click', () => setTimeout(sync, 0));
-    sync();
+    form.addEventListener('click', () => requestAnimationFrame(syncHeight));
+    updateDisplay();
     setupMenuSwitch();
 }
 
@@ -1177,7 +1209,7 @@ else init();
             footerObserver = new MutationObserver(updateActive);
             const holder = document.getElementById('top-settings-holder');
             if (holder) footerObserver.observe(holder, { attributes: true, subtree: true, attributeFilter: ['class'] });
-            window.__slkMobileFooterVersion = '1.4.19';
+            window.__slkMobileFooterVersion = '1.4.20';
         }
         // Keep an existing footer out of any clipped/transformed body containing block.
         if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);
