@@ -10543,7 +10543,7 @@ body.slk-ui {
         box-shadow: none !important;
     }
 
-    html body.slk-ui:not(#slk-a):not(#slk-b) .drawer-content h3 {
+    html body.slk-ui:not(#slk-a):not(#slk-b) .drawer-content h3:not(#title_api) {
         padding-left: 0 !important;
     }
 
@@ -10901,5 +10901,197 @@ body.slk-ui {
         -webkit-text-fill-color: #616061 !important;
         opacity: 1 !important;
         filter: none !important;
+    }
+}
+
+
+/* ==============================================================
+   v1.4.14 — API 제목 좌측 정렬 + 비활성 설정 필드 밝기 개선
+   기존 헤더/바텀바/입력창/탭 전환 및 활성 입력 스타일은 변경하지 않음.
+   ============================================================== */
+@media screen and (max-width: 1000px) {
+    /* 기존 h3 일괄 padding-left:0 의 예외로 두되, 테마가 또 덮어써도
+       선택 상자와 같은 16px 인셋이 유지되게 제목에만 최종 명시. */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_api_block.drawer-content > h3#title_api {
+        padding-left: 16px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 설정 탭 / 설정 팝업의 *사용 불가 입력 필드에만* 적용.
+       일반 입력, 체크박스, 라디오, 버튼, 슬라이더는 제외. */
+    html body.slk-ui:not(#slk-a):not(#slk-b) :is(.drawer-content, .popup) :is(
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+        textarea,
+        select,
+        .text_pole
+    ):is(:disabled, [disabled], [aria-disabled="true"], [readonly], .disabled) {
+        background-color: #F8F8F9 !important;
+        color: #8A8A8D !important;
+        -webkit-text-fill-color: #8A8A8D !important;
+        border-color: #E3E3E6 !important;
+        opacity: 1 !important;
+        filter: none !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    /* 기본 테마의 회색 오버레이/그라데이션 이미지까지 제거. */
+    html body.slk-ui:not(#slk-a):not(#slk-b) :is(.drawer-content, .popup) :is(
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+        textarea
+    ):is(:disabled, [disabled], [aria-disabled="true"], [readonly], .disabled) {
+        background-image: none !important;
+    }
+
+    /* 선택칸은 회색 그라데이션을 제거하면서 화살표는 유지. */
+    html body.slk-ui:not(#slk-a):not(#slk-b) :is(.drawer-content, .popup) select:is(:disabled, [disabled], [aria-disabled="true"], .disabled) {
+        background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239B9B9E%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E") !important;
+        background-position: right 12px center !important;
+        background-size: 16px !important;
+        background-repeat: no-repeat !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b) :is(.drawer-content, .popup) :is(input, textarea):is(:disabled, [disabled], [aria-disabled="true"], [readonly], .disabled)::placeholder {
+        color: #A9A9AD !important;
+        -webkit-text-fill-color: #A9A9AD !important;
+        opacity: 1 !important;
+    }
+}
+
+
+/* ================================================================
+   v1.4.15 — 모바일 채팅 통계 색상 / 접힌 입력창 배치 / 키보드 위 배경
+   기존 헤더, 탭 전환, 바텀바, 열린 입력창, 기타 패널은 그대로 유지.
+   ================================================================ */
+@media screen and (max-width: 1000px) {
+    /* 최근 채팅 개수와 용량은 내부 small/i가 별도 테마색을 갖기 때문에
+       부모만 지정하지 말고 통계 텍스트/아이콘까지 직접 중립 회색 적용. */
+    html body.slk-ui .welcomePanel .welcomeRecent .recentChat .chatStats,
+    html body.slk-ui .welcomePanel .welcomeRecent .recentChat .chatStats .counterBlock,
+    html body.slk-ui .welcomePanel .welcomeRecent .recentChat .chatStats :is(small, span, i, svg, .fileSize) {
+        color: #858585 !important;
+        -webkit-text-fill-color: #858585 !important;
+        opacity: 1 !important;
+    }
+    html body.slk-ui .welcomePanel .welcomeRecent .recentChat .chatStats svg {
+        stroke: currentColor !important;
+    }
+    html body.slk-ui .welcomePanel .welcomeRecent .recentChat .chatStats .counterBlock::after {
+        color: #B5B5B5 !important;
+    }
+
+    /* 접힌 컴포저는 3칸 그리드로 공간을 강제 분리:
+       [메뉴/지팡이] [안내문구/입력] [보내기] */
+    html body.slk-ui #form_sheld #send_form:not(.slk-compose-open) #nonQRFormItems {
+        display: grid !important;
+        grid-template-columns: 70px minmax(0, 1fr) 42px !important;
+        grid-template-rows: minmax(40px, auto) !important;
+        align-items: center !important;
+        gap: 0 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        position: relative !important;
+    }
+    html body.slk-ui #form_sheld #send_form:not(.slk-compose-open) #leftSendForm {
+        display: flex !important;
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        position: static !important;
+        width: 70px !important;
+        min-width: 0 !important;
+        max-width: 70px !important;
+        height: 40px !important;
+        flex: none !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        transform: none !important;
+    }
+    html body.slk-ui #form_sheld #send_form:not(.slk-compose-open) #leftSendForm > :is(#options_button, #extensionsMenuButton) {
+        flex: 0 0 34px !important;
+        width: 34px !important;
+        min-width: 34px !important;
+        max-width: 34px !important;
+        height: 40px !important;
+        display: grid !important;
+        place-items: center !important;
+        position: static !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+    }
+    html body.slk-ui #form_sheld #send_form:not(.slk-compose-open) #send_textarea {
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+        position: relative !important;
+        inset: auto !important;
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        height: 40px !important;
+        min-height: 40px !important;
+        margin: 0 !important;
+        padding: 8px 4px !important;
+        flex: none !important;
+        box-sizing: border-box !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        transform: none !important;
+        z-index: 1 !important;
+    }
+    html body.slk-ui #form_sheld #send_form:not(.slk-compose-open) #rightSendForm {
+        display: flex !important;
+        grid-column: 3 !important;
+        grid-row: 1 !important;
+        position: static !important;
+        width: 42px !important;
+        min-width: 42px !important;
+        max-width: 42px !important;
+        height: 40px !important;
+        flex: none !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        transform: none !important;
+        z-index: 2 !important;
+    }
+    html body.slk-ui #form_sheld #send_form:not(.slk-compose-open) #rightSendForm > :is(#send_but, #mes_continue, #mes_stop) {
+        flex: 0 0 40px !important;
+        position: static !important;
+        margin: 0 !important;
+        transform: none !important;
+    }
+    html body.slk-ui #form_sheld #send_form:not(.slk-compose-open) #nonQRFormItems::after {
+        display: none !important;
+        content: none !important;
+    }
+
+    /* 키보드가 열린 동안 웹 뷰 뒤쪽에 드러나는 빈 띠만 흰색으로.
+       실제 iOS 키보드/입력 보조 막대는 운영체제 UI이므로 CSS로 색을 지정할 수 없음. */
+    html:has(body.slk-ui.slk-composing) {
+        background-color: #FFFFFF !important;
+        color-scheme: light;
+    }
+    body.slk-ui.slk-composing {
+        background-color: #FFFFFF !important;
+        color-scheme: light;
+    }
+    body.slk-ui.slk-composing #form_sheld {
+        background: #FFFFFF !important;
+    }
+    body.slk-ui #send_textarea {
+        color-scheme: light;
     }
 }
