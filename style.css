@@ -133,6 +133,42 @@ body.slk-ui {
         display: none;
     }
 
+    /* 보라색 전체 헤더: 프로필 이미지를 강제로 정사각형 중앙 크롭 후 정원으로 표시.
+       스크롤 후의 원형(컴팩트) 헤더는 기존 스타일 그대로 둡니다. */
+    body.slk-ui:not(.slk-header-compact) #slk-header .slk-ws-avatar {
+        flex: 0 0 44px !important;
+        width: 44px !important;
+        min-width: 44px !important;
+        max-width: 44px !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        max-height: 44px !important;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        border-radius: 50% !important;
+        box-sizing: border-box;
+    }
+
+    body.slk-ui:not(.slk-header-compact) #slk-header .slk-ws-avatar > img {
+        position: absolute;
+        inset: 4px auto auto 4px;
+        display: block;
+        width: 34px !important;
+        min-width: 34px !important;
+        max-width: 34px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        max-height: 34px !important;
+        aspect-ratio: 1 / 1;
+        object-fit: cover !important;
+        object-position: 50% 50% !important;
+        border-radius: 50% !important;
+    }
+
+    body.slk-ui:not(.slk-header-compact) #slk-header .slk-ws-avatar:not(.has-img) > img {
+        display: none;
+    }
+
     /* SillyTavern 1.19.0 staging — 한 줄 */
     .slk-ws-text {
         display: flex;
@@ -1959,7 +1995,7 @@ body.slk-ui {
     }
 
     /* 2) API 섹션 제목 */
-    body.slk-ui #rm_api_block > #title_api {
+    body.slk-ui #rm_api_block #title_api {
         padding: 18px 16px 8px !important;
         margin: 0 !important;
     }
@@ -8333,7 +8369,7 @@ body.slk-ui {
     /* 입력창: 유리 */
     body.slk-ui #form_sheld #send_form {
         border-color: rgba(0, 0, 0, 0.08) !important;
-        background: rgba(250, 250, 250, 0.38) !important;
+        background: rgba(250, 250, 250, 0.28) !important;
         box-shadow: 0 6px 22px rgba(0, 0, 0, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
         backdrop-filter: var(--slk-glass-blur) !important;
         -webkit-backdrop-filter: var(--slk-glass-blur) !important;
@@ -8341,7 +8377,7 @@ body.slk-ui {
 
     body.slk-ui #form_sheld #send_form.slk-compose-open {
         border-color: rgba(255, 255, 255, 0.75) !important;
-        background: rgba(255, 255, 255, 0.36) !important;
+        background: rgba(255, 255, 255, 0.26) !important;
         box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
     }
 
@@ -10807,5 +10843,63 @@ body.slk-ui {
     body.slk-footer-only-active #top-settings-holder > .drawer > .drawer-toggle {
         visibility: hidden !important;
         pointer-events: none !important;
+    }
+}
+
+
+/* =====================================================
+   v1.4.13 — 모바일 설정 화면의 외부 테마 잔여 효과 차단
+   - 제목 블록에 남는 회색 그라데이션만 초기화
+   - 전체보기(확대 편집) 팝업 textarea에 기본 본문색/흰 배경 고정
+   - 헤더, 탭바, 입력 컴포저, 외부 확장의 카드 내용은 손대지 않음
+   ===================================================== */
+@media screen and (max-width: 1000px) {
+    /* 기존 테마의 background-image가 background-color:transparent 위에 남는 현상.
+       내부 버튼이나 카드 전체를 리셋하지 않고 제목/접힘 헤더로 한정. */
+    body.slk-ui #AdvancedFormatting :is(h3.standoutHeader, h4.standoutHeader, .range-block-title),
+    body.slk-ui #left-nav-panel :is(.range-block-title, .inline-drawer-header),
+    body.slk-ui #rm_api_block :is(.range-block-title, .inline-drawer-header),
+    body.slk-ui #WorldInfo :is(.range-block-title, .inline-drawer-header),
+    body.slk-ui #PersonaManagement :is(h3.standoutHeader, h4.standoutHeader, .range-block-title),
+    body.slk-ui #right-nav-panel :is(h3.standoutHeader, h4.standoutHeader, .range-block-title),
+    body.slk-ui #rm_extensions_block :is(.standoutHeader, .range-block-title, .inline-drawer-toggle, .inline-drawer-header) {
+        background-image: none !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+    }
+
+    /* 긴 제목이 기존 그라데이션 박스의 고정된 높이에서 잘리던 현상 방지 */
+    body.slk-ui #AdvancedFormatting h4.standoutHeader {
+        height: auto !important;
+        min-height: 36px !important;
+        line-height: 1.35 !important;
+        overflow: visible !important;
+    }
+
+    /* 확대 편집 팝업은 설정 패널의 자식이 아닌 최상위 dialog에 생성됨.
+       원래 .popup .text_pole만 꾸며서, .maximized_textarea 같은 별도 textarea는
+       회색 배경/하늘색 글자 테마를 그대로 물려받았음. */
+    html body.slk-ui .popup textarea,
+    html body.slk-ui .popup .maximized_textarea,
+    html body.slk-ui #dialogue_popup textarea.maximized_textarea {
+        background: #FFFFFF !important;
+        background-image: none !important;
+        color: #1D1C1D !important;
+        -webkit-text-fill-color: #1D1C1D !important;
+        caret-color: #1D1C1D !important;
+        opacity: 1 !important;
+        filter: none !important;
+        text-shadow: none !important;
+    }
+
+    /* 비활성화된 시스템 설정 필드는 구분하되 어둡게 칠하지 않음. */
+    body.slk-ui #AdvancedFormatting :is(textarea, input[type="text"], input[type="number"], select):disabled {
+        background-color: #F7F7F7 !important;
+        color: #616061 !important;
+        -webkit-text-fill-color: #616061 !important;
+        opacity: 1 !important;
+        filter: none !important;
     }
 }

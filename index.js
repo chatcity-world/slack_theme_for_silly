@@ -843,7 +843,7 @@ else if (document.readyState === 'loading') document.addEventListener('DOMConten
 else init();
 
 
-// === MOBILE FOOTER-ONLY FIX v1.4.10 ===
+// === MOBILE FOOTER-ONLY FIX v1.4.11 ===
 // 모바일에서 원본 드로어 DOM을 옮기거나 삭제하지 않고, 독립 바텀바만 표시합니다.
 (function mountSlackMobileFooter() {
     const mq = window.matchMedia('(max-width: 1000px)');
@@ -852,6 +852,57 @@ else init();
     };
     let footerObserver = null;
     let composerObserver = null;
+    let footerSwitchSerial = 0;
+
+    // SillyTavern 드로어는 열린 탭이 있을 때 다른 토글을 누르면
+    // 기존 탭만 닫고 새 탭을 열지 않는 경우가 있습니다.
+    // 같은 탭을 다시 눌러도 닫지 않고, 다른 탭으로 이동할 때만 순서대로 전환합니다.
+    function isFooterDrawerOpen(drawer) {
+        return !!drawer && (drawer.classList.contains('openDrawer') ||
+            !!drawer.querySelector('.drawer-icon.openIcon, .drawer-content.openDrawer'));
+    }
+
+    function switchFooterDrawer(selector) {
+        const target = document.querySelector(selector);
+        if (!target) return;
+        const serial = ++footerSwitchSerial;
+        if (isFooterDrawerOpen(target)) {
+            updateActive(); // 재탭은 닫기가 아님. 뒤로가기만 닫습니다.
+            return;
+        }
+
+        // 화면이 잠시 일반 헤더로 바뀌는 깜빡임을 방지합니다.
+        primePanelHeader(selector);
+        const selectors = [...new Set([...TABS.map(([s]) => s), DRAWERS.userSettings, DRAWERS.backgrounds])];
+        const previous = selectors.filter(s => s !== selector && isFooterDrawerOpen(document.querySelector(s)));
+        previous.forEach(s => openDrawer(s)); // 먼저 이전 패널 닫기
+
+        const openTarget = () => {
+            if (serial !== footerSwitchSerial) return;
+            if (!isFooterDrawerOpen(target)) openDrawer(selector);
+            requestAnimationFrame(updateActive);
+            setTimeout(() => {
+                if (serial === footerSwitchSerial) {
+                    updateActive();
+                    recomputeHeaderCompact();
+                }
+            }, 100);
+        };
+        if (!previous.length) {
+            openTarget();
+            return;
+        }
+        // 기존 패널이 닫힌 뒤 다음 프레임에 목표 패널을 엽니다.
+        // 빠르게 여러 탭을 눌러도 가장 마지막 선택만 실행합니다.
+        let frames = 0;
+        const awaitClose = () => {
+            if (serial !== footerSwitchSerial) return;
+            const stillOpen = previous.some(s => isFooterDrawerOpen(document.querySelector(s)));
+            if (!stillOpen || ++frames >= 24) requestAnimationFrame(openTarget);
+            else requestAnimationFrame(awaitClose);
+        };
+        requestAnimationFrame(awaitClose);
+    }
 
     function updateActive() {
         const footer = document.getElementById('slk-mobile-footer');
@@ -911,9 +962,7 @@ else init();
                     'cursor': 'pointer'
                 });
                 btn.addEventListener('click', () => {
-                    openDrawer(drawer); // ST 원본 클릭 핸들러 실행
-                    requestAnimationFrame(updateActive);
-                    setTimeout(() => { updateActive(); recomputeHeaderCompact(); }, 100);
+                    switchFooterDrawer(drawer);
                 });
                 footer.appendChild(btn);
             }
@@ -923,7 +972,7 @@ else init();
             footerObserver = new MutationObserver(updateActive);
             const holder = document.getElementById('top-settings-holder');
             if (holder) footerObserver.observe(holder, { attributes: true, subtree: true, attributeFilter: ['class'] });
-            window.__slkMobileFooterVersion = '1.4.10';
+            window.__slkMobileFooterVersion = '1.4.11';
         }
         // Keep an existing footer out of any clipped/transformed body containing block.
         if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);
@@ -940,7 +989,7 @@ else init();
             'flex-direction': 'row', 'overflow': 'visible',
             'border': '1px solid rgba(255,255,255,.75)',
             'border-radius': '999px',
-            'background': 'rgba(255,255,255,.62)',
+            'background': 'rgba(255,255,255,.45)',
             'box-shadow': '0 8px 28px rgba(0,0,0,.12)',
             'backdrop-filter': 'blur(20px) saturate(180%)',
             '-webkit-backdrop-filter': 'blur(20px) saturate(180%)',
