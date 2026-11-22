@@ -101,11 +101,16 @@ body.slk-ui {
         place-items: center;
     }
 
+    .slk-ws-avatar {
+        overflow: hidden;
+    }
+
     .slk-ws-avatar img {
         display: none;
         width: 100%;
         height: 100%;
-        object-fit: contain;
+        border-radius: 50%;
+        object-fit: cover;
     }
 
     .slk-ws-avatar.has-img img {
@@ -5769,6 +5774,7 @@ body.slk-ui {
 
 
 
+
     /* ===================================================
        12) 캐릭터 패널 — 목록 / 캐릭터 편집
        =================================================== */
@@ -10331,6 +10337,112 @@ body.slk-ui {
         padding-right: 30px !important;
         background: var(--slk-surface) url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23616061%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E") right 9px center / 14px no-repeat !important;
         text-overflow: ellipsis;
+    }
+
+    /* ===================================================
+       20) 다른 테마(사용자 정의 CSS)가 덮어써도 깨지지 않게 — 핵심 배치만 아주 강하게
+       =================================================== */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #top-settings-holder {
+        position: fixed !important;
+        top: auto !important;
+        left: 12px !important;
+        right: 12px !important;
+        bottom: calc(var(--slk-tabbar-gap) + var(--slk-safe-bottom)) !important;
+        width: auto !important;
+        height: var(--slk-tabbar-h) !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        overflow: visible !important;
+        transform: none !important;
+        filter: none !important;
+        z-index: 3000 !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b) #sheld {
+        z-index: 30 !important;
+        transform: none !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b) .drawer-content.openDrawer,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #left-nav-panel.openDrawer,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel.openDrawer {
+        margin-top: 0 !important;
+        transform: none !important;
+    }
+
+    /* 패널 제목 왼쪽 검은 막대 같은 테마 장식 제거 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) .drawer-content h3,
+    html body.slk-ui:not(#slk-a):not(#slk-b) .drawer-content h4 {
+        border-left: none !important;
+        border-right: none !important;
+        box-shadow: none !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b) .drawer-content h3 {
+        padding-left: 0 !important;
+    }
+
+    /* 채팅: 내 메시지도 이름 왼쪽, ⋯ ✎ 오른쪽 (테마의 좌우 뒤집기 무시) */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #chat .mes .ch_name {
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        text-align: left !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b) #chat .mes .ch_name > .flex-container:first-child {
+        order: 0 !important;
+        flex-direction: row !important;
+        justify-content: flex-start !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b) #chat .mes .mes_buttons,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #chat .mes .mes_edit_buttons {
+        order: 1 !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b) #chat .mes .mesAvatarWrapper {
+        grid-column: 1 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b) #chat .mes .mes_block {
+        grid-column: 2 / -1 !important;
+        text-align: left !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b) #chat .mes {
+        direction: ltr !important;
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* 최근 채팅 '더 보기' 화살표 가운데 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) .welcomeRecent .recentChatList .showMoreChats {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: auto !important;
+        padding: 0 !important;
+        text-align: center !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b) .welcomeRecent .recentChatList .showMoreChats > * {
+        margin: 0 !important;
+        float: none !important;
     }
 
     /* ---------- 아이콘 ---------- */
