@@ -747,7 +747,7 @@ function buildUsTabs() {
 }
 
 // ===================================================
-// 사용자 설정 · 배경이 열려 있으면 헤더 왼쪽에 ‹ 뒤로 (패널 닫기)
+// 7개 바텀 탭 + 사용자 설정 · 배경이 열려 있으면 헤더 왼쪽에 ‹ 뒤로 (패널 닫기)
 // ===================================================
 function buildPanelBack() {
     const header = document.getElementById('slk-header');
@@ -765,10 +765,15 @@ function buildPanelBack() {
     if (ws) ws.insertAdjacentElement('beforebegin', btn);
     else header.prepend(btn);
     btn.addEventListener('click', () => {
-        ['userSettings', 'backgrounds'].forEach((k) => {
-            if (document.querySelector(`${DRAWERS[k]} .drawer-icon.openIcon`)) openDrawer(DRAWERS[k]);
-        });
-        setTimeout(() => { if (typeof recomputeHeaderCompact === 'function') recomputeHeaderCompact(); }, 80);
+        // 원래 실리태번 드로어 토글을 눌러 패널만 닫습니다.
+        const selectors = [...new Set([...TABS.map(([selector]) => selector), DRAWERS.userSettings, DRAWERS.backgrounds])];
+        for (const selector of selectors) {
+            const drawer = document.querySelector(selector);
+            if (drawer?.querySelector('.drawer-icon.openIcon, .drawer-content.openDrawer') || drawer?.classList.contains('openDrawer')) {
+                openDrawer(selector);
+            }
+        }
+        setTimeout(recomputeHeaderCompact, 80);
     });
 }
 
@@ -797,7 +802,7 @@ else if (document.readyState === 'loading') document.addEventListener('DOMConten
 else init();
 
 
-// === MOBILE FOOTER-ONLY FIX v1.4.6 ===
+// === MOBILE FOOTER-ONLY FIX v1.4.8 ===
 // 모바일에서 원본 드로어 DOM을 옮기거나 삭제하지 않고, 독립 바텀바만 표시합니다.
 (function mountSlackMobileFooter() {
     const mq = window.matchMedia('(max-width: 1000px)');
@@ -805,6 +810,7 @@ else init();
         for (const [key, value] of Object.entries(styles)) el.style.setProperty(key, value, 'important');
     };
     let footerObserver = null;
+    let composerObserver = null;
 
     function updateActive() {
         const footer = document.getElementById('slk-mobile-footer');
@@ -816,6 +822,19 @@ else init();
             btn.style.setProperty('background', isOpen ? '#EFEAF0' : 'transparent', 'important');
             btn.style.setProperty('color', isOpen ? '#4A154B' : '#616061', 'important');
         }
+    }
+
+    // The composer toggles body.slk-composing when its expanded UI is active.
+    // The independent footer is an <html> child with inline !important styles,
+    // so its visibility must be synchronized directly instead of CSS-only.
+    function syncComposerFooter() {
+        if (!mq.matches) return;
+        const footer = document.getElementById('slk-mobile-footer');
+        if (!footer) return;
+        const expanded = document.body.classList.contains('slk-composing') ||
+            !!document.getElementById('send_form')?.classList.contains('slk-compose-open');
+        footer.style.setProperty('display', expanded ? 'none' : 'flex', 'important');
+        footer.setAttribute('aria-hidden', String(expanded));
     }
 
     function mount() {
@@ -853,7 +872,7 @@ else init();
                 btn.addEventListener('click', () => {
                     openDrawer(drawer); // ST 원본 클릭 핸들러 실행
                     requestAnimationFrame(updateActive);
-                    setTimeout(updateActive, 100);
+                    setTimeout(() => { updateActive(); recomputeHeaderCompact(); }, 100);
                 });
                 footer.appendChild(btn);
             }
@@ -863,7 +882,7 @@ else init();
             footerObserver = new MutationObserver(updateActive);
             const holder = document.getElementById('top-settings-holder');
             if (holder) footerObserver.observe(holder, { attributes: true, subtree: true, attributeFilter: ['class'] });
-            window.__slkMobileFooterVersion = '1.4.6';
+            window.__slkMobileFooterVersion = '1.4.8';
         }
         // Keep an existing footer out of any clipped/transformed body containing block.
         if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);
@@ -880,13 +899,20 @@ else init();
             'flex-direction': 'row', 'overflow': 'visible',
             'border': '1px solid rgba(255,255,255,.75)',
             'border-radius': '999px',
-            'background': 'rgba(255,255,255,.82)',
+            'background': 'rgba(255,255,255,.62)',
             'box-shadow': '0 8px 28px rgba(0,0,0,.12)',
             'backdrop-filter': 'blur(20px) saturate(180%)',
             '-webkit-backdrop-filter': 'blur(20px) saturate(180%)',
             'transform': 'none', 'filter': 'none', 'z-index': '2147483646'
         });
         document.body.classList.add('slk-footer-only-active');
+        if (!composerObserver) {
+            composerObserver = new MutationObserver(syncComposerFooter);
+            composerObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+            const form = document.getElementById('send_form');
+            if (form) composerObserver.observe(form, { attributes: true, attributeFilter: ['class'] });
+        }
+        syncComposerFooter();
         updateActive();
     }
 
