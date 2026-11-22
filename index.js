@@ -1,5 +1,107 @@
 // Slack UI for SillyTavern — v0.9.2 (mobile light: header + bottom tab bar)
 
+// Settings are kept independently of SillyTavern's extension loader state.
+const SLK_UI_SETTINGS = (() => {
+    const read = (key, fallback) => {
+        try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
+    };
+    return {
+        enabled: read('slk-ui-enabled', 'true') !== 'false',
+        theme: read('slk-ui-theme', 'light') === 'dark' ? 'dark' : 'light',
+    };
+})();
+
+function applySlackUiSettings() {
+    document.body.classList.toggle('slk-ui', SLK_UI_SETTINGS.enabled);
+    document.body.classList.toggle('slk-dark', SLK_UI_SETTINGS.enabled && SLK_UI_SETTINGS.theme === 'dark');
+    if (!SLK_UI_SETTINGS.enabled) {
+        document.body.classList.remove('slk-footer-only-active');
+        document.getElementById('slk-settings-menu')?.setAttribute('hidden', '');
+        const footer = document.getElementById('slk-mobile-footer');
+        if (footer) footer.style.setProperty('display', 'none', 'important');
+    }
+    window.dispatchEvent(new Event('slk-ui-settings-changed'));
+}
+
+// Use the same collapsible markup as SillyTavern's built-in extension settings.
+// This is a settings entry, not a new bottom tab.
+function buildSlackUiExtensionSettings() {
+    const list = document.getElementById('extensions_settings2') || document.getElementById('extensions_settings');
+    if (!list) return;
+    if (document.getElementById('slk-extension-settings')) return;
+
+    const container = document.createElement('div');
+    container.id = 'slk-extension-settings';
+    container.className = 'extension_container';
+    container.innerHTML = `
+        <div class="inline-drawer">
+            <div class="inline-drawer-toggle inline-drawer-header" role="button" tabindex="0" aria-expanded="false" aria-controls="slk-extension-settings-content">
+                <b>Slack UI</b>
+                <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down" aria-hidden="true"></div>
+            </div>
+            <div id="slk-extension-settings-content" class="inline-drawer-content" style="display:none">
+                <div class="slk-settings-row">
+                    <label for="slk-enable-toggle">사용</label>
+                    <label class="slk-setting-switch">
+                        <input type="checkbox" id="slk-enable-toggle" role="switch" aria-label="Slack UI 사용">
+                        <span class="slk-setting-switch-track" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="slk-settings-row">
+                    <span id="slk-theme-label">테마</span>
+                    <div class="slk-theme-segment" role="radiogroup" aria-labelledby="slk-theme-label">
+                        <label><input type="radio" name="slk-theme" value="light"><span>라이트</span></label>
+                        <label><input type="radio" name="slk-theme" value="dark"><span>블랙</span></label>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    list.appendChild(container);
+
+    const header = container.querySelector('.inline-drawer-toggle');
+    const content = container.querySelector('.inline-drawer-content');
+    const icon = container.querySelector('.inline-drawer-icon');
+    const toggle = () => {
+        const open = header.getAttribute('aria-expanded') !== 'true';
+        header.setAttribute('aria-expanded', String(open));
+        content.style.display = open ? 'block' : 'none';
+        icon.classList.toggle('down', !open);
+        icon.classList.toggle('up', open);
+    };
+    // The event is owned here to avoid depending on whether SillyTavern binds
+    // its native inline drawer handler before or after third-party extensions.
+    header.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggle();
+    });
+    header.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        event.stopPropagation();
+        toggle();
+    });
+
+    const enabledInput = container.querySelector('#slk-enable-toggle');
+    enabledInput.checked = SLK_UI_SETTINGS.enabled;
+    enabledInput.addEventListener('change', () => {
+        SLK_UI_SETTINGS.enabled = enabledInput.checked;
+        try { localStorage.setItem('slk-ui-enabled', String(SLK_UI_SETTINGS.enabled)); } catch { /* localStorage unavailable */ }
+        applySlackUiSettings();
+    });
+
+    const themeInputs = container.querySelectorAll('input[name="slk-theme"]');
+    themeInputs.forEach(input => {
+        input.checked = input.value === SLK_UI_SETTINGS.theme;
+        input.addEventListener('change', () => {
+            if (!input.checked) return;
+            SLK_UI_SETTINGS.theme = input.value;
+            try { localStorage.setItem('slk-ui-theme', SLK_UI_SETTINGS.theme); } catch { /* localStorage unavailable */ }
+            applySlackUiSettings();
+        });
+    });
+}
+
 const SLK = {
     header: null,
     menu: null,
@@ -531,14 +633,55 @@ function setupComposer() {
     const ta = document.getElementById('send_textarea');
     if (!form || !ta || form.dataset.slkComposer) return;
     form.dataset.slkComposer = '1';
+
+    // iOS에서 키보드의 완료/내리기 동작은 textarea의 focus를 유지할 수 있습니다.
+    // 따라서 입력값이나 생성 중 아이콘이 아닌, 실제 키보드 높이 변화를 우선합니다.
+    const viewport = window.visualViewport;
+    const visibleHeight = () => {
+        const layout = window.innerHeight || document.documentElement.clientHeight;
+        const visual = viewport?.height;
+        return Number.isFinite(visual) && visual > 0 ? Math.min(layout, visual) : layout;
+    };
+    let fullHeight = visibleHeight();
+    let keyboardWasVisible = false;
+    let keyboardDismissed = false;
+
     const sync = () => {
-        const open = document.activeElement === ta || ta.value.trim() !== '';
+        const height = visibleHeight();
+        // 브라우저 상/하단 UI의 작은 높이 변화는 키보드로 오인하지 않습니다.
+        if (height > fullHeight) fullHeight = height;
+        const keyboardVisible = fullHeight - height > Math.max(130, fullHeight * 0.16);
+        if (keyboardVisible) {
+            keyboardWasVisible = true;
+            keyboardDismissed = false;
+        } else if (keyboardWasVisible) {
+            // 키보드가 닫혔지만 textarea에 focus가 남아 있어도 무조건 접습니다.
+            keyboardDismissed = true;
+        }
+        // 값이 남아 있거나 다른 확장의 생성 버튼이 돌아가도 펼치지 않습니다.
+        const open = document.activeElement === ta && !keyboardDismissed;
         form.classList.toggle('slk-compose-open', open);
         document.body.classList.toggle('slk-composing', open);
     };
-    ta.addEventListener('focus', sync);
+
+    ta.addEventListener('focus', () => {
+        // 사용자가 다시 입력을 시작하면 다음 키보드 표시 주기를 추적합니다.
+        keyboardWasVisible = false;
+        keyboardDismissed = false;
+        sync();
+    });
     ta.addEventListener('blur', () => setTimeout(sync, 0));
     ta.addEventListener('input', sync);
+    // iOS의 키보드 내리기는 blur 없이 visualViewport.resize만 발생할 수 있습니다.
+    viewport?.addEventListener('resize', sync);
+    window.addEventListener('resize', sync);
+    // 화면을 돌렸을 때 이전 세로 높이가 키보드로 오인되는 것을 방지합니다.
+    window.addEventListener('orientationchange', () => {
+        fullHeight = visibleHeight();
+        keyboardWasVisible = false;
+        keyboardDismissed = false;
+        requestAnimationFrame(sync);
+    });
     form.addEventListener('mousedown', (e) => {
         if (document.activeElement === ta && !e.target.closest('#send_textarea')) e.preventDefault();
     });
@@ -818,8 +961,68 @@ function buildPanelBack() {
     });
 }
 
+
+// v1.4.16: 외부 확장마다 다른 하늘색 글씨/아이콘만 중립 회색으로.
+// 모든 텍스트를 일괄 회색으로 만들지 않고 실제 계산된 RGB 색으로 판별한다.
+function setupExtensionNeutralColors() {
+    const panel = document.getElementById('rm_extensions_block');
+    if (!panel || panel.dataset.slkBlueNeutralizer) return;
+    panel.dataset.slkBlueNeutralizer = '1';
+    const mq = window.matchMedia('(max-width: 1000px)');
+    const isLightBlue = (raw) => {
+        if (!raw || raw === 'none' || raw === 'currentcolor') return false;
+        const m = raw.match(/^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
+        if (!m) return false;
+        const [r, g, b] = m.slice(1, 4).map(Number);
+        // pale/cyan-blue, not neutral gray, dark purple, normal black or green.
+        return b >= 155 && g >= 105 && b - r >= 13 && b - g >= 6 && r >= 80;
+    };
+    let queued = false;
+    const neutralize = () => {
+        queued = false;
+        if (!mq.matches || !SLK_UI_SETTINGS.enabled) return;
+        const els = [panel, ...panel.querySelectorAll('*')];
+        for (const el of els) {
+            if (el.matches('input[type="color"], option, canvas, .color-picker, .color-picker *')) continue;
+            const s = getComputedStyle(el);
+            // Inline !important intentionally wins over external extension CSS.
+            if (isLightBlue(s.color)) el.style.setProperty('color', '#858585', 'important');
+            const fill = s.getPropertyValue('-webkit-text-fill-color');
+            if (isLightBlue(fill)) el.style.setProperty('-webkit-text-fill-color', '#858585', 'important');
+            if (el instanceof SVGElement) {
+                if (isLightBlue(s.stroke)) el.style.setProperty('stroke', '#858585', 'important');
+                if (isLightBlue(s.fill)) el.style.setProperty('fill', '#858585', 'important');
+            }
+        }
+    };
+    const schedule = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(neutralize);
+    };
+    const obs = new MutationObserver(records => {
+        // Ignore changes made by our own neutralizer to avoid a style loop.
+        if (records.every(r => r.type === 'attributes' && r.attributeName === 'style' &&
+            r.target?.style?.getPropertyValue('color') === 'rgb(133, 133, 133)')) return;
+        schedule();
+    });
+    obs.observe(panel, {subtree: true, childList: true, attributes: true, attributeFilter: ['style', 'class', 'disabled', 'aria-selected']});
+    panel.addEventListener('click', schedule, true);
+    panel.addEventListener('change', schedule, true);
+    window.addEventListener('load', schedule, {once:true});
+    mq.addEventListener?.('change', schedule);
+    schedule();
+    setTimeout(schedule, 500); // dynamically loaded third-party extension tabs
+    setTimeout(schedule, 1600);
+}
+
 function init() {
-    document.body.classList.add('slk-ui');
+    applySlackUiSettings();
+    buildSlackUiExtensionSettings();
+    if (!document.getElementById('slk-extension-settings')) {
+        setTimeout(buildSlackUiExtensionSettings, 500);
+        setTimeout(buildSlackUiExtensionSettings, 1500);
+    }
     preventInputZoom();
     relabelPersonaButtons();
     setTimeout(relabelPersonaButtons, 1500);
@@ -829,6 +1032,7 @@ function init() {
     buildAiTabs();
     buildUsTabs();
     watchWorldInfo();
+    setupExtensionNeutralColors();
     setupPersonaAccordion();
     watchCharView();
     setupComposer();
@@ -911,8 +1115,9 @@ else init();
             const drawer = document.querySelector(btn.dataset.drawer);
             const isOpen = !!drawer?.querySelector('.drawer-icon.openIcon, .drawer-content.openDrawer');
             btn.setAttribute('aria-pressed', String(isOpen));
-            btn.style.setProperty('background', isOpen ? '#EFEAF0' : 'transparent', 'important');
-            btn.style.setProperty('color', isOpen ? '#4A154B' : '#616061', 'important');
+            const dark = SLK_UI_SETTINGS.theme === 'dark';
+            btn.style.setProperty('background', isOpen ? (dark ? '#3E2941' : '#EFEAF0') : 'transparent', 'important');
+            btn.style.setProperty('color', isOpen ? (dark ? '#F3C8F8' : '#4A154B') : (dark ? '#B1B1B1' : '#616061'), 'important');
         }
     }
 
@@ -920,7 +1125,7 @@ else init();
     // The independent footer is an <html> child with inline !important styles,
     // so its visibility must be synchronized directly instead of CSS-only.
     function syncComposerFooter() {
-        if (!mq.matches) return;
+        if (!mq.matches || !SLK_UI_SETTINGS.enabled) return;
         const footer = document.getElementById('slk-mobile-footer');
         if (!footer) return;
         const expanded = document.body.classList.contains('slk-composing') ||
@@ -931,7 +1136,7 @@ else init();
 
     function mount() {
         if (!document.body) return;
-        const mobile = mq.matches;
+        const mobile = mq.matches && SLK_UI_SETTINGS.enabled;
         let footer = document.getElementById('slk-mobile-footer');
         if (!mobile) {
             if (footer) footer.style.setProperty('display', 'none', 'important');
@@ -972,11 +1177,12 @@ else init();
             footerObserver = new MutationObserver(updateActive);
             const holder = document.getElementById('top-settings-holder');
             if (holder) footerObserver.observe(holder, { attributes: true, subtree: true, attributeFilter: ['class'] });
-            window.__slkMobileFooterVersion = '1.4.11';
+            window.__slkMobileFooterVersion = '1.4.18';
         }
         // Keep an existing footer out of any clipped/transformed body containing block.
         if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);
         // 모바일의 위치·표시를 인라인 !important로 고정. 외부 테마의 선택자보다 우선합니다.
+        const dark = SLK_UI_SETTINGS.theme === 'dark';
         setImportant(footer, {
             'position': 'fixed', 'display': 'flex', 'visibility': 'visible',
             'opacity': '1', 'pointer-events': 'auto', 'box-sizing': 'border-box',
@@ -987,9 +1193,9 @@ else init();
             'margin': '0', 'padding': '0 6px',
             'align-items': 'center', 'justify-content': 'space-around',
             'flex-direction': 'row', 'overflow': 'visible',
-            'border': '1px solid rgba(255,255,255,.75)',
+            'border': dark ? '1px solid rgba(255,255,255,.17)' : '1px solid rgba(255,255,255,.75)',
             'border-radius': '999px',
-            'background': 'rgba(255,255,255,.45)',
+            'background': dark ? 'rgba(30,30,30,.6)' : 'rgba(255,255,255,.45)',
             'box-shadow': '0 8px 28px rgba(0,0,0,.12)',
             'backdrop-filter': 'blur(20px) saturate(180%)',
             '-webkit-backdrop-filter': 'blur(20px) saturate(180%)',
@@ -1010,4 +1216,5 @@ else init();
     else mount();
     mq.addEventListener?.('change', mount);
     window.addEventListener('pageshow', mount);
+    window.addEventListener('slk-ui-settings-changed', mount);
 })();

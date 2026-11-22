@@ -11095,3 +11095,277 @@ body.slk-ui {
         color-scheme: light;
     }
 }
+
+
+/* ==============================================================
+   v1.4.16 — 비활성 고급서식 입력칸 / 확장 탭 색상 보정
+   - SillyTavern의 #AdvancedFormatting .disabled {filter:brightness(.5)}
+     때문에 자식 필드를 밝게 지정해도 부모가 통째로 어두워지는 문제 해결.
+   - 외부 확장에 인라인으로 지정된 하늘색은 index.js의 색상 감지
+     코드가 실제 계산색을 확인한 경우에만 회색으로 치환한다.
+   - 헤더 / 바텀바 / 프롬프트 기능 / 활성 설정 입력칸은 변경하지 않음.
+   ============================================================== */
+@media screen and (max-width: 1000px) {
+    /* 부모 요소의 50% 밝기 필터를 해제해야 자식의 밝은 배경이 실제로 보임. */
+    html body.slk-ui #AdvancedFormatting .disabled {
+        filter: none !important;
+        opacity: 1 !important;
+    }
+
+    /* 비활성 영역 전체는 잠긴 상태를 유지하되, 필드 배경만 연회색으로. */
+    html body.slk-ui #AdvancedFormatting .disabled :is(
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]),
+        textarea, select, .text_pole
+    ),
+    html body.slk-ui #AdvancedFormatting :is(input, textarea, select):disabled {
+        background-color: #F8F8F9 !important;
+        color: #8A8A8D !important;
+        -webkit-text-fill-color: #8A8A8D !important;
+        border-color: #E3E3E6 !important;
+        filter: none !important;
+        opacity: 1 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    html body.slk-ui #AdvancedFormatting .disabled :is(
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]), textarea
+    ) {
+        background-image: none !important;
+    }
+
+    /* 기초 select 화살표를 유지한다. */
+    html body.slk-ui #AdvancedFormatting .disabled select {
+        background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239B9B9E%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E") !important;
+        background-position: right 12px center !important;
+        background-size: 16px !important;
+        background-repeat: no-repeat !important;
+    }
+
+    html body.slk-ui #AdvancedFormatting .disabled :is(label, small, h3, h4, p) {
+        color: #939396 !important;
+        -webkit-text-fill-color: #939396 !important;
+    }
+    html body.slk-ui #AdvancedFormatting .disabled :is(input,textarea)::placeholder {
+        color: #B0B0B3 !important;
+        -webkit-text-fill-color: #B0B0B3 !important;
+    }
+
+    /* 외부 확장이 테마 링크/인용 컬러를 참조하는 경우에도 연파랑 대신 중립색. */
+    body.slk-ui #rm_extensions_block {
+        --SmartThemeQuoteColor: #858585;
+        --SmartThemeLinkColor: #858585;
+        --SmartThemeEmColor: #858585;
+    }
+    body.slk-ui #rm_extensions_block :is(a, a:visited) {
+        color: #757575 !important;
+    }
+}
+
+
+/* ==============================================================
+   v1.4.18 — Slack UI entry in the existing Extensions list.
+   Only the new entry is styled. Other extension rows are untouched.
+   ============================================================= */
+#slk-extension-settings .inline-drawer-toggle {
+    cursor: pointer;
+}
+#slk-extension-settings .inline-drawer-content {
+    padding: 8px 7px 10px;
+}
+#slk-extension-settings .slk-settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 4px;
+    color: inherit;
+}
+#slk-extension-settings .slk-settings-row + .slk-settings-row {
+    border-top: 1px solid rgba(128, 128, 128, .18);
+}
+#slk-extension-settings .slk-settings-row > label:first-child,
+#slk-extension-settings #slk-theme-label {
+    font-size: inherit;
+    font-weight: 600;
+}
+#slk-extension-settings .slk-setting-switch {
+    position: relative;
+    width: 46px;
+    height: 27px;
+    flex: 0 0 46px;
+    display: inline-flex;
+    cursor: pointer;
+}
+#slk-extension-settings .slk-setting-switch input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    z-index: 1;
+    cursor: pointer;
+}
+#slk-extension-settings .slk-setting-switch-track {
+    position: absolute;
+    inset: 0;
+    background: #B9B9B9;
+    border-radius: 999px;
+    transition: background .15s;
+}
+#slk-extension-settings .slk-setting-switch-track::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 21px;
+    height: 21px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,.14);
+    transition: transform .15s;
+}
+#slk-extension-settings .slk-setting-switch input:checked + .slk-setting-switch-track {
+    background: #4A154B;
+}
+#slk-extension-settings .slk-setting-switch input:checked + .slk-setting-switch-track::after {
+    transform: translateX(19px);
+}
+#slk-extension-settings .slk-setting-switch input:focus-visible + .slk-setting-switch-track {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+}
+#slk-extension-settings .slk-theme-segment {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px;
+    border-radius: 10px;
+    background: rgba(128,128,128,.13);
+}
+#slk-extension-settings .slk-theme-segment label {
+    position: relative;
+    cursor: pointer;
+    margin: 0;
+}
+#slk-extension-settings .slk-theme-segment input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+#slk-extension-settings .slk-theme-segment span {
+    display: block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: .9em;
+    line-height: 1.4;
+}
+#slk-extension-settings .slk-theme-segment input:checked + span {
+    background: #FFFFFF;
+    color: #292929;
+    box-shadow: 0 1px 3px rgba(0,0,0,.12);
+}
+#slk-extension-settings .slk-theme-segment input:focus-visible + span {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+/* OFF restores the native SillyTavern UI; keep only the settings entry. */
+@media screen and (max-width: 1000px) {
+    html body:not(.slk-ui) #slk-header,
+    html body:not(.slk-ui) #slk-settings-menu,
+    html body:not(.slk-ui) #slk-wi-menu {
+        display: none !important;
+    }
+}
+
+/* Black theme: light mode and desktop are unchanged. */
+@media screen and (max-width: 1000px) {
+body.slk-ui.slk-dark {
+    --slk-surface: #151515;
+    --slk-text: #F3F3F3;
+    --slk-muted: #B1B1B1;
+    --slk-border: #353535;
+    --slk-active: #D0A1D4;
+    --slk-tab-active-bg: #3E2941;
+    --slk-tab-active-fg: #F3C8F8;
+    --slk-header-grad: #171219;
+    --slk-header-fg: #F7F7F7;
+    --slk-pill-bg: #29212D;
+    --slk-pill-border: #5A3B5D;
+    --slk-glass-bg: rgba(30,30,30,.48);
+    --slk-glass-border: rgba(255,255,255,.15);
+    background: #151515 !important;
+    color: #F3F3F3;
+    color-scheme: dark;
+}
+    html:has(body.slk-ui.slk-dark) {
+        background-color: #151515 !important;
+        color-scheme: dark;
+    }
+    body.slk-ui.slk-dark :is(#rm_extensions_block, #rm_api_block, #AdvancedFormatting,
+        #WorldInfo, #PersonaManagement, #left-nav-panel, #right-nav-panel,
+        #user-settings-block, #backgrounds, #extensions_settings, #extensions_settings2,
+        .drawer-content, #form_sheld, #send_form, #nonQRFormItems) {
+        background-color: #151515 !important;
+        color: #F3F3F3 !important;
+    }
+    body.slk-ui.slk-dark :is(#sheld, #chat, .welcomePanel, .welcomeRecent,
+        .recentChat, .recentChatList, #slk-aitabs, #slk-ustabs) {
+        background: #151515 !important;
+        color: #F3F3F3 !important;
+    }
+    body.slk-ui.slk-dark :is(.drawer-content, #left-nav-panel, #right-nav-panel,
+        #rm_extensions_block, .welcomePanel) :is(h1,h2,h3,h4,b,small,label,p,span) {
+        color: inherit;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b) :is(.drawer-content, #form_sheld, #send_form, .popup) :is(
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+        textarea, select, .text_pole
+    ):not(:disabled):not([disabled]):not([readonly]) {
+        background-color: #252525 !important;
+        color: #F3F3F3 !important;
+        -webkit-text-fill-color: #F3F3F3 !important;
+        border-color: #484848 !important;
+        box-shadow: none !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b) :is(.drawer-content, .popup) :is(input, textarea, select):is(:disabled,[disabled],[readonly],.disabled) {
+        background-color: #303030 !important;
+        color: #999999 !important;
+        -webkit-text-fill-color: #999999 !important;
+        border-color: #444444 !important;
+    }
+    body.slk-ui.slk-dark :is(.drawer-content, #rm_extensions_block) :is(.inline-drawer-header, .inline-drawer-content, .standoutHeader, .menu_button, button) {
+        color: #EFEFEF;
+        border-color: #383838;
+    }
+    body.slk-ui.slk-dark .welcomeRecent .recentChat,
+    body.slk-ui.slk-dark .welcomeRecent .recentChat .chatMessage,
+    body.slk-ui.slk-dark .welcomeRecent .recentChat .chatName {
+        color: #F3F3F3 !important;
+    }
+    body.slk-ui.slk-dark .welcomeRecent .recentChat .chatStats {
+        color: #AAAAAA !important;
+    }
+    body.slk-ui.slk-dark #slk-header.slk-header-compact,
+    body.slk-ui.slk-dark.slk-header-compact #slk-header {
+        color: #F3F3F3 !important;
+    }
+    body.slk-ui.slk-dark.slk-in-chat:not(.slk-header-compact) #slk-header {
+        background: linear-gradient(to bottom, rgba(20,20,20,.93), rgba(20,20,20,.53), transparent) !important;
+    }
+    body.slk-ui.slk-dark #slk-header #slk-chat-back,
+    body.slk-ui.slk-dark #slk-header #slk-chat-title,
+    body.slk-ui.slk-dark #slk-header #slk-panel-back,
+    body.slk-ui.slk-dark.slk-header-compact #slk-settings-btn {
+        color: #F3F3F3 !important;
+        background-color: rgba(32,32,32,.65) !important;
+        border-color: rgba(255,255,255,.1) !important;
+    }
+    body.slk-ui.slk-dark #slk-extension-settings .slk-theme-segment input:checked + span {
+        color: #F3F3F3;
+        background: #464046;
+    }
+}
