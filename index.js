@@ -797,7 +797,7 @@ else if (document.readyState === 'loading') document.addEventListener('DOMConten
 else init();
 
 
-// === MOBILE FOOTER-ONLY FIX v1.4.5 ===
+// === MOBILE FOOTER-ONLY FIX v1.4.6 ===
 // 모바일에서 원본 드로어 DOM을 옮기거나 삭제하지 않고, 독립 바텀바만 표시합니다.
 (function mountSlackMobileFooter() {
     const mq = window.matchMedia('(max-width: 1000px)');
@@ -857,18 +857,23 @@ else init();
                 });
                 footer.appendChild(btn);
             }
-            document.body.appendChild(footer);
+            // Keep the footer outside <body>: some SillyTavern themes make <body>
+            // a zero-height containing block for position:fixed elements.
+            document.documentElement.appendChild(footer);
             footerObserver = new MutationObserver(updateActive);
             const holder = document.getElementById('top-settings-holder');
             if (holder) footerObserver.observe(holder, { attributes: true, subtree: true, attributeFilter: ['class'] });
-            window.__slkMobileFooterVersion = '1.4.5';
+            window.__slkMobileFooterVersion = '1.4.6';
         }
+        // Keep an existing footer out of any clipped/transformed body containing block.
+        if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);
         // 모바일의 위치·표시를 인라인 !important로 고정. 외부 테마의 선택자보다 우선합니다.
         setImportant(footer, {
             'position': 'fixed', 'display': 'flex', 'visibility': 'visible',
             'opacity': '1', 'pointer-events': 'auto', 'box-sizing': 'border-box',
-            'left': '12px', 'right': '12px', 'width': 'auto', 'top': 'auto',
-            'bottom': 'calc(10px + env(safe-area-inset-bottom, 0px))',
+            'left': '12px', 'right': '12px', 'width': 'auto',
+            'top': 'calc(100dvh - 70px - env(safe-area-inset-bottom, 0px))',
+            'bottom': 'auto',
             'height': '60px', 'min-height': '60px', 'max-height': '60px',
             'margin': '0', 'padding': '0 6px',
             'align-items': 'center', 'justify-content': 'space-around',
