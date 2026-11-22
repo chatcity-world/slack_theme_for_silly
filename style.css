@@ -11621,7 +11621,6 @@ body.slk-ui.slk-dark {
         color: var(--slk-text) !important;
         box-shadow: 0 8px 32px rgba(0,0,0,.13) !important;
         text-shadow: none !important;
-        opacity: 1 !important;
         font-family: var(--slk-font) !important;
         font-size: 13px !important;
         line-height: 1.5 !important;
@@ -11844,7 +11843,6 @@ body.slk-ui.slk-dark {
         font: 500 13px/1.5 var(--slk-font, sans-serif) !important;
         box-shadow: 0 6px 24px rgba(0,0,0,.12) !important;
         text-shadow: none !important;
-        opacity: 1 !important;
     }
     html:has(body.slk-ui) #toast-container :is(.toast-title, .toast-message) {
         color: #1D1C1D !important;
@@ -13734,7 +13732,6 @@ body.slk-ui.slk-dark {
     html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div,
     html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast {
         position: relative !important;
-        display: block !important;
         box-sizing: border-box !important;
         width: 100% !important;
         min-width: 0 !important;
@@ -13753,14 +13750,12 @@ body.slk-ui.slk-dark {
         box-shadow: 0 8px 24px rgba(0, 0, 0, .22) !important;
         text-shadow: none !important;
         text-align: left !important;
-        opacity: 1 !important;
         filter: none !important;
         overflow: hidden !important;
         cursor: default !important;
     }
     html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div:hover {
         box-shadow: 0 8px 24px rgba(0, 0, 0, .22) !important;
-        opacity: 1 !important;
     }
 
     /* 왼쪽 아이콘 동그라미 */
@@ -13773,7 +13768,6 @@ body.slk-ui.slk-dark {
         height: 22px !important;
         border-radius: 50% !important;
         background: #1D9BD1 !important;
-        display: block !important;
     }
     html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div::after {
         content: '' !important;
@@ -13785,7 +13779,6 @@ body.slk-ui.slk-dark {
         background-color: #FFFFFF !important;
         -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%2011v7%22/%3E%3Cpath%20d%3D%22M12%206.5h.01%22/%3E%3C/svg%3E") center / contain no-repeat !important;
         mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%2011v7%22/%3E%3Cpath%20d%3D%22M12%206.5h.01%22/%3E%3C/svg%3E") center / contain no-repeat !important;
-        display: block !important;
         border: 0 !important;
     }
     html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-success::before { background: #2BAC76 !important; }
@@ -13878,4 +13871,33 @@ body.slk-ui.slk-dark {
         background: rgba(52, 50, 54, .96) !important;
         border: 1px solid rgba(255, 255, 255, .08) !important;
     }
+}
+
+/* 1.4.46: 확장이 직접 띄우는 진행 알림(번역 중 등) = 알림 카드와 같은 모양 */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) .slk-notice {
+        border: 0 !important;
+        border-radius: 12px !important;
+        background: rgba(29, 28, 29, .94) !important;
+        background-image: none !important;
+        -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+        backdrop-filter: blur(16px) saturate(160%) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, .22) !important;
+        outline: none !important;
+        font-family: var(--slk-font, sans-serif) !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) .slk-notice * {
+        color: inherit !important;
+        -webkit-text-fill-color: currentColor !important;
+        border-color: transparent !important;
+        background-color: transparent !important;
+        text-shadow: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) .slk-notice :is(button, .close, [class*="close"]) {
+        color: rgba(255, 255, 255, .6) !important;
+        box-shadow: none !important;
+    }
+    /* 일반 알림은 누를 수 있다는 표시 */
+    html:has(body.slk-ui) #toast-container > div { cursor: pointer !important; }
 }

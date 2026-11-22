@@ -1742,3 +1742,91 @@ else init();
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
 })();
+
+// v1.4.46 — 알림: (1) 확장이 직접 띄우는 '진행 중' 알림(번역 중 등)도 슬랙 카드로,
+//               (2) 진행 중 알림을 뺀 나머지 알림은 누르면 사라짐
+(function slkNotices() {
+    const SPIN = '.fa-spin, .fa-spinner, .fa-circle-notch, .fa-pulse, [class*="spinner"], [class*="loading"], [class*="loader"]';
+    const isProgress = (el) => !!el.querySelector(SPIN) || /중입니다|중이에요|\.\.\.\s*$|…\s*$/.test((el.textContent || '').trim());
+
+    // (1) 고정 위치의 작은 진행 알림 찾기 (toast-container 바깥)
+    const markNotices = () => {
+        if (!document.body || !document.body.classList.contains('slk-ui')) return;
+        document.querySelectorAll(SPIN).forEach(sp => {
+            if (sp.closest('#toast-container, .slk-notice, #send_form, #chat .mes, dialog, #slk-header, #slk-mobile-footer')) return;
+            let el = sp.parentElement, hops = 0;
+            while (el && el !== document.body && hops < 6) {
+                const cs = getComputedStyle(el);
+                if (cs.position === 'fixed' || cs.position === 'sticky') {
+                    const r = el.getBoundingClientRect();
+                    if (r.height > 0 && r.height < 180 && r.width < innerWidth && (el.textContent || '').trim().length < 240) {
+                        el.classList.add('slk-notice');
+                    }
+                    return;
+                }
+                el = el.parentElement; hops++;
+            }
+        });
+    };
+    let t = null;
+    const schedule = () => { if (t) return; t = setTimeout(() => { t = null; markNotices(); }, 60); };
+    const start = () => {
+        markNotices();
+        new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+
+    // (2) 누르면 닫기 (진행 중 알림 제외)
+    document.addEventListener('click', ev => {
+        if (!document.body || !document.body.classList.contains('slk-ui')) return;
+        const toast = ev.target.closest && ev.target.closest('#toast-container > div');
+        if (!toast || isProgress(toast)) return;
+        if (ev.target.closest('a, input, select, textarea') && !ev.target.closest('.toast-close-button')) return;
+        const $ = window.jQuery || window.$;
+        if (window.toastr && $) { window.toastr.clear($(toast), { force: true }); }
+        setTimeout(() => {
+            if (!toast.isConnected) return;
+            toast.style.transition = 'opacity .15s';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 160);
+        }, 60);
+    }, true);
+})();
+
+// v1.4.47 — 일반 알림은 시간이 지나면 사라짐 (진행 중 알림 제외).
+// toastr가 시간 0(계속 표시)으로 띄운 알림도 5초 뒤 닫음.
+(function slkToastAutoClose() {
+    const SPIN = '.fa-spin, .fa-spinner, .fa-circle-notch, .fa-pulse, [class*="spinner"], [class*="loading"], [class*="loader"]';
+    const isProgress = (el) => !!el.querySelector(SPIN) || /중입니다|중이에요|\.\.\.\s*$|…\s*$/.test((el.textContent || '').trim());
+    const DELAY = 5000;
+    const seen = new WeakSet();
+    const closeToast = (toast) => {
+        if (!toast.isConnected) return;
+        const $ = window.jQuery || window.$;
+        if (window.toastr && $) { try { window.toastr.clear($(toast), { force: true }); } catch (e) {} }
+        setTimeout(() => {
+            if (!toast.isConnected) return;
+            toast.style.transition = 'opacity .2s';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 220);
+        }, 400);
+    };
+    const arm = (toast) => {
+        if (seen.has(toast)) return;
+        seen.add(toast);
+        const tick = () => {
+            if (!toast.isConnected) return;
+            if (isProgress(toast)) { setTimeout(tick, 1000); return; } // 진행 중이면 끝날 때까지 기다림
+            closeToast(toast);
+        };
+        setTimeout(tick, DELAY);
+    };
+    const scan = () => document.querySelectorAll('#toast-container > div').forEach(arm);
+    const start = () => {
+        scan();
+        new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();
