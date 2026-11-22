@@ -1217,6 +1217,31 @@ else init();
         requestAnimationFrame(recomputeHeaderCompact);
     }
 
+    // 지금 화면에 실제로 보이는 패널 (ST가 직접 연 경우 포함)
+    function visibleSelector() {
+        if (navigationUsed && desiredSelector) return desiredSelector;
+        return managedSelectors.find(sel => {
+            const parts = getDrawerParts(sel);
+            if (!parts) return false;
+            if (parts.content.classList.contains('slk-nav-hidden')) return false;
+            return getComputedStyle(parts.content).display !== 'none' &&
+                (parts.content.classList.contains('openDrawer') || parts.content.getBoundingClientRect().height > 0);
+        }) || null;
+    }
+
+    function closeAll() {
+        panelHistory.length = 0;
+        transitionTo(null, null);
+        // 안전장치: 닫은 뒤에도 남아 있는 패널은 한 번 더 숨김
+        setTimeout(() => {
+            if (desiredSelector) return;
+            for (const sel of managedSelectors) setNativeDrawerState(sel, false);
+            applyManagedVisibility();
+            updateActive();
+            recomputeHeaderCompact();
+        }, 120);
+    }
+
     function navigate(selector) {
         if (!managedSelectors.includes(selector) || !getDrawerParts(selector)) return;
         if (!mq.matches || !SLK_UI_SETTINGS.enabled) {
@@ -1224,7 +1249,7 @@ else init();
             return;
         }
         const top = panelHistory.at(-1);
-        if (top?.selector === selector) {
+        if (top?.selector === selector || (!top && visibleSelector() === selector)) {
             back(); // Clicking the active tab closes the current layer.
             return;
         }
@@ -1236,9 +1261,8 @@ else init();
 
     function back() {
         if (!mq.matches || !SLK_UI_SETTINGS.enabled) return;
-        if (panelHistory.length) panelHistory.pop();
-        const previous = panelHistory.at(-1);
-        transitionTo(previous?.selector ?? null, previous);
+        // 뒤로가기 / 열린 탭 다시 누르기 = 이전 탭으로 돌아가지 않고 패널을 닫음
+        closeAll();
     }
 
     window.__slkPanelNavigation = {

@@ -13901,3 +13901,77 @@ body.slk-ui.slk-dark {
     /* 일반 알림은 누를 수 있다는 표시 */
     html:has(body.slk-ui) #toast-container > div { cursor: pointer !important; }
 }
+
+/* 1.4.48: 페르소나 Connections 버튼(기본값/캐릭터/채팅) = 같은 너비로 한 줄 꽉, 아이콘·글자 겹침 수정
+   (실제 ST에선 이 버튼들이 펼친 페르소나 카드 안에 있어 기존 규칙이 안 걸렸음) */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_connections_buttons {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_connections_buttons > .menu_button {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        justify-self: stretch !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        height: 40px !important;
+        margin: 0 !important;
+        padding: 0 6px !important;
+        border: 1px solid #DDDDDD !important;
+        border-radius: 10px !important;
+        background: #FFFFFF !important;
+        color: var(--slk-text, #1D1C1D) !important;
+        box-shadow: none !important;
+        filter: none !important;
+        opacity: 1 !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_connections_buttons > .menu_button.locked {
+        border-color: var(--slk-aubergine, #4A154B) !important;
+        background: var(--slk-aubergine, #4A154B) !important;
+        color: #FFFFFF !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_connections_buttons > .menu_button > i {
+        position: static !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 0 0 15px !important;
+        width: 15px !important;
+        min-width: 15px !important;
+        height: 15px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+        font-size: 0 !important;
+        line-height: 1 !important;
+        color: inherit !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_connections_buttons > .menu_button > i::before {
+        position: static !important;
+        display: block !important;
+        width: 15px !important;
+        height: 15px !important;
+        margin: 0 !important;
+        background-color: currentColor !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_connections_buttons > .menu_button > div {
+        position: static !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        color: inherit !important;
+        -webkit-text-fill-color: currentColor !important;
+        white-space: nowrap !important;
+    }
+}
