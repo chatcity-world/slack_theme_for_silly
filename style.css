@@ -13679,3 +13679,48 @@ body.slk-ui.slk-dark {
         display: none !important;
     }
 }
+
+/* 1.4.44: 캐릭터 탭 페이지 줄 — '50 / page' 칸 오른쪽 테두리 잘림 */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block #rm_print_characters_pagination > .paginationjs {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 4px !important;
+        overflow: visible !important;
+        padding-right: 1px !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block #rm_print_characters_pagination .paginationjs-nav {
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
+        margin: 0 2px 0 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block #rm_print_characters_pagination .paginationjs-pages {
+        flex: 0 0 auto !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block #rm_print_characters_pagination .paginationjs-pages ul {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block #rm_print_characters_pagination .paginationjs-pages li > a {
+        min-width: 24px !important;
+        padding: 0 4px !important;
+        text-align: center !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block #rm_print_characters_pagination .paginationjs-size-changer {
+        flex: 0 1 112px !important;
+        min-width: 0 !important;
+        margin: 0 0 0 auto !important;
+        overflow: visible !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block #rm_print_characters_pagination .paginationjs-size-changer select {
+        box-sizing: border-box !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+}
