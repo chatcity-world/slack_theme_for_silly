@@ -13975,3 +13975,304 @@ body.slk-ui.slk-dark {
         white-space: nowrap !important;
     }
 }
+
+/* =====================================================================
+   1.4.50 — 채팅 본문
+   - 나레이션/대사 글자 크기 통일 (중간 크기 15px)
+   - 대사("…") 글자 뒤에 연한 회색 배경
+   - `…` 인라인 텍스트: 기호까지 보이게, 문자 메시지 말풍선 모양
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text {
+        font-size: 15px !important;
+        line-height: 1.6 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text :is(p, q, em, i, strong, b, u, s, span, font, li, blockquote, div):not([class*="fa-"]) {
+        font-size: inherit !important;
+        line-height: inherit !important;
+    }
+
+    /* 대사 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text q {
+        padding: 1px 3px !important;
+        margin: 0 1px !important;
+        border-radius: 4px !important;
+        background: #EFEFEF !important;
+        color: var(--slk-text, #1D1C1D) !important;
+        -webkit-box-decoration-break: clone !important;
+        box-decoration-break: clone !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text q {
+        background: rgba(255, 255, 255, .10) !important;
+    }
+
+    /* `문자` 말풍선 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text :not(pre) > code {
+        display: inline !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        padding: 3px 10px !important;
+        margin: 0 2px !important;
+        border: 0 !important;
+        border-radius: 14px 14px 14px 4px !important;
+        background: #E9E9EB !important;
+        color: var(--slk-text, #1D1C1D) !important;
+        -webkit-text-fill-color: var(--slk-text, #1D1C1D) !important;
+        font-family: var(--slk-font, sans-serif) !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        line-height: 1.9 !important;
+        text-shadow: none !important;
+        white-space: pre-wrap !important;
+        -webkit-box-decoration-break: clone !important;
+        box-decoration-break: clone !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text :not(pre) > code::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text :not(pre) > code::after {
+        content: '`' !important;
+        display: inline !important;
+        color: #8B8B8B !important;
+        -webkit-text-fill-color: #8B8B8B !important;
+    }
+    /* 내가 보낸 메시지 안의 `문자`는 파란 말풍선 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[is_user="true"] .mes_text :not(pre) > code {
+        border-radius: 14px 14px 4px 14px !important;
+        background: #1264A3 !important;
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[is_user="true"] .mes_text :not(pre) > code::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[is_user="true"] .mes_text :not(pre) > code::after {
+        color: rgba(255, 255, 255, .7) !important;
+        -webkit-text-fill-color: rgba(255, 255, 255, .7) !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:not([is_user="true"]) .mes_text :not(pre) > code {
+        background: #3A3A3C !important;
+        color: #F2F2F2 !important;
+        -webkit-text-fill-color: #F2F2F2 !important;
+    }
+}
+
+
+/* =====================================================================
+   1.4.51 — 받은 확장 설정 화면: 남아 있던 테마 색 제거 + 토글 스위치 보이게
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    /* 테마 변수 자체를 슬랙 라이트 값으로 (확장 CSS가 이 변수를 많이 씀) */
+    body.slk-ui:not(.slk-dark) {
+        --SmartThemeBodyColor: #1D1C1D;
+        --SmartThemeEmColor: #616061;
+        --SmartThemeUnderlineColor: #1264A3;
+        --SmartThemeBorderColor: #DDDDDD;
+        --SmartThemeShadowColor: transparent;
+        --SmartThemeBlurTintColor: rgba(255, 255, 255, .96);
+        --SmartThemeChatTintColor: #FFFFFF;
+        --SmartThemeUserMesBlurTintColor: #FFFFFF;
+        --SmartThemeBotMesBlurTintColor: #FFFFFF;
+        --SmartThemeCheckboxBgColorR: 255;
+        --SmartThemeCheckboxBgColorG: 255;
+        --SmartThemeCheckboxBgColorB: 255;
+        --SmartThemeCheckboxBgColorA: 1;
+        --SmartThemeCheckboxTickColor: #FFFFFF;
+        --black30a: rgba(0, 0, 0, .06);
+        --black50a: rgba(0, 0, 0, .10);
+        --black70a: rgba(0, 0, 0, .14);
+        --white20a: rgba(0, 0, 0, .04);
+        --white30a: rgba(0, 0, 0, .06);
+        --white50a: rgba(0, 0, 0, .10);
+        --grey30a: rgba(0, 0, 0, .06);
+    }
+
+    /* 확장 설정 안의 굵은 검정 테두리 → 연회색 (확장 자체 스타일보다 우선, 우리 입력칸 규칙은 유지) */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block .inline-drawer-content :where(*) {
+        border-color: #DDDDDD !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block .inline-drawer-content :where(button, [role="tab"], [class*="tab"], [class*="seg"]) {
+        border-width: 1px !important;
+    }
+    /* 선택된 탭/세그먼트 = 슬랙 보라 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block .inline-drawer-content :where([role="tab"][aria-selected="true"], [class*="tab"].active, [class*="tab"].selected, [class*="tab"].is-active) {
+        color: #1D1C1D !important;
+        border-bottom-color: #4A154B !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block .inline-drawer-content :where([class*="seg"]) :where(.active, .selected, .is-active, [aria-pressed="true"], [aria-selected="true"]) {
+        background: #FFFFFF !important;
+        color: #1D1C1D !important;
+        border-color: #DDDDDD !important;
+        font-weight: 700 !important;
+    }
+
+    /* ---- 토글 스위치 ---- */
+    /* (가) 체크박스 + 옆 슬라이더 모양: 체크박스는 숨기고 슬라이더를 트랙으로 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block input[type="checkbox"]:has(+ :is([class*="slider"], [class*="track"], [class*="switch"], [class*="toggle"])) {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        opacity: 0 !important;
+        border: 0 !important;
+        pointer-events: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block input[type="checkbox"] + :is([class*="slider"], [class*="track"], [class*="switch"], [class*="toggle"]) {
+        background: #D1D1D1 !important;
+        border: 0 !important;
+        border-radius: 999px !important;
+        box-shadow: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block input[type="checkbox"]:checked + :is([class*="slider"], [class*="track"], [class*="switch"], [class*="toggle"]) {
+        background: #007A5A !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block input[type="checkbox"] + :is([class*="slider"], [class*="track"], [class*="switch"], [class*="toggle"])::before {
+        background: #FFFFFF !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, .25) !important;
+    }
+    /* (나) 체크박스 자체가 스위치인 경우 (role=switch 또는 class에 switch/toggle) */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block input[type="checkbox"]:is([role="switch"], [class*="switch"], [class*="toggle"]):not(:has(+ :is([class*="slider"], [class*="track"]))) {
+        position: relative !important;
+        width: 40px !important;
+        height: 24px !important;
+        border: 0 !important;
+        border-radius: 999px !important;
+        background: #D1D1D1 !important;
+        background-image: none !important;
+        transition: background .15s !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block input[type="checkbox"]:is([role="switch"], [class*="switch"], [class*="toggle"]):not(:has(+ :is([class*="slider"], [class*="track"])))::before {
+        content: '' !important;
+        display: block !important;
+        position: absolute !important;
+        top: 3px !important;
+        left: 3px !important;
+        width: 18px !important;
+        height: 18px !important;
+        border-radius: 50% !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, .25) !important;
+        transition: transform .15s !important;
+        -webkit-mask: none !important;
+        mask: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block input[type="checkbox"]:is([role="switch"], [class*="switch"], [class*="toggle"]):not(:has(+ :is([class*="slider"], [class*="track"]))):checked {
+        background: #007A5A !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block input[type="checkbox"]:is([role="switch"], [class*="switch"], [class*="toggle"]):not(:has(+ :is([class*="slider"], [class*="track"]))):checked::before {
+        transform: translateX(16px) !important;
+    }
+    /* (다) 트랙이 투명해서 손잡이만 보이는 경우: 스위치 라벨 자체에 트랙 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block label:is([class*="switch"], [class*="toggle"]):has(> input[type="checkbox"]) > :is(span, div, i):last-child:empty {
+        background-color: #D1D1D1 !important;
+        border-radius: 999px !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block label:is([class*="switch"], [class*="toggle"]):has(> input[type="checkbox"]:checked) > :is(span, div, i):last-child:empty {
+        background-color: #007A5A !important;
+    }
+
+    /* ================= 시작(로딩) 화면: 슬랙 앱처럼 =================
+       보라 전체 화면 + 가운데 둥근 로고 + 흰 링 스피너 + 안내 글씨 */
+    body.slk-ui #preloader {
+        background: #4A154B !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+    }
+    body.slk-ui dialog.popup:has(#loader) {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-width: none !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: #4A154B !important;
+        box-shadow: none !important;
+        outline: none !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+    }
+    body.slk-ui dialog.popup:has(#loader:not(.splash-screen)) {
+        background: rgba(74, 21, 75, .55) !important;
+    }
+    body.slk-ui dialog.popup:has(#loader)::backdrop {
+        background: #4A154B !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+    }
+    body.slk-ui dialog.popup:has(#loader:not(.splash-screen))::backdrop {
+        background: rgba(74, 21, 75, .35) !important;
+    }
+    body.slk-ui dialog.popup:has(#loader) :is(.popup-body, .popup-content, .popup-controls) {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+    }
+    body.slk-ui dialog.popup:has(#loader) .popup-controls { display: none !important; }
+    body.slk-ui #loader {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 28px !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: transparent !important;
+        color: #FFFFFF !important;
+    }
+    body.slk-ui #loader .splash-logo {
+        width: 96px !important;
+        height: 96px !important;
+        object-fit: cover !important;
+        border-radius: 24px !important;
+        filter: none !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important;
+    }
+    body.slk-ui #loader #load-spinner,
+    body.slk-ui #preloader #load-spinner {
+        position: static !important;
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 0 !important;
+        border: 3px solid rgba(255, 255, 255, .25) !important;
+        border-top-color: #FFFFFF !important;
+        border-radius: 50% !important;
+        box-sizing: border-box !important;
+        animation: slk-spin .8s linear infinite !important;
+        color: transparent !important;
+    }
+    body.slk-ui #loader #load-spinner::before { content: none !important; display: none !important; }
+    body.slk-ui #loader .splash-message {
+        margin: -12px 0 0 !important;
+        color: rgba(255, 255, 255, .82) !important;
+        -webkit-text-fill-color: rgba(255, 255, 255, .82) !important;
+        font-family: var(--slk-font, sans-serif) !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        letter-spacing: -0.01em !important;
+        text-shadow: none !important;
+    }
+    body.slk-ui #loader.splash-screen::before {
+        content: 'SillyTavern' !important;
+        order: 1 !important;
+        margin: -10px 0 0 !important;
+        color: #FFFFFF !important;
+        font-family: var(--slk-font, sans-serif) !important;
+        font-size: 22px !important;
+        font-weight: 900 !important;
+        letter-spacing: -0.02em !important;
+    }
+    body.slk-ui #loader.splash-screen .splash-logo { order: 0 !important; }
+    body.slk-ui #loader.splash-screen #load-spinner { order: 2 !important; margin-top: 18px !important; }
+    body.slk-ui #loader.splash-screen .splash-message { order: 3 !important; }
+}
+@keyframes slk-spin { to { transform: rotate(360deg); } }
