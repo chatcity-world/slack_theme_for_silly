@@ -16,6 +16,8 @@ function applySlackUiSettings() {
     document.body.classList.toggle('slk-dark', SLK_UI_SETTINGS.enabled && SLK_UI_SETTINGS.theme === 'dark');
     if (!SLK_UI_SETTINGS.enabled) {
         document.body.classList.remove('slk-footer-only-active');
+        document.body.classList.remove('slk-managed-navigation', 'slk-no-panel');
+        document.querySelectorAll('.slk-nav-hidden').forEach(el => el.classList.remove('slk-nav-hidden'));
         document.getElementById('slk-settings-menu')?.setAttribute('hidden', '');
         const footer = document.getElementById('slk-mobile-footer');
         if (footer) footer.style.setProperty('display', 'none', 'important');
@@ -1002,7 +1004,9 @@ function buildPanelBack() {
     const ws = document.getElementById('slk-ws');
     if (ws) ws.insertAdjacentElement('beforebegin', btn);
     else header.prepend(btn);
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
         // Close the top drawer. Revealing the lower layer is a side effect of closing.
         if (SLK_UI_SETTINGS.enabled && window.matchMedia('(max-width: 1000px)').matches && window.__slkPanelNavigation) {
             window.__slkPanelNavigation.back();
@@ -1117,18 +1121,20 @@ else init();
     let composerObserver = null;
     let footerSwitchSerial = 0;
 
-    // Each visited drawer is a logical page layer. SillyTavern only displays one
-    // native drawer at a time, so back navigation restores the previous layer.
+    // v1.4.24: Slack navigation owns its stack. ST may momentarily change
+    // openIcon/openDrawer during drawer animations; do NOT use that to clear it.
     const panelHistory = [];
     const managedSelectors = [...new Set([...TABS.map(([s]) => s), DRAWERS.userSettings, DRAWERS.backgrounds])];
-    let transitioning = false;
+    let navigationUsed = false;
+    let desiredSelector = null;
+    const nativePending = new Map(); // Prevent double toggles while ST is animating.
 
     function isFooterDrawerOpen(drawer) {
         return !!drawer && (drawer.classList.contains('openDrawer') ||
-            !!drawer.querySelector('.drawer-icon.openIcon, .drawer-content.openDrawer'));
+            !!drawer.querySelector(':scope > .drawer-content.openDrawer, :scope > .drawer-toggle .drawer-icon.openIcon'));
     }
 
-    function openManagedSelectors() {
+    function nativeOpenSelectors() {
         return managedSelectors.filter(s => isFooterDrawerOpen(document.querySelector(s)));
     }
 
@@ -1146,59 +1152,70 @@ else init();
             if (node.isConnected) node.scrollTop = top;
         });
         requestAnimationFrame(restore);
-        setTimeout(restore, 90);
+        setTimeout(restore, 100);
+    }
+
+    function applyManagedVisibility() {
+        if (!navigationUsed || !mq.matches || !SLK_UI_SETTINGS.enabled) {
+            document.body.classList.remove('slk-managed-navigation', 'slk-no-panel');
+            for (const s of managedSelectors) {
+                document.querySelector(s)?.querySelector(':scope > .drawer-content')?.classList.remove('slk-nav-hidden');
+            }
+            return;
+        }
+        document.body.classList.add('slk-managed-navigation');
+        document.body.classList.toggle('slk-no-panel', !desiredSelector);
+        for (const selector of managedSelectors) {
+            const content = document.querySelector(selector)?.querySelector(':scope > .drawer-content');
+            content?.classList.toggle('slk-nav-hidden', selector !== desiredSelector);
+        }
+    }
+
+    // Native click is still needed for ST side effects. We immediately guard
+    // which panel may actually be visible so a native fallback character panel
+    // never replaces the desired page or a closed-to-chat state.
+    function syncNativeToDesired(serial) {
+        if (serial !== footerSwitchSerial || !mq.matches || !SLK_UI_SETTINGS.enabled) return;
+        applyManagedVisibility();
+        const ensureNative = (selector, shouldOpen) => {
+            const drawer = document.querySelector(selector);
+            if (!drawer) return;
+            const isOpen = isFooterDrawerOpen(drawer);
+            if (isOpen === shouldOpen) { nativePending.delete(selector); return; }
+            const pending = nativePending.get(selector);
+            // A native toggle may take several frames to apply .openDrawer.
+            // Never click again on the next frame and accidentally undo it.
+            if (pending && performance.now() - pending.time < 540) return;
+            nativePending.set(selector, {want:shouldOpen, time:performance.now()});
+            openDrawer(selector);
+        };
+        for (const selector of managedSelectors) {
+            if (selector !== desiredSelector) ensureNative(selector, false);
+        }
+        if (desiredSelector) ensureNative(desiredSelector, true);
+        applyManagedVisibility();
+        updateActive();
+        recomputeHeaderCompact();
     }
 
     function transitionTo(selector, layer) {
         const serial = ++footerSwitchSerial;
-        transitioning = true;
-        const target = selector ? document.querySelector(selector) : null;
-        // Keep the existing purple header until the next drawer has appeared.
-        if (target && !isFooterDrawerOpen(target)) primePanelHeader(selector);
-        const close = openManagedSelectors().filter(s => s !== selector);
-        close.forEach(s => openDrawer(s));
-
-        const finish = () => {
+        navigationUsed = true;
+        desiredSelector = selector;
+        // Suppress the previous panel before any asynchronous ST click/animation.
+        applyManagedVisibility();
+        if (selector) primePanelHeader(selector);
+        syncNativeToDesired(serial);
+        requestAnimationFrame(() => {
             if (serial !== footerSwitchSerial) return;
-            transitioning = false;
+            syncNativeToDesired(serial);
             restoreScroll(layer);
-            updateActive();
-            recomputeHeaderCompact();
-            setTimeout(() => {
-                if (serial === footerSwitchSerial) {
-                    updateActive();
-                    recomputeHeaderCompact();
-                }
-            }, 100);
-        };
-
-        let frames = 0;
-        const awaitClose = () => {
-            if (serial !== footerSwitchSerial) return;
-            const anyOtherOpen = openManagedSelectors().some(s => s !== selector);
-            if (anyOtherOpen && ++frames < 35) {
-                requestAnimationFrame(awaitClose);
-                return;
-            }
-            if (target && !isFooterDrawerOpen(target)) openDrawer(selector);
-            requestAnimationFrame(finish);
-        };
-        requestAnimationFrame(awaitClose);
-    }
-
-    function reconcileHistory() {
-        // The user may close a drawer with a native SillyTavern control.
-        // Do not restore stale pages after such an external navigation.
-        if (transitioning) return;
-        const open = openManagedSelectors();
-        if (!open.length) {
-            panelHistory.length = 0;
-            return;
-        }
-        const top = panelHistory[panelHistory.length - 1];
-        if (top && !open.includes(top.selector)) {
-            panelHistory.length = 0;
-        }
+        });
+        // Handle ST transitions that finish a frame or two after the click.
+        setTimeout(() => syncNativeToDesired(serial), 110);
+        setTimeout(() => syncNativeToDesired(serial), 350);
+        setTimeout(() => syncNativeToDesired(serial), 650);
+        setTimeout(() => syncNativeToDesired(serial), 980);
     }
 
     function navigate(selector) {
@@ -1207,59 +1224,49 @@ else init();
             openDrawer(selector);
             return;
         }
-        reconcileHistory();
-        const top = panelHistory[panelHistory.length - 1];
-        // A second tap CLOSES the visible tab, whether our layer history owns
-        // the opening or SillyTavern opened the drawer independently.
-        if (top?.selector === selector || isFooterDrawerOpen(document.querySelector(selector))) {
+        const top = panelHistory.at(-1);
+        // The button is a toggle: tapping the CURRENT tab must pop it.
+        if (top?.selector === selector) {
             back();
             return;
         }
-        if (top) rememberScroll(top);
-        else {
-            // Preserve a drawer that was opened through SillyTavern itself.
-            const underlying = openManagedSelectors().find(s => s !== selector);
-            if (underlying) {
-                const layer = {selector: underlying};
-                rememberScroll(layer);
-                panelHistory.push(layer);
-            }
+        // ST can open a panel natively before Slack has navigation history.
+        if (!navigationUsed && isFooterDrawerOpen(document.querySelector(selector))) {
+            transitionTo(null, null);
+            return;
         }
+        rememberScroll(top);
         const layer = { selector };
         panelHistory.push(layer);
         transitionTo(selector, layer);
     }
 
-    // Both the header Back control and the active footer tab close the same
-    // top layer. If a layer was underneath, it becomes visible again.
+    // Back and a second tap both close one layer, returning to the previous
+    // Slack page, or to the chat if no earlier Slack page exists.
     function back() {
         if (!mq.matches || !SLK_UI_SETTINGS.enabled) return;
-        reconcileHistory();
-        if (panelHistory.length) {
-            panelHistory.pop();
-            const previous = panelHistory[panelHistory.length - 1];
-            transitionTo(previous?.selector ?? null, previous);
-        } else {
-            // A native drawer can be open without an entry in our history.
-            transitionTo(null, null);
-        }
+        if (panelHistory.length) panelHistory.pop();
+        const previous = panelHistory.at(-1);
+        transitionTo(previous?.selector ?? null, previous);
     }
 
     window.__slkPanelNavigation = {
         navigate, back,
         getHistory: () => panelHistory.map(layer => layer.selector),
+        getCurrent: () => desiredSelector,
     };
 
     function updateActive() {
         const footer = document.getElementById('slk-mobile-footer');
         if (!footer) return;
         for (const btn of footer.querySelectorAll('.slk-footer-tab')) {
-            const drawer = document.querySelector(btn.dataset.drawer);
-            const isOpen = !!drawer?.querySelector('.drawer-icon.openIcon, .drawer-content.openDrawer');
-            btn.setAttribute('aria-pressed', String(isOpen));
+            const active = navigationUsed
+                ? btn.dataset.drawer === desiredSelector
+                : isFooterDrawerOpen(document.querySelector(btn.dataset.drawer));
+            btn.setAttribute('aria-pressed', String(active));
             const dark = SLK_UI_SETTINGS.theme === 'dark';
-            btn.style.setProperty('background', isOpen ? (dark ? '#3E2941' : '#EFEAF0') : 'transparent', 'important');
-            btn.style.setProperty('color', isOpen ? (dark ? '#F3C8F8' : '#4A154B') : (dark ? '#B1B1B1' : '#616061'), 'important');
+            btn.style.setProperty('background', active ? (dark ? '#3E2941' : '#EFEAF0') : 'transparent', 'important');
+            btn.style.setProperty('color', active ? (dark ? '#F3C8F8' : '#4A154B') : (dark ? '#B1B1B1' : '#616061'), 'important');
         }
     }
 
@@ -1308,7 +1315,9 @@ else init();
                     'opacity': '1', 'visibility': 'visible', 'pointer-events': 'auto',
                     'cursor': 'pointer'
                 });
-                btn.addEventListener('click', () => {
+                btn.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
                     navigate(drawer);
                 });
                 footer.appendChild(btn);
@@ -1319,7 +1328,7 @@ else init();
             footerObserver = new MutationObserver(updateActive);
             const holder = document.getElementById('top-settings-holder');
             if (holder) footerObserver.observe(holder, { attributes: true, subtree: true, attributeFilter: ['class'] });
-            window.__slkMobileFooterVersion = '1.4.23';
+            window.__slkMobileFooterVersion = '1.4.24';
         }
         // Keep an existing footer out of any clipped/transformed body containing block.
         if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);
@@ -1351,6 +1360,7 @@ else init();
             if (form) composerObserver.observe(form, { attributes: true, attributeFilter: ['class'] });
         }
         syncComposerFooter();
+        applyManagedVisibility();
         updateActive();
     }
 
@@ -1359,4 +1369,24 @@ else init();
     mq.addEventListener?.('change', mount);
     window.addEventListener('pageshow', mount);
     window.addEventListener('slk-ui-settings-changed', mount);
+})();
+
+// Toast overlays need the real viewport on mobile; SillyTavern themes may
+// transform body and offset position:fixed children away from screen center.
+(function mountSlackToastViewport() {
+    const sync = () => {
+        if (!SLK_UI_SETTINGS.enabled || !matchMedia('(max-width: 1000px)').matches) return;
+        const container = document.getElementById('toast-container');
+        if (container && container.parentElement !== document.documentElement) {
+            document.documentElement.appendChild(container);
+        }
+    };
+    const watch = () => {
+        if (!document.body) return;
+        new MutationObserver(sync).observe(document.body, {childList:true, subtree:false});
+        sync();
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch, {once:true});
+    else watch();
+    window.addEventListener('slk-ui-settings-changed', sync);
 })();

@@ -11916,3 +11916,67 @@ body.slk-ui.slk-dark {
         user-select: none !important;
     }
 }
+
+
+/* v1.4.24: mobile navigation suppresses ST's native fallback drawers only
+   while the Slack bottom/header navigation owns a visible page. */
+@media screen and (max-width:1000px) {
+    html body.slk-ui.slk-managed-navigation .drawer-content.slk-nav-hidden {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+    html body.slk-ui.slk-no-panel #slk-panel-back {
+        display: none !important;
+    }
+
+    /* Strong, centered Slack notifications. All toasts, including translation. */
+    html:has(body.slk-ui) #toast-container {
+        position: fixed !important;
+        top: 46% !important;
+        left: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%) !important;
+        width: min(370px, calc(100vw - 36px)) !important;
+        max-width: calc(100vw - 36px) !important;
+        z-index: 2147483647 !important;
+        pointer-events: none !important;
+        margin: 0 !important;
+    }
+    html:has(body.slk-ui) #toast-container > :is(div.toast, .toast, .toast-info, .toast-success, .toast-warning, .toast-error) {
+        box-sizing: border-box !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 0 10px !important;
+        min-height: 70px !important;
+        padding: 20px 38px 20px 18px !important;
+        border: 1px solid rgba(74,21,75,.34) !important;
+        border-left: 5px solid #4A154B !important;
+        border-radius: 16px !important;
+        background: rgba(255,255,255,.98) !important;
+        color: #1D1C1D !important;
+        box-shadow: 0 15px 55px rgba(38,17,40,.25), 0 3px 10px rgba(0,0,0,.10) !important;
+        text-align: center !important;
+        pointer-events: auto !important;
+    }
+    html:has(body.slk-ui) #toast-container :is(.toast-message,.toast-title) {
+        color: #1D1C1D !important;
+        font-size: 15px !important;
+        line-height: 1.45 !important;
+        font-weight: 650 !important;
+        text-align: center !important;
+    }
+    html:has(body.slk-ui) #toast-container .toast-close-button {
+        top: 12px !important;
+        right: 12px !important;
+    }
+    html:has(body.slk-ui.slk-dark) #toast-container > :is(div.toast,.toast,.toast-info,.toast-success,.toast-warning,.toast-error) {
+        background: rgba(39,32,41,.98) !important;
+        border-color: rgba(192,133,199,.5) !important;
+        border-left-color: #C88BCE !important;
+    }
+    html:has(body.slk-ui.slk-dark) #toast-container :is(.toast-message,.toast-title) {
+        color: #F7F2F7 !important;
+    }
+}
