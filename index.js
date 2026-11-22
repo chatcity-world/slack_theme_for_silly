@@ -59,9 +59,45 @@ function buildTabIcons() {
     });
 }
 
+// 패널을 누른 바로 그 순간 헤더를 먼저 준비합니다.
+// ST가 drawer-icon.openIcon을 나중에 붙일 때 생기는 한 프레임의 깜빡임 방지.
+let slkHeaderOpeningObserver = null;
+let slkHeaderOpeningTimeout = null;
+let slkHeaderOpeningSequence = 0;
+
+function primePanelHeader(selector) {
+    if (!window.matchMedia('(max-width: 1000px)').matches) return;
+    const drawer = document.querySelector(selector);
+    if (!drawer || drawer.querySelector('.drawer-icon.openIcon, .drawer-content.openDrawer') || drawer.classList.contains('openDrawer')) return;
+
+    if (slkHeaderOpeningObserver) slkHeaderOpeningObserver.disconnect();
+    clearTimeout(slkHeaderOpeningTimeout);
+    const sequence = ++slkHeaderOpeningSequence;
+    document.body.classList.add('slk-panel-opening');
+    document.body.classList.remove('slk-header-compact');
+
+    const finish = () => {
+        if (sequence !== slkHeaderOpeningSequence) return;
+        slkHeaderOpeningObserver?.disconnect();
+        slkHeaderOpeningObserver = null;
+        clearTimeout(slkHeaderOpeningTimeout);
+        document.body.classList.remove('slk-panel-opening');
+    };
+    slkHeaderOpeningObserver = new MutationObserver(() => {
+        if (drawer.querySelector('.drawer-icon.openIcon') &&
+            (drawer.querySelector('.drawer-content.openDrawer') || drawer.classList.contains('openDrawer'))) {
+            // 실제 패널 헤더가 준비된 다음 프레임에만 임시 상태 해제
+            requestAnimationFrame(finish);
+        }
+    });
+    slkHeaderOpeningObserver.observe(drawer, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    slkHeaderOpeningTimeout = setTimeout(finish, 1800); // 패널 실행 실패 시 정리
+}
+
 function openDrawer(selector) {
     const toggle = document.querySelector(`${selector} .drawer-toggle`);
     if (!toggle) return;
+    primePanelHeader(selector);
     // ST는 jQuery로 클릭 핸들러를 걸기 때문에 jQuery가 있으면 그걸로 트리거
     if (window.jQuery) window.jQuery(toggle).trigger('click');
     else toggle.click();
@@ -671,6 +707,11 @@ function recomputeHeaderCompact() {
 }
 
 function watchHeaderCompact() {
+    // 실리태번 기본 드로어를 직접 눌렀을 때도, 클릭 핸들러보다 먼저 준비합니다.
+    document.addEventListener('click', (e) => {
+        const toggle = e.target.closest('#top-settings-holder > .drawer > .drawer-toggle');
+        if (toggle) primePanelHeader(`#${toggle.parentElement.id}`);
+    }, true);
     document.addEventListener('scroll', (e) => {
         const t = e.target;
         if (!(t instanceof Element) || t.matches('textarea, select, input')) return;
@@ -802,7 +843,7 @@ else if (document.readyState === 'loading') document.addEventListener('DOMConten
 else init();
 
 
-// === MOBILE FOOTER-ONLY FIX v1.4.8 ===
+// === MOBILE FOOTER-ONLY FIX v1.4.10 ===
 // 모바일에서 원본 드로어 DOM을 옮기거나 삭제하지 않고, 독립 바텀바만 표시합니다.
 (function mountSlackMobileFooter() {
     const mq = window.matchMedia('(max-width: 1000px)');
@@ -882,7 +923,7 @@ else init();
             footerObserver = new MutationObserver(updateActive);
             const holder = document.getElementById('top-settings-holder');
             if (holder) footerObserver.observe(holder, { attributes: true, subtree: true, attributeFilter: ['class'] });
-            window.__slkMobileFooterVersion = '1.4.8';
+            window.__slkMobileFooterVersion = '1.4.10';
         }
         // Keep an existing footer out of any clipped/transformed body containing block.
         if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);

@@ -8719,6 +8719,28 @@ body.slk-ui {
         color: var(--slk-text) !important;
     }
 
+    /* 21) 패널 열기 직후 한 프레임 비어 보이던 헤더 방지
+       - 클릭 직후에는 기존 보라색 패널 헤더+뒤로가기를 먼저 그림
+       - SillyTavern 드로어가 준비되면 기존 스크롤 헤더 규칙에 넘김 */
+    body.slk-ui.slk-panel-opening #slk-header {
+        background: var(--slk-header-grad) !important;
+        color: var(--slk-header-fg) !important;
+        transition: none !important;
+    }
+
+    body.slk-ui.slk-panel-opening #slk-header #slk-panel-back {
+        display: flex !important;
+    }
+
+    body.slk-ui.slk-panel-opening.slk-in-chat #slk-header #slk-chat-head {
+        display: none !important;
+    }
+
+    body.slk-ui.slk-panel-opening.slk-in-chat #slk-header > #slk-ws,
+    body.slk-ui.slk-panel-opening.slk-in-chat #slk-header > .slk-header-actions {
+        display: flex !important;
+    }
+
     /* ---------- 아이콘 ---------- */
     body.slk-ui #chat .mes_buttons .fa-ellipsis::before,
     body.slk-ui #chat .mes_buttons .fa-pencil::before,
