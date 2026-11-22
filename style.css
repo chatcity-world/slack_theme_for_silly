@@ -11980,3 +11980,176 @@ body.slk-ui.slk-dark {
         color: #F7F2F7 !important;
     }
 }
+
+
+/* =====================================================================
+   Slack UI v1.4.26 — popup layering, manager controls, character toolbar
+   Scoped to Slack mobile. Do not modify the header, composer or bottom tabs.
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    /* Manager: opaque, permanently visible action header ABOVE the scrolling
+       extension list. JS moves this exact toolbar out of popup-content. */
+    html body.slk-ui dialog.popup:has(.extensions_info) > .popup-body > .slk-manager-toolbar {
+        position: relative !important;
+        top: auto !important;
+        z-index: 10 !important;
+        flex: 0 0 auto !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 16px 16px 14px !important;
+        background: var(--slk-surface, #fff) !important;
+        border-bottom: 1px solid var(--slk-border, #E3E3E3) !important;
+        box-shadow: none !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .popup-content {
+        margin-top: 0 !important;
+        padding-top: 10px !important;
+        background-color: var(--slk-surface, #fff) !important;
+    }
+    /* Smaller status/type icon beside each extension checkbox. */
+    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block {
+        grid-template-columns: 24px 14px minmax(0,1fr) !important;
+        gap: 6px 10px !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_icon {
+        width: 14px !important;
+        min-width: 14px !important;
+        height: 18px !important;
+        display: grid !important;
+        place-items: center !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_icon > i {
+        font-size: 12px !important;
+        width: 12px !important;
+        min-width: 12px !important;
+        height: 12px !important;
+        line-height: 12px !important;
+    }
+    /* Native ST marks updateable names with update_available. Override the
+       earlier generic .extension_name rule, which forced them all black. */
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block .extension_name.update_available {
+        color: #B45309 !important;
+        -webkit-text-fill-color: #B45309 !important;
+        font-weight: 800 !important;
+    }
+    html body.slk-ui.slk-dark dialog.popup:has(.extensions_info) .extensions_info .extension_block .extension_name.update_available {
+        color: #F1B46B !important;
+        -webkit-text-fill-color: #F1B46B !important;
+    }
+
+    /* Inline Slack UI settings: both labels must use the same font metrics. */
+    html body.slk-ui #slk-extension-settings .slk-settings-row > label[for="slk-enable-toggle"],
+    html body.slk-ui #slk-extension-settings .slk-settings-row > #slk-theme-label {
+        font: 700 15px/22px var(--slk-font, sans-serif) !important;
+        color: var(--slk-text) !important;
+        letter-spacing: 0 !important;
+    }
+
+    /* The native create element has no text node, only a FontAwesome icon.
+       Let its own ::after label occupy a real single-line width. */
+    html body.slk-ui #right-nav-panel #rm_characters_block #rm_button_bar {
+        display: grid !important;
+        grid-template-columns: max-content 40px 40px 40px minmax(0,1fr) !important;
+        grid-template-rows: 40px 42px !important;
+        column-gap: 0 !important;
+        row-gap: 10px !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+    html body.slk-ui #right-nav-panel #rm_characters_block #rm_button_bar::after { display: none !important; }
+    html body.slk-ui #right-nav-panel #rm_characters_block #rm_button_create {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        justify-self: start !important;
+        display: inline-flex !important;
+        flex: 0 0 auto !important;
+        box-sizing: border-box !important;
+        width: auto !important;
+        min-width: 112px !important;
+        max-width: none !important;
+        height: 40px !important;
+        padding: 0 12px !important;
+        margin: 0 8px 0 0 !important;
+        white-space: nowrap !important;
+        word-break: keep-all !important;
+        writing-mode: horizontal-tb !important;
+        flex-wrap: nowrap !important;
+        justify-content: center !important;
+        gap: 6px !important;
+    }
+    html body.slk-ui #right-nav-panel #rm_characters_block #rm_button_create::before {
+        font-size: 16px !important;
+        flex: 0 0 auto !important;
+    }
+    html body.slk-ui #right-nav-panel #rm_characters_block #rm_button_create::after {
+        display: inline !important;
+        flex: 0 0 auto !important;
+        font-size: 14px !important;
+        white-space: nowrap !important;
+        word-break: keep-all !important;
+        writing-mode: horizontal-tb !important;
+    }
+    html body.slk-ui #right-nav-panel #rm_characters_block #character_import_button { grid-column: 2 !important; grid-row: 1 !important; }
+    html body.slk-ui #right-nav-panel #rm_characters_block #external_import_button { grid-column: 3 !important; grid-row: 1 !important; }
+    html body.slk-ui #right-nav-panel #rm_characters_block #rm_button_group_chats { grid-column: 4 !important; grid-row: 1 !important; }
+    html body.slk-ui #right-nav-panel #rm_characters_block #rm_buttons_container {
+        grid-column: 5 !important;
+        grid-row: 1 !important;
+        min-width: 0 !important;
+        margin: 0 0 0 6px !important;
+        overflow-x: auto !important;
+        scrollbar-width: none;
+    }
+    html body.slk-ui #right-nav-panel #rm_characters_block #character_sort_order {
+        grid-column: 1 / 5 !important;
+        grid-row: 2 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+    }
+    html body.slk-ui #right-nav-panel #rm_characters_block #rm_button_search {
+        grid-column: 5 !important;
+        grid-row: 2 !important;
+        justify-self: end !important;
+        margin: 0 !important;
+    }
+
+    /* Pagination had flex-wrap enabled: bulkEditButton jumped onto a separate
+       line underneath. Keep page controls + both view/edit icons in one row. */
+    html body.slk-ui #right-nav-panel #rm_characters_block #rm_print_characters_pagination {
+        display: grid !important;
+        grid-template-columns: minmax(0,1fr) 34px 34px !important;
+        grid-auto-rows: minmax(34px,auto) !important;
+        align-items: center !important;
+        gap: 4px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+    html body.slk-ui #right-nav-panel #rm_characters_block #rm_print_characters_pagination > .paginationjs {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+    }
+    html body.slk-ui #right-nav-panel #rm_characters_block #charListGridToggle { grid-column: 2 !important; grid-row: 1 !important; }
+    html body.slk-ui #right-nav-panel #rm_characters_block #bulkEditButton { grid-column: 3 !important; grid-row: 1 !important; }
+    html body.slk-ui #right-nav-panel #rm_characters_block #bulkSelectedCount { grid-column: 1 !important; grid-row: 2 !important; }
+    html body.slk-ui #right-nav-panel #rm_characters_block #bulkSelectAllButton { grid-column: 2 !important; grid-row: 2 !important; }
+    html body.slk-ui #right-nav-panel #rm_characters_block #bulkDeleteButton { grid-column: 3 !important; grid-row: 2 !important; }
+
+    /* Native modal dialogs live in the top layer. JS places the existing
+       toast container inside the frontmost modal while it is open. */
+    html:has(body.slk-ui) dialog.popup[open] > #toast-container {
+        position: fixed !important;
+        z-index: 2147483647 !important;
+        inset: auto !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%,-50%) !important;
+        visibility: visible !important;
+        pointer-events: none !important;
+    }
+}

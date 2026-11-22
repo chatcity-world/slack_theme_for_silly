@@ -1323,7 +1323,7 @@ else init();
             footerObserver = new MutationObserver(updateActive);
             const holder = document.getElementById('top-settings-holder');
             if (holder) footerObserver.observe(holder, { attributes: true, subtree: true, attributeFilter: ['class'] });
-            window.__slkMobileFooterVersion = '1.4.25';
+            window.__slkMobileFooterVersion = '1.4.26';
         }
         // Keep an existing footer out of any clipped/transformed body containing block.
         if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);
@@ -1366,22 +1366,85 @@ else init();
     window.addEventListener('slk-ui-settings-changed', mount);
 })();
 
-// Toast overlays need the real viewport on mobile; SillyTavern themes may
-// transform body and offset position:fixed children away from screen center.
-(function mountSlackToastViewport() {
-    const sync = () => {
-        if (!SLK_UI_SETTINGS.enabled || !matchMedia('(max-width: 1000px)').matches) return;
-        const container = document.getElementById('toast-container');
-        if (container && container.parentElement !== document.documentElement) {
-            document.documentElement.appendChild(container);
+// v1.4.26 — Keep the extension manager toolbar solid and above its scrolling
+// list.  Native modal <dialog> elements are in the browser top layer, so a
+// body/html toast cannot appear above them even with maximum z-index.
+// While a popup is open, move the existing toastr container INTO the topmost
+// dialog; when it closes return that same container to <html>.
+(function mountSlackOverlayLayer() {
+    let lastToast = null;
+    let queued = false;
+    let syncing = false;
+    const isMobileSlack = () => document.body?.classList.contains('slk-ui') &&
+        matchMedia('(max-width: 1000px)').matches;
+
+    function sync() {
+        if (syncing || !document.body) return;
+        syncing = true;
+        try {
+            const enabled = isMobileSlack();
+            if (enabled) {
+                // The manager header is a direct child of the popup body, NOT
+                // of the scrollable popup-content. Its buttons retain handlers.
+                for (const dialog of document.querySelectorAll('dialog.popup:has(.extensions_info)')) {
+                    const toolbar = dialog.querySelector('.extensions_info > .extensions_toolbar');
+                    const body = dialog.querySelector('.popup-body');
+                    const content = body?.querySelector('.popup-content');
+                    if (toolbar && body && content) {
+                        toolbar.classList.add('slk-manager-toolbar');
+                        body.insertBefore(toolbar, content);
+                    }
+                }
+            }
+
+            const openModals = enabled ? [...document.querySelectorAll('dialog.popup[open]')] : [];
+            const target = openModals.at(-1) || document.documentElement;
+            let toast = document.getElementById('toast-container');
+            // If closing a modal detached the container along with it,
+            // recover the original node without discarding ongoing notices.
+            if (!toast && lastToast && !lastToast.isConnected &&
+                lastToast.parentElement?.closest('dialog.popup')) {
+                toast = lastToast;
+            }
+            if (toast) {
+                lastToast = toast;
+                if (toast.parentElement !== target) target.appendChild(toast);
+            }
+        } finally {
+            syncing = false;
         }
-    };
-    const watch = () => {
-        if (!document.body) return;
-        new MutationObserver(sync).observe(document.body, {childList:true, subtree:false});
+    }
+
+    function schedule() {
+        if (queued) return;
+        queued = true;
+        queueMicrotask(() => { queued = false; sync(); });
+    }
+
+    function relevant(nodes) {
+        return [...nodes].some(node => node.nodeType === 1 &&
+            (node.matches?.('dialog.popup, #toast-container, .extensions_info, .extensions_toolbar') ||
+             node.querySelector?.('dialog.popup, #toast-container, .extensions_info, .extensions_toolbar')));
+    }
+
+    function watch() {
+        if (!document.documentElement) return;
+        const observer = new MutationObserver(changes => {
+            if (changes.some(change =>
+                (change.type === 'attributes' && change.attributeName === 'open') ||
+                (change.type === 'childList' && (relevant(change.addedNodes) || relevant(change.removedNodes))))) {
+                schedule();
+            }
+        });
+        observer.observe(document.documentElement, {
+            subtree: true, childList: true, attributes: true, attributeFilter: ['open']
+        });
         sync();
-    };
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch, {once:true});
+    }
+
+    if (document.readyState === 'loading')
+        document.addEventListener('DOMContentLoaded', watch, {once:true});
     else watch();
-    window.addEventListener('slk-ui-settings-changed', sync);
+    window.addEventListener('slk-ui-settings-changed', schedule);
+    window.addEventListener('pageshow', schedule);
 })();
