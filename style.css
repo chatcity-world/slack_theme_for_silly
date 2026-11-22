@@ -12153,3 +12153,279 @@ body.slk-ui.slk-dark {
         pointer-events: none !important;
     }
 }
+
+
+/* ============================================================================
+   Slack UI v1.4.27 — extension manager typography / compact leading row
+   Affects only checkbox, type icon, title spacing and author @ glyph in the
+   extension manager popup. All existing controls and interactions are intact.
+   ============================================================================ */
+@media screen and (max-width: 1000px) {
+    /* Previous version reduced icon size but retained large gaps around the
+       14px column. Pull the title left to match the smaller 12px type icon. */
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block {
+        grid-template-columns: 24px 12px minmax(0, 1fr) !important;
+        column-gap: 5px !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block > .extension_icon {
+        width: 12px !important;
+        min-width: 12px !important;
+        max-width: 12px !important;
+        height: 12px !important;
+        min-height: 12px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: grid !important;
+        place-items: center !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block > .extension_icon > i {
+        display: block !important;
+        font-size: 12px !important;
+        line-height: 12px !important;
+        width: 12px !important;
+        height: 12px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    /* Native SillyTavern inserts an <i class="fa-solid fa-at fa-xs"> as a
+       standalone element before the author. The glyph must not inherit the
+       larger extension-name/icon typography. */
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block .extension_author {
+        font-size: 12px !important;
+        line-height: 1.3 !important;
+        vertical-align: baseline !important;
+        gap: 2px !important;
+    }
+    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block .extension_author > i.fa-at {
+        display: inline-block !important;
+        flex: 0 0 10px !important;
+        font-size: 10px !important;
+        line-height: 1 !important;
+        width: 10px !important;
+        min-width: 10px !important;
+        height: 10px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        vertical-align: baseline !important;
+    }
+}
+
+
+/* ========================================================================
+   Slack UI 1.4.28 — lorebook layout only
+   Target: #WorldInfo. Restore header/create, selector + five tools, and
+   genuine Select2 multiselect appearance (the hidden <select> is not UI).
+   ======================================================================== */
+@media screen and (max-width: 1000px) {
+    /* The active-world control is rendered by Select2, not the original select. */
+    body.slk-ui #WorldInfo #WIMultiSelector .range-block-range {
+        border: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        outline: 0 !important;
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+    body.slk-ui #WorldInfo #WIMultiSelector .select2-container {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        outline: 0 !important;
+    }
+    body.slk-ui #WorldInfo #WIMultiSelector .select2-container .select2-selection--multiple {
+        width: 100% !important;
+        min-height: 42px !important;
+        height: auto !important;
+        max-height: none !important;
+        padding: 2px 10px !important;
+        margin: 0 !important;
+        background: #FFFFFF !important;
+        border: 1px solid #D9D9D9 !important;
+        border-radius: 10px !important;
+        box-shadow: none !important;
+        outline: none !important;
+        color: #1D1C1D !important;
+        overflow: visible !important;
+    }
+    body.slk-ui #WorldInfo #WIMultiSelector .select2-selection__rendered {
+        display: flex !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+        min-height: 36px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        gap: 4px !important;
+    }
+    body.slk-ui #WorldInfo #WIMultiSelector .select2-search--inline {
+        flex: 1 1 150px !important;
+        min-width: 0 !important;
+        width: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+    }
+    body.slk-ui #WorldInfo #WIMultiSelector .select2-search__field {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 34px !important;
+        height: 34px !important;
+        margin: 0 !important;
+        padding: 0 8px !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        font-size: 14px !important;
+        color: #1D1C1D !important;
+    }
+    body.slk-ui #WorldInfo #WIMultiSelector .select2-search__field::placeholder {
+        color: #9B9B9B !important;
+        opacity: 1 !important;
+    }
+    body.slk-ui #WorldInfo #WIMultiSelector .select2-selection__choice {
+        max-width: 100% !important;
+        border-radius: 7px !important;
+        box-shadow: none !important;
+    }
+
+    /* Row 1: lorebook label at left, Create alone at right.
+       Row 2: the selection + import / export / rename / duplicate / delete. */
+    body.slk-ui #WorldInfo #world_popup > .flex-container:first-of-type {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) repeat(5, 34px) !important;
+        grid-template-rows: 40px 42px !important;
+        grid-auto-rows: minmax(0,auto) !important;
+        align-items: center !important;
+        row-gap: 12px !important;
+        column-gap: 0 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+    body.slk-ui #WorldInfo #world_popup > .flex-container:first-of-type::before {
+        content: '로어북' !important;
+        display: block !important;
+        grid-column: 1 / -1 !important;
+        grid-row: 1 !important;
+        align-self: center !important;
+        justify-self: start !important;
+        width: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        pointer-events: none !important;
+        z-index: 0 !important;
+    }
+    body.slk-ui #WorldInfo #world_popup > .flex-container:first-of-type::after {
+        content: none !important;
+        display: none !important;
+    }
+    body.slk-ui #WorldInfo #world_popup #world_create_button {
+        grid-column: 1 / -1 !important;
+        grid-row: 1 !important;
+        justify-self: end !important;
+        align-self: center !important;
+        order: 0 !important;
+        width: auto !important;
+        min-width: 104px !important;
+        max-width: max-content !important;
+        height: 38px !important;
+        padding: 0 14px !important;
+        z-index: 1 !important;
+        background: #4A154B !important;
+        border: 1px solid #4A154B !important;
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+        white-space: nowrap !important;
+    }
+    body.slk-ui #WorldInfo #world_popup #world_create_button > i,
+    body.slk-ui #WorldInfo #world_popup #world_create_button > i::before,
+    body.slk-ui #WorldInfo #world_popup #world_create_button > span {
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+    body.slk-ui #WorldInfo #world_popup #world_create_button > i::before {
+        background-color: #FFFFFF !important;
+    }
+    body.slk-ui #WorldInfo #world_popup #world_editor_select,
+    body.slk-ui #WorldInfo #world_popup #world_editor_select ~ .select2-container {
+        grid-column: 1 !important;
+        grid-row: 2 !important;
+        order: 0 !important;
+        align-self: stretch !important;
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 42px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        flex: none !important;
+    }
+    body.slk-ui #WorldInfo #world_popup > .flex-container:first-of-type > :is(
+        #world_import_button, #world_popup_export, #world_popup_name_button,
+        #world_duplicate, #world_popup_delete
+    ).menu_button {
+        order: 0 !important;
+        grid-row: 2 !important;
+        align-self: stretch !important;
+        justify-self: stretch !important;
+        width: 34px !important;
+        min-width: 34px !important;
+        max-width: 34px !important;
+        height: 42px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        background: #F1F1F1 !important;
+    }
+    body.slk-ui #WorldInfo #world_popup > .flex-container:first-of-type > #world_import_button.menu_button {
+        grid-column: 2 !important;
+        border-radius: 999px 0 0 999px !important;
+    }
+    body.slk-ui #WorldInfo #world_popup > .flex-container:first-of-type > #world_popup_export.menu_button { grid-column: 3 !important; }
+    body.slk-ui #WorldInfo #world_popup > .flex-container:first-of-type > #world_popup_name_button.menu_button { grid-column: 4 !important; }
+    body.slk-ui #WorldInfo #world_popup > .flex-container:first-of-type > #world_duplicate.menu_button { grid-column: 5 !important; }
+    body.slk-ui #WorldInfo #world_popup > .flex-container:first-of-type > #world_popup_delete.menu_button {
+        grid-column: 6 !important;
+        border-radius: 0 999px 999px 0 !important;
+        color: #E01E5A !important;
+    }
+}
+
+/* v1.4.28 Select2 structural guard: select2 uses nested inline spans and an UL. */
+@media screen and (max-width: 1000px) {
+    body.slk-ui #WorldInfo #WIMultiSelector .select2-container > .selection {
+        display: block !important;
+        width: 100% !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+    body.slk-ui #WorldInfo #WIMultiSelector .select2-container .select2-selection--multiple {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+        min-height: 42px !important;
+    }
+    body.slk-ui #WorldInfo #WIMultiSelector .select2-selection__rendered {
+        flex: 1 1 auto !important;
+        list-style: none !important;
+        width: 100% !important;
+        min-height: 34px !important;
+    }
+    body.slk-ui #WorldInfo #WIMultiSelector .select2-selection__rendered > li {
+        list-style: none !important;
+        list-style-type: none !important;
+    }
+    body.slk-ui #WorldInfo #WIMultiSelector .select2-selection__rendered > li::marker {
+        content: '' !important;
+    }
+}
