@@ -1177,7 +1177,7 @@ else init();
             footerObserver = new MutationObserver(updateActive);
             const holder = document.getElementById('top-settings-holder');
             if (holder) footerObserver.observe(holder, { attributes: true, subtree: true, attributeFilter: ['class'] });
-            window.__slkMobileFooterVersion = '1.4.18';
+            window.__slkMobileFooterVersion = '1.4.19';
         }
         // Keep an existing footer out of any clipped/transformed body containing block.
         if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);
