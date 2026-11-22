@@ -59,54 +59,6 @@ function buildTabIcons() {
     });
 }
 
-
-// 화면 하단용 독립 내비게이션. 기존 ST 드로어 DOM은 이동/삭제하지 않음.
-function buildMobileFooter() {
-    if (document.getElementById('slk-mobile-footer')) return;
-    const footer = document.createElement('nav');
-    footer.id = 'slk-mobile-footer';
-    footer.setAttribute('aria-label', '모바일 설정 탭');
-
-    TABS.forEach(([selector, iconKey, label]) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'slk-footer-tab';
-        button.setAttribute('aria-label', label);
-        button.title = label;
-        button.dataset.drawerSelector = selector;
-        button.innerHTML = ICONS[iconKey];
-        button.addEventListener('click', () => {
-            openDrawer(selector); // 원래 SillyTavern 패널 토글 그대로 사용
-            queueMicrotask(syncMobileFooter);
-        });
-        footer.appendChild(button);
-    });
-
-    document.body.appendChild(footer);
-    document.body.classList.add('slk-footer-ready');
-    syncMobileFooter();
-
-    // 원본 드로어를 열거나 닫으면 하단 아이콘 활성 상태만 동기화.
-    const observer = new MutationObserver(syncMobileFooter);
-    for (const [selector] of TABS) {
-        const original = document.querySelector(`${selector} > .drawer-toggle`);
-        if (original) observer.observe(original, { attributes: true, subtree: true, attributeFilter: ['class'] });
-        const panel = document.querySelector(`${selector} > .drawer-content`);
-        if (panel) observer.observe(panel, { attributes: true, attributeFilter: ['class'] });
-    }
-}
-
-function syncMobileFooter() {
-    const footer = document.getElementById('slk-mobile-footer');
-    if (!footer) return;
-    for (const button of footer.querySelectorAll('.slk-footer-tab')) {
-        const drawer = document.querySelector(button.dataset.drawerSelector);
-        const active = !!drawer?.querySelector('.drawer-icon.openIcon, .drawer-content.openDrawer');
-        button.classList.toggle('slk-footer-active', active);
-        button.setAttribute('aria-pressed', String(active));
-    }
-}
-
 function openDrawer(selector) {
     const toggle = document.querySelector(`${selector} .drawer-toggle`);
     if (!toggle) return;
@@ -828,7 +780,6 @@ function init() {
     buildHeader();
     buildPanelBack();
     buildTabIcons();
-    buildMobileFooter();
     buildAiTabs();
     buildUsTabs();
     watchWorldInfo();

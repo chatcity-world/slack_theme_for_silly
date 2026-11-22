@@ -37,8 +37,7 @@ body.slk-ui {
 
 /* PC에서는 아직 숨김 (다음 단계에서 작업) */
 #slk-header,
-#slk-settings-menu,
-#slk-mobile-footer {
+#slk-settings-menu {
     display: none;
 }
 
@@ -8346,7 +8345,13 @@ body.slk-ui {
         box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
     }
 
-    /* 바텀 탭바는 입력 상태와 관계없이 표시 */
+    /* 입력 중에는 바텀 탭바를 숨기고 입력창을 맨 아래로 */
+    body.slk-ui.slk-composing #top-settings-holder::before,
+    body.slk-ui.slk-composing #top-settings-holder > .drawer > .drawer-toggle {
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
 
     /* 키보드가 아래 안전 영역을 덮으므로 여백 없이 바로 붙임 */
     body.slk-ui.slk-composing #sheld {
@@ -10668,71 +10673,5 @@ body.slk-ui {
 
     body.slk-ui #PersonaManagement .persona_management_current_persona #persona_controls > label {
         grid-column: 1 !important;
-    }
-
-
-    /* 하단 탭만 독립 표시: 기존 ST 드로어/패널은 수정하지 않음 */
-    body.slk-ui.slk-footer-ready #top-settings-holder::before {
-        display: none !important;
-    }
-    body.slk-ui.slk-footer-ready #top-settings-holder > .drawer > .drawer-toggle {
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-    }
-    body.slk-ui #slk-mobile-footer {
-        position: fixed !important;
-        left: 12px !important;
-        right: 12px !important;
-        bottom: calc(var(--slk-tabbar-gap, 10px) + var(--slk-safe-bottom, 0px)) !important;
-        height: var(--slk-tabbar-h, 60px) !important;
-        box-sizing: border-box !important;
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        justify-content: space-around !important;
-        padding: 0 6px !important;
-        margin: 0 !important;
-        border: 1px solid var(--slk-glass-border, rgba(255,255,255,.75)) !important;
-        border-radius: 999px !important;
-        background: var(--slk-glass-bg, rgba(255,255,255,.78)) !important;
-        box-shadow: var(--slk-glass-shadow, 0 8px 28px rgba(0,0,0,.12)) !important;
-        backdrop-filter: var(--slk-glass-blur, blur(20px)) !important;
-        -webkit-backdrop-filter: var(--slk-glass-blur, blur(20px)) !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-        z-index: 3100 !important;
-    }
-    body.slk-ui #slk-mobile-footer .slk-footer-tab {
-        appearance: none;
-        -webkit-appearance: none;
-        display: grid !important;
-        place-items: center !important;
-        flex: 1 1 0 !important;
-        min-width: 0 !important;
-        max-width: 52px !important;
-        height: 44px !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: none !important;
-        border-radius: 999px !important;
-        background: transparent !important;
-        color: var(--slk-muted, #616061) !important;
-        box-shadow: none !important;
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-    }
-    body.slk-ui #slk-mobile-footer .slk-footer-tab svg {
-        display: block !important;
-        width: 22px !important;
-        height: 22px !important;
-    }
-    body.slk-ui #slk-mobile-footer .slk-footer-tab.slk-footer-active {
-        background: var(--slk-tab-active-bg, #EFEAF0) !important;
-        color: var(--slk-tab-active-fg, #4A154B) !important;
-    }
-    body.slk-ui #slk-mobile-footer .slk-footer-tab.slk-footer-active svg {
-        stroke-width: 2.3;
     }
 }
