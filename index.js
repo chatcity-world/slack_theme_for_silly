@@ -1523,19 +1523,100 @@ else init();
     addEventListener('slk-ui-settings-changed', update);
 })();
 
-// v1.4.36 — 로어북 '활성 월드' 여러 개 선택 목록: 빈 줄 없이 항목 수만큼만 보이게 (최대 6줄)
-(function fitActiveWorldList() {
-    const fit = () => {
-        const sel = document.getElementById('world_info');
-        if (!sel || sel.classList.contains('select2-hidden-accessible')) return;
-        const n = Math.min(Math.max(sel.options.length, 1), 6);
-        if (sel.size !== n) sel.size = n;
+// v1.4.37 — 로어북 '모든 채팅에 대한 활성화된 월드 인포': 한 줄 드롭다운(여러 개 선택)
+(function slkWorldDropdown() {
+    const PLACEHOLDER = '선택 안 됨';
+    let wrap, btn, label, menu, sel, sig = '';
+
+    const jq = () => window.jQuery || window.$;
+    const signature = () => sel ? [...sel.options].map(o => (o.selected ? '1' : '0') + o.text).join('|') : '';
+
+    const renderLabel = () => {
+        if (!sel || !label) return;
+        const picked = [...sel.options].filter(o => o.selected && o.value !== '').map(o => o.text);
+        label.textContent = picked.length ? picked.join(', ') : PLACEHOLDER;
+        label.classList.toggle('is-empty', !picked.length);
     };
+
+    const renderMenu = () => {
+        if (!sel || !menu) return;
+        menu.textContent = '';
+        const opts = [...sel.options].filter(o => o.value !== '');
+        if (!opts.length) {
+            const e = document.createElement('div');
+            e.className = 'slk-wi-dd-empty';
+            e.textContent = '로어북이 없어요';
+            menu.appendChild(e);
+            return;
+        }
+        opts.forEach(o => {
+            const it = document.createElement('button');
+            it.type = 'button';
+            it.className = 'slk-wi-dd-item' + (o.selected ? ' is-on' : '');
+            it.textContent = o.text;
+            it.addEventListener('click', ev => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                o.selected = !o.selected;
+                const $ = jq();
+                if ($) $(sel).trigger('change');
+                else sel.dispatchEvent(new Event('change', { bubbles: true }));
+                sync(true);
+            });
+            menu.appendChild(it);
+        });
+    };
+
+    const sync = (force) => {
+        const now = signature();
+        if (!force && now === sig) return;
+        sig = now;
+        renderLabel();
+        if (wrap && wrap.classList.contains('is-open')) renderMenu();
+    };
+
+    const close = () => wrap && wrap.classList.remove('is-open');
+
+    const build = () => {
+        sel = document.getElementById('world_info');
+        if (!sel || document.getElementById('slk-wi-dd')) return !!sel;
+        wrap = document.createElement('div');
+        wrap.id = 'slk-wi-dd';
+        btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'slk-wi-dd-btn';
+        label = document.createElement('span');
+        label.className = 'slk-wi-dd-label';
+        btn.appendChild(label);
+        menu = document.createElement('div');
+        menu.className = 'slk-wi-dd-menu';
+        wrap.append(btn, menu);
+        sel.insertAdjacentElement('afterend', wrap);
+        // select2 컨테이너가 있으면 그 뒤로
+        const s2 = sel.nextElementSibling && sel.nextElementSibling.classList.contains('select2-container') ? sel.nextElementSibling : null;
+        if (s2) s2.insertAdjacentElement('afterend', wrap);
+
+        btn.addEventListener('click', ev => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const open = !wrap.classList.contains('is-open');
+            wrap.classList.toggle('is-open', open);
+            if (open) renderMenu();
+        });
+        document.addEventListener('click', ev => { if (wrap && !wrap.contains(ev.target)) close(); }, true);
+        sel.addEventListener('change', () => sync(true));
+        const $ = jq();
+        if ($) $(sel).on('change.slkdd', () => sync(true));
+        new MutationObserver(() => sync(true)).observe(sel, { childList: true, subtree: true, attributes: true });
+        setInterval(() => { if (wrap.offsetParent) sync(false); }, 700);
+        sync(true);
+        return true;
+    };
+
     const start = () => {
-        const sel = document.getElementById('world_info');
-        if (!sel) return;
-        fit();
-        new MutationObserver(fit).observe(sel, { childList: true, attributes: true, attributeFilter: ['class'] });
+        if (build()) return;
+        const mo = new MutationObserver(() => { if (build()) mo.disconnect(); });
+        mo.observe(document.body, { childList: true, subtree: true });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();

@@ -12962,3 +12962,129 @@ body.slk-ui.slk-dark {
         field-sizing: content;
     }
 }
+
+/* 1.4.37: 활성 월드 = 한 줄 드롭다운 (원래 목록/Select2는 숨김) */
+#slk-wi-dd { display: none; }
+@media screen and (max-width: 1200px) {
+    html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo #WIMultiSelector #world_info,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo #WIMultiSelector #world_info ~ .select2-container {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        min-height: 0 !important;
+        max-height: 1px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        clip-path: inset(50%) !important;
+        overflow: hidden !important;
+    }
+
+    html body.slk-ui #WorldInfo #WIMultiSelector > .range-block-range {
+        position: relative !important;
+        overflow: visible !important;
+    }
+
+    html body.slk-ui #slk-wi-dd {
+        display: block;
+        position: relative;
+        width: 100%;
+        z-index: 20;
+    }
+
+    html body.slk-ui #slk-wi-dd .slk-wi-dd-btn {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 42px;
+        margin: 0;
+        padding: 0 36px 0 12px;
+        border: 1px solid #BBBBBB;
+        border-radius: 8px;
+        background: var(--slk-surface, #fff) url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23616061%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E") right 11px center / 15px no-repeat;
+        box-shadow: none;
+        box-sizing: border-box;
+        color: var(--slk-text, #1D1C1D);
+        font: inherit;
+        font-size: 16px;
+        text-align: left;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    html body.slk-ui #slk-wi-dd.is-open .slk-wi-dd-btn {
+        border-color: #1264A3;
+        box-shadow: 0 0 0 3px rgba(29, 155, 209, .25);
+    }
+
+    html body.slk-ui #slk-wi-dd .slk-wi-dd-label {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        line-height: 40px;
+    }
+
+    html body.slk-ui #slk-wi-dd .slk-wi-dd-label.is-empty {
+        color: #8B8B8B;
+    }
+
+    html body.slk-ui #slk-wi-dd .slk-wi-dd-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        max-height: 244px;
+        overflow-y: auto;
+        padding: 4px;
+        border: 1px solid #DDDDDD;
+        border-radius: 8px;
+        background: var(--slk-surface, #fff);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
+        box-sizing: border-box;
+    }
+
+    html body.slk-ui #slk-wi-dd.is-open .slk-wi-dd-menu {
+        display: block;
+    }
+
+    html body.slk-ui #slk-wi-dd .slk-wi-dd-item {
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 9px 36px 9px 10px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--slk-text, #1D1C1D);
+        font: inherit;
+        font-size: 15px;
+        line-height: 20px;
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    html body.slk-ui #slk-wi-dd .slk-wi-dd-item:active {
+        background: #F4F4F4;
+    }
+
+    html body.slk-ui #slk-wi-dd .slk-wi-dd-item.is-on {
+        font-weight: 700;
+        background: #EFEFEF url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23007A5A%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22%2F%3E%3C%2Fsvg%3E") right 10px center / 16px no-repeat;
+    }
+
+    html body.slk-ui #slk-wi-dd .slk-wi-dd-empty {
+        padding: 10px;
+        color: #8B8B8B;
+        font-size: 14px;
+    }
+}
