@@ -1522,3 +1522,21 @@ else init();
     addEventListener('resize', update);
     addEventListener('slk-ui-settings-changed', update);
 })();
+
+// v1.4.36 — 로어북 '활성 월드' 여러 개 선택 목록: 빈 줄 없이 항목 수만큼만 보이게 (최대 6줄)
+(function fitActiveWorldList() {
+    const fit = () => {
+        const sel = document.getElementById('world_info');
+        if (!sel || sel.classList.contains('select2-hidden-accessible')) return;
+        const n = Math.min(Math.max(sel.options.length, 1), 6);
+        if (sel.size !== n) sel.size = n;
+    };
+    const start = () => {
+        const sel = document.getElementById('world_info');
+        if (!sel) return;
+        fit();
+        new MutationObserver(fit).observe(sel, { childList: true, attributes: true, attributeFilter: ['class'] });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();
