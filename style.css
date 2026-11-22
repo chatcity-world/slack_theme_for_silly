@@ -13262,3 +13262,333 @@ body.slk-ui.slk-dark {
         position: static !important;
     }
 }
+
+/* =====================================================================
+   1.4.41 — 페르소나/캐릭터 탭 재정리 + 외부 테마 잔여 효과 차단 + 토스트 위치
+   (외부 테마가 덮어써도 지지 않도록 선택자를 강하게)
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    /* --- 스크롤바: 검은 막대 제거 (모바일 화면이라 숨김) --- */
+    html body.slk-ui *,
+    html body.slk-ui {
+        scrollbar-width: none !important;
+    }
+    html body.slk-ui ::-webkit-scrollbar,
+    html body.slk-ui::-webkit-scrollbar {
+        width: 0 !important;
+        height: 0 !important;
+        background: transparent !important;
+    }
+    html body.slk-ui ::-webkit-scrollbar-thumb {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: 0 !important;
+    }
+
+    /* --- 탭바 선택 시 파란 포커스 테두리 제거 --- */
+    html body.slk-ui #slk-mobile-footer *:focus,
+    html body.slk-ui #slk-mobile-footer *:focus-visible,
+    html:has(body.slk-ui) #slk-mobile-footer *:focus,
+    html:has(body.slk-ui) #slk-mobile-footer *:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* ================= 페르소나 관리 ================= */
+    /* 제목 옆 검은 세로줄 등 테마 장식 제거 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement > .flex-container,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement > .flex-container > .flex-container,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement > .flex-container > .flex-container > .flex-container,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement > .flex-container > .flex-container > .flex1,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement h3,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement h3 > span:not([class*="fa-"]) {
+        border: 0 !important;
+        outline: 0 !important;
+        box-shadow: none !important;
+        background: none !important;
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement > .flex-container::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement > .flex-container::after,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement > .flex-container > .flex-container::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement > .flex-container > .flex-container::after,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement > .flex-container > .flex-container > .flex1::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement > .flex-container > .flex-container > .flex1::after,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement h3::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement h3::after,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement h3 > span:not([class*="fa-"])::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement h3 > span:not([class*="fa-"])::after {
+        content: none !important;
+        display: none !important;
+    }
+
+    /* 사용 통계 / 백업 / 복원 = 같은 너비로 한 줄 꽉 채움 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement .flex-container:has(> .user_stats_button) {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement .flex-container:has(> .user_stats_button) > .menu_button {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        justify-self: stretch !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        height: 40px !important;
+        margin: 0 !important;
+        padding: 0 6px !important;
+        white-space: nowrap !important;
+    }
+
+    /* 목록 도구: 1줄 [만들기][검색][A-Z] / 2줄 [페이지 ……][격자] */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement .persona_management_left_column > .flex-container:first-child {
+        display: grid !important;
+        grid-template-columns: auto minmax(0, 1fr) 84px !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+        margin: 0 0 10px !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #create_dummy_persona { grid-column: 1 !important; grid-row: 1 !important; }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_search_bar {
+        grid-column: 2 !important; grid-row: 1 !important;
+        width: 100% !important; min-width: 0 !important; margin: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_sort_order {
+        grid-column: 3 !important; grid-row: 1 !important;
+        width: 100% !important; margin: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_pagination_container {
+        grid-column: 1 / 3 !important; grid-row: 2 !important;
+        width: auto !important; min-width: 0 !important; margin: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_grid_toggle {
+        grid-column: 3 !important; grid-row: 2 !important;
+        justify-self: end !important;
+        align-self: center !important;
+        position: static !important;
+        float: none !important;
+        width: 40px !important;
+        height: 36px !important;
+        margin: 0 !important;
+    }
+
+    /* 만들기 버튼: 아이콘과 글자가 겹치지 않게 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #create_dummy_persona {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        width: auto !important;
+        min-width: 0 !important;
+        height: 40px !important;
+        padding: 0 16px 0 14px !important;
+        white-space: nowrap !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #create_dummy_persona > i {
+        position: static !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 0 0 16px !important;
+        width: 16px !important;
+        min-width: 16px !important;
+        height: 16px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+        font-size: 16px !important;
+        line-height: 1 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #create_dummy_persona > i::before {
+        position: static !important;
+        display: block !important;
+        width: 16px !important;
+        height: 16px !important;
+        margin: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #create_dummy_persona > div {
+        position: static !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        white-space: nowrap !important;
+    }
+
+    /* ================= 캐릭터 목록 ================= */
+    /* 즐겨찾기 없을 때 'HotSwaps에 추가' 안내 문구 숨김 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #HotSwapWrapper:not(:has(.avatar, img)) {
+        display: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #HotSwapWrapper .hotswap::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #HotSwapWrapper .hotswap::after {
+        content: none !important;
+        display: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #CharListButtonAndHotSwaps {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+
+    /* 정렬칸 + 검색 버튼 간격 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block #character_sort_order {
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+    }
+
+    /* 태그 필터 칩: 즐겨찾기 · 그룹 · 폴더 글자 + 오른쪽 아이콘 3개 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 6px !important;
+        width: 100% !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter :is(.filterByFavorites, .filterByGroups, .filterByFolder) {
+        display: inline-flex !important;
+        align-items: center !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        height: 32px !important;
+        padding: 0 11px !important;
+        border: 1px solid #DDDDDD !important;
+        border-radius: 999px !important;
+        background-color: var(--slk-surface, #fff) !important;
+        overflow: visible !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter :is(.filterByFavorites, .filterByGroups, .filterByFolder) .tag_name {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+        width: auto !important;
+        max-width: none !important;
+        overflow: visible !important;
+        font-size: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter :is(.filterByFavorites, .filterByGroups, .filterByFolder) .tag_name::after {
+        display: inline !important;
+        visibility: visible !important;
+        position: static !important;
+        font-family: var(--slk-font) !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        color: var(--slk-text, #1D1C1D) !important;
+        white-space: nowrap !important;
+        -webkit-mask: none !important;
+        mask: none !important;
+        background: none !important;
+        width: auto !important;
+        height: auto !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter .filterByFavorites .tag_name::after { content: '즐겨찾기' !important; }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter .filterByGroups .tag_name::after { content: '그룹' !important; }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter .filterByFolder .tag_name::after { content: '폴더' !important; }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter :is(.manageTags, .showTagList, .clearAllFilters) {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 30px !important;
+        height: 32px !important;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter .manageTags {
+        margin-left: auto !important;
+    }
+
+    /* 페이지 줄: 아래 검은 막대(가로 스크롤바) 제거 + 목록과의 큰 빈칸 축소 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_print_characters_pagination {
+        overflow: visible !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_print_characters_pagination .paginationjs {
+        flex-wrap: nowrap !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_print_characters_block {
+        margin-top: 8px !important;
+        padding-top: 0 !important;
+    }
+
+    /* ================= 알림(토스트) ================= */
+    /* 여러 개가 쌓여도 위로 잘려 나가지 않게: 헤더 바로 아래에서 아래로 쌓임 */
+    html:has(body.slk-ui) body #toast-container,
+    html:has(body.slk-ui) #toast-container {
+        position: fixed !important;
+        inset: auto !important;
+        top: calc(env(safe-area-inset-top, 0px) + 72px) !important;
+        left: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+        width: min(370px, calc(100vw - 32px)) !important;
+        max-width: calc(100vw - 32px) !important;
+        overflow: visible !important;
+        z-index: 2147483647 !important;
+        pointer-events: none !important;
+    }
+    html:has(body.slk-ui) #toast-container > div {
+        width: 100% !important;
+        margin: 0 0 8px !important;
+    }
+    html:has(body.slk-ui) dialog.popup[open] > #toast-container {
+        top: calc(env(safe-area-inset-top, 0px) + 24px) !important;
+        transform: translateX(-50%) !important;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    /* 페르소나 페이지 줄: 한 줄 유지 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_pagination_container .paginationjs {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 4px !important;
+        min-width: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_pagination_container .paginationjs-nav {
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
+        margin: 0 2px 0 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_pagination_container .paginationjs-pages ul {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_pagination_container .paginationjs-pages li > a {
+        min-width: 24px !important;
+        padding: 0 4px !important;
+        text-align: center !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_pagination_container .paginationjs-size-changer {
+        flex: 0 0 106px !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_pagination_container .paginationjs-size-changer select {
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+    }
+}
