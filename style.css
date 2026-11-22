@@ -13592,3 +13592,90 @@ body.slk-ui.slk-dark {
         margin: 0 !important;
     }
 }
+
+/* 1.4.42: 페르소나 '만들기' 아이콘 = 흰색 (테마가 아이콘 색을 검정으로 덮던 문제) */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #create_dummy_persona,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #create_dummy_persona > *,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_button_create,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_button_create > * {
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #create_dummy_persona > i::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_button_create::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_button_create > i::before {
+        background-color: #FFFFFF !important;
+    }
+}
+
+/* 1.4.43: 캐릭터 탭 정리 */
+@media screen and (max-width: 1000px) {
+    /* 필터 칩: 동그라미 안에 갇혀 글자가 겹치던 문제 → 글자 폭만큼 늘어나는 알약 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter > .tag {
+        flex: 0 0 auto !important;
+        aspect-ratio: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter > :is(.filterByFavorites, .filterByGroups, .filterByFolder) {
+        width: max-content !important;
+        gap: 0 !important;
+        padding: 0 12px 0 10px !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter > .tag > .tag_name {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        aspect-ratio: auto !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    /* 아이콘 (별 포함) 확실히 보이게 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter > .tag > .tag_name::before {
+        content: '' !important;
+        display: inline-block !important;
+        flex: 0 0 15px !important;
+        width: 15px !important;
+        height: 15px !important;
+        margin: 0 !important;
+        background-color: currentColor !important;
+        -webkit-mask: var(--slk-ico) center / contain no-repeat !important;
+        mask: var(--slk-ico) center / contain no-repeat !important;
+        font-size: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter .tag_name.fa-star {
+        --slk-ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%202.5l2.9%206%206.6.9-4.8%204.6%201.2%206.5L12%2017.4%206.1%2020.5l1.2-6.5L2.5%209.4l6.6-.9z%22%2F%3E%3C%2Fsvg%3E") !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter > :is(.filterByFavorites, .filterByGroups, .filterByFolder) > .tag_name::after {
+        margin-left: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter > :is(.filterByFavorites, .filterByGroups, .filterByFolder) > .tag_name {
+        gap: 5px !important;
+    }
+
+    /* 정렬칸을 검색 버튼 바로 앞까지 늘림 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block #character_sort_order {
+        grid-column: 1 / 6 !important;
+        justify-self: start !important;
+        width: calc(100% - 50px) !important;
+        max-width: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block #rm_button_search {
+        grid-column: 5 !important;
+        justify-self: end !important;
+        width: 42px !important;
+        height: 42px !important;
+    }
+
+    /* 페이지 줄 아래 빈 줄(빈 '선택 개수' 칸) 제거 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block #bulkSelectedCount:empty {
+        display: none !important;
+    }
+}
