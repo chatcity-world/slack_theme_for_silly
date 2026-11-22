@@ -1448,3 +1448,77 @@ else init();
     window.addEventListener('slk-ui-settings-changed', schedule);
     window.addEventListener('pageshow', schedule);
 })();
+
+
+// v1.4.35 — fix only the active-world selector in the Lorebook panel.
+// Keep its title INSIDE its own bordered control (never in a separate column).
+(function slkContainActiveWorldPicker() {
+    const query = '(max-width: 1200px)';
+    let observedPicker = null;
+    let pickerObserver = null;
+    const overridden = new Map();
+    const important = (el, key, value) => {
+        if (!el) return;
+        if (!overridden.has(el)) overridden.set(el, new Map());
+        const original = overridden.get(el);
+        if (!original.has(key)) original.set(key, [el.style.getPropertyValue(key), el.style.getPropertyPriority(key)]);
+        el.style.setProperty(key, value, 'important');
+    };
+    function restore() {
+        pickerObserver?.disconnect();
+        pickerObserver = null;
+        observedPicker = null;
+        for (const [element, properties] of overridden) {
+            for (const [key, [value, priority]] of properties) {
+                if (value) element.style.setProperty(key, value, priority);
+                else element.style.removeProperty(key);
+            }
+        }
+        overridden.clear();
+    }
+
+    function update() {
+        const picker = document.getElementById('WIMultiSelector');
+        if (!picker || !document.body?.classList.contains('slk-ui') || !matchMedia(query).matches) {
+            if (overridden.size) restore();
+            return;
+        }
+        const title = picker.querySelector(':scope > .range-block-title');
+        const field = picker.querySelector(':scope > .range-block-range');
+        if (!title || !field) return;
+
+        important(picker, 'display', 'grid');
+        important(picker, 'grid-template-columns', 'minmax(0, 1fr)');
+        important(picker, 'grid-template-rows', 'auto auto');
+        important(picker, 'width', '100%');
+        important(picker, 'min-width', '0');
+        important(picker, 'max-width', '100%');
+        important(picker, 'flex', '0 0 auto');
+        for (const [el, row] of [[title, '1'], [field, '2']]) {
+            important(el, 'display', 'block');
+            important(el, 'grid-column', '1');
+            important(el, 'grid-row', row);
+            important(el, 'width', '100%');
+            important(el, 'min-width', '0');
+            important(el, 'max-width', '100%');
+            important(el, 'margin-left', '0');
+            important(el, 'margin-right', '0');
+        }
+        for (const el of picker.querySelectorAll('.select2-container, .select2-selection--multiple')) {
+            important(el, 'width', '100%');
+            important(el, 'min-width', '0');
+            important(el, 'max-width', '100%');
+        }
+        if (picker !== observedPicker) {
+            pickerObserver?.disconnect();
+            observedPicker = picker;
+            pickerObserver = new MutationObserver(update);
+            pickerObserver.observe(picker, { childList: true, subtree: true });
+        }
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', update, { once: true });
+    else update();
+    addEventListener('pageshow', update);
+    addEventListener('resize', update);
+    addEventListener('slk-ui-settings-changed', update);
+})();

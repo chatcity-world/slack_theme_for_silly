@@ -12737,3 +12737,93 @@ body.slk-ui.slk-dark {
         box-sizing: border-box !important;
     }
 }
+
+
+/* =====================================================================
+   Slack UI v1.4.35 — active worlds: ONE contained selector
+   The title must be INSIDE the bordered picker, not beside an off-screen
+   Select2/native multi-select. Limited to the Lorebook active-world control.
+   ===================================================================== */
+@media screen and (max-width: 1200px) {
+    html body.slk-ui #WorldInfo #wiTopBlock > #WIMultiSelector {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-rows: auto auto !important;
+        align-items: stretch !important;
+        justify-items: stretch !important;
+        gap: 2px !important;
+        flex: 0 0 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 9px 12px !important;
+        background: var(--slk-surface, #fff) !important;
+        color: var(--slk-text, #1d1c1d) !important;
+        border: 1px solid var(--slk-border, #d7d7d7) !important;
+        border-radius: 12px !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+    html body.slk-ui #WorldInfo #WIMultiSelector > .range-block-title {
+        display: block !important;
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: left !important;
+        box-sizing: border-box !important;
+    }
+    html body.slk-ui #WorldInfo #WIMultiSelector > .range-block-range {
+        display: block !important;
+        grid-column: 1 !important;
+        grid-row: 2 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+    /* Select2 owns the actual interaction and items. Avoid a second border. */
+    html body.slk-ui #WorldInfo #WIMultiSelector .select2-container,
+    html body.slk-ui #WorldInfo #WIMultiSelector .select2-container > .selection,
+    html body.slk-ui #WorldInfo #WIMultiSelector .select2-container .select2-selection--multiple {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        outline: 0 !important;
+        box-sizing: border-box !important;
+    }
+    html body.slk-ui #WorldInfo #WIMultiSelector .select2-container .select2-selection--multiple {
+        padding: 0 !important;
+        min-height: 30px !important;
+        overflow: hidden !important;
+    }
+    html body.slk-ui #WorldInfo #WIMultiSelector #world_info:not(.select2-hidden-accessible) {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 8px 0 0 !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+    }
+}
