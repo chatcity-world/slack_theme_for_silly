@@ -13088,3 +13088,9 @@ body.slk-ui.slk-dark {
         font-size: 14px;
     }
 }
+
+/* 1.4.38: '선택 안 됨' 항목 */
+@media screen and (max-width: 1200px) {
+    html body.slk-ui #slk-wi-dd .slk-wi-dd-item.is-none { color: #8B8B8B; }
+    html body.slk-ui #slk-wi-dd .slk-wi-dd-item.is-none.is-on { color: #616061; }
+}

@@ -1549,25 +1549,50 @@ else init();
             menu.appendChild(e);
             return;
         }
-        opts.forEach(o => {
+        const anyOn = opts.some(o => o.selected);
+        [null, ...opts].forEach(o => {
             const it = document.createElement('button');
             it.type = 'button';
-            it.className = 'slk-wi-dd-item' + (o.selected ? ' is-on' : '');
-            it.textContent = o.text;
+            const on = o ? o.selected : !anyOn;
+            it.className = 'slk-wi-dd-item' + (on ? ' is-on' : '') + (o ? '' : ' is-none');
+            it.textContent = o ? o.text : PLACEHOLDER;
             it.addEventListener('click', ev => {
                 ev.preventDefault();
                 ev.stopPropagation();
-                o.selected = !o.selected;
-                const $ = jq();
-                if ($) $(sel).trigger('change');
-                else sel.dispatchEvent(new Event('change', { bubbles: true }));
+                // 여러 개 선택: 항목은 켜고 끄기, '선택 안 됨'은 전부 해제
+                if (o) o.selected = !o.selected;
+                else [...sel.options].forEach(x => { x.selected = false; });
+                fire();
                 sync(true);
             });
             menu.appendChild(it);
         });
     };
 
+    const fire = () => {
+        const $ = jq();
+        if ($) $(sel).trigger('change');
+        else sel.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+
+    // 1회: 예전 여러 줄 목록에서 실수로 켜진 선택을 모두 해제하고 '선택 안 됨'으로 시작
+    const RESET_KEY = 'slk-wi-reset-1438';
+    let resetTimer = null;
+    const resetOnce = () => {
+        try { if (localStorage.getItem(RESET_KEY)) return; } catch (e) { return; }
+        if (!sel || !sel.options.length || resetTimer) return;
+        resetTimer = setTimeout(() => {
+            if ([...sel.options].some(o => o.selected)) {
+                [...sel.options].forEach(o => { o.selected = false; });
+                fire();
+            }
+            try { localStorage.setItem(RESET_KEY, '1'); } catch (e) {}
+            sync(true);
+        }, 2500);
+    };
+
     const sync = (force) => {
+        resetOnce();
         const now = signature();
         if (!force && now === sig) return;
         sig = now;
