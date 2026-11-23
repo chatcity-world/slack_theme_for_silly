@@ -14825,3 +14825,228 @@ body.slk-ui.slk-dark {
         color: rgba(255, 255, 255, .82) !important;
     }
 }
+
+/* =====================================================================
+   1.4.60
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    /* 1) ⋯ 펼친 아이콘이 많으면 줄바꿈 (오른쪽 정렬 유지, 밖으로 안 밀려남) */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])) .mes_buttons {
+        justify-self: stretch !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-end !important;
+        align-content: center !important;
+        row-gap: 2px !important;
+        overflow: visible !important;
+        margin: 0 -8px 0 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons .extraMesButtons[style*="flex"],
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons .extraMesButtons[style*="block"] {
+        display: contents !important;
+    }
+
+    /* 2) 프사 아래 첫 요소(확장 드롭다운 등)와 간격 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_block > :not(.ch_name):not(.mes_edit_buttons) {
+        margin-top: 10px !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_block > :not(.ch_name):not(.mes_edit_buttons):empty,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_block > .mes_media_wrapper:empty,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_block > .mes_file_wrapper:empty,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_block > .mes_bias:empty {
+        margin-top: 0 !important;
+    }
+
+    /* 3) 확장 설정 안 물음표 등 작은 안내 아이콘 크기·정렬 통일 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block :is(.fa-circle-question, .fa-question-circle, .fa-circle-info, .fa-info-circle):not(.menu_button) {
+        position: static !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 16px !important;
+        height: 16px !important;
+        min-width: 16px !important;
+        margin: 0 0 0 4px !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 50% !important;
+        background: transparent !important;
+        color: #8A8A8A !important;
+        font-size: 14px !important;
+        line-height: 1 !important;
+        vertical-align: middle !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block :is(.notes-link, a:has(> .fa-circle-question)) {
+        display: inline-flex !important;
+        align-items: center !important;
+        vertical-align: middle !important;
+        width: auto !important;
+        height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+        background: none !important;
+    }
+
+    /* 4) 슬라이더 = 슬랙 스타일 (얇은 트랙 + 파란 채움 + 흰 동그라미 손잡이) */
+    html body.slk-ui:not(#slk-a):not(#slk-b) input[type="range"] {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        height: 24px !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        outline: none !important;
+        cursor: pointer !important;
+        --slk-fill: 0%;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) input[type="range"]::-webkit-slider-runnable-track {
+        height: 4px !important;
+        border: 0 !important;
+        border-radius: 2px !important;
+        background: linear-gradient(to right, #1264A3 0 var(--slk-fill), #DDDDDD var(--slk-fill) 100%) !important;
+        box-shadow: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) input[type="range"]::-moz-range-track {
+        height: 4px;
+        border: 0;
+        border-radius: 2px;
+        background: #DDDDDD;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) input[type="range"]::-moz-range-progress {
+        height: 4px;
+        border-radius: 2px;
+        background: #1264A3;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        width: 22px !important;
+        height: 22px !important;
+        margin-top: -9px !important;
+        border: 0.5px solid rgba(0, 0, 0, .08) !important;
+        border-radius: 50% !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .28), 0 0 1px rgba(0, 0, 0, .2) !important;
+        cursor: grab !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) input[type="range"]:active::-webkit-slider-thumb {
+        transform: scale(1.08) !important;
+        cursor: grabbing !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) input[type="range"]::-moz-range-thumb {
+        width: 22px;
+        height: 22px;
+        border: 0.5px solid rgba(0, 0, 0, .08);
+        border-radius: 50%;
+        background: #FFFFFF;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .28);
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) input[type="range"]:disabled {
+        opacity: .45 !important;
+    }
+
+    /* 5) Slack UI 설정의 라이트/블랙: 위아래 여백 똑같이 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #slk-extension-settings .slk-theme-segment {
+        display: inline-flex !important;
+        align-items: stretch !important;
+        gap: 4px !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 4px !important;
+        border: 0 !important;
+        border-radius: 10px !important;
+        background: #EEEEEE !important;
+        line-height: 1 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #slk-extension-settings .slk-theme-segment > label {
+        display: flex !important;
+        align-items: center !important;
+        height: 34px !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #slk-extension-settings .slk-theme-segment > label > input {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        margin: 0 !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #slk-extension-settings .slk-theme-segment > label > span {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        height: 34px !important;
+        margin: 0 !important;
+        padding: 0 16px !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        color: #616061 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #slk-extension-settings .slk-theme-segment > label > input:checked + span {
+        background: #FFFFFF !important;
+        color: #1D1C1D !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, .12) !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #slk-extension-settings .slk-settings-row {
+        align-items: center !important;
+    }
+
+    /* 6) 캐릭터 상세: 이름 옆 파란 세로줄 제거 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel :is(#right-nav-panel-tabs, #rm_button_selected_ch, #rm_button_selected_ch h2) {
+        border-left: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+        background-image: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel :is(#right-nav-panel-tabs, #rm_button_selected_ch, #rm_button_selected_ch h2)::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel :is(#right-nav-panel-tabs, #rm_button_selected_ch, #rm_button_selected_ch h2)::after {
+        content: none !important;
+        display: none !important;
+    }
+    /* 외부 미디어 버튼: 아이콘·글자 안 겹치게 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel #rm_ch_create_block .open_media_overrides > i {
+        position: static !important;
+        flex: 0 0 15px !important;
+        width: 15px !important;
+        min-width: 15px !important;
+        height: 15px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+        line-height: 1 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel #rm_ch_create_block .open_media_overrides > i::before {
+        position: static !important;
+        display: block !important;
+        margin: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel #rm_ch_create_block .open_media_overrides > span {
+        position: static !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    /* 공통: 버튼 안 아이콘이 글자 위로 겹치는 테마 효과 차단 */
+    html body.slk-ui .menu_button > i:not(:only-child) {
+        position: static !important;
+        flex: 0 0 auto !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        transform: none !important;
+    }
+}

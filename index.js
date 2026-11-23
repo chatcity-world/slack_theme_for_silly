@@ -2027,3 +2027,25 @@ else init();
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
 })();
+
+// v1.4.60 — 슬라이더 채움(파란 부분) 표시
+(function slkRangeFill() {
+    const update = (el) => {
+        const min = parseFloat(el.min || '0'), max = parseFloat(el.max || '100'), v = parseFloat(el.value || '0');
+        const pct = max > min ? Math.min(100, Math.max(0, ((v - min) / (max - min)) * 100)) : 0;
+        el.style.setProperty('--slk-fill', pct + '%');
+    };
+    const all = () => document.querySelectorAll('input[type="range"]').forEach(update);
+    document.addEventListener('input', (e) => { if (e.target?.type === 'range') update(e.target); }, true);
+    document.addEventListener('change', (e) => { if (e.target?.type === 'range') update(e.target); }, true);
+    // ST가 코드로 값을 바꾸는 경우(프리셋 불러오기 등)도 반영
+    const start = () => {
+        all();
+        setInterval(all, 1500);
+        let t = null;
+        new MutationObserver(() => { if (!t) t = setTimeout(() => { t = null; all(); }, 200); })
+            .observe(document.body, { childList: true, subtree: true });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();
