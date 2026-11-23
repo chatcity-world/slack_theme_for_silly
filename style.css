@@ -14708,3 +14708,120 @@ body.slk-ui.slk-dark {
         margin: 4px -8px 0 0 !important;
     }
 }
+
+/* =====================================================================
+   1.4.59
+   - `문자` : 백틱 기호 없이 말풍선만
+   - ``` 코드 블록 : 연회색 네모 + 검정 글자 (본문 글꼴)
+   - ⋯ 펼침 / ✎ 편집 중 : 이름·날짜 줄을 숨기고 그 자리에 버튼을 오른쪽 정렬
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text :not(pre) > code::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text :not(pre) > code::after {
+        content: none !important;
+        display: none !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text pre {
+        position: relative !important;
+        margin: 8px 0 !important;
+        padding: 12px 16px !important;
+        border: 1px solid #DDDDDD !important;
+        border-radius: 6px !important;
+        background: #F5F5F5 !important;
+        box-shadow: none !important;
+        overflow-x: auto !important;
+        white-space: pre-wrap !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text pre code,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text pre code * {
+        display: block;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        color: #1D1C1D !important;
+        -webkit-text-fill-color: #1D1C1D !important;
+        font-family: var(--slk-font, sans-serif) !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        line-height: 1.75 !important;
+        white-space: pre-wrap !important;
+        text-shadow: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text pre code * {
+        display: inline;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text pre {
+        border-color: #3A3A3C !important;
+        background: #222224 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text pre code,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text pre code * {
+        color: #E8E8E8 !important;
+        -webkit-text-fill-color: #E8E8E8 !important;
+    }
+
+    /* ⋯ 펼침 또는 편집 중: 이름·날짜 등 숨김 (자리는 유지해 메시지가 안 흔들림) */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"]), :has(.mes_edit_buttons[style*="flex"]), :has(#curEditTextarea)) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost) {
+        visibility: hidden !important;
+    }
+    /* ⋯ 펼침: 버튼 묶음이 이름 자리까지 오른쪽 정렬로 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])) .mes_buttons {
+        grid-column: 2 / -1 !important;
+        grid-row: 1 / 3 !important;
+        justify-self: end !important;
+        max-width: none !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        z-index: 2 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .extraMesButtons[style*="flex"],
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .extraMesButtons[style*="block"] {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+    }
+    /* ✎ 편집: 편집 버튼을 이름 자리에, 오른쪽 정렬 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_edit_buttons {
+        grid-column: 2 / -1 !important;
+        grid-row: 1 / 3 !important;
+        align-self: center !important;
+        justify-self: end !important;
+        margin: 0 -4px 0 0 !important;
+        z-index: 2 !important;
+    }
+}
+
+/* 시작 화면: ST 버전마다 구조가 조금 달라서 더 넓게 잡음 */
+@media screen and (max-width: 1000px) {
+    body.slk-ui dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo), :has(#load-spinner)) {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-width: none !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: #4A154B !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    body.slk-ui dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo), :has(#load-spinner)) * {
+        border-color: transparent !important;
+        box-shadow: none;
+    }
+    body.slk-ui dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo), :has(#load-spinner)) :is(.popup-body, .popup-content, #loader, .splash-screen) {
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    body.slk-ui .splash-screen .splash-message,
+    body.slk-ui #loader .splash-message {
+        color: rgba(255, 255, 255, .82) !important;
+    }
+}
