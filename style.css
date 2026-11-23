@@ -15511,3 +15511,54 @@ body.slk-ui.slk-dark {
         border-radius: 0 !important;
     }
 }
+
+
+/* =====================================================================
+   1.4.66 — 메시지 ⋯ 확장 아이콘: 실제 사용 가능 폭부터 채워 줄바꿈
+   확장 새로고침 버튼과 SillyTavern 기본 추가 버튼을 같은 flex 줄에 배치.
+   펼침 상태에만 적용하므로 닫힌 메시지 헤더·편집 버튼은 그대로 유지.
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:has(.extraMesButtons[style*="flex"]) .mes_buttons,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:has(.extraMesButtons[style*="block"]) .mes_buttons {
+        grid-column: 2 / -1 !important;
+        justify-self: stretch !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        align-content: flex-start !important;
+        gap: 2px 0 !important;
+        overflow: visible !important;
+    }
+
+    /* ST 추가 버튼용 래퍼가 별도 줄/폭을 차지하지 않게 자식만 흐름에 참가 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons > .extraMesButtons,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons > .extraMesButtons[style*="flex"],
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons > .extraMesButtons[style*="block"] {
+        display: contents !important;
+    }
+
+    /* 외부 확장 아이콘도 ST 아이콘과 똑같이 30px씩 차지 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons > :not(.extraMesButtons),
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons > .extraMesButtons > *,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:has(.extraMesButtons[style*="flex"]) .mes_buttons > :not(.extraMesButtons),
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:has(.extraMesButtons[style*="flex"]) .mes_buttons > .extraMesButtons > *,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:has(.extraMesButtons[style*="block"]) .mes_buttons > :not(.extraMesButtons),
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:has(.extraMesButtons[style*="block"]) .mes_buttons > .extraMesButtons > * {
+        flex: 0 0 30px !important;
+        box-sizing: border-box !important;
+        width: 30px !important;
+        min-width: 30px !important;
+        max-width: 30px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: static !important;
+        float: none !important;
+    }
+}

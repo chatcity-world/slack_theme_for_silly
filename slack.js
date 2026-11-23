@@ -2155,7 +2155,7 @@ else init();
             ['display','flex-wrap','justify-content','align-items','gap','width','max-width'].forEach(k => box.style.removeProperty(k));
             return;
         }
-        force(box, { 'display': 'flex', 'flex-wrap': 'wrap', 'justify-content': 'flex-end', 'align-items': 'center', 'gap': '0', 'width': '100%', 'max-width': 'none' });
+        force(box, { 'display': 'flex', 'flex-wrap': 'wrap', 'justify-content': 'flex-start', 'align-items': 'center', 'gap': '0', 'width': '100%', 'max-width': 'none' });
         const items = [...box.children].filter(c => c !== extra).concat(extra ? [...extra.children] : []);
         items.forEach(el => {
             if (getComputedStyle(el).display === 'none') return;
