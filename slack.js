@@ -99,7 +99,7 @@ function buildSlackUiExtensionSettings() {
                     <span id="slk-theme-label">테마</span>
                     <div class="slk-theme-segment" role="radiogroup" aria-labelledby="slk-theme-label">
                         <label><input type="radio" name="slk-theme" value="light"><span>라이트</span></label>
-                        <label><input type="radio" name="slk-theme" value="dark"><span>블랙</span></label>
+                        <label><input type="radio" name="slk-theme" value="dark"><span>슬랙 다크</span></label>
                     </div>
                 </div>
                 <section class="slk-preference-section" aria-label="채팅 글자 설정">

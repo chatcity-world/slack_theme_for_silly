@@ -16862,3 +16862,251 @@ body.slk-ui.slk-dark #slk-extension-settings .slk-header-image-options input:che
     border-color: #96629B;
 }
 
+
+/* ========================================================================
+   v1.4.94 — Slack Dark (mobile)
+   A branded aubergine navigation + Slack-style charcoal surfaces, not black.
+   Strictly gated by .slk-dark: light theme and user chat preferences persist.
+   ======================================================================== */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) {
+        --slk-aubergine: #4A154B;
+        --slk-aubergine-deep: #350D36;
+        --slk-header-grad: #350D36;
+        --slk-header-fg: #F9F6FA;
+        --slk-pill-bg: #4A2250;
+        --slk-pill-border: #7C4D82;
+        --slk-surface: #1A1D21;
+        --slk-dark-raised: #222529;
+        --slk-dark-input: #292D32;
+        --slk-dark-hover: #34313B;
+        --slk-text: #ECEDEF;
+        --slk-muted: #ABB1B9;
+        --slk-border: #3C4148;
+        --slk-active: #D5A5DD;
+        --slk-tab-active-bg: #45354D;
+        --slk-tab-active-fg: #F1DAF5;
+        --slk-shadow: 0 12px 34px rgba(0,0,0,.32), 0 1px 3px rgba(0,0,0,.18);
+        --slk-glass-bg: rgba(34,37,41,.90);
+        --slk-glass-border: rgba(215,221,232,.14);
+        --slk-glass-shadow: 0 10px 30px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.055);
+        --SmartThemeBodyColor: #ECEDEF;
+        --SmartThemeEmColor: #ABB1B9;
+        --SmartThemeUnderlineColor: #D5A5DD;
+        --SmartThemeBorderColor: #3C4148;
+        --SmartThemeBlurTintColor: rgba(26,29,33,.98);
+        --SmartThemeChatTintColor: #1A1D21;
+        --SmartThemeUserMesBlurTintColor: #1A1D21;
+        --SmartThemeBotMesBlurTintColor: #1A1D21;
+        background-color: #1A1D21 !important;
+        color: var(--slk-text) !important;
+        color-scheme: dark;
+    }
+    html:has(body.slk-ui.slk-dark) { background: #1A1D21 !important; color-scheme: dark; }
+
+    /* Header: Slack aubergine, even in a compact or active chat. */
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-header,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c).slk-header-compact #slk-header,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c).slk-in-chat:not(.slk-header-compact) #slk-header {
+        background: #350D36 !important;
+        background-image: none !important;
+        color: #F9F6FA !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-header :is(#slk-chat-back, #slk-panel-back, #slk-settings-btn),
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c).slk-header-compact #slk-settings-btn {
+        color: #F9F6FA !important;
+        background-color: rgba(255,255,255,.09) !important;
+        border-color: rgba(230,197,232,.25) !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-header :is(.slk-ws-ver,.slk-ws-branch) { color: #DCCBDF !important; }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-settings-menu,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-wi-menu,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(#options, #extensionsMenu) {
+        background: #25282D !important;
+        border-color: #454950 !important;
+        color: #ECEDEF !important;
+        box-shadow: 0 12px 28px rgba(0,0,0,.38) !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(#slk-settings-menu,#slk-wi-menu,#options,#extensionsMenu) :is(.slk-menu-item,.list-group-item):is(:hover,:active) {
+        background: #34313B !important;
+    }
+
+    /* Chat, all navigation panels and welcome screen share one calm dark canvas. */
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(#sheld, #chat, #left-nav-panel, #right-nav-panel,
+        #rm_api_block, #AdvancedFormatting, #WorldInfo, #PersonaManagement,
+        #rm_extensions_block, #user-settings-block, #backgrounds, #Backgrounds,
+        .drawer-content, .welcomePanel, .welcomeRecent, .recentChatList) {
+        background-color: #1A1D21 !important;
+        color: #ECEDEF !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_block,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text { color: #ECEDEF !important; }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes :is(.timestamp,.mesIDDisplay,.mes_timer,.tokenCounterDisplay) {
+        color: #AEB4BB !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons :is(.mes_button,.slk-adopted-btn),
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .extraMesButtons > * {
+        color: #B9BEC5 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons :is(.mes_button,.slk-adopted-btn):hover { color: #E5D1EB !important; }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c):not(.slk-dialogue-custom) #chat .mes_text q {
+        background: #34383E !important;
+        color: #F2F3F5 !important;
+        border-color: #444950 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text blockquote {
+        border-left-color: #9772A4 !important;
+        color: #C9CDD3 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text a { color: #8CBDE5 !important; }
+
+    /* Floating composition and navigation glass: no white flare in dark mode. */
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #form_sheld { background: transparent !important; }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #form_sheld #send_form {
+        background: #272B30 !important;
+        border-color: #474B52 !important;
+        box-shadow: 0 8px 26px rgba(0,0,0,.24) !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #form_sheld #send_form #send_textarea {
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        color: #F0F1F3 !important;
+        -webkit-text-fill-color: #F0F1F3 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #form_sheld #send_form #send_textarea::placeholder {
+        color: #979DA6 !important;
+        -webkit-text-fill-color: #979DA6 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #form_sheld #send_form #leftSendForm > div,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #form_sheld #send_form #rightSendForm > div:not(#send_but) {
+        color: #B9BEC5 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #form_sheld #send_form :is(#leftSendForm,#rightSendForm) > div:active {
+        background: rgba(255,255,255,.09) !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #top-settings-holder::before,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-mobile-footer::before {
+        background: rgba(37,40,45,.94) !important;
+        border-color: rgba(215,221,232,.17) !important;
+        box-shadow: 0 14px 36px rgba(0,0,0,.35) !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #top-settings-holder > .drawer .slk-tab-icon,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-mobile-footer .slk-tab-icon { color: #B9BEC5 !important; }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #top-settings-holder > .drawer:has(.drawer-icon.openIcon) > .drawer-toggle,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #top-settings-holder > .drawer.slk-active > .drawer-toggle,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-mobile-footer .slk-active {
+        background: #45354D !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #top-settings-holder > .drawer:has(.drawer-icon.openIcon) .slk-tab-icon { color: #F1DAF5 !important; }
+
+    /* Inputs, selects, accordions, dropdown panels. Keep the original sizing. */
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(.drawer-content, .popup, #slk-extension-settings) :is(
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+        textarea, select, .text_pole
+    ):not(:disabled):not([readonly]) {
+        background-color: #292D32 !important;
+        color: #ECEDEF !important;
+        -webkit-text-fill-color: #ECEDEF !important;
+        border-color: #4A4F56 !important;
+        box-shadow: none !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(.drawer-content,.popup,#slk-extension-settings) :is(input,textarea,select)::placeholder {
+        color: #959BA3 !important;
+        -webkit-text-fill-color: #959BA3 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(.drawer-content,.popup) :is(input,textarea,select):is(:disabled,[readonly]) {
+        background: #25282C !important;
+        color: #8B929B !important;
+        -webkit-text-fill-color: #8B929B !important;
+        border-color: #383D43 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(.drawer-content, .popup) :is(.inline-drawer-header,.inline-drawer-content,.standoutHeader) {
+        background-color: #222529 !important;
+        background-image: none !important;
+        color: #E8E9EC !important;
+        border-color: #3C4148 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(.drawer-content,.popup) :is(.menu_button,button):not(:disabled):not(#send_but) {
+        border-color: #454950 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(.drawer-content,.popup) :is(.menu_button,button):not(:disabled):hover {
+        background-color: #35383F !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(.drawer-content,.popup) :is(h1,h2,h3,h4,h5,label,small) { color: #E8E9EC; }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(.drawer-content,.popup) hr { border-color: #3B4047 !important; }
+
+    /* Welcome / recent chats / characters / personas / selected cards. */
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(.welcomePanel,.welcomeRecent) :is(.recentChat,.recentChatItem,.welcomeShortcuts,.welcomeShortcuts .menu_button),
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel :is(.character_select,.group_select,.bogus_folder_select),
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #user_avatar_block .avatar-container {
+        background-color: #222529 !important;
+        color: #ECEDEF !important;
+        border-color: #3C4148 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #user_avatar_block .avatar-container.selected,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel :is(.character_select,.group_select).selected,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) .welcomeRecent .recentChat.active {
+        background-color: #3B3043 !important;
+        border-color: #775584 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement,#right-nav-panel) :is(.ch_name,.character_name,.ch_description,.paginationjs-nav) {
+        color: #E8E9EC !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement,#right-nav-panel) :is(.ch_description,.text_muted,.paginationjs-nav) {
+        color: #A7ADB6 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination) .paginationjs,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination) :is(#persona_grid_toggle,#charListGridToggle,#bulkEditButton) {
+        background: #272B30 !important;
+        border-color: #40454C !important;
+        color: #C9CDD3 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container,#right-nav-panel #rm_print_characters_pagination) .paginationjs-size-changer select {
+        background: #34383E !important;
+        border-color: #50555D !important;
+        color: #ECEDEF !important;
+        -webkit-text-fill-color: #ECEDEF !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container,#right-nav-panel #rm_print_characters_pagination) .paginationjs-pages li:not(.disabled) > a::before {
+        background-color: #C8CDD3 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement:has(#user_avatar_block.gridView) #persona_grid_toggle {
+        background: #45354D !important;
+        color: #F1DAF5 !important;
+        border-color: #6A4E75 !important;
+    }
+
+    /* Named primary actions stay aubergine; secondary controls stay charcoal. */
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_button_create,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #create_dummy_persona,
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #WorldInfo :is(#world_create_button,#world_create),
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) dialog.popup:has(.extensions_info) .popup-controls :is(.menu_button,button) {
+        background: #704477 !important;
+        border-color: #704477 !important;
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_button_create::after { color: #FFFFFF !important; -webkit-text-fill-color: #FFFFFF !important; }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-extension-settings .slk-theme-segment { background: #2C3035 !important; }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-extension-settings .slk-theme-segment > label > span { color: #C2C7CF !important; }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-extension-settings .slk-theme-segment > label > input:checked + span {
+        background: #57355E !important; color: #FFFFFF !important; box-shadow: none !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-extension-settings :is(.slk-stepper,.slk-preference-button,.slk-header-image-options span) {
+        background: #292D32 !important;
+        border-color: #494E55 !important;
+        color: #ECEDEF !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-extension-settings .slk-stepper button {
+        background: #3A3F46 !important; color: #F0F1F3 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-extension-settings .slk-header-image-options input:checked + span {
+        background: #45354D !important; color: #F1DAF5 !important; border-color: #785B82 !important;
+    }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #slk-extension-settings :is(.slk-preference-section,.slk-settings-row) { border-color: #3C4148 !important; }
+    html body.slk-ui.slk-dark:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes > .swipeRightBlock.slk-swipe-inline > :is(.swipe_left,.swipe_right) {
+        background: #292D32 !important; color: #C1C6CC !important; border-color: #4A5057 !important;
+    }
+}
