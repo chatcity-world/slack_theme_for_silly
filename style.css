@@ -16633,3 +16633,261 @@ body.slk-ui.slk-dark {
     transition: none !important;
   }
 }
+
+
+/* === v1.4.87: Slack UI settings — live chat typography and dialogue tint === */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text {
+        font-size: var(--slk-chat-font-size, 15px) !important;
+        line-height: var(--slk-chat-line-height, 1.6) !important;
+    }
+    html body.slk-ui.slk-dialogue-custom:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text q,
+    html body.slk-ui.slk-dark.slk-dialogue-custom:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text q {
+        background: var(--slk-dialogue-bg, #EFEFEF) !important;
+    }
+}
+
+/* Additional controls only inside the existing extension settings drawer. */
+#slk-extension-settings .slk-preference-section {
+    padding: 13px 4px 8px;
+    border-top: 1px solid rgba(128, 128, 128, .18);
+    min-width: 0;
+}
+#slk-extension-settings .slk-preference-heading {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 7px;
+}
+#slk-extension-settings .slk-preference-section .slk-settings-row {
+    padding: 7px 0;
+    border: 0 !important;
+    min-height: 42px;
+}
+#slk-extension-settings .slk-preference-section .slk-settings-row > label {
+    font-size: 14px;
+    font-weight: 500;
+}
+#slk-extension-settings .slk-preference-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 0 1 auto;
+    min-width: 0;
+    gap: 6px;
+}
+#slk-extension-settings .slk-preference-controls .slk-stepper {
+    width: 132px;
+}
+#slk-extension-settings .slk-preference-controls .slk-pref-reset {
+    min-height: 34px !important;
+    padding: 6px 8px !important;
+    font-size: 12px !important;
+}
+#slk-extension-settings .slk-stepper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 auto;
+    width: 142px;
+    height: 36px;
+    padding: 3px;
+    gap: 4px;
+    border-radius: 10px;
+    border: 1px solid #DEDEDE;
+    background: rgba(128,128,128,.07);
+    box-sizing: border-box;
+}
+#slk-extension-settings .slk-stepper button {
+    display: grid !important;
+    place-items: center !important;
+    flex: 0 0 31px !important;
+    width: 31px !important;
+    height: 29px !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 7px !important;
+    background: #FFFFFF !important;
+    color: #292929 !important;
+    font-size: 18px !important;
+    font-weight: 400 !important;
+    line-height: 1 !important;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+#slk-extension-settings .slk-stepper button:disabled {
+    opacity: .35 !important;
+    cursor: not-allowed;
+}
+#slk-extension-settings .slk-stepper output {
+    flex: 1 1 auto;
+    min-width: 39px;
+    text-align: center;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    font-size: 14px;
+    font-weight: 700;
+}
+#slk-extension-settings .slk-color-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+#slk-extension-settings input#slk-dialogue-color-picker {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    flex: 0 0 38px !important;
+    width: 38px !important;
+    height: 38px !important;
+    padding: 3px !important;
+    margin: 0 !important;
+    border: 1px solid #D9D9D9 !important;
+    border-radius: 9px !important;
+    background: transparent !important;
+    cursor: pointer;
+}
+#slk-extension-settings input#slk-dialogue-color-picker::-webkit-color-swatch-wrapper { padding: 0; }
+#slk-extension-settings input#slk-dialogue-color-picker::-webkit-color-swatch { border: 0; border-radius: 5px; }
+#slk-extension-settings input#slk-dialogue-hex {
+    flex: 1 1 90px !important;
+    width: 100px !important;
+    min-width: 65px !important;
+    max-width: none !important;
+    height: 38px !important;
+    min-height: 0 !important;
+    padding: 7px 10px !important;
+    margin: 0 !important;
+    border: 1px solid #D9D9D9 !important;
+    border-radius: 9px !important;
+    box-sizing: border-box;
+    background: transparent !important;
+    color: inherit !important;
+    font-size: 14px !important;
+    line-height: normal !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
+    text-transform: uppercase;
+}
+#slk-extension-settings input#slk-dialogue-hex.slk-input-invalid { border-color: #D44A4A !important; }
+#slk-extension-settings .slk-preference-button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto;
+    min-width: 0;
+    min-height: 34px !important;
+    padding: 6px 10px !important;
+    margin: 0 !important;
+    border: 1px solid #D9D9D9 !important;
+    border-radius: 9px !important;
+    background: transparent !important;
+    color: inherit !important;
+    font: inherit !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+#slk-extension-settings .slk-preference-button[hidden] { display: none !important; }
+#slk-extension-settings .slk-preference-hint {
+    color: #888;
+    font-size: 12px;
+    line-height: 1.45;
+    margin: 7px 0 0;
+}
+#slk-extension-settings .slk-header-image-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 5px;
+    margin-bottom: 12px;
+}
+#slk-extension-settings .slk-header-image-options label {
+    min-width: 0;
+    display: flex;
+    cursor: pointer;
+}
+#slk-extension-settings .slk-header-image-options input {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+#slk-extension-settings .slk-header-image-options span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 36px;
+    border: 1px solid #D9D9D9;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.1;
+}
+#slk-extension-settings .slk-header-image-options input:checked + span {
+    border-color: #4A154B;
+    color: #4A154B;
+    background: #F2EAF3;
+}
+#slk-extension-settings .slk-header-image-options input:focus-visible + span,
+#slk-extension-settings .slk-preference-button:focus-visible,
+#slk-extension-settings .slk-stepper button:focus-visible {
+    outline: 2px solid #7A3A82 !important;
+    outline-offset: 2px;
+}
+#slk-extension-settings .slk-avatar-setting-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+#slk-extension-settings #slk-avatar-preview {
+    flex: 0 0 50px;
+    width: 50px !important;
+    height: 50px !important;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #E1E1E1;
+    background: #FFFFFF;
+}
+#slk-extension-settings .slk-avatar-setting-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+}
+#slk-extension-settings .slk-visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+}
+body.slk-ui.slk-dark #slk-extension-settings .slk-stepper button {
+    background: #3C3C3F !important;
+    color: #FFFFFF !important;
+}
+body.slk-ui.slk-dark #slk-extension-settings .slk-header-image-options input:checked + span {
+    color: #FFFFFF;
+    background: #5A2C60;
+    border-color: #96629B;
+}
+
+#slk-extension-settings .slk-avatar-file-input {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+}
