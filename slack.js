@@ -2064,89 +2064,57 @@ else init();
     else start();
 })();
 
-// v1.4.61 — 확장이 메시지 이름 줄에 끼워 넣은 버튼을 ⋯ ✎ 버튼 묶음 안으로 옮김
-// (따로 떨어져 이름과 겹치거나 혼자 동떨어지지 않게)
+// v1.4.81 — 메시지의 실제 아이콘 버튼만 수집합니다.
+// 텍스트 정보·아이콘 없는 컨테이너를 버튼으로 오인해 빈 슬롯을 만드는 문제 방지.
 (function slkAdoptForeignMesButtons() {
-    const KNOWN = '.name_text, .mes_ghost, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_buttons, .mes_edit_buttons, .flex-container, .alignItemsBaseline';
-    const AVATAR_KNOWN = '.avatar, .mesIDDisplay, .mes_timer, .tokenCounterDisplay';
-    const adopt = (mes) => {
-        const ch = mes.querySelector(':scope .ch_name');
-        const box = ch?.querySelector(':scope > .mes_buttons');
-        if (!ch || !box) return;
-        // 프사 묶음 안에 확장이 넣은 버튼(↻ 등)도 버튼 묶음으로
-        mes.querySelectorAll(':scope > .mesAvatarWrapper > *').forEach(el => {
-            if (el.matches(AVATAR_KNOWN) || el.dataset.slkAdopted) return;
-            el.dataset.slkAdopted = '1';
-            el.classList.add('slk-adopted-btn');
-            box.insertBefore(el, box.firstChild);
-        });
-        // .mes 바로 아래에 붙은 작은 버튼(아이콘만 있는 것)도
-        mes.querySelectorAll(':scope > :is(.mes_button, [class*="fa-"], button)').forEach(el => {
-            if (el.matches('.swipe_left, .swipeRightBlock, .del_checkbox, .for_checkbox') || el.dataset.slkAdopted) return;
-            if ((el.textContent || '').trim().length > 2) return;
-            el.dataset.slkAdopted = '1';
-            el.classList.add('slk-adopted-btn');
-            box.insertBefore(el, box.firstChild);
-        });
-        const cands = [
-            ...ch.querySelectorAll(':scope > *'),
-            ...ch.querySelectorAll(':scope > .flex-container > *'),
-            ...ch.querySelectorAll(':scope .alignItemsBaseline > *'),
+    const NON_ACTION = '.avatar, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .timestamp, .name_text, .mes_ghost, .mes_buttons, .mes_edit_buttons, .ch_name, .swipe_left, .swipeRightBlock, .del_checkbox, .for_checkbox, .flex-container, .alignItemsBaseline';
+    const isIconAction = el => {
+        if (!el || el.matches(NON_ACTION) || el.closest('.mes_buttons, .mes_edit_buttons')) return false;
+        if (el.matches('[aria-hidden="true"], [hidden], .displayNone')) return false;
+        if (el.matches('input, textarea, select, label, a:not([role="button"])')) return false;
+        if ((el.textContent || '').trim().length > 2) return false;
+        // 다른 확장의 새로고침 등은 fa- 아이콘, SVG, 이미지, 버튼 형식 중 하나입니다.
+        if (!el.matches('.mes_button, .menu_button, button, [role="button"], [class*="fa-"]') &&
+            !el.querySelector('svg, img, i, [class*="fa-"]')) return false;
+        const css = getComputedStyle(el);
+        return css.display !== 'none' && css.visibility !== 'hidden';
+    };
+    const adopt = mes => {
+        const name = mes.querySelector(':scope .ch_name');
+        const box = name?.querySelector(':scope > .mes_buttons');
+        if (!box) return;
+        const candidates = [
+            ...mes.querySelectorAll(':scope > .mesAvatarWrapper > *'),
+            ...mes.querySelectorAll(':scope > .mes_button, :scope > button, :scope > [class*="fa-"]'),
+            ...name.querySelectorAll(':scope > *, :scope > .flex-container > *, :scope > .flex-container > .alignItemsBaseline > *'),
         ];
-        cands.forEach(el => {
-            if (el.matches(KNOWN) || el.closest('.mes_buttons, .mes_edit_buttons') !== null && el.closest('.mes_buttons, .mes_edit_buttons') !== el) return;
-            if (el.matches(KNOWN)) return;
-            if (el.dataset.slkAdopted) return;
+        for (const el of new Set(candidates)) {
+            if (!isIconAction(el) || el.dataset.slkAdopted) continue;
             el.dataset.slkAdopted = '1';
             el.classList.add('slk-adopted-btn');
             box.insertBefore(el, box.firstChild);
-        });
+        }
     };
     const run = () => {
         if (!document.body?.classList.contains('slk-ui')) return;
+        if (!window.matchMedia('(max-width: 1000px)').matches) return;
         document.querySelectorAll('#chat .mes').forEach(adopt);
     };
-    let t = null;
-    const schedule = () => { if (!t) t = setTimeout(() => { t = null; run(); }, 120); };
+    let pending = null;
+    const schedule = () => { if (pending === null) pending = setTimeout(() => {pending = null; run();}, 100); };
     const start = () => {
         const chat = document.getElementById('chat');
         if (!chat) { setTimeout(start, 500); return; }
         run();
-        new MutationObserver(schedule).observe(chat, { childList: true, subtree: true });
+        new MutationObserver(schedule).observe(chat, {childList:true, subtree:true});
+        document.addEventListener('click', e => {
+            if (!e.target.closest?.('#chat .extraMesButtonsHint')) return;
+            run();
+            setTimeout(run, 50);
+        }, true);
     };
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
     else start();
-})();
-
-// v1.4.63 — ⋯ 펼칠 때 확장 아이콘(↻ 등)이 어디에 붙어 있든 버튼 묶음 맨 앞으로 모음
-(function slkGatherOnExpand() {
-    const gather = (mes) => {
-        const box = mes.querySelector('.ch_name > .mes_buttons');
-        if (!box) return;
-        const extra = box.querySelector('.extraMesButtons');
-        // ch_name 안·프사 안·mes_block 바로 아래의 작은 아이콘 요소
-        const pool = [
-            ...mes.querySelectorAll(':scope > .mesAvatarWrapper > :not(.avatar):not(.mesIDDisplay):not(.mes_timer):not(.tokenCounterDisplay)'),
-            ...mes.querySelectorAll(':scope .ch_name > :not(.mes_buttons):not(.mes_edit_buttons):not(.flex-container)'),
-            ...mes.querySelectorAll(':scope .ch_name > .flex-container > :not(.alignItemsBaseline)'),
-            ...mes.querySelectorAll(':scope .ch_name .alignItemsBaseline > :not(.name_text):not(.mes_ghost):not(.timestamp)'),
-        ];
-        pool.forEach(el => {
-            // Metadata is not an action. Moving it to the icon toolbar creates
-            // invisible 30px flex items when its visibility is hidden on expand.
-            if (el.matches('.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost')) return;
-            if (el.closest('.mes_buttons')) return;
-            el.classList.add('slk-adopted-btn');
-            el.dataset.slkAdopted = '1';
-            box.insertBefore(el, extra || box.firstChild);
-        });
-    };
-    document.addEventListener('click', (e) => {
-        const hint = e.target.closest?.('#chat .extraMesButtonsHint');
-        if (!hint) return;
-        const mes = hint.closest('.mes');
-        if (mes) { gather(mes); setTimeout(() => gather(mes), 50); setTimeout(() => gather(mes), 300); }
-    }, true);
 })();
 
 // v1.4.69 — 열린 메시지 메뉴의 실제 버튼들을 한 컨테이너에 모으고,
@@ -2200,27 +2168,33 @@ else init();
             }
         }
         for (const el of tail) extra.appendChild(el);
-        // 외부 확장이 만든 빈 래퍼에는 아이콘이 없어도 크기만 남을 수 있습니다.
-        // 글자·SVG·이미지·실제 pseudo-icon이 없는 경우에만 빈 슬롯으로 처리합니다.
-        const hasGlyph = (el) => {
-            if ((el.textContent || '').trim()) return true;
-            if (el.querySelector('svg, img, i, [class*="fa-"]')) return true;
-            const style = getComputedStyle(el);
-            if (style.backgroundImage !== 'none' || style.maskImage !== 'none' || style.webkitMaskImage !== 'none') return true;
+        // 화면에 보이지 않는 보조 요소와 ST의 숨김 액션은 레이아웃에 참여하지 않습니다.
+        // 확장 버튼 다음에는 ST의 실제 액션을 붙이고, 외부 보조 요소는 뒤로 보냅니다.
+        const native = el => el.classList.contains('mes_button') || el.classList.contains('mes_edit');
+        const hasVisibleIcon = el => {
+            if (el.querySelector('svg, img')) return true;
+            if ([...el.querySelectorAll('i, [class*="fa-"]')].some(node => {
+                const cs = getComputedStyle(node);
+                return cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0';
+            })) return true;
             const before = getComputedStyle(el, '::before');
-            const content = before.content || '';
-            if (content !== 'none' && content !== 'normal' && content !== '""' && content !== "''" && content !== '') return true;
-            return before.backgroundImage !== 'none' || before.maskImage !== 'none' || before.webkitMaskImage !== 'none';
+            if (before.display === 'none' || before.visibility === 'hidden' || before.opacity === '0') return false;
+            const pseudo = before.content;
+            const image = before.backgroundImage !== 'none' || before.maskImage !== 'none' || before.webkitMaskImage !== 'none';
+            return image || (pseudo && pseudo !== 'none' && pseudo !== 'normal' && pseudo !== '""' && pseudo !== "''");
         };
         for (const el of extra.children) {
-            // Invisible (but laid-out) actions create empty 30px slots. Check
-            // visibility as well as whether the element draws any icon.
-            const computed = getComputedStyle(el);
-            if (computed.visibility === 'hidden' || computed.opacity === '0') {
-                el.classList.add('slk-flow-hidden');
-            } else if (computed.display !== 'none') {
-                el.classList.toggle('slk-action-noicon', !hasGlyph(el));
-            }
+            // 남아 있는 직접 추가 요소 중 텍스트/메타데이터는 제외합니다.
+            const dataOnly = el.matches('.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost, [aria-hidden="true"]');
+            const css = getComputedStyle(el);
+            const intentionallyHidden = el.hidden || el.style.display === 'none' || el.style.visibility === 'hidden' ||
+                el.style.opacity === '0' || (css.visibility === 'hidden') || (css.opacity === '0');
+            const action = native(el) || el.matches('button, [role="button"], .slk-adopted-btn') || el.querySelector('svg, i, img, [class*="fa-"]');
+            const show = !dataOnly && !intentionallyHidden && action && hasVisibleIcon(el);
+            el.classList.toggle('slk-action-noicon', !show);
+            // inline display:none인 기본 ST 액션은 나중에 나타날 수 있으므로 별도 상태를 저장하지 않습니다.
+            // 모든 기본/확장 버튼은 정해진 순서대로 나열하며, 보조 요소는 자리 없이 숨깁니다.
+
         }
     }
 
