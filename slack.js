@@ -3064,3 +3064,171 @@ else init();
     else prepare();
     window.addEventListener('slk-ui-settings-changed', prepare);
 })();
+
+
+// v1.6.7 — Prompt editor runtime stabilization.
+// SillyTavern, Select2 and third-party themes can change inline layout after
+// the initial render. Work on the real native controls, never clone them, and
+// preserve SillyTavern's own save/reset/cancel listeners.
+(function slkStabilizePromptEditor() {
+    const id = 'completion_prompt_manager_popup';
+    const prefix = 'completion_prompt_manager_popup_entry_form_';
+    const set = (element, property, value) => {
+        if (!element) return;
+        if (element.style.getPropertyValue(property) !== value || element.style.getPropertyPriority(property) !== 'important') {
+            element.style.setProperty(property, value, 'important');
+        }
+    };
+    const select = (parent, query) => parent?.querySelector(query);
+    let scheduled = false;
+    const fix = () => {
+        scheduled = false;
+        if (!document.body.classList.contains('slk-ui')) return;
+        const popup = document.getElementById(id);
+        const edit = select(popup, '#completion_prompt_manager_popup_edit');
+        if (!edit) return;
+
+        // Headline: pad the H3 itself, not a conditional child injected by JS.
+        const heading = select(edit, ':scope > h3');
+        set(heading, 'box-sizing', 'border-box');
+        set(heading, 'padding-left', '24px');
+        set(heading, 'padding-right', '24px');
+        set(heading, 'text-indent', '0px');
+        const headingText = select(heading, '.slk-prompt-heading-text');
+        set(headingText, 'margin-left', '0px');
+        set(headingText, 'margin-right', '0px');
+
+        const form = select(edit, '.completion_prompt_manager_popup_entry_form');
+        const footer = select(form, ':scope > .completion_prompt_manager_popup_entry_form_footer');
+        if (!form || !footer) return;
+        let fields = select(form, ':scope > .slk-prompt-form-fields');
+        if (!fields) {
+            fields = document.createElement('div');
+            fields.className = 'slk-prompt-form-fields';
+            while (form.firstChild && form.firstChild !== footer) fields.appendChild(form.firstChild);
+            form.insertBefore(fields, footer);
+        }
+        // Explicit flow layout: never allow the prompt field to stretch vertically.
+        set(fields, 'display', 'block');
+        set(fields, 'flex', '1 1 auto');
+        set(fields, 'min-height', '0px');
+        set(fields, 'height', 'auto');
+        set(fields, 'overflow-y', 'auto');
+        set(fields, 'overflow-x', 'hidden');
+
+        const rows = Array.from(fields.children).filter(e => e.classList.contains('flex-container') && e.classList.contains('gap10px'));
+        for (const row of rows) {
+            set(row, 'display', 'grid');
+            set(row, 'grid-template-columns', window.matchMedia('(max-width: 520px)').matches ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))');
+            set(row, 'align-content', 'start');
+            set(row, 'align-items', 'start');
+            set(row, 'flex', '0 0 auto');
+            set(row, 'height', 'auto');
+            set(row, 'min-height', '0px');
+            set(row, 'margin-top', '0px');
+            set(row, 'margin-bottom', '16px');
+            set(row, 'gap', '16px');
+            for (const ctrl of row.children) {
+                if (!ctrl.classList.contains('completion_prompt_manager_popup_entry_form_control')) continue;
+                if (ctrl.matches('#completion_prompt_manager_depth_block, #completion_prompt_manager_order_block') &&
+                    (ctrl.getAttribute('style')?.includes('display: none') || ctrl.getAttribute('style')?.includes('display:none'))) {
+                    // Native toggles manage whether these fields are shown.
+                    continue;
+                }
+                set(ctrl, 'flex', '0 0 auto');
+                set(ctrl, 'min-height', '0px');
+                set(ctrl, 'height', 'auto');
+            }
+        }
+        if (rows[0]) {
+            const triggerControl = select(rows[0], ':scope > .completion_prompt_manager_popup_entry_form_control:has(#completion_prompt_manager_popup_entry_form_injection_trigger)');
+            set(triggerControl, 'grid-column', '1 / -1');
+        }
+        if (rows[1]) {
+            const positionControl = select(rows[1], ':scope > .completion_prompt_manager_popup_entry_form_control:has(#completion_prompt_manager_popup_entry_form_injection_position)');
+            set(positionControl, 'grid-column', '1 / -1');
+        }
+        const prompt = select(fields, '#' + prefix + 'prompt');
+        const promptControl = prompt?.closest('.completion_prompt_manager_popup_entry_form_control');
+        if (promptControl) {
+            set(promptControl, 'display', 'flex');
+            set(promptControl, 'flex-direction', 'column');
+            set(promptControl, 'flex', '0 0 auto');
+            set(promptControl, 'height', 'auto');
+            set(promptControl, 'min-height', '0px');
+            set(promptControl, 'margin-top', '0px');
+            set(promptControl, 'padding-top', '0px');
+            set(promptControl, 'justify-content', 'flex-start');
+            set(promptControl, 'gap', '8px');
+            // Ensure the prompt field is directly after the position/depth row.
+            const after = rows[1];
+            if (after && promptControl.previousElementSibling !== after) after.insertAdjacentElement('afterend', promptControl);
+        }
+        set(prompt, 'display', 'block');
+        set(prompt, 'flex', '0 0 auto');
+        set(prompt, 'height', 'clamp(240px, 38vh, 420px)');
+        set(prompt, 'min-height', '220px');
+
+        // Real Select2 multiple selection, including its dynamically inserted
+        // search textarea. In particular remove ST/theme right alignment.
+        const trigger = select(edit, '#' + prefix + 'injection_trigger');
+        const triggerControl = trigger?.closest('.completion_prompt_manager_popup_entry_form_control');
+        const select2 = select(triggerControl, '.select2-container');
+        if (select2) {
+            set(trigger, 'display', 'none');
+            set(select2, 'display', 'block');
+            set(select2, 'width', '100%');
+            set(select2, 'min-width', '0px');
+            set(select2, 'text-align', 'left');
+            for (const e of select2.querySelectorAll('.selection, .select2-selection, .select2-selection__rendered, .select2-search, .select2-search--inline')) {
+                set(e, 'float', 'none');
+                set(e, 'text-align', 'left');
+                set(e, 'direction', 'ltr');
+                set(e, 'justify-content', 'flex-start');
+                set(e, 'align-items', 'center');
+                set(e, 'min-width', '0px');
+                if (e.classList.contains('select2-selection__rendered')) {
+                    set(e, 'display', 'flex');
+                    set(e, 'flex-wrap', 'wrap');
+                    set(e, 'width', '100%');
+                }
+                if (e.classList.contains('select2-search') || e.classList.contains('select2-search--inline')) {
+                    set(e, 'display', 'block');
+                    set(e, 'width', '100%');
+                    set(e, 'flex', '1 1 100%');
+                }
+            }
+            for (const e of select2.querySelectorAll('.select2-search__field')) {
+                set(e, 'width', '100%');
+                set(e, 'min-width', '0px');
+                set(e, 'max-width', '100%');
+                set(e, 'display', 'block');
+                set(e, 'text-align', 'left');
+                set(e, 'text-indent', '0px');
+                set(e, 'direction', 'ltr');
+                set(e, 'margin-left', '0px');
+                set(e, 'margin-right', '0px');
+                set(e, 'padding-left', '0px');
+            }
+        }
+    };
+    const schedule = () => {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(fix);
+    };
+    const observe = () => {
+        const popup = document.getElementById(id);
+        if (!popup) return;
+        // Reapply when ST opens the popup / replaces Select2's input.
+        new MutationObserver(schedule).observe(popup, {
+            attributes: true, attributeFilter: ['class'], childList: true, subtree: true,
+        });
+        popup.addEventListener('click', schedule, true);
+        schedule();
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observe, { once: true });
+    else observe();
+    window.addEventListener('slk-ui-settings-changed', schedule);
+    window.addEventListener('resize', schedule);
+})();

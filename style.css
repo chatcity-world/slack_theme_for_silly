@@ -18627,7 +18627,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     html body.slk-ui.slk-pc { --pc-panel: 360px; }
     html body.slk-ui.slk-pc #slk-pc-search { width: min(520px, calc(100vw - 300px)); }
 }
-:root { --slk-css-version: '1.6.4'; }
+:root { --slk-css-version: '1.6.7'; }
 
 
 /* ===============================================================
@@ -19279,5 +19279,34 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     max-width: calc(100vw - 48px) !important;
     height: calc(100dvh - 110px) !important;
     max-height: calc(100dvh - 110px) !important;
+  }
+}
+
+/* v1.6.7 prompt editor — native heading padding and Select2 intrinsic width.
+   JS independently enforces critical layout when another ST theme overrides CSS. */
+@media screen {
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit > h3 {
+    padding: 0 24px !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit > h3 .slk-prompt-heading-text {
+    margin-inline: 0 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-form-fields > .completion_prompt_manager_popup_entry_form_control {
+    flex: 0 0 auto !important;
+    justify-content: flex-start !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__rendered,
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-search--inline {
+    text-align: left !important;
+    direction: ltr !important;
+    justify-content: flex-start !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-search__field {
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: left !important;
+    text-indent: 0 !important;
   }
 }
