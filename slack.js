@@ -3066,169 +3066,160 @@ else init();
 })();
 
 
-// v1.6.7 — Prompt editor runtime stabilization.
-// SillyTavern, Select2 and third-party themes can change inline layout after
-// the initial render. Work on the real native controls, never clone them, and
-// preserve SillyTavern's own save/reset/cancel listeners.
-(function slkStabilizePromptEditor() {
-    const id = 'completion_prompt_manager_popup';
+// v1.6.8 — Native SillyTavern prompt editor: compact, responsive rows.
+// Reuses the native inputs and listeners; it does not replace prompt data or save behavior.
+(function slkCompactNativePromptEditor() {
+    const popupId = 'completion_prompt_manager_popup';
     const prefix = 'completion_prompt_manager_popup_entry_form_';
-    const set = (element, property, value) => {
-        if (!element) return;
-        if (element.style.getPropertyValue(property) !== value || element.style.getPropertyPriority(property) !== 'important') {
-            element.style.setProperty(property, value, 'important');
-        }
-    };
-    const select = (parent, query) => parent?.querySelector(query);
+    const controlSelector = '.completion_prompt_manager_popup_entry_form_control';
     let scheduled = false;
+    let popupObserver = null;
+    let watchedPopup = null;
+
+    const nativeControl = (fields, suffix, labelPattern) => {
+        const input = fields.querySelector('#' + prefix + suffix);
+        if (input) return input.closest(controlSelector) || input;
+        if (!labelPattern) return null;
+        return [...fields.querySelectorAll(controlSelector)].find(node =>
+            labelPattern.test(node.querySelector('label')?.textContent?.trim() || '')
+        ) || null;
+    };
+    const blockControl = (fields, blockId, labelPattern) => {
+        const block = fields.querySelector('#' + blockId);
+        return { block, control: (block?.closest(controlSelector) || block ||
+            [...fields.querySelectorAll(controlSelector)].find(node =>
+                labelPattern.test(node.querySelector('label')?.textContent?.trim() || '')
+            ) || null) };
+    };
+    const isNativeHidden = (block, control) => [block, control].some(el =>
+        el && (el.hidden || el.style.display === 'none' ||
+            el.classList.contains('displayNone') || el.classList.contains('hidden'))
+    );
+    const ensure = (parent, className) => {
+        let node = parent.querySelector(':scope > .' + className);
+        if (!node) {
+            node = document.createElement('div');
+            node.className = className;
+            parent.appendChild(node);
+        }
+        return node;
+    };
+    const moveNative = (node, parent) => {
+        if (node && node.parentElement !== parent) parent.appendChild(node);
+    };
+
     const fix = () => {
         scheduled = false;
         if (!document.body.classList.contains('slk-ui')) return;
-        const popup = document.getElementById(id);
-        const edit = select(popup, '#completion_prompt_manager_popup_edit');
-        if (!edit) return;
+        const popup = document.getElementById(popupId);
+        const edit = popup?.querySelector('#completion_prompt_manager_popup_edit');
+        const heading = edit?.querySelector(':scope > h3');
+        const form = edit?.querySelector('.completion_prompt_manager_popup_entry_form');
+        const footer = form?.querySelector(':scope > .completion_prompt_manager_popup_entry_form_footer');
+        if (!edit || !form || !footer) return;
 
-        // Headline: pad the H3 itself, not a conditional child injected by JS.
-        const heading = select(edit, ':scope > h3');
-        set(heading, 'box-sizing', 'border-box');
-        set(heading, 'padding-left', '24px');
-        set(heading, 'padding-right', '24px');
-        set(heading, 'text-indent', '0px');
-        const headingText = select(heading, '.slk-prompt-heading-text');
-        set(headingText, 'margin-left', '0px');
-        set(headingText, 'margin-right', '0px');
-
-        const form = select(edit, '.completion_prompt_manager_popup_entry_form');
-        const footer = select(form, ':scope > .completion_prompt_manager_popup_entry_form_footer');
-        if (!form || !footer) return;
-        let fields = select(form, ':scope > .slk-prompt-form-fields');
+        // Retain the heading content and give it a real inset, not a visual indent.
+        if (heading && !heading.querySelector(':scope > .slk-prompt-heading-text')) {
+            const label = document.createElement('span');
+            label.className = 'slk-prompt-heading-text';
+            while (heading.firstChild) label.appendChild(heading.firstChild);
+            heading.appendChild(label);
+        }
+        let fields = form.querySelector(':scope > .slk-prompt-form-fields');
         if (!fields) {
             fields = document.createElement('div');
             fields.className = 'slk-prompt-form-fields';
             while (form.firstChild && form.firstChild !== footer) fields.appendChild(form.firstChild);
             form.insertBefore(fields, footer);
         }
-        // Explicit flow layout: never allow the prompt field to stretch vertically.
-        set(fields, 'display', 'block');
-        set(fields, 'flex', '1 1 auto');
-        set(fields, 'min-height', '0px');
-        set(fields, 'height', 'auto');
-        set(fields, 'overflow-y', 'auto');
-        set(fields, 'overflow-x', 'hidden');
+        for (const [suffix, label] of [['close', '취소'], ['reset', '초기화'], ['save', '저장']]) {
+            const button = footer.querySelector('#' + prefix + suffix);
+            if (button && button.dataset.slkActionLabel !== label) {
+                button.dataset.slkActionLabel = label;
+                button.setAttribute('aria-label', label);
+            }
+        }
 
-        const rows = Array.from(fields.children).filter(e => e.classList.contains('flex-container') && e.classList.contains('gap10px'));
-        for (const row of rows) {
-            set(row, 'display', 'grid');
-            set(row, 'grid-template-columns', window.matchMedia('(max-width: 520px)').matches ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))');
-            set(row, 'align-content', 'start');
-            set(row, 'align-items', 'start');
-            set(row, 'flex', '0 0 auto');
-            set(row, 'height', 'auto');
-            set(row, 'min-height', '0px');
-            set(row, 'margin-top', '0px');
-            set(row, 'margin-bottom', '16px');
-            set(row, 'gap', '16px');
-            for (const ctrl of row.children) {
-                if (!ctrl.classList.contains('completion_prompt_manager_popup_entry_form_control')) continue;
-                if (ctrl.matches('#completion_prompt_manager_depth_block, #completion_prompt_manager_order_block') &&
-                    (ctrl.getAttribute('style')?.includes('display: none') || ctrl.getAttribute('style')?.includes('display:none'))) {
-                    // Native toggles manage whether these fields are shown.
-                    continue;
-                }
-                set(ctrl, 'flex', '0 0 auto');
-                set(ctrl, 'min-height', '0px');
-                set(ctrl, 'height', 'auto');
-            }
-        }
-        if (rows[0]) {
-            const triggerControl = select(rows[0], ':scope > .completion_prompt_manager_popup_entry_form_control:has(#completion_prompt_manager_popup_entry_form_injection_trigger)');
-            set(triggerControl, 'grid-column', '1 / -1');
-        }
-        if (rows[1]) {
-            const positionControl = select(rows[1], ':scope > .completion_prompt_manager_popup_entry_form_control:has(#completion_prompt_manager_popup_entry_form_injection_position)');
-            set(positionControl, 'grid-column', '1 / -1');
-        }
-        const prompt = select(fields, '#' + prefix + 'prompt');
-        const promptControl = prompt?.closest('.completion_prompt_manager_popup_entry_form_control');
-        if (promptControl) {
-            set(promptControl, 'display', 'flex');
-            set(promptControl, 'flex-direction', 'column');
-            set(promptControl, 'flex', '0 0 auto');
-            set(promptControl, 'height', 'auto');
-            set(promptControl, 'min-height', '0px');
-            set(promptControl, 'margin-top', '0px');
-            set(promptControl, 'padding-top', '0px');
-            set(promptControl, 'justify-content', 'flex-start');
-            set(promptControl, 'gap', '8px');
-            // Ensure the prompt field is directly after the position/depth row.
-            const after = rows[1];
-            if (after && promptControl.previousElementSibling !== after) after.insertAdjacentElement('afterend', promptControl);
-        }
-        set(prompt, 'display', 'block');
-        set(prompt, 'flex', '0 0 auto');
-        set(prompt, 'height', 'clamp(240px, 38vh, 420px)');
-        set(prompt, 'min-height', '220px');
+        const name = nativeControl(fields, 'name', /^(이름|Name)$/i);
+        const role = nativeControl(fields, 'role', /^(역할|Role)$/i);
+        const triggers = nativeControl(fields, 'injection_trigger', /^Triggers?$/i);
+        const position = nativeControl(fields, 'injection_position', /^(위치|Position)$/i);
+        const depth = blockControl(fields, 'completion_prompt_manager_depth_block', /^(깊이|Depth)$/i);
+        const order = blockControl(fields, 'completion_prompt_manager_order_block', /^(오더|순서|Order)$/i);
+        if (!name && !role && !triggers && !position) return;
 
-        // Real Select2 multiple selection, including its dynamically inserted
-        // search textarea. In particular remove ST/theme right alignment.
-        const trigger = select(edit, '#' + prefix + 'injection_trigger');
-        const triggerControl = trigger?.closest('.completion_prompt_manager_popup_entry_form_control');
-        const select2 = select(triggerControl, '.select2-container');
-        if (select2) {
-            set(trigger, 'display', 'none');
-            set(select2, 'display', 'block');
-            set(select2, 'width', '100%');
-            set(select2, 'min-width', '0px');
-            set(select2, 'text-align', 'left');
-            for (const e of select2.querySelectorAll('.selection, .select2-selection, .select2-selection__rendered, .select2-search, .select2-search--inline')) {
-                set(e, 'float', 'none');
-                set(e, 'text-align', 'left');
-                set(e, 'direction', 'ltr');
-                set(e, 'justify-content', 'flex-start');
-                set(e, 'align-items', 'center');
-                set(e, 'min-width', '0px');
-                if (e.classList.contains('select2-selection__rendered')) {
-                    set(e, 'display', 'flex');
-                    set(e, 'flex-wrap', 'wrap');
-                    set(e, 'width', '100%');
-                }
-                if (e.classList.contains('select2-search') || e.classList.contains('select2-search--inline')) {
-                    set(e, 'display', 'block');
-                    set(e, 'width', '100%');
-                    set(e, 'flex', '1 1 100%');
-                }
-            }
-            for (const e of select2.querySelectorAll('.select2-search__field')) {
-                set(e, 'width', '100%');
-                set(e, 'min-width', '0px');
-                set(e, 'max-width', '100%');
-                set(e, 'display', 'block');
-                set(e, 'text-align', 'left');
-                set(e, 'text-indent', '0px');
-                set(e, 'direction', 'ltr');
-                set(e, 'margin-left', '0px');
-                set(e, 'margin-right', '0px');
-                set(e, 'padding-left', '0px');
-            }
+        let layout = fields.querySelector(':scope > .slk-prompt-layout');
+        if (!layout) {
+            layout = document.createElement('div');
+            layout.className = 'slk-prompt-layout';
+            fields.insertBefore(layout, fields.firstChild);
         }
+        const nameRow = ensure(layout, 'slk-prompt-name-row');
+        const roleRow = ensure(layout, 'slk-prompt-role-trigger-row');
+        const posRow = ensure(layout, 'slk-prompt-position-row');
+        for (const [node, parent] of [[name, nameRow], [role, roleRow], [triggers, roleRow],
+            [position, posRow], [depth.control, posRow], [order.control, posRow]]) {
+            moveNative(node, parent);
+        }
+
+        // ST controls whether Depth/Order exist for the selected position.
+        // Hide their *whole* column when native ST sets display:none, and
+        // restore it when position switches to '깊이에 따라'.
+        for (const { block, control } of [depth, order]) {
+            if (control) control.classList.toggle('slk-prompt-native-hidden', isNativeHidden(block, control));
+        }
+        posRow.classList.toggle('slk-prompt-has-depth', [depth, order].some(({block, control}) =>
+            control && !isNativeHidden(block, control)));
+
+        // The original ST flex wrappers remain in the DOM, but never take up
+        // unused vertical space after their controls have moved into our rows.
+        for (const row of fields.querySelectorAll(':scope > .flex-container.gap10px')) {
+            const hasControls = row.querySelector(controlSelector);
+            const hasOtherContent = [...row.children].some(el => !el.matches(controlSelector) &&
+                (el.textContent?.trim() || el.children.length));
+            row.classList.toggle('slk-prompt-empty-native-row', !hasControls && !hasOtherContent);
+        }
+
+        // Place the native prompt body immediately after the compact controls.
+        const prompt = fields.querySelector('#' + prefix + 'prompt');
+        const promptControl = prompt?.closest(controlSelector);
+        if (promptControl && promptControl.parentElement === fields &&
+            promptControl.previousElementSibling !== layout) {
+            layout.insertAdjacentElement('afterend', promptControl);
+        }
+
+        // Do not reveal Select2's hidden backing <select> or tamper with its
+        // values. Use the existing Select2 widget and its normal events.
     };
     const schedule = () => {
         if (scheduled) return;
         scheduled = true;
         requestAnimationFrame(fix);
     };
-    const observe = () => {
-        const popup = document.getElementById(id);
-        if (!popup) return;
-        // Reapply when ST opens the popup / replaces Select2's input.
-        new MutationObserver(schedule).observe(popup, {
-            attributes: true, attributeFilter: ['class'], childList: true, subtree: true,
+    const observePopup = (popup) => {
+        if (watchedPopup === popup) return;
+        popupObserver?.disconnect();
+        watchedPopup = popup;
+        popupObserver = new MutationObserver(schedule);
+        popupObserver.observe(popup, {
+            childList: true, subtree: true, attributes: true,
+            attributeFilter: ['class', 'style', 'hidden'],
         });
+        popup.addEventListener('change', schedule, true);
         popup.addEventListener('click', schedule, true);
         schedule();
     };
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observe, { once: true });
-    else observe();
+    const start = () => {
+        const popup = document.getElementById(popupId);
+        if (popup) { observePopup(popup); return; }
+        const rootObserver = new MutationObserver(() => {
+            const found = document.getElementById(popupId);
+            if (found) { rootObserver.disconnect(); observePopup(found); }
+        });
+        rootObserver.observe(document.body, { childList: true, subtree: true });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
     window.addEventListener('slk-ui-settings-changed', schedule);
     window.addEventListener('resize', schedule);
 })();
