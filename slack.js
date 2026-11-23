@@ -12,17 +12,24 @@ const SLK_UI_SETTINGS = (() => {
         return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
     };
     const color = read('slk-ui-dialogue-color', '').trim();
+    const readInk = (key) => {
+        const candidate = read(key, '').trim();
+        return /^#[0-9a-f]{6}$/i.test(candidate) ? candidate.toUpperCase() : '';
+    };
     const headerImageMode = read('slk-ui-header-image-mode', 'slack');
     return {
         enabled: read('slk-ui-enabled', 'true') !== 'false',
-        theme: read('slk-ui-theme', 'light') === 'dark' ? 'dark' : 'light',
         fontSize: Math.round(clamp(read('slk-ui-font-size', '15'), 15, 11, 26)),
         lineHeight: Math.round(clamp(read('slk-ui-line-height', '1.6'), 1.6, 1.2, 2.4) * 10) / 10,
         letterSpacing: Math.round(clamp(read('slk-ui-letter-spacing', '0'), 0, -1.5, 3) * 10) / 10,
         dialogueColor: /^#[0-9a-f]{6}$/i.test(color) ? color.toUpperCase() : '',
+        narrationInk: readInk('slk-ui-ink-narration'),
+        dialogueInk: readInk('slk-ui-ink-dialogue'),
+        asciiInk: readInk('slk-ui-ink-ascii'),
         headerImageMode: headerImageMode === 'custom' ? 'custom' : 'slack',
     };
 })();
+try { localStorage.removeItem('slk-ui-theme'); } catch { /* old option may not exist */ }
 
 function slkSavePreference(key, value) {
     try { localStorage.setItem(key, String(value)); return true; }
@@ -52,13 +59,20 @@ function slkApplyHeaderImage() {
 
 function applySlackUiSettings() {
     document.body.classList.toggle('slk-ui', SLK_UI_SETTINGS.enabled);
-    document.body.classList.toggle('slk-dark', SLK_UI_SETTINGS.enabled && SLK_UI_SETTINGS.theme === 'dark');
+    document.body.classList.remove('slk-dark'); // Remove any older saved dark-mode class.
     document.body.style.setProperty('--slk-chat-font-size', `${SLK_UI_SETTINGS.fontSize}px`);
     document.body.style.setProperty('--slk-chat-line-height', String(SLK_UI_SETTINGS.lineHeight));
     document.body.style.setProperty('--slk-chat-letter-spacing-adjust', `${SLK_UI_SETTINGS.letterSpacing}px`);
     document.body.classList.toggle('slk-dialogue-custom', Boolean(SLK_UI_SETTINGS.dialogueColor));
     if (SLK_UI_SETTINGS.dialogueColor) document.body.style.setProperty('--slk-dialogue-bg', SLK_UI_SETTINGS.dialogueColor);
     else document.body.style.removeProperty('--slk-dialogue-bg');
+    // The three ink colors are independent. Empty values keep the native theme colors.
+    for (const [pref, slug] of [['narrationInk', 'narration'], ['dialogueInk', 'dialogue'], ['asciiInk', 'ascii']]) {
+        const color = SLK_UI_SETTINGS[pref];
+        document.body.classList.toggle(`slk-ink-${slug}`, Boolean(color));
+        if (color) document.body.style.setProperty(`--slk-ink-${slug}`, color);
+        else document.body.style.removeProperty(`--slk-ink-${slug}`);
+    }
     slkApplyHeaderImage();
     if (!SLK_UI_SETTINGS.enabled) {
         document.body.classList.remove('slk-footer-only-active');
@@ -94,13 +108,6 @@ function buildSlackUiExtensionSettings() {
                         <input type="checkbox" id="slk-enable-toggle" role="switch" aria-label="Slack UI 사용">
                         <span class="slk-setting-switch-track" aria-hidden="true"></span>
                     </label>
-                </div>
-                <div class="slk-settings-row">
-                    <span id="slk-theme-label">테마</span>
-                    <div class="slk-theme-segment" role="radiogroup" aria-labelledby="slk-theme-label">
-                        <label><input type="radio" name="slk-theme" value="light"><span>라이트</span></label>
-                        <label><input type="radio" name="slk-theme" value="dark"><span>슬랙 다크</span></label>
-                    </div>
                 </div>
                 <section class="slk-preference-section" aria-label="채팅 글자 설정">
                     <div class="slk-preference-heading">채팅 텍스트</div>
@@ -149,6 +156,34 @@ function buildSlackUiExtensionSettings() {
                     </div>
                     <div class="slk-preference-hint">기본값은 현재 테마의 대사 배경색입니다.</div>
                 </section>
+                <section class="slk-preference-section" aria-label="채팅 글자색 설정">
+                    <div class="slk-preference-heading">폰트 컬러</div>
+                    <div class="slk-preference-hint">지정하지 않으면 테마의 기존 색상을 유지합니다.</div>
+                    <div class="slk-ink-setting" data-ink="narration" data-pref="narrationInk" data-storage="slk-ui-ink-narration">
+                        <label for="slk-ink-narration-hex">나레이션</label>
+                        <div class="slk-color-row">
+                            <input type="color" id="slk-ink-narration-picker" aria-label="나레이션 글자색 선택">
+                            <input type="text" id="slk-ink-narration-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" aria-label="나레이션 글자색 HEX">
+                            <button type="button" class="slk-preference-button slk-ink-reset" aria-label="나레이션 글자색 초기화">초기화</button>
+                        </div>
+                    </div>
+                    <div class="slk-ink-setting" data-ink="dialogue" data-pref="dialogueInk" data-storage="slk-ui-ink-dialogue">
+                        <label for="slk-ink-dialogue-hex">대사</label>
+                        <div class="slk-color-row">
+                            <input type="color" id="slk-ink-dialogue-picker" aria-label="대사 글자색 선택">
+                            <input type="text" id="slk-ink-dialogue-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" aria-label="대사 글자색 HEX">
+                            <button type="button" class="slk-preference-button slk-ink-reset" aria-label="대사 글자색 초기화">초기화</button>
+                        </div>
+                    </div>
+                    <div class="slk-ink-setting" data-ink="ascii" data-pref="asciiInk" data-storage="slk-ui-ink-ascii">
+                        <label for="slk-ink-ascii-hex">아스키아트</label>
+                        <div class="slk-color-row">
+                            <input type="color" id="slk-ink-ascii-picker" aria-label="아스키아트 글자색 선택">
+                            <input type="text" id="slk-ink-ascii-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" aria-label="아스키아트 글자색 HEX">
+                            <button type="button" class="slk-preference-button slk-ink-reset" aria-label="아스키아트 글자색 초기화">초기화</button>
+                        </div>
+                    </div>
+                </section>
                 <section class="slk-preference-section" aria-label="시작화면 / 헤더 이미지 설정">
                     <div class="slk-preference-heading">시작화면 / 헤더 이미지</div>
                     <div class="slk-header-image-options" role="radiogroup" aria-label="시작화면 / 헤더 이미지 종류">
@@ -190,17 +225,6 @@ function buildSlackUiExtensionSettings() {
         SLK_UI_SETTINGS.enabled = enabledInput.checked;
         try { localStorage.setItem('slk-ui-enabled', String(SLK_UI_SETTINGS.enabled)); } catch { /* localStorage unavailable */ }
         applySlackUiSettings();
-    });
-
-    const themeInputs = container.querySelectorAll('input[name="slk-theme"]');
-    themeInputs.forEach(input => {
-        input.checked = input.value === SLK_UI_SETTINGS.theme;
-        input.addEventListener('change', () => {
-            if (!input.checked) return;
-            SLK_UI_SETTINGS.theme = input.value;
-            try { localStorage.setItem('slk-ui-theme', SLK_UI_SETTINGS.theme); } catch { /* localStorage unavailable */ }
-            applySlackUiSettings();
-        });
     });
 
     // Steppers update the actual chat text, not the settings panel itself.
@@ -267,6 +291,40 @@ function buildSlackUiExtensionSettings() {
     container.querySelector('#slk-dialogue-reset').addEventListener('click', () => setDialogueColor(''));
     syncColorFields();
 
+    // Independent narrative / dialogue / ASCII art ink color pickers and HEX fields.
+    const inkDefaults = { narration: '#1D1C1D', dialogue: '#1D1C1D', ascii: '#1D1C1D' };
+    const inkRows = [...container.querySelectorAll('.slk-ink-setting')];
+    const drawInkFields = (row) => {
+        const pref = row.dataset.pref;
+        const picker = row.querySelector('input[type="color"]');
+        const hex = row.querySelector('input[type="text"]');
+        picker.value = SLK_UI_SETTINGS[pref] || inkDefaults[row.dataset.ink];
+        hex.value = SLK_UI_SETTINGS[pref] || '';
+        hex.classList.remove('slk-input-invalid');
+    };
+    inkRows.forEach(row => {
+        const pref = row.dataset.pref;
+        const picker = row.querySelector('input[type="color"]');
+        const hex = row.querySelector('input[type="text"]');
+        const setInk = value => {
+            SLK_UI_SETTINGS[pref] = value;
+            slkSavePreference(row.dataset.storage, value);
+            drawInkFields(row);
+            applySlackUiSettings();
+        };
+        picker.addEventListener('input', () => setInk(picker.value.toUpperCase()));
+        hex.addEventListener('input', () => {
+            const normalized = normalizeHex(hex.value);
+            hex.classList.toggle('slk-input-invalid', Boolean(hex.value.trim()) && !normalized);
+            if (normalized) setInk(normalized);
+        });
+        hex.addEventListener('blur', () => {
+            if (!hex.value.trim()) setInk('');
+            else drawInkFields(row);
+        });
+        row.querySelector('.slk-ink-reset').addEventListener('click', () => setInk(''));
+        drawInkFields(row);
+    });
     // The registered image is SillyTavern's own logo, already replaced by the user.
     // Never store or require a separate Slack UI upload.
     const modes = container.querySelectorAll('input[name="slk-header-image-mode"]');
@@ -1473,9 +1531,8 @@ else init();
                 ? btn.dataset.drawer === desiredSelector
                 : isFooterDrawerOpen(document.querySelector(btn.dataset.drawer));
             btn.setAttribute('aria-pressed', String(active));
-            const dark = SLK_UI_SETTINGS.theme === 'dark';
-            btn.style.setProperty('background', active ? (dark ? '#3E2941' : '#EFEAF0') : 'transparent', 'important');
-            btn.style.setProperty('color', active ? (dark ? '#F3C8F8' : '#4A154B') : (dark ? '#B1B1B1' : '#616061'), 'important');
+            btn.style.setProperty('background', active ? '#EFEAF0' : 'transparent', 'important');
+            btn.style.setProperty('color', active ? '#4A154B' : '#616061', 'important');
         }
     }
 
@@ -1546,7 +1603,6 @@ else init();
         // Keep an existing footer out of any clipped/transformed body containing block.
         if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);
         // 모바일의 위치·표시를 인라인 !important로 고정. 외부 테마의 선택자보다 우선합니다.
-        const dark = SLK_UI_SETTINGS.theme === 'dark';
         setImportant(footer, {
             'position': 'fixed', 'display': 'flex', 'visibility': 'visible',
             'opacity': '1', 'pointer-events': 'auto', 'box-sizing': 'border-box',
@@ -1557,9 +1613,9 @@ else init();
             'margin': '0', 'padding': '0 6px',
             'align-items': 'center', 'justify-content': 'space-around',
             'flex-direction': 'row', 'overflow': 'visible',
-            'border': dark ? '1px solid rgba(255,255,255,.17)' : '1px solid rgba(255,255,255,.75)',
+            'border': '1px solid rgba(255,255,255,.75)',
             'border-radius': '999px',
-            'background': dark ? 'rgba(30,30,30,.38)' : 'rgba(255,255,255,.22)',
+            'background': 'rgba(255,255,255,.22)',
             'box-shadow': '0 8px 28px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.65)',
             'backdrop-filter': 'blur(14px) saturate(200%)',
             '-webkit-backdrop-filter': 'blur(14px) saturate(200%)',
