@@ -18725,3 +18725,411 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     justify-content: flex-end !important;
   }
 }
+/* ============================================================
+   Slack UI v1.5.11 — desktop three-column layout
+   Original mobile footer and mobile drawers remain untouched.
+   ① 76px workspace icon rail ② 300px native settings sidebar
+   ③ remaining width: live chat, never covered by a settings panel
+   ============================================================ */
+@media screen and (min-width: 1001px) {
+    html body.slk-ui {
+        --slk-pc-top: 52px;
+        --slk-pc-rail: 76px;
+        --slk-pc-sidebar: 76px;
+        --slk-pc-detail: 304px;
+        --slk-pc-open-width: 0px;
+        --slk-pc-gutter: 0px;
+        --topBarBlockSize: 52px !important;
+        background: #FFFFFF !important;
+    }
+    html body.slk-ui.slk-pc-panel-open {
+        --slk-pc-open-width: var(--slk-pc-detail);
+    }
+
+    /* The Slack title bar belongs above both the rail and the conversation. */
+    html body.slk-ui #slk-header {
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: auto !important;
+        width: 100% !important;
+        height: var(--slk-pc-top) !important;
+        min-height: var(--slk-pc-top) !important;
+        padding: 0 18px !important;
+        background: #350D36 !important;
+        color: #FFFFFF !important;
+        border-bottom: 1px solid #4A154B !important;
+        border-radius: 0 !important;
+        z-index: 3050 !important;
+        overflow: visible !important;
+    }
+    html body.slk-ui #slk-header > #slk-ws {
+        flex: 0 1 auto !important;
+        width: auto !important;
+        max-width: min(44vw, 410px) !important;
+        min-width: 0 !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        align-items: center !important;
+        gap: 9px !important;
+        display: flex !important;
+        background: none !important;
+        color: #FFFFFF !important;
+        border: 0 !important;
+    }
+    html body.slk-ui #slk-header #slk-panel-back,
+    html body.slk-ui #slk-header #slk-chat-head,
+    html body.slk-ui #slk-header #slk-chat-back {
+        display: none !important;
+    }
+    html body.slk-ui #slk-header .slk-ws-avatar {
+        width: 30px !important;
+        height: 30px !important;
+        flex: 0 0 30px !important;
+        border-radius: 7px !important;
+    }
+    html body.slk-ui #slk-header .slk-ws-name { font-size: 17px !important; }
+    html body.slk-ui #slk-header .slk-ws-ver,
+    html body.slk-ui #slk-header .slk-ws-branch { font-size: 11px !important; }
+    html body.slk-ui #slk-header .slk-header-actions {
+        display: flex !important;
+        visibility: visible !important;
+        margin-left: auto !important;
+    }
+
+    /* Primary rail — identical seven icons/order to the mobile tab bar. */
+    html body.slk-ui #top-settings-holder {
+        display: flex !important;
+        position: fixed !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 5px !important;
+        top: var(--slk-pc-top) !important;
+        left: 0 !important;
+        right: auto !important;
+        bottom: 0 !important;
+        width: var(--slk-pc-rail) !important;
+        max-width: var(--slk-pc-rail) !important;
+        min-width: var(--slk-pc-rail) !important;
+        height: calc(100dvh - var(--slk-pc-top)) !important;
+        max-height: none !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 15px 6px 12px !important;
+        box-sizing: border-box !important;
+        background: #350D36 !important;
+        border: 0 !important;
+        border-right: 1px solid #612A62 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        z-index: 3010 !important;
+        overflow-y: auto !important;
+        overflow-x: visible !important;
+        scrollbar-width: none;
+    }
+    html body.slk-ui #top-settings-holder::-webkit-scrollbar { display: none; }
+    html body.slk-ui #top-settings-holder::before,
+    html body.slk-ui #top-settings-holder::after {
+        content: none !important;
+        display: none !important;
+    }
+    html body.slk-ui #top-settings-holder > .drawer:not(#user-settings-button):not(#backgrounds-button) {
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 62px !important;
+        min-height: 62px !important;
+        max-height: 62px !important;
+        flex: 0 0 62px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        justify-content: center !important;
+        align-items: center !important;
+        background: transparent !important;
+        border: 0 !important;
+    }
+    html body.slk-ui #top-settings-holder > .drawer:not(#user-settings-button):not(#backgrounds-button) > .drawer-toggle {
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        width: 60px !important;
+        height: 60px !important;
+        min-height: 60px !important;
+        flex: 0 0 60px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        padding: 4px 0 !important;
+        box-sizing: border-box !important;
+        border: 0 !important;
+        border-radius: 12px !important;
+        background: transparent !important;
+        color: rgba(255,255,255,.79) !important;
+        box-shadow: none !important;
+        text-align: center !important;
+        cursor: pointer !important;
+        transition: background-color .12s ease, color .12s ease;
+    }
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle > .drawer-icon {
+        display: none !important;
+    }
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle > .slk-tab-icon {
+        display: grid !important;
+        width: 25px !important;
+        height: 25px !important;
+        flex: 0 0 25px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        place-items: center !important;
+        background: none !important;
+        color: inherit !important;
+    }
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle .slk-tab-icon svg {
+        display: block !important;
+        width: 23px !important;
+        height: 23px !important;
+        stroke-width: 1.9 !important;
+        color: inherit !important;
+    }
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle::after {
+        content: attr(aria-label) !important;
+        display: block !important;
+        min-width: 0 !important;
+        max-width: 60px !important;
+        font: 500 10px/1.15 var(--slk-font) !important;
+        color: inherit !important;
+        letter-spacing: -.03em !important;
+        white-space: nowrap !important;
+    }
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle:focus-visible {
+        outline: 2px solid #FFFFFF !important;
+        outline-offset: 2px !important;
+    }
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle:hover {
+        background: rgba(255,255,255,.12) !important;
+        color: #FFFFFF !important;
+    }
+    html body.slk-ui #top-settings-holder > .drawer.slk-pc-selected > .drawer-toggle,
+    html body.slk-ui #top-settings-holder > .drawer:has(.drawer-icon.openIcon) > .drawer-toggle {
+        background: rgba(255,255,255,.18) !important;
+        color: #FFFFFF !important;
+    }
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle::before,
+    html body.slk-ui #top-settings-holder > .drawer:has(.drawer-icon.openIcon) > .drawer-toggle::before {
+        content: none !important;
+        display: none !important;
+    }
+    /* Hidden utility drawers remain available from the top-right gear. */
+    html body.slk-ui #top-settings-holder > :is(#user-settings-button, #backgrounds-button) {
+        flex: 0 0 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        overflow: visible !important;
+    }
+    html body.slk-ui #top-settings-holder > :is(#user-settings-button, #backgrounds-button) > .drawer-toggle { display: none !important; }
+
+    /* Native SillyTavern drawers become a fixed SECOND column immediately
+       beside the rail. No drawer floats over the chat surface. */
+    html body.slk-ui #top-settings-holder .drawer-content,
+    html body.slk-ui #left-nav-panel,
+    html body.slk-ui #right-nav-panel {
+        position: fixed !important;
+        top: var(--slk-pc-top) !important;
+        bottom: 0 !important;
+        left: var(--slk-pc-rail) !important;
+        right: auto !important;
+        width: var(--slk-pc-detail) !important;
+        min-width: 0 !important;
+        max-width: var(--slk-pc-detail) !important;
+        height: calc(100dvh - var(--slk-pc-top)) !important;
+        min-height: 0 !important;
+        max-height: calc(100dvh - var(--slk-pc-top)) !important;
+        margin: 0 !important;
+        padding: 68px 14px 22px !important;
+        box-sizing: border-box !important;
+        border: 0 !important;
+        border-right: 1px solid #E5E1E6 !important;
+        border-radius: 0 !important;
+        background: #F8F7F9 !important;
+        color: #1D1C1D !important;
+        box-shadow: none !important;
+        transform: none !important;
+        filter: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        z-index: 3020 !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+    }
+    html body.slk-ui #top-settings-holder .drawer-content:not(.openDrawer),
+    html body.slk-ui #left-nav-panel:not(.openDrawer),
+    html body.slk-ui #right-nav-panel:not(.openDrawer) {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+    html body.slk-ui #top-settings-holder .drawer-content.openDrawer,
+    html body.slk-ui #left-nav-panel.openDrawer,
+    html body.slk-ui #right-nav-panel.openDrawer {
+        display: block !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+    html body.slk-ui #slk-pc-panel-heading {
+        display: flex !important;
+        position: fixed !important;
+        top: var(--slk-pc-top) !important;
+        left: var(--slk-pc-rail) !important;
+        right: auto !important;
+        width: var(--slk-pc-detail) !important;
+        height: 58px !important;
+        min-height: 58px !important;
+        box-sizing: border-box !important;
+        padding: 0 15px 0 20px !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        background: #F8F7F9 !important;
+        border-bottom: 1px solid #E5E1E6 !important;
+        border-right: 1px solid #E5E1E6 !important;
+        z-index: 3030 !important;
+    }
+    html body.slk-ui #slk-pc-panel-heading[aria-hidden="true"] { display: none !important; }
+    html body.slk-ui #slk-pc-panel-heading h2 {
+        font: 750 18px/1.2 var(--slk-font) !important;
+        color: #1D1C1D !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    html body.slk-ui #slk-pc-panel-close {
+        display: grid !important;
+        place-items: center !important;
+        width: 30px !important;
+        height: 30px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 7px !important;
+        background: transparent !important;
+        color: #616061 !important;
+        cursor: pointer !important;
+    }
+    html body.slk-ui #slk-pc-panel-close:hover { background: #ECE8EF !important; }
+
+    /* Chat area immediately resizes when a panel opens/closes. */
+    html body.slk-ui #sheld {
+        display: flex !important;
+        flex-direction: column !important;
+        position: fixed !important;
+        top: var(--slk-pc-top) !important;
+        bottom: 0 !important;
+        left: calc(var(--slk-pc-rail) + var(--slk-pc-open-width)) !important;
+        right: 0 !important;
+        width: auto !important;
+        height: calc(100dvh - var(--slk-pc-top)) !important;
+        max-height: none !important;
+        min-height: 0 !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: #FFFFFF !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+    }
+    html body.slk-ui #slk-pc-channel-heading {
+        position: fixed !important;
+        display: flex !important;
+        top: var(--slk-pc-top) !important;
+        left: calc(var(--slk-pc-rail) + var(--slk-pc-open-width)) !important;
+        right: 0 !important;
+        width: auto !important;
+        height: 58px !important;
+        box-sizing: border-box !important;
+        align-items: center !important;
+        gap: 10px !important;
+        padding: 0 24px !important;
+        background: #FFFFFF !important;
+        color: #1D1C1D !important;
+        border-bottom: 1px solid #E8E8E8 !important;
+        z-index: 3015 !important;
+        pointer-events: none !important;
+    }
+    html body.slk-ui #slk-pc-channel-heading[aria-hidden="true"] {display: none !important;}
+    html body.slk-ui #slk-pc-channel-heading strong {
+        font: 750 16px/1.2 var(--slk-font) !important;
+        white-space: nowrap !important;
+        text-overflow: ellipsis !important;
+        overflow: hidden !important;
+    }
+    html body.slk-ui #slk-pc-channel-heading .slk-pc-channel-symbol {
+        font: 700 21px var(--slk-font) !important;
+        color: #817984 !important;
+    }
+    html body.slk-ui #slk-pc-channel-heading:not(.slk-pc-is-chat) .slk-pc-channel-symbol { display: none !important; }
+    html body.slk-ui #sheld #chat {
+        width: 100% !important;
+        max-width: none !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        padding: 76px clamp(16px, 2.5vw, 36px) 24px !important;
+        background: #FFFFFF !important;
+        box-sizing: border-box !important;
+        overflow-y: auto !important;
+    }
+    html body.slk-ui #sheld #chat > .mes,
+    html body.slk-ui #sheld #chat > .welcomePanel {
+        max-width: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    html body.slk-ui #sheld #form_sheld {
+        width: 100% !important;
+        padding: 14px clamp(18px, 2.5vw, 36px) 16px !important;
+        border-top: 1px solid #ECEAEC !important;
+        background: #FFFFFF !important;
+        box-shadow: none !important;
+    }
+    html body.slk-ui #sheld #send_form {
+        width: 100% !important;
+        max-width: none !important;
+        border-color: #CFCACF !important;
+        border-radius: 10px !important;
+        min-height: 58px !important;
+    }
+    /* Make the home recent-chat list look like Slack messages/DM rows. */
+    html body.slk-ui #chat .welcomePanel .welcomeRecent .recentChatList .recentChat {
+        border: 0 !important;
+        border-bottom: 1px solid #ECEAEC !important;
+        border-radius: 0 !important;
+        background: #FFFFFF !important;
+        box-shadow: none !important;
+        padding: 12px 14px !important;
+    }
+    html body.slk-ui #chat .welcomePanel .welcomeRecent .recentChatList .recentChat:hover {
+        background: #F8F6F8 !important;
+    }
+    html body.slk-ui #chat .welcomePanel .welcomeShortcuts .menu_button {
+        border: 1px solid #E8E5EA !important;
+        background: #FFFFFF !important;
+        box-shadow: none !important;
+        border-radius: 10px !important;
+    }
+}
+/* Tighter desktop keeps both the panel and chat usable. */
+@media screen and (min-width: 1001px) and (max-width: 1220px) {
+    html body.slk-ui { --slk-pc-detail: 264px; }
+    html body.slk-ui #slk-pc-panel-heading { padding-left: 14px !important; }
+    html body.slk-ui #top-settings-holder .drawer-content,
+    html body.slk-ui #left-nav-panel,
+    html body.slk-ui #right-nav-panel { padding-left: 10px !important; padding-right: 10px !important; }
+}

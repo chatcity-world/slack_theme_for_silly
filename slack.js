@@ -480,7 +480,9 @@ function openDrawer(selector) {
 // Route extension/header navigation through the same mobile page history as the footer.
 // Desktop and disabled Slack UI keep SillyTavern's original drawer behavior.
 function navigateSlackPanel(selector) {
-    if (SLK_UI_SETTINGS.enabled && window.matchMedia('(max-width: 1000px)').matches && window.__slkPanelNavigation) {
+    if (SLK_UI_SETTINGS.enabled && window.matchMedia('(min-width: 1001px)').matches && window.__slkDesktopRailNavigation) {
+        window.__slkDesktopRailNavigation.toggle(selector);
+    } else if (SLK_UI_SETTINGS.enabled && window.matchMedia('(max-width: 1000px)').matches && window.__slkPanelNavigation) {
         window.__slkPanelNavigation.navigate(selector);
     } else {
         openDrawer(selector);
@@ -2744,4 +2746,166 @@ else init();
     if (document.readyState === 'loading')
         document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
+})();
+
+
+// v1.5.11 — Desktop Slack navigation: the same 7 mobile-footer icons become
+// a narrow vertical workspace rail; their real SillyTavern panels open in the
+// adjacent column (not as floating overlays over chat).
+(function mountSlackDesktopRail() {
+    const desktop = window.matchMedia('(min-width: 1001px)');
+    const navSelectors = TABS.map(([selector]) => selector);
+    const extraSelectors = [DRAWERS.userSettings, DRAWERS.backgrounds].filter(Boolean);
+    const selectors = [...new Set([...navSelectors, ...extraSelectors])];
+    const labelMap = new Map(TABS.map(([selector, , label]) => [selector, label]));
+    labelMap.set(DRAWERS.userSettings, '사용자 설정');
+    labelMap.set(DRAWERS.backgrounds, '배경');
+    let active = null;
+    let initialized = false;
+    let panelHeader = null;
+    let contextHeader = null;
+    let panelTitle = null;
+    let contextTitle = null;
+
+    const isDesktop = () => desktop.matches && SLK_UI_SETTINGS.enabled && document.body?.classList.contains('slk-ui');
+    const partsFor = (selector) => {
+        const root = document.querySelector(selector);
+        return root && {
+            root,
+            content: root.querySelector(':scope > .drawer-content'),
+            icon: root.querySelector(':scope > .drawer-toggle > .drawer-icon'),
+            toggle: root.querySelector(':scope > .drawer-toggle'),
+        };
+    };
+
+    function makeChrome() {
+        if (!panelHeader) {
+            panelHeader = document.getElementById('slk-pc-panel-heading');
+            if (!panelHeader) {
+                panelHeader = document.createElement('div');
+                panelHeader.id = 'slk-pc-panel-heading';
+                panelHeader.innerHTML = `<h2 id="slk-pc-panel-title"></h2><button type="button" id="slk-pc-panel-close" aria-label="패널 닫기" title="패널 닫기"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+                document.body.append(panelHeader);
+                panelHeader.querySelector('#slk-pc-panel-close').addEventListener('click', () => activate(null));
+            }
+            panelTitle = panelHeader.querySelector('#slk-pc-panel-title');
+        }
+        if (!contextHeader) {
+            contextHeader = document.getElementById('slk-pc-channel-heading');
+            if (!contextHeader) {
+                contextHeader = document.createElement('div');
+                contextHeader.id = 'slk-pc-channel-heading';
+                contextHeader.innerHTML = `<span class="slk-pc-channel-symbol">#</span><strong id="slk-pc-channel-title">최근 채팅</strong>`;
+                document.body.append(contextHeader);
+            }
+            contextTitle = contextHeader.querySelector('#slk-pc-channel-title');
+        }
+    }
+
+    function syncContext() {
+        if (!isDesktop()) return;
+        const inChat = document.body.classList.contains('slk-in-chat');
+        const text = inChat ? (document.getElementById('slk-chat-title')?.querySelector('.slk-ch-name')?.textContent || chatInfo().name || '채팅') : '최근 채팅';
+        if (contextTitle && contextTitle.textContent !== text) contextTitle.textContent = text;
+        if (contextHeader) contextHeader.classList.toggle('slk-pc-is-chat', inChat);
+    }
+
+    function activate(selector) {
+        if (!isDesktop()) return;
+        active = selector && selectors.includes(selector) && partsFor(selector)?.content ? selector : null;
+        for (const item of selectors) {
+            const parts = partsFor(item);
+            if (!parts?.content) continue;
+            const open = item === active;
+            parts.content.classList.toggle('openDrawer', open);
+            parts.content.classList.toggle('closedDrawer', !open);
+            parts.icon?.classList.toggle('openIcon', open);
+            parts.icon?.classList.toggle('closedIcon', !open);
+            parts.toggle?.setAttribute('aria-expanded', String(open));
+            parts.root.classList.toggle('slk-pc-selected', open);
+        }
+        document.body.classList.toggle('slk-pc-panel-open', Boolean(active));
+        if (panelTitle) panelTitle.textContent = labelMap.get(active) || '';
+        if (panelHeader) panelHeader.setAttribute('aria-hidden', String(!active));
+        if (active === DRAWERS.character) {
+            document.getElementById('rm_print_characters_block')?.dispatchEvent(new Event('scroll'));
+        }
+        syncContext();
+    }
+
+    function toggle(selector) {
+        if (!isDesktop()) return;
+        activate(active === selector ? null : selector);
+    }
+
+    // Capture the click ahead of ST's asynchronous drawer toggle: otherwise
+    // rapid switching triggers its delayed close/open animation and flickers.
+    function captureRailClick(event) {
+        if (!isDesktop()) return;
+        const toggleEl = event.target.closest?.('#top-settings-holder > .drawer > .drawer-toggle');
+        if (!toggleEl) return;
+        const id = toggleEl.parentElement?.id;
+        const selector = id && `#${id}`;
+        if (!navSelectors.includes(selector)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        toggle(selector);
+    }
+
+    function captureRailPointer(event) {
+        if (!isDesktop()) return;
+        const toggleEl = event.target.closest?.('#top-settings-holder > .drawer > .drawer-toggle');
+        if (toggleEl && navSelectors.includes(`#${toggleEl.parentElement?.id}`)) event.stopPropagation();
+    }
+
+    function syncViewport() {
+        if (!document.body) return;
+        if (!isDesktop()) {
+            if (initialized && active) {
+                // The mobile controller owns the drawer classes after switching
+                // back to a narrow screen. Do not leave a desktop tab open.
+                for (const item of selectors) {
+                    const parts = partsFor(item);
+                    if (!parts?.content) continue;
+                    parts.content.classList.remove('openDrawer');
+                    parts.content.classList.add('closedDrawer');
+                    parts.icon?.classList.remove('openIcon');
+                    parts.icon?.classList.add('closedIcon');
+                    parts.root.classList.remove('slk-pc-selected');
+                }
+            }
+            active = null;
+            document.body.classList.remove('slk-pc-panel-open');
+            panelHeader?.setAttribute('aria-hidden', 'true');
+            contextHeader?.setAttribute('aria-hidden', 'true');
+            return;
+        }
+        makeChrome();
+        const initiallyOpen = !initialized && selectors.find(sel => partsFor(sel)?.content?.classList.contains('openDrawer'));
+        initialized = true;
+        activate(initiallyOpen || active);
+        contextHeader?.setAttribute('aria-hidden', 'false');
+    }
+
+    window.__slkDesktopRailNavigation = { toggle, close: () => activate(null), getCurrent: () => active };
+    document.addEventListener('click', captureRailClick, true);
+    document.addEventListener('mousedown', captureRailPointer, true);
+    document.addEventListener('touchstart', captureRailPointer, true);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', syncViewport, { once: true });
+    else syncViewport();
+    desktop.addEventListener?.('change', syncViewport);
+    window.addEventListener('slk-ui-settings-changed', syncViewport);
+    window.addEventListener('pageshow', syncViewport);
+    // Chat/channel heading stays synced even when the character changes.
+    let refreshRequested = false;
+    const triggerRefresh = () => {
+        if (!refreshRequested) {
+            refreshRequested = true;
+            requestAnimationFrame(() => { refreshRequested = false; syncContext(); });
+        }
+    };
+    new MutationObserver(triggerRefresh).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    document.getElementById('slk-chat-head') &&
+        new MutationObserver(triggerRefresh).observe(document.getElementById('slk-chat-head'), { subtree: true, childList: true, characterData: true });
 })();
