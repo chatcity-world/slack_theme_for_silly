@@ -15486,7 +15486,7 @@ body.slk-ui.slk-dark {
 /* =====================================================================
    1.4.65
    ===================================================================== */
-:root { --slk-css-version: '1.4.81'; }
+:root { --slk-css-version: '1.4.82'; }
 @media screen and (max-width: 1000px) {
     /* 고급 서식: 구역을 감싸는 테마 상자 테두리·그림자 전부 제거 (입력칸은 그대로) */
     html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting div:not(.menu_button):not([class*="select2"]):not(:has(> select[data-preset-manager-for])):not([data-preset-manager-for]) {
@@ -16476,31 +16476,71 @@ body.slk-ui.slk-dark {
   }
 }
 
-/* v1.4.81 — messaging ⋯ toolbar: only actual icons get flex slots.
-   Legacy right-alignment and hidden extension helper wrappers must never reserve cells. */
+/* v1.4.81 — empty/hidden slots should never reserve space. */
 @media screen and (max-width: 1000px) {
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons > .extraMesButtons {
-    display: flex !important;
-    flex-flow: row wrap !important;
-    justify-content: flex-start !important;
-    align-items: center !important;
-    align-content: flex-start !important;
-    gap: 2px 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-  }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons > .extraMesButtons > .slk-adopted-btn { order: 0 !important; }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons > .extraMesButtons > .mes_button:not(.slk-adopted-btn) { order: 1 !important; }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons > .extraMesButtons > :not(.mes_button):not(.slk-adopted-btn) { order: 2 !important; }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons > .extraMesButtons > :is(.slk-action-noicon, .slk-flow-hidden, [hidden]) {
     display: none !important;
     flex: 0 0 0 !important;
     width: 0 !important;
     min-width: 0 !important;
     max-width: 0 !important;
+  }
+}
+
+/* v1.4.82 — ⋯ 아이콘 메뉴: 확장 새로고침과 ST 버튼을 단일 flex-flow에 배열.
+   주변 채팅과 닫힌 메뉴는 수정하지 않습니다. */
+@media screen and (max-width: 1000px) {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[data-slk-actions-flow] .mes_buttons {
+    display: block !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    justify-self: stretch !important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[data-slk-actions-flow] .mes_buttons > .extraMesButtons {
+    display: flex !important;
+    flex-flow: row wrap !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    align-content: flex-start !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 2px 0 !important;
+    overflow: visible !important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[data-slk-actions-flow] .mes_buttons > .extraMesButtons > * {
+    position: static !important;
+    float: none !important;
+    box-sizing: border-box !important;
+    flex: 0 0 30px !important;
+    width: 30px !important;
+    min-width: 30px !important;
+    max-width: 30px !important;
+    height: 30px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    order: 0 !important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[data-slk-actions-flow] .mes_buttons > .extraMesButtons > :is(.slk-action-noicon, .displayNone, [hidden]) {
+    display: none !important;
+    flex: 0 0 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+  }
+}
+
+/* v1.4.82 — ST 기본 액션 → 타 확장 액션. 둘 다 같은 행 흐름 안에서만 줄바꿈. */
+@media screen and (max-width: 1000px) {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[data-slk-actions-flow] .mes_buttons > .extraMesButtons > :not(.slk-foreign-action) {
+    order: 0 !important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[data-slk-actions-flow] .mes_buttons > .extraMesButtons > .slk-foreign-action {
+    order: 1 !important;
   }
 }
