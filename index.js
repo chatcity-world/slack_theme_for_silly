@@ -2131,3 +2131,105 @@ else init();
         if (mes) { gather(mes); setTimeout(() => gather(mes), 50); setTimeout(() => gather(mes), 300); }
     }, true);
 })();
+
+// v1.4.64 — ⋯ 펼침 아이콘 정리를 인라인(!important)로 강제: 어떤 확장 CSS보다 우선
+(function slkForceButtonRow() {
+    const ICON_W = '30px';
+    const force = (el, props) => { for (const [k, v] of Object.entries(props)) el.style.setProperty(k, v, 'important'); };
+    const tidy = (mes) => {
+        const box = mes.querySelector('.ch_name > .mes_buttons');
+        if (!box) return;
+        const extra = box.querySelector('.extraMesButtons');
+        const sd = extra ? (extra.style.display || '') : '';
+        const open = !!extra && sd !== '' && sd !== 'none';
+        mes.classList.toggle('slk-mes-expanded', open);
+        // 바깥에 있는 확장 아이콘을 묶음 맨 앞으로
+        const outside = [
+            ...mes.querySelectorAll(':scope > .mesAvatarWrapper > :not(.avatar):not(.mesIDDisplay):not(.mes_timer):not(.tokenCounterDisplay)'),
+            ...mes.querySelectorAll(':scope .ch_name > :not(.mes_buttons):not(.mes_edit_buttons):not(.flex-container)'),
+            ...mes.querySelectorAll(':scope .ch_name > .flex-container > :not(.alignItemsBaseline)'),
+            ...mes.querySelectorAll(':scope .ch_name .alignItemsBaseline > :not(.name_text):not(.mes_ghost):not(.timestamp)'),
+        ];
+        outside.forEach(el => { if (!el.closest('.mes_buttons')) { el.classList.add('slk-adopted-btn'); box.insertBefore(el, box.firstChild); } });
+        if (!open) {
+            ['display','flex-wrap','justify-content','align-items','gap','width','max-width'].forEach(k => box.style.removeProperty(k));
+            return;
+        }
+        force(box, { 'display': 'flex', 'flex-wrap': 'wrap', 'justify-content': 'flex-end', 'align-items': 'center', 'gap': '0', 'width': '100%', 'max-width': 'none' });
+        const items = [...box.children].filter(c => c !== extra).concat(extra ? [...extra.children] : []);
+        items.forEach(el => {
+            if (getComputedStyle(el).display === 'none') return;
+            force(el, { 'flex': `0 0 ${ICON_W}`, 'width': ICON_W, 'min-width': ICON_W, 'max-width': ICON_W, 'margin': '0', 'padding': '0', 'position': 'static', 'float': 'none', 'order': '0', 'justify-content': 'center', 'align-items': 'center', 'transform': 'none' });
+            [...el.children].forEach(ch => force(ch, { 'margin': '0', 'position': 'static', 'transform': 'none' }));
+        });
+        window.__slkLastButtons = box.outerHTML;
+    };
+    const run = () => {
+        if (!document.body?.classList.contains('slk-ui')) return;
+        document.querySelectorAll('#chat .mes').forEach(m => {
+            const ex = m.querySelector('.extraMesButtons');
+            const sd = ex ? (ex.style.display || '') : '';
+            const open = !!ex && sd !== '' && sd !== 'none';
+            if (open || m.classList.contains('slk-mes-expanded')) tidy(m);
+        });
+    };
+    document.addEventListener('click', (e) => {
+        if (e.target.closest?.('#chat .extraMesButtonsHint, #chat .mes_buttons')) {
+            setTimeout(run, 0); setTimeout(run, 80); setTimeout(run, 400);
+        }
+    }, true);
+    const start = () => {
+        const chat = document.getElementById('chat');
+        if (!chat) { setTimeout(start, 500); return; }
+        let t = null;
+        new MutationObserver(() => { if (!t) t = setTimeout(() => { t = null; run(); }, 60); })
+            .observe(chat, { subtree: true, attributes: true, attributeFilter: ['style', 'class'], childList: true });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();
+
+// v1.4.64 — 확장이 직접 만든 팝업(고정 위치 창)을 찾아 slk-modal 클래스 부여 → 슬랙 팝업 디자인
+(function slkForeignModals() {
+    const OURS = '#slk-header, #slk-mobile-footer, #slk-settings-menu, #toast-container, #send_form, #form_sheld, .drawer-content, #top-bar, #top-settings-holder, #chat, #bg1, #bg_custom, #preloader, dialog.popup';
+    const PRIMARY = /^(send|save|ok|confirm|apply|submit|generate|확인|저장|전송|적용|보내기|생성|예)$/i;
+    const mark = () => {
+        if (!document.body?.classList.contains('slk-ui')) return;
+        const cands = document.querySelectorAll('body > *:not(script):not(style), dialog:not(.popup)');
+        cands.forEach(el => {
+            if (el.classList.contains('slk-modal') || el.matches(OURS) || el.closest(OURS)) return;
+            const cs = getComputedStyle(el);
+            if (cs.display === 'none' || cs.visibility === 'hidden') return;
+            if (!(cs.position === 'fixed' || el.tagName === 'DIALOG')) return;
+            if (el.querySelector('#chat, #send_form, #slk-header, .drawer-content, #top-settings-holder')) return;
+            if (el.tagName !== 'DIALOG' && (parseInt(cs.zIndex, 10) || 0) < 1000) return;
+            const r = el.getBoundingClientRect();
+            // 화면 전체를 덮는 반투명 배경이면, 그 안의 창을 찾음
+            let win = el;
+            if (r.width >= innerWidth - 2 && r.height >= innerHeight - 2) {
+                win = [...el.querySelectorAll(':scope > *, :scope > * > *')].find(c => {
+                    const rr = c.getBoundingClientRect();
+                    return rr.width > innerWidth * 0.6 && rr.height > 120 && rr.height < innerHeight && c.querySelector('button, textarea, input, .menu_button');
+                });
+                if (!win) return;
+                el.classList.add('slk-modal-backdrop');
+            } else if (!(r.width > innerWidth * 0.6 && r.height > 120 && el.querySelector('button, textarea, input, .menu_button'))) {
+                return;
+            }
+            win.classList.add('slk-modal');
+            win.querySelectorAll('button, .menu_button, [role="button"]').forEach(b => {
+                const label = (b.textContent || '').trim();
+                if (PRIMARY.test(label)) b.classList.add('slk-modal-primary');
+                if ((!label || /^[✕×xX✖]$/.test(label)) && (!label ? /close|xmark|times/i.test(b.className + ' ' + (b.innerHTML || '')) : true)) b.classList.add('slk-modal-close');
+            });
+        });
+    };
+    let t = null;
+    const start = () => {
+        new MutationObserver(() => { if (!t) t = setTimeout(() => { t = null; mark(); }, 120); })
+            .observe(document.body, { childList: true, subtree: false, attributes: true, attributeFilter: ['style', 'class', 'open'] });
+        mark();
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();

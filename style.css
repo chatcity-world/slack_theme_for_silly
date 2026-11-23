@@ -15341,3 +15341,144 @@ body.slk-ui.slk-dark {
         padding-bottom: 0 !important;
     }
 }
+
+/* =====================================================================
+   1.4.64
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    /* 3) 날짜 · #번호 · 시간 · 토큰 사이 가운데 점 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes :is(.mesIDDisplay, .mes_timer, .tokenCounterDisplay) {
+        margin-left: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes :is(.mesIDDisplay, .mes_timer, .tokenCounterDisplay):not(:empty)::before {
+        content: '·';
+        display: inline-block;
+        margin: 0 5px;
+        color: #B0B0B0;
+        font-weight: 700;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:not(:has(.timestamp:not(:empty))) .mesIDDisplay::before {
+        content: none;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_ghost {
+        margin-left: 6px !important;
+    }
+
+    /* 4) 고급 서식 섹션: 둥근 테두리 상자(윗선만 보이던 것) → 반듯한 구분선 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting > .flex-container.spaceEvenly > div,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting > .flex-container.spaceEvenly > div > div:has(> h4.standoutHeader) {
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        outline: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting > .flex-container.spaceEvenly > div + div {
+        border-top: 1px solid #EEEEEE !important;
+    }
+
+    /* 2) 확장이 만든 팝업 = 슬랙 팝업 */
+    html body.slk-ui .slk-modal-backdrop {
+        background: rgba(0, 0, 0, .45) !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+    }
+    html body.slk-ui .slk-modal {
+        border: 0 !important;
+        border-radius: 14px !important;
+        background: #FFFFFF !important;
+        background-image: none !important;
+        color: #1D1C1D !important;
+        box-shadow: 0 18px 48px rgba(0, 0, 0, .25) !important;
+        outline: none !important;
+        overflow: hidden auto !important;
+    }
+    html body.slk-ui .slk-modal :not([class*="fa-"]):not(i):not(svg):not(svg *) {
+        font-family: var(--slk-font) !important;
+        letter-spacing: -0.01em !important;
+        text-shadow: none !important;
+    }
+    html body.slk-ui .slk-modal :is(div, section, header, footer) {
+        border-color: #EEEEEE !important;
+        box-shadow: none !important;
+        background-image: none !important;
+    }
+    html body.slk-ui .slk-modal :is(h1, h2, h3, h4, header > *:first-child) {
+        color: #1D1C1D !important;
+        font-size: 18px !important;
+        font-weight: 900 !important;
+        line-height: 1.3 !important;
+    }
+    html body.slk-ui .slk-modal :is(div, section)[style*="background"],
+    html body.slk-ui .slk-modal :is(header, footer) {
+        background-color: #FFFFFF !important;
+    }
+    html body.slk-ui .slk-modal blockquote,
+    html body.slk-ui .slk-modal :is(div, section):has(> :is(b, strong, h4, h5):first-child + :is(div, p, span)) {
+        border: 0 !important;
+        border-left: 4px solid #DDDDDD !important;
+        border-radius: 0 !important;
+        background: #F8F8F8 !important;
+        box-shadow: none !important;
+    }
+    html body.slk-ui .slk-modal :is(textarea, input[type="text"], input:not([type])) {
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+        border: 1px solid #BBBBBB !important;
+        border-radius: 8px !important;
+        background: #FFFFFF !important;
+        color: #1D1C1D !important;
+        box-shadow: none !important;
+        font-size: 15px !important;
+        line-height: 1.5 !important;
+    }
+    html body.slk-ui .slk-modal :is(textarea, input):focus {
+        border-color: #1264A3 !important;
+        box-shadow: 0 0 0 3px rgba(29, 155, 209, .25) !important;
+    }
+    html body.slk-ui .slk-modal :is(button, .menu_button, [role="button"]):not(.slk-modal-close) {
+        min-height: 40px !important;
+        border: 1px solid #DDDDDD !important;
+        border-radius: 8px !important;
+        background: #FFFFFF !important;
+        color: #1D1C1D !important;
+        box-shadow: none !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+    }
+    html body.slk-ui .slk-modal :is(button, .menu_button, [role="button"]).slk-modal-primary:not(.slk-modal-close) {
+        border-color: #007A5A !important;
+        background: #007A5A !important;
+        color: #FFFFFF !important;
+    }
+    html body.slk-ui .slk-modal :is(button, .menu_button, [role="button"]).slk-modal-primary:not(.slk-modal-close) * {
+        color: #FFFFFF !important;
+    }
+    html body.slk-ui .slk-modal :is(button, .menu_button, [role="button"]).slk-modal-close {
+        border: 0 !important;
+        background: transparent !important;
+        color: #616061 !important;
+        box-shadow: none !important;
+    }
+}
+@media screen and (max-width: 1000px) {
+    /* 1.4.64b: 펼침 상태를 클래스(slk-mes-expanded)로도 인식 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost) {
+        visibility: hidden !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons {
+        grid-column: 2 / -1 !important;
+        grid-row: 1 / 3 !important;
+        justify-self: stretch !important;
+        align-self: center !important;
+        width: 100% !important;
+        max-width: none !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-end !important;
+        margin: 0 -8px 0 0 !important;
+        z-index: 2 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons .extraMesButtons {
+        display: contents !important;
+    }
+}
