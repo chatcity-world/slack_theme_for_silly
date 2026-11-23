@@ -2915,44 +2915,63 @@ else init();
 })();
 
 
-// v1.6.0 — PC(데스크톱) 슬랙 레이아웃
-// 왼쪽 레일: 워크스페이스 로고 + 7개 메뉴 + (아래) 사용자 설정·배경
-// 위 막대: 가운데 검색창 (누르면 캐릭터 목록 검색으로 이동)
+// v1.6.1 — Slack desktop: independent brand rail + navigation sidebar.
+// Leftmost column contains only the Slack workspace image; the adjoining
+// lighter purple column contains all 7 tabs plus Settings and Background.
+// All buttons reuse the real native SillyTavern drawer content and handlers.
 (function mountSlackPcChrome() {
     const desktop = window.matchMedia('(min-width: 1001px)');
-    const ITEMS = [
-        ...TABS.map(([selector, icon, label]) => ({ selector, icon: ICONS[icon], label })),
-    ];
-    const SHORT = { '프롬프트': '프롬프트', '연결': '연결', '고급 서식': '서식', '로어북': '로어북', '확장': '확장', '페르소나': '페르소나', '캐릭터': '캐릭터' };
+    const ITEMS = TABS.map(([selector, icon, label]) => ({ selector, icon: ICONS[icon], label }));
     const BOTTOM = [
         { selector: DRAWERS.userSettings, icon: ICONS.userSettings, label: '설정' },
         { selector: DRAWERS.backgrounds, icon: ICONS.backgrounds, label: '배경' },
     ];
     const SEARCH_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
-    let rail = null, search = null;
-
+    let brandRail = null;
+    let sectionMenu = null;
+    let search = null;
     const nav = () => window.__slkDesktopRailNavigation;
-    const btn = ({ selector, icon, label }) =>
-        `<button type="button" class="slk-pc-item" data-drawer="${selector}" title="${label}" aria-label="${label}">` +
-        `<span class="slk-pc-item-icon">${icon}</span><span class="slk-pc-item-label">${SHORT[label] || label}</span></button>`;
+    const itemMarkup = ({ selector, icon, label }) =>
+        `<button type="button" class="slk-pc-item" data-drawer="${selector}" title="${label}" aria-label="${label}" aria-pressed="false">` +
+        `<span class="slk-pc-item-icon">${icon}</span><span class="slk-pc-item-label">${label}</span></button>`;
+
+    function mark(active) {
+        sectionMenu?.querySelectorAll('.slk-pc-item').forEach(button => {
+            const on = button.dataset.drawer === active;
+            button.classList.toggle('active', on);
+            button.setAttribute('aria-pressed', String(on));
+        });
+    }
 
     function build() {
         if (!document.body) return;
-        if (!rail) {
-            rail = document.createElement('nav');
-            rail.id = 'slk-pc-rail';
-            rail.setAttribute('aria-label', '워크스페이스 메뉴');
-            rail.innerHTML =
-                `<button type="button" class="slk-pc-ws" title="최근 채팅"><img alt="" src="${slkSelectedLogoUrl()}"></button>` +
-                `<div class="slk-pc-items">${ITEMS.map(btn).join('')}</div>` +
-                `<div class="slk-pc-spacer"></div>` +
-                `<div class="slk-pc-items slk-pc-bottom">${BOTTOM.map(btn).join('')}</div>`;
-            document.body.appendChild(rail);
-            for (const type of ['touchstart', 'mousedown']) rail.addEventListener(type, e => e.stopPropagation());
-            rail.addEventListener('click', (e) => {
-                const item = e.target.closest('.slk-pc-item');
-                if (item) { e.preventDefault(); nav()?.toggle(item.dataset.drawer); return; }
-                if (e.target.closest('.slk-pc-ws')) nav()?.close();
+        if (!brandRail) {
+            brandRail = document.createElement('nav');
+            brandRail.id = 'slk-pc-rail';
+            brandRail.setAttribute('aria-label', 'Slack 워크스페이스');
+            brandRail.innerHTML = `<button type="button" class="slk-pc-ws" title="채팅으로 돌아가기" aria-label="채팅으로 돌아가기"><img alt="Slack" src="${SLK_SLACK_HEADER_IMAGE}"></button>`;
+            document.body.appendChild(brandRail);
+            for (const type of ['touchstart', 'mousedown']) brandRail.addEventListener(type, e => e.stopPropagation());
+            brandRail.querySelector('.slk-pc-ws').addEventListener('click', () => nav()?.close());
+        }
+        if (!sectionMenu) {
+            sectionMenu = document.createElement('nav');
+            sectionMenu.id = 'slk-pc-sidebar';
+            sectionMenu.setAttribute('aria-label', 'Slack UI 설정 메뉴');
+            sectionMenu.innerHTML = `
+                <div class="slk-pc-section-main" aria-label="주요 메뉴">
+                    ${ITEMS.map(itemMarkup).join('')}
+                </div>
+                <div class="slk-pc-section-utility" aria-label="추가 메뉴">
+                    ${BOTTOM.map(itemMarkup).join('')}
+                </div>`;
+            document.body.appendChild(sectionMenu);
+            for (const type of ['touchstart', 'mousedown']) sectionMenu.addEventListener(type, e => e.stopPropagation());
+            sectionMenu.addEventListener('click', event => {
+                const button = event.target.closest('.slk-pc-item');
+                if (!button) return;
+                event.preventDefault();
+                nav()?.toggle(button.dataset.drawer);
             });
         }
         if (!search) {
@@ -2964,7 +2983,6 @@ else init();
             for (const type of ['touchstart', 'mousedown']) search.addEventListener(type, e => e.stopPropagation());
             search.addEventListener('click', () => {
                 if (nav()?.getCurrent() !== DRAWERS.character) nav()?.toggle(DRAWERS.character);
-                // 캐릭터 목록 화면으로 + 검색칸 열기
                 setTimeout(() => {
                     const back = document.getElementById('rm_button_characters');
                     if (back && getComputedStyle(document.getElementById('rm_characters_block') || back).display === 'none') back.click();
@@ -2975,18 +2993,12 @@ else init();
                 }, 60);
             });
         }
-        const img = rail.querySelector('.slk-pc-ws img');
-        const src = slkSelectedLogoUrl();
-        if (img && img.getAttribute('src') !== src) img.src = src;
         const on = desktop.matches && SLK_UI_SETTINGS.enabled;
         document.body.classList.toggle('slk-pc', on);
-        rail.hidden = !on;
+        brandRail.hidden = !on;
+        sectionMenu.hidden = !on;
         search.hidden = !on;
         mark(nav()?.getCurrent?.() ?? null);
-    }
-
-    function mark(active) {
-        rail?.querySelectorAll('.slk-pc-item').forEach(b => b.classList.toggle('active', b.dataset.drawer === active));
     }
 
     window.addEventListener('slk-pc-active', e => mark(e.detail));

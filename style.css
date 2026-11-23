@@ -18235,11 +18235,13 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
 @media screen and (min-width: 1001px) {
     html body.slk-ui.slk-pc {
         --pc-top: 44px;
-        --pc-rail: 76px;
+        --pc-rail: 68px;
+        --pc-sidebar: 126px;
+        --pc-sidebar-edge: calc(var(--pc-rail) + var(--pc-sidebar));
         --pc-panel: 400px;
         --pc-gap: 8px;
         --pc-head: 50px;
-        --pc-main-left: var(--pc-rail);
+        --pc-main-left: var(--pc-sidebar-edge);
         --slk-top-h: 0px;
         --slk-footer-h: 0px;
         background: #3F0E40 !important;
@@ -18247,7 +18249,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
         overflow: hidden !important;
     }
     html body.slk-ui.slk-pc.slk-pc-panel-open {
-        --pc-main-left: calc(var(--pc-rail) + var(--pc-panel));
+        --pc-main-left: calc(var(--pc-sidebar-edge) + var(--pc-panel));
     }
     html:has(body.slk-ui.slk-pc) { background: #3F0E40 !important; }
     html body.slk-ui.slk-pc :is(#bg1, #bg_custom) { display: none !important; }
@@ -18385,7 +18387,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     html body.slk-ui.slk-pc #slk-pc-panel-heading {
         position: fixed;
         top: var(--pc-top);
-        left: var(--pc-rail);
+        left: var(--pc-sidebar-edge);
         width: var(--pc-panel);
         height: var(--pc-head);
         z-index: 52;
@@ -18424,7 +18426,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     html body.slk-ui.slk-pc :is(#top-settings-holder > .drawer > .drawer-content, #left-nav-panel, #right-nav-panel).openDrawer {
         position: fixed !important;
         top: calc(var(--pc-top) + var(--pc-head)) !important;
-        left: var(--pc-rail) !important;
+        left: var(--pc-sidebar-edge) !important;
         right: auto !important;
         bottom: var(--pc-gap) !important;
         width: var(--pc-panel) !important;
@@ -18625,4 +18627,142 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     html body.slk-ui.slk-pc { --pc-panel: 360px; }
     html body.slk-ui.slk-pc #slk-pc-search { width: min(520px, calc(100vw - 300px)); }
 }
-:root { --slk-css-version: '1.6.0'; }
+:root { --slk-css-version: '1.6.1'; }
+
+
+/* ===============================================================
+   v1.6.1 — Slack's two-tone left navigation (desktop only)
+   Column 1: one Slack logo, Column 2: nine navigational controls.
+   No changes to the mobile footer, panels, chat or preferences.
+   =============================================================== */
+@media screen and (min-width: 1001px) {
+  html body.slk-ui.slk-pc #slk-pc-rail {
+    width: var(--pc-rail) !important;
+    padding: 13px 0 !important;
+    background: #3F0E40 !important;
+    align-items: center !important;
+    overflow: hidden !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-ws {
+    width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    border-radius: 13px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.22) !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar {
+    position: fixed !important;
+    top: var(--pc-top) !important;
+    left: var(--pc-rail) !important;
+    bottom: 0 !important;
+    width: var(--pc-sidebar) !important;
+    z-index: 54 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+    padding: 10px 6px 12px !important;
+    margin: 0 !important;
+    color: #FFFFFF !important;
+    background: linear-gradient(180deg, #633868 0%, #59325D 100%) !important;
+    border-right: 1px solid rgba(255,255,255,.15) !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    font-family: var(--slk-font) !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar[hidden] { display: none !important; }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-section-main,
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-section-utility {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    align-items: stretch !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-section-main {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: none;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-section-main::-webkit-scrollbar { display: none; }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-section-utility {
+    flex: 0 0 auto !important;
+    padding-top: 8px !important;
+    margin-top: 8px !important;
+    border-top: 1px solid rgba(255,255,255,.16) !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item {
+    all: unset !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-height: 66px !important;
+    flex: 0 0 66px !important;
+    padding: 6px 4px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    border-radius: 10px !important;
+    background: transparent !important;
+    color: rgba(255,255,255,.85) !important;
+    font-family: var(--slk-font) !important;
+    cursor: pointer !important;
+    text-align: center !important;
+    transition: background-color .15s ease, color .15s ease !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item:hover {
+    background: rgba(255,255,255,.10) !important;
+    color: #FFFFFF !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item.active {
+    background: rgba(255,255,255,.22) !important;
+    color: #FFFFFF !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item:focus-visible {
+    outline: 2px solid #FFFFFF !important;
+    outline-offset: -3px !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item-icon {
+    display: grid !important;
+    place-items: center !important;
+    width: 26px !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    color: currentColor !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item-icon svg {
+    width: 23px !important;
+    height: 23px !important;
+    stroke-width: 1.85 !important;
+    color: inherit !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item-label {
+    display: block !important;
+    max-width: 100% !important;
+    color: currentColor !important;
+    font: 600 12px/1.15 var(--slk-font) !important;
+    white-space: nowrap !important;
+    letter-spacing: -.01em !important;
+  }
+  /* Place the native SillyTavern panels directly to the right of the new menu. */
+  html body.slk-ui.slk-pc #slk-pc-panel-heading { left: var(--pc-sidebar-edge) !important; }
+  html body.slk-ui.slk-pc :is(#top-settings-holder > .drawer > .drawer-content, #left-nav-panel, #right-nav-panel).openDrawer {
+    left: var(--pc-sidebar-edge) !important;
+  }
+}
+@media screen and (min-width: 1001px) and (max-height: 690px) {
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item {
+    min-height: 57px !important;
+    flex-basis: 57px !important;
+    gap: 3px !important;
+  }
+}
