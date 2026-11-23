@@ -30,6 +30,88 @@ const SLK_UI_SETTINGS = (() => {
         headerImageMode: headerImageMode === 'custom' ? 'custom' : 'slack',
     };
 })();
+// v1.7.2 — Keep iOS status area white above the chat screen, purple above settings.
+// The original SillyTavern theme-color meta is static, even while Slack's
+// mobile header switches between its white chat and purple settings modes.
+const slkOriginalStatusMeta = document.querySelector('meta[name="theme-color"]');
+const slkOriginalStatusColor = slkOriginalStatusMeta?.getAttribute('content') ?? null;
+let slkCreatedStatusMeta = null;
+
+function slkSyncMobileStatusBar() {
+    const mobile = window.matchMedia('(max-width: 1000px)').matches;
+    const enabled = SLK_UI_SETTINGS.enabled && document.body?.classList.contains('slk-ui');
+    const active = mobile && enabled;
+    const chat = document.getElementById('chat');
+    let inChat = Boolean(document.body?.classList.contains('slk-in-chat'));
+    if (!inChat && chat && !chat.querySelector('.welcomePanel')) {
+        // Empty new chats also need a white top bar, before their first message.
+        const ctx = typeof stContext === 'function' ? stContext() : null;
+        inChat = Boolean(ctx && (
+            (ctx.groupId !== undefined && ctx.groupId !== null && ctx.groupId !== '') ||
+            (ctx.characterId !== undefined && ctx.characterId !== null && Number(ctx.characterId) >= 0)
+        ));
+    }
+    const openingPanel = Boolean(document.body?.classList.contains('slk-panel-opening'));
+    const openPanel = [...document.querySelectorAll('.drawer-content.openDrawer:not(.slk-nav-hidden)')].some(el => {
+        const cs = getComputedStyle(el);
+        return cs.display !== 'none' && cs.visibility !== 'hidden';
+    });
+    const white = Boolean(active && inChat && !openingPanel && !openPanel);
+    document.documentElement.classList.toggle('slk-chat-status-white', white);
+
+    const desired = !active ? slkOriginalStatusColor : white ? '#FFFFFF' : '#3F1543';
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta && desired !== null) {
+        meta = document.createElement('meta');
+        meta.name = 'theme-color';
+        document.head.appendChild(meta);
+        slkCreatedStatusMeta = meta;
+    }
+    if (meta && desired === null && meta === slkCreatedStatusMeta) {
+        meta.remove();
+        slkCreatedStatusMeta = null;
+    } else if (meta && desired !== null && meta.getAttribute('content') !== desired) {
+        meta.setAttribute('content', desired);
+    }
+}
+
+function slkWatchMobileStatusBar() {
+    // Some iOS releases sample the root canvas instead of the theme-color meta.
+    // Do not remove chat wallpapers or change the actual Slack header layout.
+    if (!document.getElementById('slk-status-bar-surface-style')) {
+        const style = document.createElement('style');
+        style.id = 'slk-status-bar-surface-style';
+        style.textContent = '@media screen and (max-width: 1000px) {' +
+            'html.slk-chat-status-white { background-color: #FFFFFF !important; }' +
+            'html.slk-chat-status-white body.slk-ui { background-color: #FFFFFF !important; }' +
+            '}';
+        document.head.appendChild(style);
+    }
+    let pending = false;
+    const schedule = () => {
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(() => {
+            pending = false;
+            slkSyncMobileStatusBar();
+        });
+    };
+    // Ignore unrelated message-node updates. Chat state is on the body; panel
+    // visibility is on the native drawers. Batch transitions into one frame.
+    const observer = new MutationObserver(records => {
+        if (records.some(r => r.target === document.body ||
+            r.target.classList?.contains('drawer-content'))) schedule();
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true });
+    window.addEventListener('slk-ui-settings-changed', schedule);
+    window.addEventListener('resize', schedule);
+    window.addEventListener('pageshow', schedule);
+    window.addEventListener('focus', schedule);
+    window.addEventListener('load', schedule, { once: true });
+    schedule();
+    setTimeout(schedule, 500);
+}
+
 try { localStorage.removeItem('slk-ui-theme'); } catch { /* old option may not exist */ }
 
 function slkSavePreference(key, value) {
@@ -1399,6 +1481,7 @@ function init() {
     watchCharView();
     setupComposer();
     watchChat();
+    slkWatchMobileStatusBar();
     watchHeaderCompact();
     updateHeader();
 
