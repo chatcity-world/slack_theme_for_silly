@@ -2152,13 +2152,24 @@ else init();
         ];
         outside.forEach(el => { if (!el.closest('.mes_buttons')) { el.classList.add('slk-adopted-btn'); box.insertBefore(el, box.firstChild); } });
         if (!open) {
+            // 펼친 상태에서 숨긴 빈 버튼 자리를 원상복구 (기존 ⋯/편집 동작 보존)
+            box.querySelectorAll('.slk-empty-action-slot').forEach(el => el.classList.remove('slk-empty-action-slot'));
             ['display','flex-wrap','justify-content','align-items','gap','width','max-width'].forEach(k => box.style.removeProperty(k));
             return;
         }
         force(box, { 'display': 'flex', 'flex-wrap': 'wrap', 'justify-content': 'flex-start', 'align-items': 'center', 'gap': '0', 'width': '100%', 'max-width': 'none' });
         const items = [...box.children].filter(c => c !== extra).concat(extra ? [...extra.children] : []);
         items.forEach(el => {
-            if (getComputedStyle(el).display === 'none') return;
+            // ⋯ 토글이나 실제로 안 보이는 버튼도 30px을 차지하던 것이 빈칸의 원인.
+            // 펼친 동안에만 공간에서 제외하고 닫으면 자동으로 복원합니다.
+            if (el.classList.contains('slk-empty-action-slot')) return;
+            const cs = getComputedStyle(el);
+            const isHint = el.classList.contains('extraMesButtonsHint');
+            const hidden = cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0;
+            if (isHint || hidden) {
+                el.classList.add('slk-empty-action-slot');
+                return;
+            }
             force(el, { 'flex': `0 0 ${ICON_W}`, 'width': ICON_W, 'min-width': ICON_W, 'max-width': ICON_W, 'margin': '0', 'padding': '0', 'position': 'static', 'float': 'none', 'order': '0', 'justify-content': 'center', 'align-items': 'center', 'transform': 'none' });
             [...el.children].forEach(ch => force(ch, { 'margin': '0', 'position': 'static', 'transform': 'none' }));
         });

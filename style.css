@@ -15562,3 +15562,16 @@ body.slk-ui.slk-dark {
         float: none !important;
     }
 }
+
+/* 1.4.67 — ⋯ 펼침 상태에서 보이지 않는 버튼의 30px 빈 슬롯 제거 */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons .slk-empty-action-slot {
+        display: none !important;
+        flex: 0 0 0 !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
