@@ -2212,25 +2212,10 @@ else init();
         }
         if (!mes.classList.contains('slk-mes-expanded')) mes.classList.add('slk-mes-expanded');
         if (!mes.hasAttribute('data-slk-actions-flow')) mes.setAttribute('data-slk-actions-flow', '');
-        // A single row must sit on the original ⋯ button's vertical centerline.
-        // Measure the center BEFORE SillyTavern toggles the popup (below), then
-        // compensate for rows/metadata that would otherwise move the toolbar.
-        if (Number.isFinite(state.hintCenter)) requestAnimationFrame(() => {
-            if (!mobile() || !isOpen(extra) || !mes.isConnected) return;
-            const first = [...extra.children].find(el => {
-                const cs = getComputedStyle(el);
-                return cs.display !== 'none' && cs.visibility !== 'hidden' && el.getBoundingClientRect().width > 0;
-            });
-            if (!first) return;
-            const prior = Number.parseFloat(extra.style.getPropertyValue('--slk-actions-shift')) || 0;
-            const center = first.getBoundingClientRect().top + first.getBoundingClientRect().height / 2;
-            const rawCenter = center - mes.getBoundingClientRect().top - prior;
-            const shift = Math.round(state.hintCenter - rawCenter);
-            const value = `${shift}px`;
-            if (extra.style.getPropertyValue('--slk-actions-shift') !== value) {
-                extra.style.setProperty('--slk-actions-shift', value);
-            }
-        });
+        // v1.4.85 — Vertical alignment is owned by the grid CSS.
+        // Do not translate the menu after the row count changes: multi-row
+        // messages (and messages decorated by extensions) would jump upwards.
+        extra.style.removeProperty('--slk-actions-shift');
     }
 
     function run() { document.querySelectorAll('#chat .mes').forEach(sync); }
@@ -2251,12 +2236,6 @@ else init();
             if (!hint) return;
             const mes = hint.closest('.mes');
             const extra = mes?.querySelector('.mes_buttons > .extraMesButtons');
-            if (mes && extra && !isOpen(extra)) {
-                const state = states.get(mes) || { origins: new Map() };
-                const rect = hint.getBoundingClientRect();
-                state.hintCenter = rect.top + rect.height / 2 - mes.getBoundingClientRect().top;
-                states.set(mes, state);
-            }
             setTimeout(run, 0);
             setTimeout(run, 90);
         }, true);
