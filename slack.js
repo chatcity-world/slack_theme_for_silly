@@ -2340,7 +2340,7 @@ else init();
 })();
 
 
-// v1.4.79 — Keep the original swipe controls in ONE parent, avoiding
+// v1.4.80 — Keep the original swipe controls in ONE parent, avoiding
 // competing absolute/grid positioning of .swipe_left versus .swipeRightBlock.
 // The original elements are moved, NOT cloned; SillyTavern handlers survive.
 (function slkGroupNativeSwipeControls() {
@@ -2351,7 +2351,7 @@ else init();
         const enabled = isEnabled();
         document.querySelectorAll('#chat .mes').forEach(mes => {
             const mesBlock = mes.querySelector(':scope > .mes_block');
-            const holder = mesBlock?.querySelector(':scope > .swipeRightBlock');
+            const holder = mes.querySelector(':scope > .swipeRightBlock');
             if (!mesBlock || !holder) return;
             const left = mes.querySelector(':scope > .swipe_left') ||
                 holder.querySelector(':scope > .swipe_left');

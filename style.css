@@ -15486,7 +15486,7 @@ body.slk-ui.slk-dark {
 /* =====================================================================
    1.4.65
    ===================================================================== */
-:root { --slk-css-version: '1.4.79'; }
+:root { --slk-css-version: '1.4.80'; }
 @media screen and (max-width: 1000px) {
     /* 고급 서식: 구역을 감싸는 테마 상자 테두리·그림자 전부 제거 (입력칸은 그대로) */
     html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting div:not(.menu_button):not([class*="select2"]):not(:has(> select[data-preset-manager-for])):not([data-preset-manager-for]) {
@@ -16358,18 +16358,19 @@ body.slk-ui.slk-dark {
 }
 
 
-/* v1.4.79 — message reroll navigation, genuine SillyTavern controls.
-   The original left arrow is moved into .swipeRightBlock by slack.js.
+/* v1.4.80 — message reroll navigation, genuine SillyTavern controls.
+   ST native .swipeRightBlock sits DIRECTLY under .mes, beside .mes_block.
+   Move the existing left arrow into that real sibling (not into .mes_block).
    All three controls share a single flex layout; no artificial grid columns,
    absolute-positioned buttons, pseudo-buttons or duplicated click targets. */
 @media screen and (max-width: 1000px) {
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
-    #chat .mes > .mes_block > .swipeRightBlock.slk-swipe-inline {
+    #chat .mes > .swipeRightBlock.slk-swipe-inline {
     display: flex !important;
     flex-flow: row nowrap !important;
     gap: 6px !important;
     grid-column: 1 / -1 !important;
-    grid-row: 20 !important;
+    grid-row: auto !important;
     justify-self: end !important;
     align-self: center !important;
     align-items: center !important;
@@ -16388,7 +16389,7 @@ body.slk-ui.slk-dark {
     overflow: visible !important;
   }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
-    #chat .mes > .mes_block > .swipeRightBlock.slk-swipe-inline > :is(.swipe_left, .swipe_right) {
+    #chat .mes > .swipeRightBlock.slk-swipe-inline > :is(.swipe_left, .swipe_right) {
     display: flex !important;
     flex: 0 0 28px !important;
     position: relative !important;
@@ -16421,9 +16422,9 @@ body.slk-ui.slk-dark {
     z-index: 1 !important;
   }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
-    #chat .mes > .mes_block > .swipeRightBlock.slk-swipe-inline > .swipe_left { order: 0 !important; }
+    #chat .mes > .swipeRightBlock.slk-swipe-inline > .swipe_left { order: 0 !important; }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
-    #chat .mes > .mes_block > .swipeRightBlock.slk-swipe-inline > .swipes-counter {
+    #chat .mes > .swipeRightBlock.slk-swipe-inline > .swipes-counter {
     display: flex !important;
     flex: 0 0 auto !important;
     order: 1 !important;
@@ -16448,9 +16449,9 @@ body.slk-ui.slk-dark {
     pointer-events: auto !important;
   }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
-    #chat .mes > .mes_block > .swipeRightBlock.slk-swipe-inline > .swipe_right { order: 2 !important; }
+    #chat .mes > .swipeRightBlock.slk-swipe-inline > .swipe_right { order: 2 !important; }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
-    #chat .mes > .mes_block > .swipeRightBlock.slk-swipe-inline > :is(.swipe_left, .swipe_right)::before {
+    #chat .mes > .swipeRightBlock.slk-swipe-inline > :is(.swipe_left, .swipe_right)::before {
     content: '' !important;
     display: block !important;
     flex: 0 0 16px !important;
@@ -16462,15 +16463,15 @@ body.slk-ui.slk-dark {
     mask: var(--slk-ico) center / contain no-repeat !important;
   }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
-    #chat .mes > .mes_block > .swipeRightBlock.slk-swipe-inline > :is(.swipe_left, .swipe_right):hover {
+    #chat .mes > .swipeRightBlock.slk-swipe-inline > :is(.swipe_left, .swipe_right):hover {
     background: #F7F7F8 !important;
   }
   /* Keep the original visibility policy: only the most recent AI message
      unless SillyTavern's swipe-all-messages preference is enabled. */
   html body.slk-ui:not(.swipeAllMessages):not(#slk-a):not(#slk-b):not(#slk-c)
-    #chat .mes:not(.last_mes) > .mes_block > .swipeRightBlock.slk-swipe-inline,
+    #chat .mes:not(.last_mes) > .swipeRightBlock.slk-swipe-inline,
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
-    #chat .mes[is_user="true"] > .mes_block > .swipeRightBlock.slk-swipe-inline {
+    #chat .mes[is_user="true"] > .swipeRightBlock.slk-swipe-inline {
     display: none !important;
   }
 }
