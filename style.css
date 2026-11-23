@@ -15171,3 +15171,117 @@ body.slk-ui.slk-dark {
         align-self: center !important;
     }
 }
+
+/* =====================================================================
+   1.4.62
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    /* 1) ⋯ 펼친 아이콘: 한 줄 우선, 자리 모자랄 때만 줄바꿈 (아이콘 폭 30px로 촘촘히) */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])) .mes_buttons {
+        grid-column: 2 / -1 !important;
+        justify-self: stretch !important;
+        width: 100% !important;
+        max-width: none !important;
+        flex: none !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-end !important;
+        gap: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])) .mes_buttons :is(.mes_button, .slk-adopted-btn, .extraMesButtons > *) {
+        width: 30px !important;
+        min-width: 30px !important;
+        max-width: 30px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* 2) 전체보기(확대 편집) 팝업 등 팝업 안 여러 줄 입력칸 = 슬랙 입력칸 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) .popup :is(textarea, .maximized_textarea) {
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+        border: 1px solid #BBBBBB !important;
+        border-radius: 8px !important;
+        background: #FFFFFF !important;
+        color: #1D1C1D !important;
+        box-shadow: none !important;
+        outline: none !important;
+        padding: 10px 12px !important;
+        font-family: var(--slk-font) !important;
+        font-size: 15px !important;
+        line-height: 1.6 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) .popup :is(textarea, .maximized_textarea):focus {
+        border-color: #1264A3 !important;
+        box-shadow: 0 0 0 3px rgba(29, 155, 209, .25) !important;
+    }
+
+    /* 5) 팝업 안 입력칸·본문을 다른 내용과 같은 좌우 여백(20px)으로 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) .popup .popup-body > .popup-input {
+        display: block;
+        width: calc(100% - 40px) !important;
+        max-width: calc(100% - 40px) !important;
+        margin: 8px 20px 0 !important;
+        box-sizing: border-box !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) .popup .popup-content {
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) .popup .popup-content :is(code, pre) {
+        white-space: pre-wrap !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-all !important;
+        font-size: 14px !important;
+    }
+
+    /* 3) 캐릭터 상세 '제작자의 메모' 상자 = 다른 입력칸과 같은 모양 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel #rm_ch_create_block :is(#creator_notes_spoiler, #creator_notes_empty) {
+        margin: 0 !important;
+        padding: 12px 14px !important;
+        border: 1px solid #BBBBBB !important;
+        border-radius: 8px !important;
+        background: #FFFFFF !important;
+        color: #1D1C1D !important;
+        box-shadow: none !important;
+        font-size: 15px !important;
+        line-height: 1.6 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel #rm_ch_create_block #creator_notes_empty {
+        color: #8B8B8B !important;
+        text-align: left !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel #rm_ch_create_block #creator_notes_spoiler:empty {
+        display: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel #rm_ch_create_block :is(#creator_notes_spoiler, #creator_notes_empty) ~ * {
+        box-shadow: none !important;
+    }
+
+    /* 4) 슬라이더 손잡이: 흰색 + 그림자 (다른 규칙보다 우선) */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d) input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none !important;
+        width: 22px !important;
+        height: 22px !important;
+        margin-top: -9px !important;
+        border: 0.5px solid rgba(0, 0, 0, .08) !important;
+        border-radius: 50% !important;
+        background: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+        background-image: none !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .3), 0 0 1px rgba(0, 0, 0, .25) !important;
+        filter: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d) input[type="range"]::-moz-range-thumb {
+        background: #FFFFFF !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .3) !important;
+    }
+    /* ST의 커스텀 손잡이(.ui-slider-handle 등)도 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) :is(.ui-slider-handle, .range-thumb, [class*="slider-thumb"], [class*="slider_thumb"]) {
+        width: 22px !important;
+        height: 22px !important;
+        border: 0.5px solid rgba(0, 0, 0, .08) !important;
+        border-radius: 50% !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .3) !important;
+    }
+}

@@ -2054,10 +2054,26 @@ else init();
 // (따로 떨어져 이름과 겹치거나 혼자 동떨어지지 않게)
 (function slkAdoptForeignMesButtons() {
     const KNOWN = '.name_text, .mes_ghost, .timestamp, .mes_buttons, .mes_edit_buttons, .flex-container, .alignItemsBaseline';
+    const AVATAR_KNOWN = '.avatar, .mesIDDisplay, .mes_timer, .tokenCounterDisplay';
     const adopt = (mes) => {
         const ch = mes.querySelector(':scope .ch_name');
         const box = ch?.querySelector(':scope > .mes_buttons');
         if (!ch || !box) return;
+        // 프사 묶음 안에 확장이 넣은 버튼(↻ 등)도 버튼 묶음으로
+        mes.querySelectorAll(':scope > .mesAvatarWrapper > *').forEach(el => {
+            if (el.matches(AVATAR_KNOWN) || el.dataset.slkAdopted) return;
+            el.dataset.slkAdopted = '1';
+            el.classList.add('slk-adopted-btn');
+            box.insertBefore(el, box.firstChild);
+        });
+        // .mes 바로 아래에 붙은 작은 버튼(아이콘만 있는 것)도
+        mes.querySelectorAll(':scope > :is(.mes_button, [class*="fa-"], button)').forEach(el => {
+            if (el.matches('.swipe_left, .swipeRightBlock, .del_checkbox, .for_checkbox') || el.dataset.slkAdopted) return;
+            if ((el.textContent || '').trim().length > 2) return;
+            el.dataset.slkAdopted = '1';
+            el.classList.add('slk-adopted-btn');
+            box.insertBefore(el, box.firstChild);
+        });
         const cands = [
             ...ch.querySelectorAll(':scope > *'),
             ...ch.querySelectorAll(':scope > .flex-container > *'),
