@@ -15482,3 +15482,32 @@ body.slk-ui.slk-dark {
         display: contents !important;
     }
 }
+
+/* =====================================================================
+   1.4.65
+   ===================================================================== */
+:root { --slk-css-version: '1.4.65'; }
+@media screen and (max-width: 1000px) {
+    /* 고급 서식: 구역을 감싸는 테마 상자 테두리·그림자 전부 제거 (입력칸은 그대로) */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting div:not(.menu_button):not([class*="select2"]):not(:has(> select[data-preset-manager-for])):not([data-preset-manager-for]) {
+        border-top-color: transparent !important;
+        border-left-color: transparent !important;
+        border-right-color: transparent !important;
+        border-bottom-color: transparent !important;
+        box-shadow: none !important;
+        outline: none !important;
+        background-image: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting :is(h4, h3).standoutHeader::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting :is(h4, h3).standoutHeader::after,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting div:has(> :is(h4, h3).standoutHeader)::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting div:has(> :is(h4, h3).standoutHeader)::after {
+        content: none !important;
+        display: none !important;
+    }
+    /* 구역 사이에는 반듯한 연회색 선 하나만 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting > .flex-container.spaceEvenly > div + div {
+        border-top: 1px solid #EEEEEE !important;
+        border-radius: 0 !important;
+    }
+}
