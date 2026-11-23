@@ -3029,6 +3029,15 @@ else init();
             popup.slkHomeMarker.parentNode.insertBefore(popup, popup.slkHomeMarker);
         }
         const editor = document.getElementById('completion_prompt_manager_popup_edit');
+        // Keep the heading text inset independent of SillyTavern and external
+        // themes overriding H3 padding. Preserve translated title content.
+        const heading = editor?.querySelector(':scope > h3');
+        if (heading && !heading.querySelector('.slk-prompt-heading-text')) {
+            const inner = document.createElement('span');
+            inner.className = 'slk-prompt-heading-text';
+            while (heading.firstChild) inner.appendChild(heading.firstChild);
+            heading.appendChild(inner);
+        }
         const form = editor?.querySelector('.completion_prompt_manager_popup_entry_form');
         const footer = form?.querySelector(':scope > .completion_prompt_manager_popup_entry_form_footer');
         if (!form || !footer || form.querySelector(':scope > .slk-prompt-form-fields')) return;
