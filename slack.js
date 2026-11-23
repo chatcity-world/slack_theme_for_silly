@@ -2703,3 +2703,45 @@ else init();
         document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
 })();
+
+
+// v1.5.9 — Anchor SillyTavern's existing Backups panel to its actual button.
+// The native backup buttons and list remain intact; only positioning changes.
+(function slkAnchorChatBackups() {
+    let scheduled = false;
+    function sync() {
+        scheduled = false;
+        if (!document.body.classList.contains('slk-ui') ||
+            !window.matchMedia('(max-width: 1000px)').matches) return;
+        const popup = document.getElementById('select_chat_popup');
+        const panel = popup?.querySelector('.chatBackupsList');
+        const trigger = popup?.querySelector('[name="selectChatPopupHeader"] button.menu_button:has(.fa-box-open)');
+        if (!popup || !panel || !trigger || !panel.classList.contains('open')) return;
+        const popupRect = popup.getBoundingClientRect();
+        const triggerRect = trigger.getBoundingClientRect();
+        if (!popupRect.width || !triggerRect.width) return;
+        const value = Math.max(0, Math.round((triggerRect.bottom - popupRect.top + 8) * 100) / 100) + 'px';
+        if (popup.style.getPropertyValue('--slk-backups-top') !== value)
+            popup.style.setProperty('--slk-backups-top', value);
+    }
+    function schedule() {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(sync);
+    }
+    function start() {
+        const popup = document.getElementById('select_chat_popup');
+        if (!popup) return;
+        new MutationObserver(schedule).observe(popup, {
+            subtree: true, childList: true, attributes: true,
+            attributeFilter: ['class'],
+        });
+        window.addEventListener('resize', schedule);
+        window.addEventListener('orientationchange', schedule);
+        popup.addEventListener('click', schedule);
+        schedule();
+    }
+    if (document.readyState === 'loading')
+        document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();

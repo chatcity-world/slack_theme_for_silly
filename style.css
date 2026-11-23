@@ -18554,3 +18554,173 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     box-shadow: none !important;
     background: #F4EFF5 !important;
 }
+
+
+/* ===========================================================
+   v1.5.9 | Chat History: proper Backups dropdown + full metadata
+   Only affects SillyTavern's native #select_chat_popup.
+   =========================================================== */
+@media screen and (max-width: 1000px) {
+  /* Keep the header text clean: no stray help / inherited icon next to title. */
+  html body.slk-ui #select_chat_popup #selectChatPopupHeaderText .notes-link,
+  html body.slk-ui #select_chat_popup #selectChatPopupHeaderText .note-link-span {
+    display: none !important;
+  }
+
+  /* The Backups trigger remains part of the normal header grid. */
+  html body.slk-ui #select_chat_popup [name="selectChatPopupHeader"] button.menu_button:has(.fa-box-open) {
+    position: relative !important;
+    z-index: 8 !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
+    background: #FFFFFF !important;
+    border: 1px solid #D6D6D6 !important;
+    border-radius: 11px !important;
+    padding: 0 13px !important;
+    gap: 8px !important;
+    justify-content: flex-start !important;
+    font-size: 14px !important;
+  }
+  html body.slk-ui #select_chat_popup [name="selectChatPopupHeader"] button.menu_button:has(.fa-box-open) > .fa-chevron-down,
+  html body.slk-ui #select_chat_popup [name="selectChatPopupHeader"] button.menu_button:has(.fa-box-open) > .fa-chevron-up {
+    margin-left: auto !important;
+  }
+  html body.slk-ui #select_chat_popup [name="selectChatPopupHeader"] button.menu_button:has(.fa-box-open):has(.fa-chevron-up) {
+    background: #F7F2F8 !important;
+    border-color: #611F69 !important;
+  }
+
+  /* Floating dropdown, positioned below the trigger by a tiny JS helper.
+     It overlays the chat list instead of making the modal taller. */
+  html body.slk-ui #select_chat_popup .chatBackupsList.open:not(:empty) {
+    position: absolute !important;
+    z-index: 9 !important;
+    top: var(--slk-backups-top, 168px) !important;
+    left: 14px !important;
+    right: 14px !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: min(350px, calc(100% - var(--slk-backups-top, 168px) - 12px)) !important;
+    margin: 0 !important;
+    padding: 5px 0 !important;
+    border: 1px solid #DDDDDD !important;
+    border-radius: 14px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 12px 32px rgba(29,28,29,.16), 0 2px 8px rgba(29,28,29,.08) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  html body.slk-ui #select_chat_popup .chatBackupsList:not(.open),
+  html body.slk-ui #select_chat_popup .chatBackupsList:empty {
+    display: none !important;
+  }
+
+  /* One backup is a true dropdown item, not a tiny two-column card.
+     All metadata (including final message count) gets its OWN full-width row. */
+  html body.slk-ui #select_chat_popup .chatBackupsList .chatBackupsListItem {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto auto !important;
+    align-items: start !important;
+    justify-content: stretch !important;
+    gap: 5px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 110px !important;
+    margin: 0 !important;
+    padding: 12px 14px 10px !important;
+    box-sizing: border-box !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    border-bottom: 1px solid #F0F0F0 !important;
+    background: #FFFFFF !important;
+    box-shadow: none !important;
+  }
+  html body.slk-ui #select_chat_popup .chatBackupsList .chatBackupsListItem:hover,
+  html body.slk-ui #select_chat_popup .chatBackupsList .chatBackupsListItem:focus-within {
+    background: #F9F8FA !important;
+  }
+  html body.slk-ui #select_chat_popup .chatBackupsList .chatBackupsListItem:last-child {
+    border-bottom: 0 !important;
+  }
+  html body.slk-ui #select_chat_popup .chatBackupsList .chatBackupsListItemName {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    color: #1D1C1D !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    font-weight: 650 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  html body.slk-ui #select_chat_popup .chatBackupsList .chatBackupsListItemInfo {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    font-size: 12px !important;
+    line-height: 1.55 !important;
+    color: #616061 !important;
+    opacity: 1 !important;
+    /* Never cut the message count. Natural wrapping is intentional. */
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-break: keep-all !important;
+    overflow-wrap: anywhere !important;
+  }
+  html body.slk-ui #select_chat_popup .chatBackupsList .chatBackupsListItemActions {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 1px 0 0 !important;
+    padding: 0 !important;
+  }
+  html body.slk-ui #select_chat_popup .chatBackupsList .chatBackupsListItemActions .right_menu_button {
+    color: #616061 !important;
+    background: transparent !important;
+  }
+}
+
+/* On wider PC panels, never shorten the final backup message count either. */
+@media screen and (min-width: 1001px) {
+  html body.slk-ui #select_chat_popup .chatBackupsListItem {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto auto !important;
+    min-height: 100px !important;
+  }
+  html body.slk-ui #select_chat_popup .chatBackupsListItemInfo {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: anywhere !important;
+    word-break: keep-all !important;
+  }
+  html body.slk-ui #select_chat_popup .chatBackupsListItemActions {
+    grid-column: 1 / -1 !important;
+    grid-row: 3 !important;
+    justify-content: flex-end !important;
+  }
+}
