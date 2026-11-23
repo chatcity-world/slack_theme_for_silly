@@ -7551,8 +7551,8 @@ body.slk-ui {
         font-size: 0 !important;
     }
 
-    body.slk-ui #chat .mes_buttons .mes_button,
-    body.slk-ui #chat .extraMesButtons > div {
+    body.slk-ui #chat .mes_buttons .mes_button:not(.slk-foreign-action),
+    body.slk-ui #chat .extraMesButtons > div:not(.slk-foreign-action) {
         width: 32px !important;
         height: 30px !important;
         margin: 0 !important;
@@ -15486,7 +15486,7 @@ body.slk-ui.slk-dark {
 /* =====================================================================
    1.4.65
    ===================================================================== */
-:root { --slk-css-version: '1.4.83'; }
+:root { --slk-css-version: '1.4.84'; }
 @media screen and (max-width: 1000px) {
     /* 고급 서식: 구역을 감싸는 테마 상자 테두리·그림자 전부 제거 (입력칸은 그대로) */
     html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting div:not(.menu_button):not([class*="select2"]):not(:has(> select[data-preset-manager-for])):not([data-preset-manager-for]) {
@@ -15582,7 +15582,6 @@ body.slk-ui.slk-dark {
         color: #616061 !important;
         font-size: 17px !important;
         line-height: 1 !important;
-        background: transparent !important;
         border: 0 !important;
     }
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons > .extraMesButtons > .slk-adopted-btn.slk-action-noicon {
@@ -16584,5 +16583,22 @@ body.slk-ui.slk-dark {
 @media screen and (max-width: 1000px) {
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[data-slk-actions-flow] .mes_buttons > .extraMesButtons {
     transform: translateY(var(--slk-actions-shift, 0px)) !important;
+  }
+}
+
+/* 1.4.84 — Keep all installed extension actions visible in the expanded
+   message menu. Third-party icons can use Font Awesome, SVG, CSS backgrounds,
+   masks or emoji; do not reset their typography/background to transparent. */
+@media screen and (max-width: 1000px) {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
+    #chat .mes[data-slk-actions-flow] .mes_buttons > .extraMesButtons
+    > .slk-foreign-action:not(.slk-action-noicon):not([hidden]):not(.displayNone) {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 17px !important;
+    line-height: 1 !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
   }
 }

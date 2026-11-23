@@ -2064,7 +2064,7 @@ else init();
     else start();
 })();
 
-// v1.4.83 — 메시지 ⋯ 메뉴: ST 기본 아이콘 먼저, 타 확장 아이콘은 그 뒤에 배치.
+// v1.4.84 — 메시지 ⋯ 메뉴: ST 기본 아이콘 먼저, 타 확장 아이콘은 그 뒤에 배치.
 // 기존 두 개의 수집/정렬 옵저버를 하나로 통합합니다. 기존 DOM 버튼만 이동하므로 클릭 리스너는 유지됩니다.
 (function slkUnifiedMessageActions() {
     const states = new WeakMap();
@@ -2078,31 +2078,48 @@ else init();
         return Boolean(extra.style.display && extra.style.display !== 'none');
     }
 
-    // 정확한 확장 요소를 특정하기 어렵더라도, 헤더/아바타에 추가된 아이콘 버튼은
-    // 실제 행동 요소만 취급합니다. 메타데이터 및 레이아웃 컨테이너는 절대 옮기지 않습니다.
+    // v1.4.84 — The extension system does not mandate one button class or one
+    // injection location. Collect action elements from the message header and
+    // avatar area, not just special-case reload/refresh icons. Do not assume
+    // icons are Font Awesome: some extensions render CSS masks/backgrounds,
+    // emoji or inline text and those must remain usable.
     function foreignActions(mes, box) {
-        const title = mes.querySelector(':scope > .mes_block > .ch_name');
-        const candidates = [
-            ...mes.querySelectorAll(':scope > .mesAvatarWrapper > *, :scope > .mes_button, :scope > button, :scope > [role="button"]'),
-            ...(title ? title.querySelectorAll(':scope > *, :scope > .flex-container > *, :scope > .flex-container > .flex-container > *, :scope > .flex-container > .alignItemsBaseline > *') : []),
-        ];
-        const refreshSel = '.fa-rotate, .fa-arrows-rotate, .fa-refresh, .fa-sync, .fa-sync-alt, .fa-repeat, .fa-rotate-right, [title*="egenerate"], [title*="efresh"], [aria-label*="egenerate"], [aria-label*="efresh"], [data-action*="regen"], [data-action*="refresh"]';
-        // 다른 확장에서 더 깊이 넣은 새로고침 버튼도 찾되, 본문 내 콘텐츠는 제외합니다.
-        for (const node of mes.querySelectorAll(refreshSel)) {
-            const btn = node.closest('button, [role="button"], .mes_button, .menu_button') || node;
-            candidates.push(btn);
+        const header = mes.querySelector(':scope > .mes_block > .ch_name');
+        const avatar = mes.querySelector(':scope > .mesAvatarWrapper');
+        const scopes = [avatar, header].filter(Boolean);
+        const actionSelector = [
+            'button', '[role="button"]', 'a[href]', '.mes_button', '.menu_button',
+            '[data-action]', '[onclick]', '[tabindex]', '[title]', '[aria-label]',
+            '.fa-solid', '.fa-regular', '.fa-brands'
+        ].join(',');
+        const candidateSet = new Set();
+        for (const scope of scopes) {
+            for (const node of scope.querySelectorAll(actionSelector)) {
+                const action = node.closest('button, [role="button"], a[href], .mes_button, .menu_button, [data-action]') || node;
+                if (action === scope || candidateSet.has(action)) continue;
+                candidateSet.add(action);
+            }
         }
-        const skip = '.avatar, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .timestamp, .name_text, .mes_ghost, .swipe_left, .swipeRightBlock, .mes_buttons, .mes_edit_buttons, .extraMesButtons, .extraMesButtonsHint, .flex-container, .alignItemsBaseline, .for_checkbox, .del_checkbox';
-        return [...new Set(candidates)].filter(el => {
+        // Some extensions append a bare action next to the native message
+        // structure rather than inside the header. Only collect explicit action
+        // controls there, never user content or the swipe/navigation controls.
+        for (const node of mes.querySelectorAll(':scope > button, :scope > [role="button"], :scope > .mes_button, :scope > .menu_button')) {
+            candidateSet.add(node);
+        }
+        const skip = '.avatar, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .timestamp, .name_text, .mes_ghost, .swipe_left, .swipeRightBlock, .mes_buttons, .mes_edit_buttons, .extraMesButtons, .extraMesButtonsHint, .for_checkbox, .del_checkbox';
+        return [...candidateSet].filter(el => {
             if (!el?.isConnected || el === box || box.contains(el)) return false;
-            if (el.closest('.mes_text, .mes_reasoning_details, .mes_edit_buttons, .swipeRightBlock, .mes_media_wrapper')) return false;
-            if (el.matches(skip) || el.matches('input, label, select, textarea, a:not([role="button"]), [hidden], .displayNone')) return false;
-            if ((el.textContent || '').trim().length > 2) return false;
-            const action = el.matches('button, [role="button"], .mes_button, .menu_button, [class*="fa-"]') ||
-                el.querySelector('svg, i, img, [class*="fa-"]');
-            const c = getComputedStyle(el);
-            return Boolean(action) && el.style.display !== 'none' && c.display !== 'none' && c.visibility !== 'hidden';
-        });
+            if (el.matches(skip)) return false;
+            if (el.closest('.avatar, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_text, .mes_reasoning_details, .mes_edit_buttons, .swipeRightBlock, .mes_media_wrapper, .mes_file_wrapper, .mes_bias, .mes_buttons')) return false;
+            if (el.matches('input, label, select, textarea, [hidden], .displayNone, .mes_edit')) return false;
+            const explicit = el.matches('button, [role="button"], a[href], .mes_button, .menu_button, [data-action], [onclick], .fa-solid, .fa-regular, .fa-brands');
+            const iconHint = el.querySelector('svg, i, img, [class*="icon"], [class*="fa-"]');
+            const action = explicit || (iconHint && el.matches('[title], [aria-label], [tabindex]'));
+            if (!action || el.style.display === 'none' || el.style.visibility === 'hidden') return false;
+            const cs = getComputedStyle(el);
+            return cs.display !== 'none' && cs.visibility !== 'hidden';
+        }).filter(el => ![...candidateSet].some(parent => parent !== el &&
+            parent.contains(el) && parent.matches('button, [role="button"], a[href], .mes_button, .menu_button, [data-action]')));
     }
 
     function hasIcon(el) {
@@ -2181,14 +2198,17 @@ else init();
             el.classList.toggle('slk-action-pencil-duplicate', el.matches('.mes_edit'));
         }
 
-        // 2개의 빈 슬롯처럼 보이는 미표시 버튼을 포함해 실제 아이콘이 없는 항목을 제거.
-        // display:none 원본 인라인 값을 절대로 덮어쓰지 않습니다.
+        // Do not drop third-party actions for failing icon detection. Plugins
+        // frequently use custom masks, background images, emoji or delayed SVGs.
+        // Respect explicit hidden state; for native ST actions only, keep the
+        // older glyph check to avoid reserving empty conditional menu slots.
         for (const el of extra.children) {
-            const c = getComputedStyle(el);
-            const absent = el.hidden || el.hasAttribute('hidden') || el.style.display === 'none' ||
-                el.style.visibility === 'hidden' || el.style.opacity === '0' ||
-                c.visibility === 'hidden' || c.opacity === '0' || !hasIcon(el);
-            if (el.classList.contains('slk-action-noicon') !== absent) el.classList.toggle('slk-action-noicon', absent);
+            const cs = getComputedStyle(el);
+            const explicitHidden = el.hidden || el.hasAttribute('hidden') ||
+                el.classList.contains('displayNone') || el.style.display === 'none' ||
+                el.style.visibility === 'hidden' || cs.visibility === 'hidden';
+            const absent = explicitHidden || (isNative(el) && !hasIcon(el));
+            el.classList.toggle('slk-action-noicon', absent);
         }
         if (!mes.classList.contains('slk-mes-expanded')) mes.classList.add('slk-mes-expanded');
         if (!mes.hasAttribute('data-slk-actions-flow')) mes.setAttribute('data-slk-actions-flow', '');
