@@ -16766,3 +16766,742 @@ body.slk-ui {
 #slk-extension-settings .slk-ink-setting input[type="text"].slk-input-invalid {
     border-color: #D44A4A !important;
 }
+
+
+/* ================================================================
+   Slack UI · Desktop workspace (>= 1001px) · 1.5.0
+   Mobile remains untouched. Reuse native SillyTavern drawer toggles,
+   panels and their existing JS click handlers (no cloned controls).
+   ================================================================ */
+@media screen and (min-width: 1001px) {
+    html body.slk-ui {
+        --slk-pc-top: 64px;
+        --slk-pc-sidebar: 238px;
+        --slk-pc-gutter: 16px;
+        --topBarBlockSize: var(--slk-pc-top) !important;
+        background: #F8F7F8 !important;
+        color: #1D1C1D;
+        font-family: var(--slk-font);
+    }
+    /* Native desktop top icons are repositioned, not removed. */
+    html body.slk-ui #top-bar { display: none !important; }
+    html body.slk-ui #slk-mobile-footer { display: none !important; }
+    html body.slk-ui #slk-header {
+        display: flex !important;
+        position: fixed !important;
+        inset: 0 0 auto 0 !important;
+        box-sizing: border-box;
+        z-index: 3050 !important;
+        width: 100%;
+        height: var(--slk-pc-top);
+        padding: 0 20px 0 18px;
+        align-items: center;
+        justify-content: space-between;
+        background: #350D36;
+        color: #FFF;
+        border: 0;
+        box-shadow: none;
+    }
+    html body.slk-ui #slk-header button {
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        font-family: var(--slk-font);
+    }
+    html body.slk-ui #slk-header > #slk-ws {
+        display: flex;
+        align-items: center;
+        flex: 0 0 var(--slk-pc-sidebar);
+        min-width: 0;
+        padding: 0;
+        gap: 10px;
+        border: 0;
+        background: transparent;
+        color: #FFF;
+        text-align: left;
+    }
+    html body.slk-ui #slk-header .slk-ws-avatar {
+        flex: 0 0 36px;
+        position: relative;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+        color: #4A154B;
+        background: #FFF;
+    }
+    html body.slk-ui #slk-header .slk-ws-avatar img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: inherit;
+    }
+    html body.slk-ui #slk-header .slk-ws-avatar:not(.has-img) img {display: none;}
+    html body.slk-ui #slk-header .slk-ws-initial {
+        display: none;
+        font-size: 18px;
+        font-weight: 900;
+    }
+    html body.slk-ui #slk-header .slk-ws-avatar:not(.has-img) .slk-ws-initial {display: block;}
+    html body.slk-ui #slk-header .slk-ws-text {
+        display: flex;
+        align-items: baseline;
+        min-width: 0;
+        gap: 7px;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    html body.slk-ui #slk-header .slk-ws-name {
+        font-size: 19px;
+        font-weight: 900;
+        letter-spacing: -0.3px;
+    }
+    html body.slk-ui #slk-header :is(.slk-ws-ver, .slk-ws-branch) {
+        font-size: 12px;
+        color: rgba(255,255,255,.67);
+    }
+    html body.slk-ui #slk-header .slk-ws-branch[hidden] {display: none;}
+    html body.slk-ui #slk-header .slk-header-actions {display: flex; align-items: center; margin-left: auto;}
+    html body.slk-ui #slk-header #slk-settings-btn {
+        display: grid;
+        place-items: center;
+        flex: 0 0 36px;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: 1px solid rgba(255,255,255,.27);
+        border-radius: 10px;
+        background: rgba(255,255,255,.10);
+        color: #FFF;
+        transition: background .15s;
+    }
+    html body.slk-ui #slk-header #slk-settings-btn:hover,
+    html body.slk-ui #slk-header #slk-settings-btn.slk-active {
+        background: rgba(255,255,255,.24);
+    }
+    /* Chat identity sits in the desktop top bar, not in the sidebar. */
+    html body.slk-ui #slk-header #slk-chat-head {
+        display: flex;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: calc(var(--slk-pc-sidebar) + 31px);
+        right: 94px;
+        align-items: center;
+        pointer-events: none;
+    }
+    html body.slk-ui:not(.slk-in-chat) #slk-chat-head {display: none !important;}
+    html body.slk-ui #slk-header #slk-chat-back {display: none !important;}
+    html body.slk-ui #slk-header #slk-chat-title {
+        display: inline-flex;
+        max-width: 100%;
+        min-width: 0;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 10px;
+        border: 0;
+        border-radius: 9px;
+        background: transparent;
+        color: #FFF;
+        text-align: left;
+        pointer-events: auto;
+    }
+    html body.slk-ui #slk-header #slk-chat-title:hover {background: rgba(255,255,255,.11);}
+    html body.slk-ui #slk-chat-title .slk-ch-av {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    html body.slk-ui #slk-chat-title .slk-ch-av[hidden] {display: none;}
+    html body.slk-ui #slk-chat-title .slk-ch-text {display:flex; flex-direction:column; min-width:0; line-height:1.1; gap:4px;}
+    html body.slk-ui #slk-chat-title .slk-ch-name {font-size:14px; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+    html body.slk-ui #slk-chat-title .slk-ch-count {display:inline-flex; align-items:center; gap:5px; font-size:11px; color:rgba(255,255,255,.75);}
+    /* Settings dropdown is outside the sidebar and remains clickable. */
+    html body.slk-ui #slk-settings-menu {
+        display: block;
+        position: fixed;
+        top: calc(var(--slk-pc-top) + 8px);
+        right: 17px;
+        z-index: 3060;
+        width: 218px;
+        box-sizing: border-box;
+        padding: 6px;
+        border: 1px solid #E9E5E9;
+        border-radius: 13px;
+        background: #FFF;
+        box-shadow: 0 12px 36px rgba(35,15,35,.16);
+    }
+    html body.slk-ui #slk-settings-menu[hidden] {display: none !important;}
+    html body.slk-ui #slk-settings-menu .slk-menu-item {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+        gap: 11px;
+        padding: 11px 12px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: #373238;
+        font: 600 13px var(--slk-font);
+        cursor: pointer;
+        text-align: left;
+    }
+    html body.slk-ui #slk-settings-menu .slk-menu-item:hover {background: #F4EFF5;}
+    html body.slk-ui #slk-settings-menu .slk-menu-icon {display:grid; place-items:center; color:#645764;}
+    html body.slk-ui #slk-settings-menu .slk-menu-icon svg {width:19px; height:19px;}
+
+    /* True desktop workspace navigation: 7 original SillyTavern drawers. */
+    html body.slk-ui #top-settings-holder {
+        position: fixed !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        gap: 4px !important;
+        box-sizing: border-box !important;
+        top: var(--slk-pc-top) !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        right: auto !important;
+        width: var(--slk-pc-sidebar) !important;
+        max-width: var(--slk-pc-sidebar) !important;
+        height: calc(100dvh - var(--slk-pc-top)) !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 50px 12px 30px !important;
+        background: #F7F4F7 !important;
+        border: 0 !important;
+        border-right: 1px solid #E9E3E9 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+        filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+        overflow: visible !important;
+        z-index: 3010 !important;
+    }
+    html body.slk-ui #top-settings-holder::before {
+        content: 'WORKSPACE';
+        position: absolute;
+        top: 20px;
+        left: 22px;
+        font: 800 10px var(--slk-font);
+        letter-spacing: 1.4px;
+        color: #938393;
+        pointer-events: none;
+    }
+    html body.slk-ui #top-settings-holder::after {
+        content: 'SLACK UI  ·  SILLYTAVERN';
+        position: absolute;
+        left: 21px;
+        bottom: 20px;
+        font: 700 10px var(--slk-font);
+        letter-spacing: .45px;
+        color: #A79BA7;
+        pointer-events: none;
+    }
+    html body.slk-ui #top-settings-holder > .drawer {
+        display: flex !important;
+        flex: 0 0 45px !important;
+        justify-content: stretch !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 45px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        overflow: visible !important;
+    }
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle {
+        display: flex !important;
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        height: 43px !important;
+        min-height: 43px !important;
+        box-sizing: border-box !important;
+        padding: 0 12px !important;
+        margin: 0 !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        gap: 13px !important;
+        border: 0 !important;
+        border-radius: 9px !important;
+        background: transparent !important;
+        color: #5D535E !important;
+        cursor: pointer !important;
+        box-shadow: none !important;
+        transition: background .15s ease, color .15s ease;
+        text-decoration: none;
+    }
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle:hover {background: #ECE5EC !important;}
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle > .drawer-icon {display: none !important;}
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle > .slk-tab-icon {
+        display: grid !important;
+        flex: 0 0 22px;
+        place-items: center;
+        color: inherit !important;
+        line-height: 1;
+    }
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle .slk-tab-icon svg {
+        display: block;
+        width: 21px !important;
+        height: 21px !important;
+        stroke-width: 1.85;
+    }
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle::after {
+        content: attr(aria-label);
+        display: block;
+        min-width: 0;
+        font: 700 14px var(--slk-font);
+        white-space: nowrap;
+    }
+    html body.slk-ui #top-settings-holder > .drawer:has(.drawer-icon.openIcon) > .drawer-toggle {
+        background: #EDE3EF !important;
+        color: #4A154B !important;
+    }
+    html body.slk-ui #top-settings-holder > .drawer:has(.drawer-icon.openIcon) > .drawer-toggle::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 3px;
+        height: 23px;
+        border-radius: 0 5px 5px 0;
+        background: #611F69;
+    }
+    /* Header gear opens native drawers for these hidden navigation icons. */
+    html body.slk-ui #top-settings-holder > :is(#user-settings-button, #backgrounds-button) {
+        width: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        flex: 0 0 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        /* Keep these drawers visible to the header menu; hide only their rail toggles. */
+        visibility: visible;
+    }
+    html body.slk-ui #top-settings-holder > :is(#user-settings-button, #backgrounds-button) > .drawer-toggle {
+        display: none !important;
+    }
+    /* Live native content panels: slide over workspace, not inside rail. */
+    html body.slk-ui #top-settings-holder .drawer-content,
+    html body.slk-ui #left-nav-panel,
+    html body.slk-ui #right-nav-panel {
+        position: fixed !important;
+        top: calc(var(--slk-pc-top) + var(--slk-pc-gutter)) !important;
+        bottom: var(--slk-pc-gutter) !important;
+        right: var(--slk-pc-gutter) !important;
+        left: auto !important;
+        width: min(630px, calc(100vw - var(--slk-pc-sidebar) - 42px)) !important;
+        max-width: calc(100vw - var(--slk-pc-sidebar) - 42px) !important;
+        height: calc(100dvh - var(--slk-pc-top) - 2 * var(--slk-pc-gutter)) !important;
+        max-height: calc(100dvh - var(--slk-pc-top) - 2 * var(--slk-pc-gutter)) !important;
+        box-sizing: border-box !important;
+        padding: 20px 22px 25px !important;
+        border: 1px solid #E8E3E9 !important;
+        border-radius: 15px !important;
+        background: #FFF !important;
+        box-shadow: -12px 0 44px rgba(32,18,36,.09), 0 8px 22px rgba(0,0,0,.05) !important;
+        z-index: 3030 !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+    }
+    html body.slk-ui #top-settings-holder .drawer-content:not(.openDrawer) {
+        pointer-events: none !important;
+    }
+    html body.slk-ui #top-settings-holder .drawer-content :is(h2, h3, h4) {
+        color: #1D1C1D;
+    }
+    html body.slk-ui #top-settings-holder .drawer-content :is(input[type='text'],input[type='number'],input[type='search'],textarea,select) {
+        border-color: #DEDADE;
+        border-radius: 8px;
+        background-color: #FFF;
+        color: #1D1C1D;
+    }
+    html body.slk-ui #top-settings-holder .drawer-content .menu_button:not(.fa-solid):not(.fa-regular) {
+        border-radius: 8px;
+    }
+    /* Main conversation canvas, independent from the native floating panel. */
+    html body.slk-ui #sheld {
+        position: fixed !important;
+        display: flex !important;
+        flex-direction: column !important;
+        top: calc(var(--slk-pc-top) + var(--slk-pc-gutter)) !important;
+        bottom: var(--slk-pc-gutter) !important;
+        left: calc(var(--slk-pc-sidebar) + var(--slk-pc-gutter)) !important;
+        right: var(--slk-pc-gutter) !important;
+        width: auto !important;
+        max-width: none !important;
+        height: calc(100dvh - var(--slk-pc-top) - 2 * var(--slk-pc-gutter)) !important;
+        max-height: none !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 1px solid #EBE6EB !important;
+        border-radius: 16px !important;
+        background: #FFF !important;
+        box-shadow: 0 3px 18px rgba(35,25,35,.035) !important;
+        overflow: hidden !important;
+    }
+    html body.slk-ui #sheldheader {display: none !important;}
+    html body.slk-ui #sheld #chat {
+        position: relative !important;
+        display: block !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        padding: 18px 28px 24px !important;
+        border: 0 !important;
+        background: #FFF !important;
+        box-shadow: none !important;
+        overflow-y: auto !important;
+    }
+    html body.slk-ui #chat > .mes,
+    html body.slk-ui #chat > .welcomePanel {
+        max-width: 970px;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    html body.slk-ui #chat .mes {border-color: #F0EDF0;}
+    html body.slk-ui #chat .mes_text {
+        font-family: var(--slk-font) !important;
+        font-size: var(--slk-chat-font-size, 15px) !important;
+        line-height: var(--slk-chat-line-height, 1.6) !important;
+        letter-spacing: calc(-.01em + var(--slk-chat-letter-spacing-adjust, 0px)) !important;
+        color: #1D1C1D;
+    }
+    html body.slk-ui #chat .mes_text q {
+        box-decoration-break: clone;
+        -webkit-box-decoration-break: clone;
+        padding: 2px 4px;
+        border-radius: 5px;
+        background-color: var(--slk-dialogue-bg, #EFEFEF) !important;
+    }
+    html body.slk-ui #sheld #form_sheld {
+        position: relative !important;
+        display: block !important;
+        flex: 0 0 auto !important;
+        top: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
+        width: 100% !important;
+        max-width: none !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        padding: 12px clamp(20px, 5vw, 56px) 20px !important;
+        border: 0 !important;
+        background: #FFF !important;
+        box-shadow: 0 -8px 22px rgba(255,255,255,.96);
+    }
+    html body.slk-ui #sheld #send_form {
+        position: relative !important;
+        display: flex;
+        width: min(100%, 970px) !important;
+        max-width: 970px !important;
+        box-sizing: border-box !important;
+        margin: 0 auto !important;
+        padding: 8px 13px !important;
+        min-height: 58px;
+        border: 1px solid #D7D3D8 !important;
+        border-radius: 12px !important;
+        background: #FFF !important;
+        box-shadow: none !important;
+    }
+    html body.slk-ui #sheld #send_textarea {
+        min-height: 32px;
+        max-height: 220px;
+        border: 0 !important;
+        outline-offset: 3px;
+        background: transparent !important;
+        font-family: var(--slk-font);
+    }
+    /* Desktop skin on global overlays (preserve native scrolling). */
+    html body.slk-ui dialog.popup {
+        border: 1px solid #E5DFE5 !important;
+        border-radius: 17px !important;
+        background: #FFF !important;
+        color: #1D1C1D;
+        box-shadow: 0 20px 70px rgba(31,15,33,.20) !important;
+    }
+    html body.slk-ui dialog.popup .popup-body {background: #FFF; border-radius: inherit;}
+    html body.slk-ui dialog.popup :is(.popup-content, .popup-controls) {background: #FFF;}
+    /* Set only requested text colors; prose, *emphasis*, dialogue and code are independent. */
+    html body.slk-ui.slk-ink-narration #chat .mes_text,
+    html body.slk-ui.slk-ink-narration #chat .mes_text :is(p,span,div,li,blockquote,strong,b,u):not(q *):not(pre *):not(code *) {
+        color: var(--slk-ink-narration) !important;
+    }
+    html body.slk-ui.slk-ink-dialogue #chat .mes_text q,
+    html body.slk-ui.slk-ink-dialogue #chat .mes_text q * {
+        color: var(--slk-ink-dialogue) !important;
+    }
+    html body.slk-ui.slk-ink-ascii #chat .mes_text em:not(q em):not(pre em):not(code em),
+    html body.slk-ui.slk-ink-ascii #chat .mes_text em:not(q em):not(pre em):not(code em) * {
+        color: var(--slk-ink-ascii, #999999) !important;
+    }
+    html body.slk-ui.slk-ink-code #chat .mes_text pre,
+    html body.slk-ui.slk-ink-code #chat .mes_text pre *,
+    html body.slk-ui.slk-ink-code #chat .mes_text .code-block,
+    html body.slk-ui.slk-ink-code #chat .mes_text .code-block * {
+        color: var(--slk-ink-code) !important;
+    }
+}
+/* A narrower desktop retains the workspace layout, with a compact nav. */
+@media screen and (min-width: 1001px) and (max-width: 1199px) {
+    html body.slk-ui {--slk-pc-sidebar: 194px; --slk-pc-gutter: 12px;}
+    html body.slk-ui #top-settings-holder {padding-left: 8px !important; padding-right: 8px !important;}
+    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle {gap: 10px !important; padding-left: 10px !important;}
+    html body.slk-ui #top-settings-holder .drawer-content,
+    html body.slk-ui #right-nav-panel,
+    html body.slk-ui #left-nav-panel {
+        width: min(530px, calc(100vw - 220px)) !important;
+        max-width: calc(100vw - 220px) !important;
+    }
+}
+
+
+/* v1.5.1 — Home shortcut labels and User Settings header only. */
+body.slk-ui .welcomePanel .welcomeShortcuts .menu_button span {
+    font-size: 12px !important;
+}
+
+/* Remove the blue left accent on the User Settings header + language row. */
+html body.slk-ui #user-settings-block > .flex-container:first-child,
+html body.slk-ui #user-settings-block [name="userSettingsRowOne"],
+html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-container:first-child,
+html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-container:first-child > .flex-container {
+    border-left: 0 !important;
+    border-inline-start: 0 !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+html body.slk-ui #user-settings-block > .flex-container:first-child::before,
+html body.slk-ui #user-settings-block [name="userSettingsRowOne"]::before,
+html body.slk-ui #user-settings-block [name="userSettingsRowOne"]::after,
+html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-container:first-child::before,
+html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-container:first-child::after,
+html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-container:first-child > .flex-container::before {
+    content: none !important;
+    display: none !important;
+}
+
+
+/* ===================================================
+   v1.5.2 — Chat history popup polish
+   =================================================== */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui .slk-modal {
+        position: relative !important;
+        width: calc(100vw - 24px) !important;
+        max-width: 820px !important;
+        max-height: calc(100dvh - 84px) !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        border: 1px solid #E8E8E8 !important;
+        border-radius: 18px !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 20px 56px rgba(29, 28, 29, .18), 0 4px 16px rgba(29, 28, 29, .08) !important;
+        overflow: hidden auto !important;
+    }
+
+    html body.slk-ui .slk-modal > :first-child {
+        border-top-left-radius: 18px !important;
+        border-top-right-radius: 18px !important;
+    }
+
+    html body.slk-ui .slk-modal > :last-child {
+        border-bottom-left-radius: 18px !important;
+        border-bottom-right-radius: 18px !important;
+    }
+
+    html body.slk-ui .slk-modal :is(i, .fa, .fa-solid, .fa-regular, .fa-light, .fa-brands, svg) {
+        color: #616061 !important;
+        fill: currentColor !important;
+        stroke: currentColor;
+    }
+
+    html body.slk-ui .slk-modal :is(button, .menu_button, [role="button"]) {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+    }
+
+    html body.slk-ui .slk-modal :is(button, .menu_button, [role="button"]):not(.slk-modal-close) {
+        min-height: 44px !important;
+        padding: 0 16px !important;
+        border: 1px solid #DDDDDD !important;
+        border-radius: 10px !important;
+        background: #FFFFFF !important;
+        color: #1D1C1D !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+    }
+
+    html body.slk-ui .slk-modal :is(button, .menu_button, [role="button"]):not(.slk-modal-close):active {
+        background: #F8F8F8 !important;
+    }
+
+    html body.slk-ui .slk-modal :is(button, .menu_button, [role="button"]).slk-modal-primary:not(.slk-modal-close) {
+        border-color: #007A5A !important;
+        background: #007A5A !important;
+        color: #FFFFFF !important;
+    }
+
+    html body.slk-ui .slk-modal :is(button, .menu_button, [role="button"]):has(> i:only-child),
+    html body.slk-ui .slk-modal :is(button, .menu_button, [role="button"]):has(> svg:only-child) {
+        min-width: 44px !important;
+        width: 44px !important;
+        padding: 0 !important;
+        border-radius: 10px !important;
+    }
+
+    html body.slk-ui .slk-modal .slk-modal-close,
+    html body.slk-ui .slk-modal :is(button, .menu_button, [role="button"])[aria-label*="close" i],
+    html body.slk-ui .slk-modal :is(button, .menu_button, [role="button"])[title*="close" i] {
+        border: 1px solid #DDDDDD !important;
+        border-radius: 999px !important;
+        background: #FFFFFF !important;
+        color: #616061 !important;
+        min-width: 36px !important;
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        box-shadow: none !important;
+    }
+
+    html body.slk-ui .slk-modal :is(textarea, input[type="text"], input:not([type])) {
+        min-height: 44px !important;
+        padding: 0 14px !important;
+        border: 1px solid #BBBBBB !important;
+        border-radius: 10px !important;
+        background: #FFFFFF !important;
+        color: #1D1C1D !important;
+        font-size: 16px !important;
+    }
+
+    html body.slk-ui .slk-modal textarea {
+        min-height: 96px !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+    }
+
+    html body.slk-ui .slk-modal :is(textarea, input):focus {
+        border-color: #1264A3 !important;
+        box-shadow: 0 0 0 3px rgba(18, 100, 163, .18) !important;
+    }
+
+    html body.slk-ui .slk-modal > div,
+    html body.slk-ui .slk-modal > section,
+    html body.slk-ui .slk-modal > header,
+    html body.slk-ui .slk-modal > footer {
+        background: #FFFFFF !important;
+    }
+
+    html body.slk-ui .slk-modal > :is(div, section, header, footer):first-child {
+        padding-top: 18px !important;
+    }
+
+    html body.slk-ui .slk-modal :is(div, section):has(> :is(input, textarea, button, .menu_button)) {
+        border-color: #EEEEEE !important;
+    }
+
+    /* Chat log list cards */
+    html body.slk-ui .slk-modal :is(div, section)[style*="background: rgb(237, 237, 248)"],
+    html body.slk-ui .slk-modal :is(div, section)[style*="background-color: rgb(237, 237, 248)"] {
+        background: #ECEBFF !important;
+        border: 1px solid #DDD9FF !important;
+        border-radius: 14px !important;
+        padding: 14px 14px 12px !important;
+    }
+
+    html body.slk-ui .slk-modal :is(div, section)[style*="background: rgb(248, 248, 248)"],
+    html body.slk-ui .slk-modal :is(div, section)[style*="background-color: rgb(248, 248, 248)"],
+    html body.slk-ui .slk-modal :is(div, section)[style*="background: rgb(255, 255, 255)"],
+    html body.slk-ui .slk-modal :is(div, section)[style*="background-color: rgb(255, 255, 255)"] {
+        border: 1px solid #E8E8E8 !important;
+        border-radius: 14px !important;
+        padding: 14px 14px 12px !important;
+        background: #FFFFFF !important;
+    }
+
+    /* neutralize old bright blue action icons */
+    html body.slk-ui .slk-modal [style*="color: rgb(0, 102, 204)"],
+    html body.slk-ui .slk-modal [style*="color:#0066cc"],
+    html body.slk-ui .slk-modal [style*="color: #0066cc"],
+    html body.slk-ui .slk-modal [style*="color: rgb(59, 130, 246)"] {
+        color: #616061 !important;
+    }
+
+    html body.slk-ui .slk-modal [style*="background-color: rgb(122, 185, 235)"],
+    html body.slk-ui .slk-modal [style*="background: rgb(122, 185, 235)"] {
+        background: #F8F8F8 !important;
+        border: 1px solid #DDDDDD !important;
+        color: #616061 !important;
+    }
+}
+
+
+/* v1.5.3 — Chat-history popup typography.
+   The chat history is #select_chat_popup, NOT a .popup or .slk-modal.
+   Preserve Font Awesome icon fonts and change text nodes only. */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui #select_chat_popup,
+    html body.slk-ui #select_chat_popup :not(i):not(svg):not([class*="fa-"]):not(.fa) {
+        font-family: var(--slk-font, 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
+        letter-spacing: -0.01em !important;
+        font-variant-ligatures: normal;
+    }
+
+    /* Files, dates, statistics, text previews, and backup item rows. */
+    html body.slk-ui #select_chat_popup :is(
+        .select_chat_block_filename,
+        .select_chat_block_filename_item,
+        .chat_messages_date,
+        .chat_file_size,
+        .chat_messages_num,
+        .select_chat_block_mes,
+        .chatBackupsListItemName,
+        .chatBackupsListItemInfo
+    ) {
+        font-family: var(--slk-font, 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
+        font-weight: 400;
+        letter-spacing: -0.01em !important;
+        font-variant-numeric: proportional-nums;
+        text-transform: none !important;
+    }
+
+    html body.slk-ui #select_chat_popup :is(.select_chat_block_filename, .chatBackupsListItemName) {
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+        overflow-wrap: anywhere;
+    }
+
+    html body.slk-ui #select_chat_popup :is(.select_chat_block_mes, .chatBackupsListItemInfo) {
+        font-size: 13px !important;
+        line-height: 1.5 !important;
+    }
+
+    html body.slk-ui #select_chat_popup :is(.chat_messages_date, .chat_file_size, .chat_messages_num) {
+        font-size: 12px !important;
+        line-height: 1.4 !important;
+    }
+}

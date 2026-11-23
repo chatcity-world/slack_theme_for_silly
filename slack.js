@@ -2283,7 +2283,7 @@ else init();
         // logo on the *next initial loading screen*, before slack.js is evaluated.
         const imageUrl = slkSelectedLogoUrl();
         const quotedUrl = JSON.stringify(imageUrl);
-        const splashImageCss = `@media screen and (max-width: 1000px) {
+        const splashImageCss = `@media screen {
             #loader.splash-screen .splash-logo { display: none !important; }
             #loader.splash-screen::after {
                 content: '' !important; display: block !important; order: 0 !important;
