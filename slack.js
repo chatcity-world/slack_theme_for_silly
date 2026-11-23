@@ -29,16 +29,25 @@ function slkSavePreference(key, value) {
     catch { window.toastr?.error('설정 저장 공간이 부족합니다. 이미지 용량을 확인해 주세요.'); return false; }
 }
 
-function slkApplyHeaderImage() {
-    const avatar = document.querySelector('#slk-header .slk-ws-avatar');
-    const image = avatar?.querySelector('img');
-    if (!image) return;
-    const mode = SLK_UI_SETTINGS.headerImageMode;
-    const src = mode === 'custom'
+function slkSelectedLogoUrl() {
+    // Both the startup splash and the header share the same image selection.
+    return SLK_UI_SETTINGS.headerImageMode === 'custom'
         ? SLK_DEFAULT_HEADER_IMAGE
         : SLK_SLACK_HEADER_IMAGE;
-    if (image.getAttribute('src') !== src) image.src = src;
-    avatar.classList.add('has-img');
+}
+
+function slkApplyHeaderImage() {
+    const src = slkSelectedLogoUrl();
+    const avatar = document.querySelector('#slk-header .slk-ws-avatar');
+    const image = avatar?.querySelector('img');
+    if (image) {
+        if (image.getAttribute('src') !== src) image.src = src;
+        avatar.classList.add('has-img');
+    }
+    // Also update a currently visible splash (the pre-boot CSS below handles the next launch).
+    document.querySelectorAll('#loader.splash-screen .splash-logo').forEach(logo => {
+        if (logo.tagName === 'IMG' && logo.getAttribute('src') !== src) logo.src = src;
+    });
 }
 
 function applySlackUiSettings() {
@@ -140,9 +149,9 @@ function buildSlackUiExtensionSettings() {
                     </div>
                     <div class="slk-preference-hint">기본값은 현재 테마의 대사 배경색입니다.</div>
                 </section>
-                <section class="slk-preference-section" aria-label="헤더 이미지 설정">
-                    <div class="slk-preference-heading">헤더 이미지</div>
-                    <div class="slk-header-image-options" role="radiogroup" aria-label="헤더 이미지 종류">
+                <section class="slk-preference-section" aria-label="시작화면 / 헤더 이미지 설정">
+                    <div class="slk-preference-heading">시작화면 / 헤더 이미지</div>
+                    <div class="slk-header-image-options" role="radiogroup" aria-label="시작화면 / 헤더 이미지 종류">
                         <label><input type="radio" name="slk-header-image-mode" value="slack"><span>Slack</span></label>
                         <label><input type="radio" name="slk-header-image-mode" value="custom"><span>등록한 이미지</span></label>
                     </div>
@@ -269,7 +278,7 @@ function buildSlackUiExtensionSettings() {
         SLK_UI_SETTINGS.headerImageMode = radio.value;
         slkSavePreference('slk-ui-header-image-mode', radio.value);
         syncAvatarFields();
-        slkApplyHeaderImage();
+        applySlackUiSettings(); // refresh header, visible splash, and saved next-launch splash CSS
     }));
     syncAvatarFields();
 }
@@ -2179,7 +2188,24 @@ else init();
 (function slkBootSplashCss() {
     const START = '/* ==== Slack UI 시작 화면 (자동 추가 — 지우지 마세요) ==== */';
     const END = '/* ==== /Slack UI 시작 화면 ==== */';
-    const BLOCK = START + '\n' + "@font-face { font-family: 'SlackBootLato'; font-style: normal; font-weight: 900; font-display: block; src: url(https://fonts.gstatic.com/s/lato/v25/S6u9w4BMUTPHh50Xew8.ttf) format('truetype'); } @media screen and (max-width: 1000px) { #preloader { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: #4A154B !important; box-shadow: none !important; outline: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo))::backdrop { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content) { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; overflow: hidden !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) .popup-controls { display: none !important; } #loader { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 28px !important; width: 100% !important; height: 100% !important; background: transparent !important; color: #FFFFFF !important; } #loader::before { content: 'Slack'; order: 1; margin: -10px 0 0; color: #FFFFFF; font-family: 'Lato', 'SlackBootLato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -0.02em; } #loader .splash-logo { order: 0; width: 96px !important; height: 96px !important; object-fit: cover !important; border-radius: 24px !important; filter: none !important; box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important; } #loader #load-spinner, #preloader #load-spinner { order: 2; position: static !important; width: 28px !important; height: 28px !important; margin-top: 18px; font-size: 0 !important; color: transparent !important; border: 3px solid rgba(255, 255, 255, .25) !important; border-top-color: #FFFFFF !important; border-radius: 50% !important; box-sizing: border-box !important; animation: slk-boot-spin .8s linear infinite !important; } #loader #load-spinner::before { content: none !important; display: none !important; } #loader .splash-message { order: 3; margin: -12px 0 0 !important; color: rgba(255, 255, 255, .82) !important; font-family: 'Lato', 'SlackBootLato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important; font-size: 15px !important; font-weight: 600 !important; text-shadow: none !important; } } @keyframes slk-boot-spin { to { transform: rotate(360deg); } } @media screen and (max-width: 1000px) { dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) * { border-color: transparent !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content, #loader, .splash-screen) { background: transparent !important; border: 0 !important; box-shadow: none !important; outline: none !important; } }" + '\n' + END;
+    const BOOT_CSS = "@font-face { font-family: 'SlackBootLato'; font-style: normal; font-weight: 900; font-display: block; src: url(https://fonts.gstatic.com/s/lato/v25/S6u9w4BMUTPHh50Xew8.ttf) format('truetype'); } @media screen and (max-width: 1000px) { #preloader { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: #4A154B !important; box-shadow: none !important; outline: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo))::backdrop { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content) { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; overflow: hidden !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) .popup-controls { display: none !important; } #loader { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 28px !important; width: 100% !important; height: 100% !important; background: transparent !important; color: #FFFFFF !important; } #loader::before { content: 'Slack'; order: 1; margin: -10px 0 0; color: #FFFFFF; font-family: 'Lato', 'SlackBootLato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -0.02em; } #loader .splash-logo { order: 0; width: 96px !important; height: 96px !important; object-fit: cover !important; border-radius: 24px !important; filter: none !important; box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important; } #loader #load-spinner, #preloader #load-spinner { order: 2; position: static !important; width: 28px !important; height: 28px !important; margin-top: 18px; font-size: 0 !important; color: transparent !important; border: 3px solid rgba(255, 255, 255, .25) !important; border-top-color: #FFFFFF !important; border-radius: 50% !important; box-sizing: border-box !important; animation: slk-boot-spin .8s linear infinite !important; } #loader #load-spinner::before { content: none !important; display: none !important; } #loader .splash-message { order: 3; margin: -12px 0 0 !important; color: rgba(255, 255, 255, .82) !important; font-family: 'Lato', 'SlackBootLato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important; font-size: 15px !important; font-weight: 600 !important; text-shadow: none !important; } } @keyframes slk-boot-spin { to { transform: rotate(360deg); } } @media screen and (max-width: 1000px) { dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) * { border-color: transparent !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content, #loader, .splash-screen) { background: transparent !important; border: 0 !important; box-shadow: none !important; outline: none !important; } }";
+    const buildBlock = () => {
+        // custom_css is loaded by SillyTavern before extensions: this also matches the chosen
+        // logo on the *next initial loading screen*, before slack.js is evaluated.
+        const imageUrl = slkSelectedLogoUrl();
+        const quotedUrl = JSON.stringify(imageUrl);
+        const splashImageCss = `@media screen and (max-width: 1000px) {
+            #loader.splash-screen .splash-logo { display: none !important; }
+            #loader.splash-screen::after {
+                content: '' !important; display: block !important; order: 0 !important;
+                flex: 0 0 96px !important; width: 96px !important; height: 96px !important;
+                border-radius: 24px !important;
+                background: url(${quotedUrl}) center / cover no-repeat !important;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important;
+            }
+        }`;
+        return START + '\n' + BOOT_CSS + '\n' + splashImageCss + '\n' + END;
+    };
     const strip = (s) => {
         const i = s.indexOf(START), j = s.indexOf(END);
         if (i === -1 || j === -1) return s;
@@ -2191,7 +2217,7 @@ else init();
         if (!pu || typeof pu.custom_css !== 'string') return false;
         const current = pu.custom_css;
         const base = strip(current);
-        const next = SLK_UI_SETTINGS.enabled ? (base ? base + '\n\n' : '') + BLOCK : base;
+        const next = SLK_UI_SETTINGS.enabled ? (base ? base + '\n\n' : '') + buildBlock() : base;
         if (next === current) return true;
         pu.custom_css = next;
         const ta = document.getElementById('customCSS');
