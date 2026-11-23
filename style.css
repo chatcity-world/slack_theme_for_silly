@@ -16700,12 +16700,22 @@ body.slk-ui {
         color: var(--slk-ink-dialogue) !important;
         -webkit-text-fill-color: var(--slk-ink-dialogue) !important;
     }
-    /* ASCII art is preformatted text: keep its structure and background. */
+    /* ASCII art ink: style the letters INSIDE the rendered art, not only the
+       enclosing <pre> / <code>. Some HTML/extension-rendered art uses spans,
+       syntax highlighting, or an .ascii-art wrapper without <pre> at all.
+       Do not affect normal narration, dialogue, or inline code bubbles. */
     html body.slk-ui.slk-ink-ascii:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text pre,
-    html body.slk-ui.slk-ink-ascii:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text pre code,
-    html body.slk-ui.slk-ink-ascii:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text pre code * {
-        color: var(--slk-ink-ascii) !important;
-        -webkit-text-fill-color: var(--slk-ink-ascii) !important;
+    html body.slk-ui.slk-ink-ascii:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text pre *,
+    html body.slk-ui.slk-ink-ascii:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text .ascii-art,
+    html body.slk-ui.slk-ink-ascii:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text .ascii-art *,
+    html body.slk-ui.slk-ink-ascii:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text .ascii_art,
+    html body.slk-ui.slk-ink-ascii:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text .ascii_art *,
+    html body.slk-ui.slk-ink-ascii:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text [data-ascii-art],
+    html body.slk-ui.slk-ink-ascii:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text [data-ascii-art] *,
+    html body.slk-ui.slk-ink-ascii:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text [class*="ascii-art"],
+    html body.slk-ui.slk-ink-ascii:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text [class*="ascii-art"] * {
+        color: var(--slk-ink-ascii, #999999) !important;
+        -webkit-text-fill-color: var(--slk-ink-ascii, #999999) !important;
     }
 }
 /* Three independent ink pickers, matching the existing dialogue background UI. */
