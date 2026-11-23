@@ -15285,3 +15285,59 @@ body.slk-ui.slk-dark {
         box-shadow: 0 1px 4px rgba(0, 0, 0, .3) !important;
     }
 }
+
+/* =====================================================================
+   1.4.63
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    /* 1) 슬라이더: 입력 자체에 걸린 어둡게/흐리게 효과 제거 → 손잡이 흰색이 그대로 보이게 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d) input[type="range"] {
+        filter: none !important;
+        opacity: 1 !important;
+        mix-blend-mode: normal !important;
+        accent-color: #1264A3 !important;
+        color-scheme: light !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d) input[type="range"]:disabled {
+        opacity: .45 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d) :is(.range-block-range, .range-block-range-and-counter, .range-block) {
+        filter: none !important;
+        opacity: 1 !important;
+    }
+
+    /* 2) ⋯ 버튼 묶음: 확장이 감싼 래퍼가 넓게 자리 잡는 것 방지 → 한 줄 우선 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons > :not(.extraMesButtons):not(.mes_button),
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons .extraMesButtons > :not(.mes_button) {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: 40px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons :is(.mes_button, .slk-adopted-btn) > * {
+        margin: 0 !important;
+        position: static !important;
+    }
+
+    /* 4) 제작자의 메모: 바깥 상자(테마 회색 상자·검정 그림자) 제거, 안쪽 입력칸 모양만 */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel #rm_ch_create_block .inline-drawer:has(#creator_notes_spoiler, #creator_notes_empty),
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel #rm_ch_create_block .inline-drawer:has(#creator_notes_spoiler, #creator_notes_empty) > .inline-drawer-content {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #right-nav-panel #rm_ch_create_block .inline-drawer:has(#creator_notes_spoiler, #creator_notes_empty) > .inline-drawer-content {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+}

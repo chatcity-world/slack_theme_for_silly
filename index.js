@@ -2103,3 +2103,31 @@ else init();
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
 })();
+
+// v1.4.63 — ⋯ 펼칠 때 확장 아이콘(↻ 등)이 어디에 붙어 있든 버튼 묶음 맨 앞으로 모음
+(function slkGatherOnExpand() {
+    const gather = (mes) => {
+        const box = mes.querySelector('.ch_name > .mes_buttons');
+        if (!box) return;
+        const extra = box.querySelector('.extraMesButtons');
+        // ch_name 안·프사 안·mes_block 바로 아래의 작은 아이콘 요소
+        const pool = [
+            ...mes.querySelectorAll(':scope > .mesAvatarWrapper > :not(.avatar):not(.mesIDDisplay):not(.mes_timer):not(.tokenCounterDisplay)'),
+            ...mes.querySelectorAll(':scope .ch_name > :not(.mes_buttons):not(.mes_edit_buttons):not(.flex-container)'),
+            ...mes.querySelectorAll(':scope .ch_name > .flex-container > :not(.alignItemsBaseline)'),
+            ...mes.querySelectorAll(':scope .ch_name .alignItemsBaseline > :not(.name_text):not(.mes_ghost):not(.timestamp)'),
+        ];
+        pool.forEach(el => {
+            if (el.closest('.mes_buttons')) return;
+            el.classList.add('slk-adopted-btn');
+            el.dataset.slkAdopted = '1';
+            box.insertBefore(el, extra || box.firstChild);
+        });
+    };
+    document.addEventListener('click', (e) => {
+        const hint = e.target.closest?.('#chat .extraMesButtonsHint');
+        if (!hint) return;
+        const mes = hint.closest('.mes');
+        if (mes) { gather(mes); setTimeout(() => gather(mes), 50); setTimeout(() => gather(mes), 300); }
+    }, true);
+})();
