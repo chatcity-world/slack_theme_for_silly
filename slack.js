@@ -2644,3 +2644,62 @@ else init();
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
 })();
+
+
+// v1.5.6 — Size the UI-language selector to the real Settings Search field.
+// Both controls live in separate native ST rows; fixed percentages cannot
+// align them when account/admin buttons or the viewport width change.
+(function slkMatchLanguageToSearch() {
+    let scheduled = false;
+    const sync = () => {
+        scheduled = false;
+        const panel = document.getElementById('user-settings-block');
+        const row = panel?.querySelector('#UI-language-block');
+        const search = panel?.querySelector('#settingsSearch');
+        const account = panel?.querySelector('#account_controls');
+        if (!row || !search || !account) return;
+        if (!document.body.classList.contains('slk-ui') ||
+            !window.matchMedia('(max-width: 1000px)').matches) return;
+        const langRect = row.getBoundingClientRect();
+        const searchRect = search.getBoundingClientRect();
+        const accountRect = account.getBoundingClientRect();
+        // Closed drawers measure zero: wait until the panel is visible.
+        if (!langRect.width || !searchRect.width || !accountRect.width) return;
+        const isWrapped = searchRect.top >= accountRect.bottom - 2;
+        const isTooWide = searchRect.width > langRect.width - 76;
+        const stacked = isWrapped || isTooWide;
+        row.classList.toggle('slk-language-stacked', stacked);
+        const matchWidth = Math.min(searchRect.width, langRect.width);
+        const value = `${Math.round(matchWidth * 100) / 100}px`;
+        if (row.style.getPropertyValue('--slk-language-match-search') !== value)
+            row.style.setProperty('--slk-language-match-search', value);
+    };
+    const schedule = () => {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(sync);
+    };
+    const start = () => {
+        const panel = document.getElementById('user-settings-block');
+        const search = panel?.querySelector('#settingsSearch');
+        const account = panel?.querySelector('#account_controls');
+        if (!panel || !search || !account) return;
+        window.addEventListener('resize', schedule);
+        window.addEventListener('slk-ui-settings-changed', schedule);
+        const ro = new ResizeObserver(schedule);
+        ro.observe(panel);
+        ro.observe(search);
+        ro.observe(account);
+        new MutationObserver(schedule).observe(panel, {
+            attributes: true, attributeFilter: ['style', 'class'],
+        });
+        new MutationObserver(schedule).observe(account, {
+            attributes: true, childList: true, subtree: true,
+            attributeFilter: ['style', 'class'],
+        });
+        schedule();
+    };
+    if (document.readyState === 'loading')
+        document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();

@@ -18250,3 +18250,166 @@ html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] #newChatFromM
     grid-row: 3 !important;
   }
 }
+
+
+/* v1.5.6 — Match User Settings title, language and search to one inset. */
+@media screen and (max-width: 1000px) {
+  /* v1.5.5's -12px margin pulled the heading/label out of alignment. */
+  html body.slk-ui #user-settings-block [name="userSettingsRowOne"] {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  /* The selector uses exactly the same right and left edges as settingsSearch. */
+  html body.slk-ui #user-settings-block #UI-language-block {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    column-gap: 12px !important;
+    row-gap: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  html body.slk-ui #user-settings-block #ui_language_select {
+    display: block !important;
+    flex: 0 0 var(--slk-language-match-search, 52%) !important;
+    width: var(--slk-language-match-search, 52%) !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  /* If the Account buttons make the search wrap, use the same full-width row. */
+  html body.slk-ui #user-settings-block #UI-language-block.slk-language-stacked {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  html body.slk-ui #user-settings-block #UI-language-block.slk-language-stacked #ui_language_select {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+/* v1.5.7 — Chat history modal: keep above footer, contain long chat rows. */
+@media screen and (max-width: 1000px) {
+  html body.slk-ui #select_chat_popup {
+    /* Center in the usable area ABOVE the floating footer, not the full viewport. */
+    top: calc((100dvh - var(--slk-footer-h, 80px)) / 2) !important;
+    height: min(540px, calc(100dvh - var(--slk-footer-h, 80px) - 56px)) !important;
+    max-height: calc(100dvh - var(--slk-footer-h, 80px) - 56px) !important;
+    min-height: 0 !important;
+    max-width: min(720px, calc(100vw - 24px)) !important;
+    overflow: hidden !important;
+  }
+  html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] {
+    min-height: 0 !important;
+    flex-shrink: 0 !important;
+  }
+  html body.slk-ui #select_chat_popup .chatBackupsList {
+    flex: 0 1 auto !important;
+    max-height: min(155px, 24dvh) !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  html body.slk-ui #select_chat_popup #select_chat_div {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    flex: 1 1 auto !important;
+    overscroll-behavior: contain;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  html body.slk-ui #select_chat_popup .select_chat_block_wrapper,
+  html body.slk-ui #select_chat_popup .select_chat_block,
+  html body.slk-ui #select_chat_popup #select_chat_name_wrapper {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+  html body.slk-ui #select_chat_popup .select_chat_block[highlight] {
+    /* Keep the colored selection inside the card, never wider than its scroller. */
+    border-left: 3px solid #4A154B !important;
+    border-radius: 8px !important;
+    background: #F5EFF6 !important;
+    padding-left: 8px !important;
+    padding-right: 11px !important;
+    background-clip: padding-box !important;
+  }
+  html body.slk-ui #select_chat_popup #select_chat_name_wrapper > .flex-container:first-child {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    flex-wrap: nowrap !important;
+  }
+  html body.slk-ui #select_chat_popup .select_chat_block_filename {
+    flex: 1 1 auto !important;
+    display: block !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+  }
+  html body.slk-ui #select_chat_popup .renameChatButton {
+    flex: 0 0 28px !important;
+    align-self: center !important;
+  }
+  html body.slk-ui #select_chat_popup #select_chat_name_wrapper > .flex-container:last-child {
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  html body.slk-ui #select_chat_popup .select_chat_info {
+    grid-column: 1 !important;
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    column-gap: 3px !important;
+    row-gap: 0 !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+  html body.slk-ui #select_chat_popup .chat_messages_date {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  html body.slk-ui #select_chat_popup .select_chat_actions {
+    grid-column: 2 !important;
+    justify-self: end !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    flex-wrap: nowrap !important;
+  }
+  html body.slk-ui #select_chat_popup .select_chat_block_mes {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+  }
+}
+@media screen and (max-width: 360px) {
+  html body.slk-ui #select_chat_popup .select_chat_block_wrapper {
+    padding: 0 8px !important;
+  }
+  html body.slk-ui #select_chat_popup .select_chat_block {
+    padding: 11px 10px !important;
+  }
+  html body.slk-ui #select_chat_popup .select_chat_block[highlight] {
+    padding-left: 7px !important;
+  }
+}
