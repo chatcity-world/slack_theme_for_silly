@@ -1945,3 +1945,85 @@ else init();
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
 })();
+
+// v1.4.57 — 채팅 날짜를 26.11.11 형태로 (원래 글자는 그대로 두고 data-slk-date로 표시)
+(function slkShortDates() {
+    const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+    const pad = (n) => String(n).padStart(2, '0');
+    const fmt = (y, m, d) => `${String(y).slice(-2)}.${pad(m)}.${pad(d)}`;
+    const parse = (t) => {
+        if (!t) return null;
+        let m = t.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
+        if (m) return fmt(m[1], m[2], m[3]);
+        m = t.match(/(\d{4})[-./](\d{1,2})[-./](\d{1,2})/);
+        if (m) return fmt(m[1], m[2], m[3]);
+        m = t.match(/([A-Za-z]{3})[A-Za-z]*\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})/);
+        if (m && MONTHS[m[1].toLowerCase()]) return fmt(m[3], MONTHS[m[1].toLowerCase()], m[2]);
+        m = t.match(/(\d{1,2})\s+([A-Za-z]{3})[A-Za-z]*\.?,?\s+(\d{4})/);
+        if (m && MONTHS[m[2].toLowerCase()]) return fmt(m[3], MONTHS[m[2].toLowerCase()], m[1]);
+        const d = new Date(t);
+        if (!isNaN(d)) return fmt(d.getFullYear(), d.getMonth() + 1, d.getDate());
+        return null;
+    };
+    const run = () => {
+        document.querySelectorAll('#chat .mes .timestamp').forEach(el => {
+            const raw = (el.textContent || '').trim();
+            if (el.dataset.slkRaw === raw) return;
+            el.dataset.slkRaw = raw;
+            const short = parse(raw);
+            if (short) el.dataset.slkDate = short;
+            else delete el.dataset.slkDate;
+        });
+    };
+    let t = null;
+    const schedule = () => { if (!t) t = setTimeout(() => { t = null; run(); }, 80); };
+    const start = () => {
+        const chat = document.getElementById('chat');
+        if (!chat) { setTimeout(start, 500); return; }
+        run();
+        new MutationObserver(schedule).observe(chat, { childList: true, subtree: true, characterData: true });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();
+
+
+// v1.4.58 — 시작(로딩) 화면을 처음부터 슬랙 모양으로.
+// 확장은 ST가 켜진 뒤에 불러와지므로, ST가 설정을 읽자마자 적용하는 '사용자 지정 CSS'에
+// 표시된 블록 하나를 자동으로 넣어 둠 (다음 실행부터 적용). Slack UI를 끄면 자동으로 뺌.
+(function slkBootSplashCss() {
+    const START = '/* ==== Slack UI 시작 화면 (자동 추가 — 지우지 마세요) ==== */';
+    const END = '/* ==== /Slack UI 시작 화면 ==== */';
+    const BLOCK = START + '\n' + "@media screen and (max-width: 1000px) { #preloader { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog.popup:has(#loader.splash-screen) { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: #4A154B !important; box-shadow: none !important; outline: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog.popup:has(#loader.splash-screen)::backdrop { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog.popup:has(#loader.splash-screen) :is(.popup-body, .popup-content) { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; overflow: hidden !important; } dialog.popup:has(#loader.splash-screen) .popup-controls { display: none !important; } #loader.splash-screen { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 28px !important; width: 100% !important; height: 100% !important; background: transparent !important; color: #FFFFFF !important; } #loader.splash-screen::before { content: 'Slack'; order: 1; margin: -10px 0 0; color: #FFFFFF; font-size: 22px; font-weight: 900; letter-spacing: -0.02em; } #loader.splash-screen .splash-logo { order: 0; width: 96px !important; height: 96px !important; object-fit: cover !important; border-radius: 24px !important; filter: none !important; box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important; } #loader.splash-screen #load-spinner, #preloader #load-spinner { order: 2; position: static !important; width: 28px !important; height: 28px !important; margin-top: 18px; font-size: 0 !important; color: transparent !important; border: 3px solid rgba(255, 255, 255, .25) !important; border-top-color: #FFFFFF !important; border-radius: 50% !important; box-sizing: border-box !important; animation: slk-boot-spin .8s linear infinite !important; } #loader.splash-screen #load-spinner::before { content: none !important; display: none !important; } #loader.splash-screen .splash-message { order: 3; margin: -12px 0 0 !important; color: rgba(255, 255, 255, .82) !important; font-size: 15px !important; font-weight: 600 !important; text-shadow: none !important; } } @keyframes slk-boot-spin { to { transform: rotate(360deg); } }" + '\n' + END;
+    const strip = (s) => {
+        const i = s.indexOf(START), j = s.indexOf(END);
+        if (i === -1 || j === -1) return s;
+        return (s.slice(0, i).replace(/\n+$/, '') + '\n' + s.slice(j + END.length).replace(/^\n+/, '')).trim();
+    };
+    const sync = () => {
+        const ctx = window.SillyTavern?.getContext?.();
+        const pu = ctx?.powerUserSettings;
+        if (!pu || typeof pu.custom_css !== 'string') return false;
+        const current = pu.custom_css;
+        const base = strip(current);
+        const next = SLK_UI_SETTINGS.enabled ? (base ? base + '\n\n' : '') + BLOCK : base;
+        if (next === current) return true;
+        pu.custom_css = next;
+        const ta = document.getElementById('customCSS');
+        if (ta) ta.value = next;
+        ctx.saveSettingsDebounced?.();
+        return true;
+    };
+    const start = () => {
+        let tries = 0;
+        const tick = () => { if (!sync() && ++tries < 30) setTimeout(tick, 1000); };
+        setTimeout(tick, 1500);
+        // 테마를 바꾸면 사용자 지정 CSS가 통째로 바뀌므로 그때도 다시 넣음
+        document.addEventListener('change', (e) => {
+            if (e.target && (e.target.id === 'themes' || e.target.id === 'customCSS')) setTimeout(sync, 800);
+        }, true);
+        window.addEventListener('slk-ui-settings-changed', () => setTimeout(sync, 0));
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();
