@@ -15867,3 +15867,62 @@ body.slk-ui.slk-dark {
         padding: 0 !important;
     }
 }
+
+/* Persona grid toggle: restore the native three-column list and put the
+   selected persona editor below the full list. The row/accordion mode is unchanged. */
+@media screen and (max-width: 1000px) {
+    body.slk-ui #PersonaManagement #user_avatar_block.gridView {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: space-around !important;
+        align-content: flex-start !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    body.slk-ui #PersonaManagement #user_avatar_block.gridView > .avatar-container {
+        flex: 0 0 30% !important;
+        width: 30% !important;
+        min-width: 0 !important;
+        max-width: 100px !important;
+        height: min-content !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 6px !important;
+        overflow: hidden !important;
+        padding: 8px 4px !important;
+        border-radius: 12px !important;
+    }
+
+    body.slk-ui #PersonaManagement #user_avatar_block.gridView > .avatar-container .character_select_container,
+    body.slk-ui #PersonaManagement #user_avatar_block.gridView > .avatar-container .character_name_block {
+        flex: 0 0 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    body.slk-ui #PersonaManagement #user_avatar_block.gridView > .avatar-container .ch_name,
+    body.slk-ui #PersonaManagement #user_avatar_block.gridView > .avatar-container .ch_additional_info {
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: center !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+        text-overflow: ellipsis !important;
+        font-size: 12px !important;
+    }
+
+    body.slk-ui #PersonaManagement #user_avatar_block.gridView > .avatar-container .ch_description {
+        display: none !important;
+    }
+
+    body.slk-ui #PersonaManagement #user_avatar_block.gridView > .avatar-container .avatar_container_states {
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+    }
+}

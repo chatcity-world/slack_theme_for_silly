@@ -564,6 +564,17 @@ function setupPersonaAccordion() {
             list.querySelectorAll('.slk-open').forEach((a) => a.classList.remove('slk-open'));
             return;
         }
+        // SillyTavern switches the persona list into grid mode by adding .gridView.
+        // Grid mode must use the native document flow: the editor belongs below
+        // the entire list, not in a slot after the selected avatar.
+        if (list.classList.contains('gridView')) {
+            collapsed = false;
+            slot.remove();
+            list.querySelectorAll('.slk-open').forEach((a) => a.classList.remove('slk-open'));
+            editor.classList.remove('slk-floating', 'slk-hidden');
+            editor.style.top = '';
+            return;
+        }
         const sel = list.querySelector('.avatar-container.selected');
         list.querySelectorAll('.avatar-container').forEach((a) => a.classList.toggle('slk-open', a === sel && !collapsed));
         if (!sel || collapsed) {
@@ -589,6 +600,9 @@ function setupPersonaAccordion() {
     list.addEventListener('click', (e) => {
         const item = e.target.closest('.avatar-container');
         if (!item) return;
+        // In grid mode, clicking a persona only changes the selection.
+        // Keep accordion toggling exclusively in the one-row list mode.
+        if (list.classList.contains('gridView')) return;
         collapsed = item.classList.contains('selected') ? !collapsed : false;
         schedule();
     }, true);
