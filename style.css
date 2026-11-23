@@ -15486,7 +15486,7 @@ body.slk-ui.slk-dark {
 /* =====================================================================
    1.4.65
    ===================================================================== */
-:root { --slk-css-version: '1.4.70'; }
+:root { --slk-css-version: '1.4.71'; }
 @media screen and (max-width: 1000px) {
     /* 고급 서식: 구역을 감싸는 테마 상자 테두리·그림자 전부 제거 (입력칸은 그대로) */
     html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting div:not(.menu_button):not([class*="select2"]):not(:has(> select[data-preset-manager-for])):not([data-preset-manager-for]) {
@@ -15718,5 +15718,138 @@ body.slk-ui.slk-dark {
     html body.slk-ui:not(#slk-a):not(#slk-b) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
       .paginationjs-pages li:is(.paginationjs-prev,.paginationjs-next).disabled > a::before {
         opacity: .32 !important;
+    }
+}
+
+
+/* =====================================================================
+   1.4.71 — only 2 requested repairs
+   1) Remove the *actual header row* left accent (not an inner unrelated heading)
+   2) Give all four pagination chevrons one common, centered icon box
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    /* The two ST sections have different header wrappers.
+       Reset only their top header rows and contained title, never the other fields. */
+    html body.slk-ui #WorldInfo > .flex-container.alignitemscenter.gap10px,
+    html body.slk-ui #WorldInfo > .flex-container.alignitemscenter.gap10px > h3,
+    html body.slk-ui #AdvancedFormatting > .flex-container.alignItemsBaseline:first-child,
+    html body.slk-ui #AdvancedFormatting > .flex-container.alignItemsBaseline:first-child > h3 {
+        border: 0 !important;
+        border-left: 0 !important;
+        border-inline-start: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+        background-image: none !important;
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+    }
+    /* Color rules from an existing theme can draw the accent as a pseudo-element
+       instead of a border. Neither header needs those decorative layers. */
+    html body.slk-ui #WorldInfo > .flex-container.alignitemscenter.gap10px::before,
+    html body.slk-ui #WorldInfo > .flex-container.alignitemscenter.gap10px::after,
+    html body.slk-ui #WorldInfo > .flex-container.alignitemscenter.gap10px > h3::before,
+    html body.slk-ui #WorldInfo > .flex-container.alignitemscenter.gap10px > h3::after,
+    html body.slk-ui #AdvancedFormatting > .flex-container.alignItemsBaseline:first-child::before,
+    html body.slk-ui #AdvancedFormatting > .flex-container.alignItemsBaseline:first-child::after,
+    html body.slk-ui #AdvancedFormatting > .flex-container.alignItemsBaseline:first-child > h3::before,
+    html body.slk-ui #AdvancedFormatting > .flex-container.alignItemsBaseline:first-child > h3::after {
+        content: none !important;
+        display: none !important;
+        border: 0 !important;
+        background: none !important;
+    }
+
+    /* All controls use the same button/viewport geometry. Position icons by the
+       center of the anchor, not by the text baseline (different for 1 and 2 chevrons). */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages > ul {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li:is(.paginationjs-first,.paginationjs-prev,.paginationjs-next,.paginationjs-last) {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 0 0 auto !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li:is(.paginationjs-first,.paginationjs-prev,.paginationjs-next,.paginationjs-last) > a {
+        position: relative !important;
+        display: block !important;
+        flex: 0 0 27px !important;
+        width: 27px !important;
+        min-width: 27px !important;
+        max-width: 27px !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        max-height: 32px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        font-size: 0 !important;
+        line-height: 0 !important;
+        color: transparent !important;
+        -webkit-text-fill-color: transparent !important;
+        text-align: center !important;
+        text-shadow: none !important;
+        box-sizing: border-box !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li:is(.paginationjs-first,.paginationjs-prev,.paginationjs-next,.paginationjs-last) > a::before {
+        content: '' !important;
+        display: block !important;
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 23px !important;
+        height: 23px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #494949 !important;
+        -webkit-mask-repeat: no-repeat !important;
+        mask-repeat: no-repeat !important;
+        -webkit-mask-position: center !important;
+        mask-position: center !important;
+        -webkit-mask-size: contain !important;
+        mask-size: contain !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li:is(.paginationjs-first,.paginationjs-prev,.paginationjs-next,.paginationjs-last) > a > :is(i,svg) {
+        display: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li:is(.paginationjs-first,.paginationjs-prev,.paginationjs-next,.paginationjs-last).disabled > a::before {
+        opacity: .30 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li.paginationjs-first > a::before {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11%205.5%204.5%2012%2011%2018.5%20M19.5%205.5%2013%2012l6.5%206.5%22%2F%3E%3C%2Fsvg%3E") !important;
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11%205.5%204.5%2012%2011%2018.5%20M19.5%205.5%2013%2012l6.5%206.5%22%2F%3E%3C%2Fsvg%3E") !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li.paginationjs-prev > a::before {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m15.5%205.5-6.5%206.5%206.5%206.5%22%2F%3E%3C%2Fsvg%3E") !important;
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m15.5%205.5-6.5%206.5%206.5%206.5%22%2F%3E%3C%2Fsvg%3E") !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li.paginationjs-next > a::before {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m8.5%205.5%206.5%206.5-6.5%206.5%22%2F%3E%3C%2Fsvg%3E") !important;
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m8.5%205.5%206.5%206.5-6.5%206.5%22%2F%3E%3C%2Fsvg%3E") !important;
+    }
+
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li.paginationjs-last > a::before {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m5%205.5%206.5%206.5-6.5%206.5%20M13.5%205.5%2020%2012l-6.5%206.5%22%2F%3E%3C%2Fsvg%3E") !important;
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m5%205.5%206.5%206.5-6.5%206.5%20M13.5%205.5%2020%2012l-6.5%206.5%22%2F%3E%3C%2Fsvg%3E") !important;
     }
 }
