@@ -3066,7 +3066,7 @@ else init();
 })();
 
 
-// v1.7.0 — Native SillyTavern prompt editor: compact, responsive rows.
+// v1.7.1 — Native SillyTavern prompt editor: compact, responsive rows.
 // Reuses the native inputs and listeners; it does not replace prompt data or save behavior.
 (function slkCompactNativePromptEditor() {
     const popupId = 'completion_prompt_manager_popup';
@@ -3176,26 +3176,72 @@ else init();
         // SillyTavern/theme source wrappers can have fixed height or padding;
         // moving the wrapper into this flex layout caused a ~150px blank gap.
         // Moving the real control preserves the native input, ID and listeners.
-        const prompt = fields.querySelector('#' + prefix + 'prompt');
+        // SillyTavern also nests this textarea in source wrappers which may
+        // reserve 150px even after the visible control moves. Find the actual
+        // textarea, keep its original listeners, and always place its control
+        // DIRECTLY after Position, not inside any source/sizing wrapper.
+        const prompt = fields.querySelector('#' + prefix + 'prompt') ||
+            fields.querySelector('textarea[id*="prompt"]') || fields.querySelector('textarea');
         const promptControl = prompt?.closest(controlSelector) || prompt?.parentElement;
+        const oldSourceParent = promptControl?.parentElement;
         if (promptControl && ![name, role, triggers, position, depth.control, order.control].includes(promptControl)) {
             promptControl.classList.add('slk-prompt-content-block');
-            moveNative(promptControl, layout);
+            if (promptControl.previousElementSibling !== posRow || promptControl.parentElement !== layout) {
+                posRow.after(promptControl);
+            }
         }
-        // Hide the original shell only if it's now empty of controls and
-        // actionable content. No actual form input or event handler is removed.
+        // Retire only the ORPHANED source wrappers that no longer contain
+        // any form interaction. They are not deleted, so other native scripts
+        // can still address them. This deliberately ignores stale hidden text.
+        for (let shell = oldSourceParent; shell && shell !== fields && shell !== layout; shell = shell.parentElement) {
+            if (shell.querySelector('input,select,textarea,button,a,[contenteditable="true"],[role="button"]')) break;
+            shell.classList.add('slk-prompt-retired-source');
+        }
         const promptSource = fields.querySelector('#completion_prompt_manager_popup_entry_source_block');
         if (promptSource && !promptSource.contains(prompt)) {
             const hasInteractive = !!promptSource.querySelector('input,textarea,select,button,a,[role="button"],[contenteditable="true"]');
-            promptSource.classList.toggle('slk-prompt-empty-source', !hasInteractive && !promptSource.textContent.trim());
+            promptSource.classList.toggle('slk-prompt-retired-source', !hasInteractive);
+            if (!hasInteractive) {
+                const sourceWrapper = promptSource.closest('.flex-container');
+                if (sourceWrapper && fields.contains(sourceWrapper) && !sourceWrapper.querySelector('input,textarea,select,button,a')) {
+                    sourceWrapper.classList.add('slk-prompt-retired-source');
+                }
+            }
         }
+        // Older markup occasionally keeps a fixed-height .flex-container row
+        // with only labels/whitespace after we move all the real inputs out.
+        for (const row of fields.querySelectorAll(':scope > .flex-container, :scope > .flex-container.gap10px')) {
+            if (!row.querySelector('input,select,textarea,button,a,[role="button"],[contenteditable="true"]')) {
+                row.classList.add('slk-prompt-retired-source', 'slk-prompt-empty-native-row');
+            }
+        }
+        // Collapsed Depth/Order controls must not reserve grid row height.
+        // Check computed visibility too (the native app can use CSS classes).
+        for (const { block, control } of [depth, order]) {
+            const invisible = !control || isNativeHidden(block, control) ||
+                (block && getComputedStyle(block).display === 'none') ||
+                (control && getComputedStyle(control).visibility === 'hidden');
+            if (control) control.classList.toggle('slk-prompt-native-hidden', invisible);
+        }
+        posRow.classList.toggle('slk-prompt-has-depth', [depth, order].some(({control}) =>
+            control && !control.classList.contains('slk-prompt-native-hidden')));
 
-        // Clean up AFTER moving the prompt input. The former source wrapper can
-        // otherwise remain a 150px-tall empty flex row beneath the textarea.
-        for (const row of fields.querySelectorAll(':scope > .flex-container.gap10px')) {
-            const hasActualInput = !!row.querySelector('input,select,textarea,button,a,[role="button"],[contenteditable="true"]');
-            const hasVisibleText = !!row.textContent.trim();
-            row.classList.toggle('slk-prompt-empty-native-row', !hasActualInput && !hasVisibleText);
+        // Guard against an old theme leaving an invisible reserved row inside
+        // Position. If row height exceeds all visible children, cap it to the
+        // actual content height. This is a layout correction, not data mutation.
+        const visiblePositionControls = [...posRow.children].filter(el =>
+            !el.classList.contains('slk-prompt-native-hidden') && getComputedStyle(el).display !== 'none');
+        if (visiblePositionControls.length) {
+            const origin = posRow.getBoundingClientRect().top;
+            const last = Math.max(...visiblePositionControls.map(el => el.getBoundingClientRect().bottom));
+            const targetHeight = Math.max(0, Math.ceil(last - origin));
+            const currentCap = posRow.style.getPropertyValue('--slk-prompt-position-content-h');
+            if (targetHeight > 0 && (currentCap || posRow.getBoundingClientRect().height - targetHeight > 24)) {
+                // Once capped, keep the cap until the contents change; otherwise
+                // repeated MutationObserver runs would alternate gap/no-gap.
+                const v = `${targetHeight}px`;
+                if (currentCap !== v) posRow.style.setProperty('--slk-prompt-position-content-h', v);
+            }
         }
 
         // Make the title line up with the actual Name label even when the host
