@@ -4,7 +4,7 @@
    (PC 화면은 기존 스타일 유지)
    ===================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
 
 /* ---------- 디자인 토큰 (라이트) ---------- */
 body.slk-ui {
@@ -24,7 +24,8 @@ body.slk-ui {
     --slk-tab-active-fg: #4A154B;
     --slk-shadow: 0 6px 24px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.06);
 
-    --slk-font: 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    --slk-font: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    font-family: var(--slk-font) !important;
 
     --slk-header-h: 60px;
     --slk-tabbar-h: 60px;
@@ -14117,7 +14118,7 @@ body.slk-ui {
         text-shadow: none !important;
     }
     body.slk-ui #loader.splash-screen::before {
-        font-family: 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important;
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important;
         content: 'Slack' !important;
         order: 1 !important;
         margin: -10px 0 0 !important;
@@ -17466,7 +17467,7 @@ html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-contai
 @media screen and (max-width: 1000px) {
     html body.slk-ui #select_chat_popup,
     html body.slk-ui #select_chat_popup :not(i):not(svg):not([class*="fa-"]):not(.fa) {
-        font-family: var(--slk-font, 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
+        font-family: var(--slk-font, 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
         letter-spacing: -0.01em !important;
         font-variant-ligatures: normal;
     }
@@ -17482,7 +17483,7 @@ html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-contai
         .chatBackupsListItemName,
         .chatBackupsListItemInfo
     ) {
-        font-family: var(--slk-font, 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
+        font-family: var(--slk-font, 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
         font-weight: 400;
         letter-spacing: -0.01em !important;
         font-variant-numeric: proportional-nums;
@@ -17542,7 +17543,7 @@ html body.slk-ui #select_chat_popup {
     backdrop-filter: none !important;
     overflow: hidden !important;
     isolation: isolate;
-    font-family: var(--slk-font, 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
+    font-family: var(--slk-font, 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
     letter-spacing: -0.01em !important;
     text-shadow: none !important;
 }
@@ -17551,7 +17552,7 @@ html body.slk-ui #select_chat_popup,
 html body.slk-ui #select_chat_popup :is(span, small, p, label, input, button, .select_chat_block_filename, .select_chat_block_mes,
     .chatBackupsListItemName, .chatBackupsListItemInfo, #selectChatPopupHeaderText, .chat_messages_date,
     .chat_file_size, .chat_messages_num) {
-    font-family: var(--slk-font, 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
+    font-family: var(--slk-font, 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
     font-variant-ligatures: normal !important;
     letter-spacing: -0.01em !important;
     text-shadow: none !important;
@@ -17880,7 +17881,7 @@ html body.slk-ui #select_chat_popup .select_chat_block_mes {
     border: 0 !important;
     background: transparent !important;
     color: #616061 !important;
-    font-family: var(--slk-font, 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
+    font-family: var(--slk-font, 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
     font-size: 13px !important;
     font-weight: 400 !important;
     line-height: 1.5 !important;
