@@ -2064,7 +2064,7 @@ else init();
     else start();
 })();
 
-// v1.4.82 — 메시지 ⋯ 메뉴: ST 기본 아이콘 먼저, 타 확장 아이콘은 그 뒤에 배치.
+// v1.4.83 — 메시지 ⋯ 메뉴: ST 기본 아이콘 먼저, 타 확장 아이콘은 그 뒤에 배치.
 // 기존 두 개의 수집/정렬 옵저버를 하나로 통합합니다. 기존 DOM 버튼만 이동하므로 클릭 리스너는 유지됩니다.
 (function slkUnifiedMessageActions() {
     const states = new WeakMap();
@@ -2141,6 +2141,7 @@ else init();
         const state = states.get(mes) || { origins: new Map() };
         const open = mobile() && isOpen(extra);
         if (!open) {
+            if (extra.style.getPropertyValue('--slk-actions-shift')) extra.style.removeProperty('--slk-actions-shift');
             if (state.origins.size) {
                 for (const [el, anchor] of [...state.origins.entries()].reverse()) {
                     if (anchor.isConnected) anchor.replaceWith(el);
@@ -2158,13 +2159,15 @@ else init();
             '.mes_translate', '.sd_message_gen', '.mes_narrate', '.mes_prompt',
             '.mes_hide', '.mes_unhide', '.mes_media_gallery', '.mes_media_list',
             '.mes_embed', '.mes_swipe_picker', '.mes_create_bookmark',
-            '.mes_create_branch', '.mes_copy', '.mes_bookmark', '.mes_edit',
+            '.mes_create_branch', '.mes_copy', '.mes_bookmark',
         ].join(', ');
         const isNative = el => el.matches(nativeSelector);
         const foreign = foreignActions(mes, box);
-        // 직접 배치된 북마크/편집은 기본 메뉴 버튼 뒤에, 타 확장 버튼은 마지막에.
+        // 편집(연필)은 원래부터 ⋯ 바깥의 독립 버튼입니다.
+        // 메뉴로 이동시키거나 확장 버튼으로 오분류하지 않습니다.
         const direct = [...box.children].filter(el =>
-            el !== extra && !el.classList.contains('extraMesButtonsHint'));
+            el !== extra && !el.classList.contains('extraMesButtonsHint') &&
+            !el.matches('.mes_edit'));
         for (const el of direct.filter(isNative)) move(el, extra, state);
         for (const el of [...foreign, ...direct.filter(el => !isNative(el))]) {
             if (el.parentElement !== extra) move(el, extra, state);
@@ -2174,6 +2177,8 @@ else init();
         // CSS order만 지정하고 기존 버튼 노드/리스너는 변경하지 않습니다.
         for (const el of extra.children) {
             el.classList.toggle('slk-foreign-action', !isNative(el));
+            // 연필은 독립 편집 버튼이므로 펼침 메뉴의 중복 연필은 숨깁니다.
+            el.classList.toggle('slk-action-pencil-duplicate', el.matches('.mes_edit'));
         }
 
         // 2개의 빈 슬롯처럼 보이는 미표시 버튼을 포함해 실제 아이콘이 없는 항목을 제거.
@@ -2187,6 +2192,25 @@ else init();
         }
         if (!mes.classList.contains('slk-mes-expanded')) mes.classList.add('slk-mes-expanded');
         if (!mes.hasAttribute('data-slk-actions-flow')) mes.setAttribute('data-slk-actions-flow', '');
+        // A single row must sit on the original ⋯ button's vertical centerline.
+        // Measure the center BEFORE SillyTavern toggles the popup (below), then
+        // compensate for rows/metadata that would otherwise move the toolbar.
+        if (Number.isFinite(state.hintCenter)) requestAnimationFrame(() => {
+            if (!mobile() || !isOpen(extra) || !mes.isConnected) return;
+            const first = [...extra.children].find(el => {
+                const cs = getComputedStyle(el);
+                return cs.display !== 'none' && cs.visibility !== 'hidden' && el.getBoundingClientRect().width > 0;
+            });
+            if (!first) return;
+            const prior = Number.parseFloat(extra.style.getPropertyValue('--slk-actions-shift')) || 0;
+            const center = first.getBoundingClientRect().top + first.getBoundingClientRect().height / 2;
+            const rawCenter = center - mes.getBoundingClientRect().top - prior;
+            const shift = Math.round(state.hintCenter - rawCenter);
+            const value = `${shift}px`;
+            if (extra.style.getPropertyValue('--slk-actions-shift') !== value) {
+                extra.style.setProperty('--slk-actions-shift', value);
+            }
+        });
     }
 
     function run() { document.querySelectorAll('#chat .mes').forEach(sync); }
@@ -2203,7 +2227,16 @@ else init();
         new MutationObserver(schedule).observe(chat, { subtree: true, childList: true, attributes: true,
             attributeFilter: ['style', 'class', 'hidden'] });
         document.addEventListener('click', e => {
-            if (!e.target.closest?.('#chat .extraMesButtonsHint')) return;
+            const hint = e.target.closest?.('#chat .extraMesButtonsHint');
+            if (!hint) return;
+            const mes = hint.closest('.mes');
+            const extra = mes?.querySelector('.mes_buttons > .extraMesButtons');
+            if (mes && extra && !isOpen(extra)) {
+                const state = states.get(mes) || { origins: new Map() };
+                const rect = hint.getBoundingClientRect();
+                state.hintCenter = rect.top + rect.height / 2 - mes.getBoundingClientRect().top;
+                states.set(mes, state);
+            }
             setTimeout(run, 0);
             setTimeout(run, 90);
         }, true);
