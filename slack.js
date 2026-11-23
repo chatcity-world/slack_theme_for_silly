@@ -2053,7 +2053,7 @@ else init();
 // v1.4.61 — 확장이 메시지 이름 줄에 끼워 넣은 버튼을 ⋯ ✎ 버튼 묶음 안으로 옮김
 // (따로 떨어져 이름과 겹치거나 혼자 동떨어지지 않게)
 (function slkAdoptForeignMesButtons() {
-    const KNOWN = '.name_text, .mes_ghost, .timestamp, .mes_buttons, .mes_edit_buttons, .flex-container, .alignItemsBaseline';
+    const KNOWN = '.name_text, .mes_ghost, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_buttons, .mes_edit_buttons, .flex-container, .alignItemsBaseline';
     const AVATAR_KNOWN = '.avatar, .mesIDDisplay, .mes_timer, .tokenCounterDisplay';
     const adopt = (mes) => {
         const ch = mes.querySelector(':scope .ch_name');
@@ -2118,6 +2118,9 @@ else init();
             ...mes.querySelectorAll(':scope .ch_name .alignItemsBaseline > :not(.name_text):not(.mes_ghost):not(.timestamp)'),
         ];
         pool.forEach(el => {
+            // Metadata is not an action. Moving it to the icon toolbar creates
+            // invisible 30px flex items when its visibility is hidden on expand.
+            if (el.matches('.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost')) return;
             if (el.closest('.mes_buttons')) return;
             el.classList.add('slk-adopted-btn');
             el.dataset.slkAdopted = '1';
@@ -2167,7 +2170,8 @@ else init();
         // .extraMesButtonsHint는 실리태번의 접힘/펼침 트리거이므로 이동하지 않습니다.
         // extra는 원래 위치(메뉴 직접 자식)에 유지하고, 클릭 가능한 실물 버튼만 extra 안으로 이동.
         const direct = [...box.children].filter(el =>
-            el !== extra && !el.classList.contains('extraMesButtonsHint')
+            el !== extra && !el.classList.contains('extraMesButtonsHint') &&
+            !el.matches('.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost')
         );
         // 닫힘 상태에서의 원래 부모·다음 형제를 기록합니다.
         // 나중에 추가된 버튼도 동일하게 관리합니다.
@@ -2195,8 +2199,14 @@ else init();
             return before.backgroundImage !== 'none' || before.maskImage !== 'none' || before.webkitMaskImage !== 'none';
         };
         for (const el of extra.children) {
-            if (!el.classList.contains('slk-adopted-btn')) continue;
-            el.classList.toggle('slk-action-noicon', !hasGlyph(el));
+            // Invisible (but laid-out) actions create empty 30px slots. Check
+            // visibility as well as whether the element draws any icon.
+            const computed = getComputedStyle(el);
+            if (computed.visibility === 'hidden' || computed.opacity === '0') {
+                el.classList.add('slk-flow-hidden');
+            } else if (computed.display !== 'none') {
+                el.classList.toggle('slk-action-noicon', !hasGlyph(el));
+            }
         }
     }
 
