@@ -26,6 +26,7 @@ const SLK_UI_SETTINGS = (() => {
         narrationInk: readInk('slk-ui-ink-narration'),
         dialogueInk: readInk('slk-ui-ink-dialogue'),
         asciiInk: readInk('slk-ui-ink-ascii') || '#999999',
+        codeInk: readInk('slk-ui-ink-code'),
         headerImageMode: headerImageMode === 'custom' ? 'custom' : 'slack',
     };
 })();
@@ -67,7 +68,7 @@ function applySlackUiSettings() {
     if (SLK_UI_SETTINGS.dialogueColor) document.body.style.setProperty('--slk-dialogue-bg', SLK_UI_SETTINGS.dialogueColor);
     else document.body.style.removeProperty('--slk-dialogue-bg');
     // The three ink colors are independent. Empty values keep the native theme colors.
-    for (const [pref, slug] of [['narrationInk', 'narration'], ['dialogueInk', 'dialogue'], ['asciiInk', 'ascii']]) {
+    for (const [pref, slug] of [['narrationInk', 'narration'], ['dialogueInk', 'dialogue'], ['asciiInk', 'ascii'], ['codeInk', 'code']]) {
         const color = SLK_UI_SETTINGS[pref];
         document.body.classList.toggle(`slk-ink-${slug}`, Boolean(color));
         if (color) document.body.style.setProperty(`--slk-ink-${slug}`, color);
@@ -176,11 +177,19 @@ function buildSlackUiExtensionSettings() {
                         </div>
                     </div>
                     <div class="slk-ink-setting" data-ink="ascii" data-pref="asciiInk" data-storage="slk-ui-ink-ascii">
-                        <label for="slk-ink-ascii-hex">아스키아트</label>
+                        <label for="slk-ink-ascii-hex">아스키아트 (*텍스트*)</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-ascii-picker" aria-label="아스키아트 글자색 선택">
                             <input type="text" id="slk-ink-ascii-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="아스키아트 글자색 HEX">
                             <button type="button" class="slk-preference-button slk-ink-reset" aria-label="아스키아트 글자색 초기화">초기화</button>
+                        </div>
+                    </div>
+                    <div class="slk-ink-setting" data-ink="code" data-pref="codeInk" data-storage="slk-ui-ink-code">
+                        <label for="slk-ink-code-hex">코드박스</label>
+                        <div class="slk-color-row">
+                            <input type="color" id="slk-ink-code-picker" aria-label="코드박스 글자색 선택">
+                            <input type="text" id="slk-ink-code-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="코드박스 글자색 HEX">
+                            <button type="button" class="slk-preference-button slk-ink-reset" aria-label="코드박스 글자색 초기화">초기화</button>
                         </div>
                     </div>
                 </section>
@@ -304,8 +313,8 @@ function buildSlackUiExtensionSettings() {
     container.querySelector('#slk-dialogue-reset').addEventListener('click', () => setDialogueColor(''));
     syncColorFields();
 
-    // Independent narrative / dialogue / ASCII art ink color pickers and HEX fields.
-    const inkDefaults = { narration: '#1D1C1D', dialogue: '#1D1C1D', ascii: '#999999' };
+    // Independent narration / dialogue / asterisk emphasis / code block ink controls.
+    const inkDefaults = { narration: '#1D1C1D', dialogue: '#1D1C1D', ascii: '#999999', code: '#1D1C1D' };
     const inkRows = [...container.querySelectorAll('.slk-ink-setting')];
     const drawInkFields = (row) => {
         const pref = row.dataset.pref;
