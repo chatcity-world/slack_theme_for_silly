@@ -14262,6 +14262,7 @@ body.slk-ui.slk-dark {
         text-shadow: none !important;
     }
     body.slk-ui #loader.splash-screen::before {
+        font-family: 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important;
         content: 'Slack' !important;
         order: 1 !important;
         margin: -10px 0 0 !important;
@@ -15048,5 +15049,125 @@ body.slk-ui.slk-dark {
         margin-left: 0 !important;
         margin-right: 0 !important;
         transform: none !important;
+    }
+}
+
+/* =====================================================================
+   1.4.61
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    /* 2) 확장 탭 '?' 두 개 → 동그라미 아이콘 하나만 (글자 ? 숨김) */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block .note-link-span {
+        font-size: 0 !important;
+        color: transparent !important;
+        -webkit-text-fill-color: transparent !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block .note-link-span::before {
+        width: 16px !important;
+        height: 16px !important;
+        background-color: #8A8A8A !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block .notes-link:has(.note-link-span) :is(.fa-circle-question, .fa-question-circle) {
+        display: none !important;
+    }
+
+    /* 3) 캐릭터 상세 제목 줄: 한 줄 고정 [이름 …… 토큰 · 📊 · 👁], 왼쪽 파란 막대 제거 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_PinAndTabs {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+        background-image: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_PinAndTabs > :not(#right-nav-panel-tabs) {
+        display: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_PinAndTabs::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_PinAndTabs::after {
+        content: none !important;
+        display: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #right-nav-panel-tabs {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_button_selected_ch {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_button_selected_ch h2 {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #result_info {
+        flex: 0 0 auto !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 2px !important;
+        width: auto !important;
+        margin: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #result_info_text {
+        flex: 0 0 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        margin: 0 4px 0 0 !important;
+        white-space: nowrap !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #result_info > :not(#result_info_text) {
+        flex: 0 0 auto !important;
+        margin: 0 !important;
+    }
+}
+@media screen and (max-width: 1000px) {
+    /* 4) 옮겨 온 확장 버튼: 다른 아이콘과 같은 크기·색 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons > .slk-adopted-btn {
+        position: static !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 0 0 auto !important;
+        width: 32px !important;
+        height: 30px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        color: #616061 !important;
+        font-size: 17px !important;
+        line-height: 1 !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons > .slk-adopted-btn :is(i, svg, img) {
+        width: 17px !important;
+        height: 17px !important;
+        font-size: 17px !important;
+        color: inherit !important;
+    }
+}
+@media screen and (max-width: 1000px) {
+    /* 4b) ⋯ 안 확장 버튼이 margin-auto 등으로 혼자 떨어지는 것 방지 */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons > :not(.extraMesButtons),
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons .extraMesButtons > * {
+        flex: 0 0 auto !important;
+        margin: 0 !important;
+        position: static !important;
+        float: none !important;
+        order: 0 !important;
+        align-self: center !important;
     }
 }

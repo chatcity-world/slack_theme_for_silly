@@ -1994,7 +1994,7 @@ else init();
 (function slkBootSplashCss() {
     const START = '/* ==== Slack UI 시작 화면 (자동 추가 — 지우지 마세요) ==== */';
     const END = '/* ==== /Slack UI 시작 화면 ==== */';
-    const BLOCK = START + '\n' + "@media screen and (max-width: 1000px) { #preloader { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: #4A154B !important; box-shadow: none !important; outline: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo))::backdrop { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content) { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; overflow: hidden !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) .popup-controls { display: none !important; } #loader { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 28px !important; width: 100% !important; height: 100% !important; background: transparent !important; color: #FFFFFF !important; } #loader::before { content: 'Slack'; order: 1; margin: -10px 0 0; color: #FFFFFF; font-size: 22px; font-weight: 900; letter-spacing: -0.02em; } #loader .splash-logo { order: 0; width: 96px !important; height: 96px !important; object-fit: cover !important; border-radius: 24px !important; filter: none !important; box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important; } #loader #load-spinner, #preloader #load-spinner { order: 2; position: static !important; width: 28px !important; height: 28px !important; margin-top: 18px; font-size: 0 !important; color: transparent !important; border: 3px solid rgba(255, 255, 255, .25) !important; border-top-color: #FFFFFF !important; border-radius: 50% !important; box-sizing: border-box !important; animation: slk-boot-spin .8s linear infinite !important; } #loader #load-spinner::before { content: none !important; display: none !important; } #loader .splash-message { order: 3; margin: -12px 0 0 !important; color: rgba(255, 255, 255, .82) !important; font-size: 15px !important; font-weight: 600 !important; text-shadow: none !important; } } @keyframes slk-boot-spin { to { transform: rotate(360deg); } } @media screen and (max-width: 1000px) { dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) * { border-color: transparent !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content, #loader, .splash-screen) { background: transparent !important; border: 0 !important; box-shadow: none !important; outline: none !important; } }" + '\n' + END;
+    const BLOCK = START + '\n' + "@font-face { font-family: 'SlackBootLato'; font-style: normal; font-weight: 900; font-display: block; src: url(https://fonts.gstatic.com/s/lato/v25/S6u9w4BMUTPHh50Xew8.ttf) format('truetype'); } @media screen and (max-width: 1000px) { #preloader { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: #4A154B !important; box-shadow: none !important; outline: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo))::backdrop { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content) { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; overflow: hidden !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) .popup-controls { display: none !important; } #loader { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 28px !important; width: 100% !important; height: 100% !important; background: transparent !important; color: #FFFFFF !important; } #loader::before { content: 'Slack'; order: 1; margin: -10px 0 0; color: #FFFFFF; font-family: 'Lato', 'SlackBootLato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -0.02em; } #loader .splash-logo { order: 0; width: 96px !important; height: 96px !important; object-fit: cover !important; border-radius: 24px !important; filter: none !important; box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important; } #loader #load-spinner, #preloader #load-spinner { order: 2; position: static !important; width: 28px !important; height: 28px !important; margin-top: 18px; font-size: 0 !important; color: transparent !important; border: 3px solid rgba(255, 255, 255, .25) !important; border-top-color: #FFFFFF !important; border-radius: 50% !important; box-sizing: border-box !important; animation: slk-boot-spin .8s linear infinite !important; } #loader #load-spinner::before { content: none !important; display: none !important; } #loader .splash-message { order: 3; margin: -12px 0 0 !important; color: rgba(255, 255, 255, .82) !important; font-family: 'Lato', 'SlackBootLato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important; font-size: 15px !important; font-weight: 600 !important; text-shadow: none !important; } } @keyframes slk-boot-spin { to { transform: rotate(360deg); } } @media screen and (max-width: 1000px) { dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) * { border-color: transparent !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content, #loader, .splash-screen) { background: transparent !important; border: 0 !important; box-shadow: none !important; outline: none !important; } }" + '\n' + END;
     const strip = (s) => {
         const i = s.indexOf(START), j = s.indexOf(END);
         if (i === -1 || j === -1) return s;
@@ -2045,6 +2045,44 @@ else init();
         let t = null;
         new MutationObserver(() => { if (!t) t = setTimeout(() => { t = null; all(); }, 200); })
             .observe(document.body, { childList: true, subtree: true });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();
+
+// v1.4.61 — 확장이 메시지 이름 줄에 끼워 넣은 버튼을 ⋯ ✎ 버튼 묶음 안으로 옮김
+// (따로 떨어져 이름과 겹치거나 혼자 동떨어지지 않게)
+(function slkAdoptForeignMesButtons() {
+    const KNOWN = '.name_text, .mes_ghost, .timestamp, .mes_buttons, .mes_edit_buttons, .flex-container, .alignItemsBaseline';
+    const adopt = (mes) => {
+        const ch = mes.querySelector(':scope .ch_name');
+        const box = ch?.querySelector(':scope > .mes_buttons');
+        if (!ch || !box) return;
+        const cands = [
+            ...ch.querySelectorAll(':scope > *'),
+            ...ch.querySelectorAll(':scope > .flex-container > *'),
+            ...ch.querySelectorAll(':scope .alignItemsBaseline > *'),
+        ];
+        cands.forEach(el => {
+            if (el.matches(KNOWN) || el.closest('.mes_buttons, .mes_edit_buttons') !== null && el.closest('.mes_buttons, .mes_edit_buttons') !== el) return;
+            if (el.matches(KNOWN)) return;
+            if (el.dataset.slkAdopted) return;
+            el.dataset.slkAdopted = '1';
+            el.classList.add('slk-adopted-btn');
+            box.insertBefore(el, box.firstChild);
+        });
+    };
+    const run = () => {
+        if (!document.body?.classList.contains('slk-ui')) return;
+        document.querySelectorAll('#chat .mes').forEach(adopt);
+    };
+    let t = null;
+    const schedule = () => { if (!t) t = setTimeout(() => { t = null; run(); }, 120); };
+    const start = () => {
+        const chat = document.getElementById('chat');
+        if (!chat) { setTimeout(start, 500); return; }
+        run();
+        new MutationObserver(schedule).observe(chat, { childList: true, subtree: true });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
