@@ -3066,7 +3066,7 @@ else init();
 })();
 
 
-// v1.6.8 — Native SillyTavern prompt editor: compact, responsive rows.
+// v1.6.9 — Native SillyTavern prompt editor: compact, responsive rows.
 // Reuses the native inputs and listeners; it does not replace prompt data or save behavior.
 (function slkCompactNativePromptEditor() {
     const popupId = 'completion_prompt_manager_popup';
@@ -3113,12 +3113,13 @@ else init();
         if (!document.body.classList.contains('slk-ui')) return;
         const popup = document.getElementById(popupId);
         const edit = popup?.querySelector('#completion_prompt_manager_popup_edit');
-        const heading = edit?.querySelector(':scope > h3');
+        const heading = edit?.querySelector(':scope > h3') || edit?.querySelector('h3');
         const form = edit?.querySelector('.completion_prompt_manager_popup_entry_form');
         const footer = form?.querySelector(':scope > .completion_prompt_manager_popup_entry_form_footer');
         if (!edit || !form || !footer) return;
 
         // Retain the heading content and give it a real inset, not a visual indent.
+        if (heading) heading.classList.add('slk-prompt-editor-title');
         if (heading && !heading.querySelector(':scope > .slk-prompt-heading-text')) {
             const label = document.createElement('span');
             label.className = 'slk-prompt-heading-text';
@@ -3180,12 +3181,28 @@ else init();
             row.classList.toggle('slk-prompt-empty-native-row', !hasControls && !hasOtherContent);
         }
 
-        // Place the native prompt body immediately after the compact controls.
+        // Keep native prompt listeners intact. Move the *original* source block
+        // (or the original prompt control if ST does not have that wrapper) into
+        // the same compact layout, directly under Position. This removes leftover
+        // wrapper height that otherwise creates a 100+ px blank gap.
         const prompt = fields.querySelector('#' + prefix + 'prompt');
         const promptControl = prompt?.closest(controlSelector);
-        if (promptControl && promptControl.parentElement === fields &&
-            promptControl.previousElementSibling !== layout) {
-            layout.insertAdjacentElement('afterend', promptControl);
+        const promptSource = fields.querySelector('#completion_prompt_manager_popup_entry_source_block');
+        const promptBlock = (promptSource && promptSource.contains(prompt)) ? promptSource : promptControl;
+        if (promptBlock && ![name, role, triggers, position, depth.control, order.control].includes(promptBlock)) {
+            promptBlock.classList.add('slk-prompt-content-block');
+            moveNative(promptBlock, layout);
+        }
+
+        // Make the title line up with the actual Name label even when the host
+        // theme offsets the native h3. Avoid redundant style writes: the dialog
+        // is watched by a MutationObserver.
+        if (heading && name) {
+            const inset = Math.max(16, Math.round(name.getBoundingClientRect().left - heading.getBoundingClientRect().left));
+            const value = inset + 'px';
+            if (heading.style.getPropertyValue('--slk-prompt-title-inset') !== value) {
+                heading.style.setProperty('--slk-prompt-title-inset', value);
+            }
         }
 
         // Do not reveal Select2's hidden backing <select> or tamper with its

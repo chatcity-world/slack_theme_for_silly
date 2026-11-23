@@ -18964,13 +18964,14 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     grid-template-columns: minmax(0, 1fr) !important;
   }
   html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-role-trigger-row {
-    grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
+  /* The Position field uses exactly the same width as Role, whether Depth/Order show or not. */
   html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row {
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, .7fr) minmax(0, .7fr) !important;
+    grid-template-columns: calc((100% - 10px) / 2) repeat(2, minmax(0, 1fr)) !important;
   }
   html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row:not(.slk-prompt-has-depth) > :first-child {
-    grid-column: 1 / -1 !important;
+    grid-column: 1 !important;
   }
   html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row.slk-prompt-has-depth > :first-child {
     grid-column: 1 !important;
@@ -19250,11 +19251,11 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     gap: 13px !important;
   }
   html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-role-trigger-row {
-    grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
   html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row {
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, .7fr) minmax(0, .7fr) !important;
-    gap: 8px !important;
+    grid-template-columns: calc((100% - 10px) / 2) repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
   }
   html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row select:not([multiple]) {
     font-size: 12px !important;
@@ -19274,5 +19275,61 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     width: min(820px, calc(100vw - 48px)) !important;
     max-width: calc(100vw - 48px) !important;
     max-height: calc(100dvh - 110px) !important;
+  }
+}
+
+/* v1.6.9 — final prompt editor alignment fixes (native SillyTavern UI only). */
+@media screen {
+  /* The real ST title may be nested beneath another wrapper; the JS locates it
+     and aligns its content to the Name label with --slk-prompt-title-inset. */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit h3.slk-prompt-editor-title {
+    position: relative !important;
+    display: flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 58px !important;
+    padding: 16px 0 !important;
+    margin: 0 !important;
+    text-indent: 0 !important;
+    box-sizing: border-box !important;
+    border-bottom: 1px solid #EDEDED !important;
+    font: 800 20px/1.3 var(--slk-font) !important;
+    color: #1D1C1D !important;
+    background: #FFFFFF !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit h3.slk-prompt-editor-title > .slk-prompt-heading-text {
+    display: block !important;
+    position: absolute !important;
+    left: var(--slk-prompt-title-inset, 24px) !important;
+    top: 50% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translateY(-50%) !important;
+    text-indent: 0 !important;
+    white-space: nowrap !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-layout {
+    gap: 10px !important;
+  }
+  /* Direct layout child, moved without recreating the original textarea.
+     Source block and empty native wrappers no longer push the prompt down. */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-layout > .slk-prompt-content-block {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 6px !important;
+    align-self: stretch !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-layout > .slk-prompt-content-block > .completion_prompt_manager_popup_entry_form_control {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 }
