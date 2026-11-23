@@ -15486,7 +15486,7 @@ body.slk-ui.slk-dark {
 /* =====================================================================
    1.4.65
    ===================================================================== */
-:root { --slk-css-version: '1.4.69'; }
+:root { --slk-css-version: '1.4.70'; }
 @media screen and (max-width: 1000px) {
     /* 고급 서식: 구역을 감싸는 테마 상자 테두리·그림자 전부 제거 (입력칸은 그대로) */
     html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting div:not(.menu_button):not([class*="select2"]):not(:has(> select[data-preset-manager-for])):not([data-preset-manager-for]) {
@@ -15592,5 +15592,131 @@ body.slk-ui.slk-dark {
         width: 17px !important;
         height: 17px !important;
         font-size: 17px !important;
+    }
+}
+
+
+/* =====================================================================
+   1.4.70 — mobile panel polish (character list / section headings / paging)
+   Only these three requested areas change; message buttons are untouched.
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    /* 1. 캐릭터 목록: 열려 있는 채팅의 '선택된 캐릭터 이름' 헤더가
+       상위의 강한 display:flex 룰 때문에 44px 빈 공간으로 남던 문제.
+       편집 화면은 건드리지 않고 목록에서만 완전히 접습니다. */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel[data-slk-view="list"] #rm_PinAndTabs {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel[data-slk-view="list"] #CharListButtonAndHotSwaps {
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 10px 16px 5px !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel[data-slk-view="list"] > .scrollableInner {
+        padding-top: 3px !important;
+    }
+
+    /* 2. 연결 프로필 / 로어북 / 고급 서식 제목의 테마 파란 세로선 제거.
+       입력 필드/내부 버튼의 테두리는 그대로 유지. */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_api_block > .wide100p:has(#connection_profiles),
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_api_block > .wide100p:has(#connection_profiles) > .flex-container:first-child,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_api_block :is(h2,h3,h4).standoutHeader,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo #wiTopBlock,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo > :is(h2,h3,h4,.range-block-title),
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting > .flex-container.spaceEvenly,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting > .flex-container.spaceEvenly > div,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting :is(h2,h3,h4).standoutHeader {
+        border-left: 0 !important;
+        border-inline-start: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_api_block > .wide100p:has(#connection_profiles) > .flex-container:first-child::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo #wiTopBlock::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo > :is(h2,h3,h4,.range-block-title)::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting > .flex-container.spaceEvenly::before,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting :is(h2,h3,h4).standoutHeader::before {
+        /* 외부 테마에서 삽입한 장식만 숨김 (로어북 선택줄의 제목 의사 요소는 유지). */
+        content: none !important;
+        display: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_api_block > .wide100p:has(#connection_profiles) > .flex-container:first-child,
+    html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo > :is(h2,h3,h4,.range-block-title),
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting :is(h2,h3,h4).standoutHeader {
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+    }
+    /* 제목 텍스트는 각 패널의 기본 16px 안쪽 여백에서 시작. */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo #wiTopBlock {
+        padding-left: 0 !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo #wiTopBlock > :is(h2,h3,h4,.standoutHeader),
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting > :is(h2,h3,h4) {
+        border-left: 0 !important;
+        border-inline-start: 0 !important;
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+    }
+    /* 제거된 세로 막대가 있던 자리 없이 제목/버튼을 가까이 배치. */
+    html body.slk-ui:not(#slk-a):not(#slk-b) #rm_api_block > .wide100p:has(#connection_profiles) > .flex-container:first-child {
+        margin-bottom: 8px !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting > .flex-container.spaceEvenly > div:first-child {
+        padding-left: 0 !important;
+    }
+
+    /* 3. 페르소나·캐릭터 페이지 이동의 < > 문자열 대신
+       일정한 선 굵기의 20px 벡터 chevron 사용. << >> 버튼은 유지. */
+    html body.slk-ui:not(#slk-a):not(#slk-b) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li:is(.paginationjs-prev,.paginationjs-next) > a {
+        display: grid !important;
+        place-items: center !important;
+        min-width: 27px !important;
+        height: 32px !important;
+        padding: 0 !important;
+        font-size: 0 !important;
+        line-height: 0 !important;
+        color: transparent !important;
+        -webkit-text-fill-color: transparent !important;
+        text-shadow: none !important;
+        text-decoration: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li:is(.paginationjs-prev,.paginationjs-next) > a::before {
+        content: '' !important;
+        display: block !important;
+        width: 20px !important;
+        height: 20px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: var(--slk-text, #1D1C1D) !important;
+        -webkit-mask-size: contain !important;
+        mask-size: contain !important;
+        -webkit-mask-position: center !important;
+        mask-position: center !important;
+        -webkit-mask-repeat: no-repeat !important;
+        mask-repeat: no-repeat !important;
+        transform: none !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li.paginationjs-prev > a::before {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m14.5 5.5-6.5 6.5 6.5 6.5'/%3E%3C/svg%3E") !important;
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m14.5 5.5-6.5 6.5 6.5 6.5'/%3E%3C/svg%3E") !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li.paginationjs-next > a::before {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9.5 5.5 6.5 6.5-6.5 6.5'/%3E%3C/svg%3E") !important;
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9.5 5.5 6.5 6.5-6.5 6.5'/%3E%3C/svg%3E") !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b) :is(#PersonaManagement #persona_pagination_container, #right-nav-panel #rm_print_characters_pagination)
+      .paginationjs-pages li:is(.paginationjs-prev,.paginationjs-next).disabled > a::before {
+        opacity: .32 !important;
     }
 }
