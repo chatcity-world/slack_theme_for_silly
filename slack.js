@@ -3066,7 +3066,7 @@ else init();
 })();
 
 
-// v1.6.9 — Native SillyTavern prompt editor: compact, responsive rows.
+// v1.7.0 — Native SillyTavern prompt editor: compact, responsive rows.
 // Reuses the native inputs and listeners; it does not replace prompt data or save behavior.
 (function slkCompactNativePromptEditor() {
     const popupId = 'completion_prompt_manager_popup';
@@ -3172,26 +3172,30 @@ else init();
         posRow.classList.toggle('slk-prompt-has-depth', [depth, order].some(({block, control}) =>
             control && !isNativeHidden(block, control)));
 
-        // The original ST flex wrappers remain in the DOM, but never take up
-        // unused vertical space after their controls have moved into our rows.
-        for (const row of fields.querySelectorAll(':scope > .flex-container.gap10px')) {
-            const hasControls = row.querySelector(controlSelector);
-            const hasOtherContent = [...row.children].some(el => !el.matches(controlSelector) &&
-                (el.textContent?.trim() || el.children.length));
-            row.classList.toggle('slk-prompt-empty-native-row', !hasControls && !hasOtherContent);
+        // Move ONLY the original prompt control, not its containing source block.
+        // SillyTavern/theme source wrappers can have fixed height or padding;
+        // moving the wrapper into this flex layout caused a ~150px blank gap.
+        // Moving the real control preserves the native input, ID and listeners.
+        const prompt = fields.querySelector('#' + prefix + 'prompt');
+        const promptControl = prompt?.closest(controlSelector) || prompt?.parentElement;
+        if (promptControl && ![name, role, triggers, position, depth.control, order.control].includes(promptControl)) {
+            promptControl.classList.add('slk-prompt-content-block');
+            moveNative(promptControl, layout);
+        }
+        // Hide the original shell only if it's now empty of controls and
+        // actionable content. No actual form input or event handler is removed.
+        const promptSource = fields.querySelector('#completion_prompt_manager_popup_entry_source_block');
+        if (promptSource && !promptSource.contains(prompt)) {
+            const hasInteractive = !!promptSource.querySelector('input,textarea,select,button,a,[role="button"],[contenteditable="true"]');
+            promptSource.classList.toggle('slk-prompt-empty-source', !hasInteractive && !promptSource.textContent.trim());
         }
 
-        // Keep native prompt listeners intact. Move the *original* source block
-        // (or the original prompt control if ST does not have that wrapper) into
-        // the same compact layout, directly under Position. This removes leftover
-        // wrapper height that otherwise creates a 100+ px blank gap.
-        const prompt = fields.querySelector('#' + prefix + 'prompt');
-        const promptControl = prompt?.closest(controlSelector);
-        const promptSource = fields.querySelector('#completion_prompt_manager_popup_entry_source_block');
-        const promptBlock = (promptSource && promptSource.contains(prompt)) ? promptSource : promptControl;
-        if (promptBlock && ![name, role, triggers, position, depth.control, order.control].includes(promptBlock)) {
-            promptBlock.classList.add('slk-prompt-content-block');
-            moveNative(promptBlock, layout);
+        // Clean up AFTER moving the prompt input. The former source wrapper can
+        // otherwise remain a 150px-tall empty flex row beneath the textarea.
+        for (const row of fields.querySelectorAll(':scope > .flex-container.gap10px')) {
+            const hasActualInput = !!row.querySelector('input,select,textarea,button,a,[role="button"],[contenteditable="true"]');
+            const hasVisibleText = !!row.textContent.trim();
+            row.classList.toggle('slk-prompt-empty-native-row', !hasActualInput && !hasVisibleText);
         }
 
         // Make the title line up with the actual Name label even when the host
