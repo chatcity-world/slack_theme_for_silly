@@ -3007,3 +3007,35 @@ else init();
     desktop.addEventListener?.('change', build);
     window.addEventListener('slk-ui-settings-changed', build);
 })();
+
+// v1.6.3 — Native prompt editing dialog: scrollable fields + persistent,
+// clearly labeled action bar. This only moves existing nodes and retains
+// SillyTavern's original save/reset/close event listeners and input IDs.
+(function slkPolishNativePromptEditor() {
+    function prepare() {
+        const editor = document.getElementById('completion_prompt_manager_popup_edit');
+        const form = editor?.querySelector('.completion_prompt_manager_popup_entry_form');
+        const footer = form?.querySelector(':scope > .completion_prompt_manager_popup_entry_form_footer');
+        if (!form || !footer || form.querySelector(':scope > .slk-prompt-form-fields')) return;
+
+        const fields = document.createElement('div');
+        fields.className = 'slk-prompt-form-fields';
+        while (form.firstChild && form.firstChild !== footer) {
+            fields.appendChild(form.firstChild);
+        }
+        form.insertBefore(fields, footer);
+
+        for (const [id, label] of [
+            ['completion_prompt_manager_popup_entry_form_close', '취소'],
+            ['completion_prompt_manager_popup_entry_form_reset', '초기화'],
+            ['completion_prompt_manager_popup_entry_form_save', '저장'],
+        ]) {
+            const button = footer.querySelector('#' + id);
+            if (!button) continue;
+            button.dataset.slkActionLabel = label;
+            button.setAttribute('aria-label', label);
+        }
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prepare, { once: true });
+    else prepare();
+})();
