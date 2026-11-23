@@ -25,7 +25,7 @@ const SLK_UI_SETTINGS = (() => {
         dialogueColor: /^#[0-9a-f]{6}$/i.test(color) ? color.toUpperCase() : '',
         narrationInk: readInk('slk-ui-ink-narration'),
         dialogueInk: readInk('slk-ui-ink-dialogue'),
-        asciiInk: readInk('slk-ui-ink-ascii'),
+        asciiInk: readInk('slk-ui-ink-ascii') || '#999999',
         headerImageMode: headerImageMode === 'custom' ? 'custom' : 'slack',
     };
 })();
@@ -151,7 +151,7 @@ function buildSlackUiExtensionSettings() {
                     <div class="slk-color-row">
                         <input type="color" id="slk-dialogue-color-picker" value="#efefef" aria-label="대사 배경색 선택">
                         <label class="slk-visually-hidden" for="slk-dialogue-hex">HEX 색상</label>
-                        <input type="text" id="slk-dialogue-hex" maxlength="7" placeholder="#EFEFEF" spellcheck="false" autocomplete="off" inputmode="text" aria-label="대사 배경색 HEX">
+                        <input type="text" id="slk-dialogue-hex" maxlength="7" placeholder="#EFEFEF" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="대사 배경색 HEX">
                         <button type="button" id="slk-dialogue-reset" class="slk-preference-button" aria-label="대사 배경색 초기화">초기화</button>
                     </div>
                     <div class="slk-preference-hint">기본값은 현재 테마의 대사 배경색입니다.</div>
@@ -163,7 +163,7 @@ function buildSlackUiExtensionSettings() {
                         <label for="slk-ink-narration-hex">나레이션</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-narration-picker" aria-label="나레이션 글자색 선택">
-                            <input type="text" id="slk-ink-narration-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" aria-label="나레이션 글자색 HEX">
+                            <input type="text" id="slk-ink-narration-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="나레이션 글자색 HEX">
                             <button type="button" class="slk-preference-button slk-ink-reset" aria-label="나레이션 글자색 초기화">초기화</button>
                         </div>
                     </div>
@@ -171,7 +171,7 @@ function buildSlackUiExtensionSettings() {
                         <label for="slk-ink-dialogue-hex">대사</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-dialogue-picker" aria-label="대사 글자색 선택">
-                            <input type="text" id="slk-ink-dialogue-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" aria-label="대사 글자색 HEX">
+                            <input type="text" id="slk-ink-dialogue-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="대사 글자색 HEX">
                             <button type="button" class="slk-preference-button slk-ink-reset" aria-label="대사 글자색 초기화">초기화</button>
                         </div>
                     </div>
@@ -179,7 +179,7 @@ function buildSlackUiExtensionSettings() {
                         <label for="slk-ink-ascii-hex">아스키아트</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-ascii-picker" aria-label="아스키아트 글자색 선택">
-                            <input type="text" id="slk-ink-ascii-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" aria-label="아스키아트 글자색 HEX">
+                            <input type="text" id="slk-ink-ascii-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="아스키아트 글자색 HEX">
                             <button type="button" class="slk-preference-button slk-ink-reset" aria-label="아스키아트 글자색 초기화">초기화</button>
                         </div>
                     </div>
@@ -274,6 +274,7 @@ function buildSlackUiExtensionSettings() {
         colorPicker.value = SLK_UI_SETTINGS.dialogueColor || '#efefef';
         colorHex.value = SLK_UI_SETTINGS.dialogueColor || '';
         colorHex.classList.remove('slk-input-invalid');
+        colorHex.removeAttribute('aria-invalid');
     };
     const setDialogueColor = value => {
         SLK_UI_SETTINGS.dialogueColor = value;
@@ -282,17 +283,29 @@ function buildSlackUiExtensionSettings() {
         applySlackUiSettings();
     };
     colorPicker.addEventListener('input', () => setDialogueColor(colorPicker.value.toUpperCase()));
+    // Never apply, normalize, or validate while the user is typing.
+    // Commit only after the input loses focus (e.g. dismissing the iOS keyboard).
     colorHex.addEventListener('input', () => {
-        const color = normalizeHex(colorHex.value);
-        colorHex.classList.toggle('slk-input-invalid', Boolean(colorHex.value.trim()) && !color);
-        if (color) setDialogueColor(color);
+        colorHex.classList.remove('slk-input-invalid');
+        colorHex.removeAttribute('aria-invalid');
     });
-    colorHex.addEventListener('blur', syncColorFields);
+    colorHex.addEventListener('blur', () => {
+        const raw = colorHex.value.trim();
+        if (!raw) { setDialogueColor(''); return; }
+        const normalized = normalizeHex(raw);
+        if (normalized) { setDialogueColor(normalized); return; }
+        // Leave invalid text intact so it can be corrected on the next focus.
+        colorHex.classList.add('slk-input-invalid');
+        colorHex.setAttribute('aria-invalid', 'true');
+    });
+    colorHex.addEventListener('keydown', event => {
+        if (event.key === 'Enter') colorHex.blur();
+    });
     container.querySelector('#slk-dialogue-reset').addEventListener('click', () => setDialogueColor(''));
     syncColorFields();
 
     // Independent narrative / dialogue / ASCII art ink color pickers and HEX fields.
-    const inkDefaults = { narration: '#1D1C1D', dialogue: '#1D1C1D', ascii: '#1D1C1D' };
+    const inkDefaults = { narration: '#1D1C1D', dialogue: '#1D1C1D', ascii: '#999999' };
     const inkRows = [...container.querySelectorAll('.slk-ink-setting')];
     const drawInkFields = (row) => {
         const pref = row.dataset.pref;
@@ -301,6 +314,7 @@ function buildSlackUiExtensionSettings() {
         picker.value = SLK_UI_SETTINGS[pref] || inkDefaults[row.dataset.ink];
         hex.value = SLK_UI_SETTINGS[pref] || '';
         hex.classList.remove('slk-input-invalid');
+        hex.removeAttribute('aria-invalid');
     };
     inkRows.forEach(row => {
         const pref = row.dataset.pref;
@@ -313,16 +327,26 @@ function buildSlackUiExtensionSettings() {
             applySlackUiSettings();
         };
         picker.addEventListener('input', () => setInk(picker.value.toUpperCase()));
+        // Preserve the exact typed text while the keyboard is open.
+        // Validate and apply only after editing is finished.
         hex.addEventListener('input', () => {
-            const normalized = normalizeHex(hex.value);
-            hex.classList.toggle('slk-input-invalid', Boolean(hex.value.trim()) && !normalized);
-            if (normalized) setInk(normalized);
+            hex.classList.remove('slk-input-invalid');
+            hex.removeAttribute('aria-invalid');
         });
         hex.addEventListener('blur', () => {
-            if (!hex.value.trim()) setInk('');
-            else drawInkFields(row);
+            const raw = hex.value.trim();
+            if (!raw) { setInk(row.dataset.ink === 'ascii' ? '#999999' : ''); return; }
+            const normalized = normalizeHex(raw);
+            if (normalized) { setInk(normalized); return; }
+            // Do not discard the invalid text or modify the last valid color.
+            hex.classList.add('slk-input-invalid');
+            hex.setAttribute('aria-invalid', 'true');
         });
-        row.querySelector('.slk-ink-reset').addEventListener('click', () => setInk(''));
+        hex.addEventListener('keydown', event => {
+            if (event.key === 'Enter') hex.blur();
+        });
+        row.querySelector('.slk-ink-reset').addEventListener('click', () =>
+            setInk(row.dataset.ink === 'ascii' ? '#999999' : ''));
         drawInkFields(row);
     });
     // The registered image is SillyTavern's own logo, already replaced by the user.
