@@ -17505,3 +17505,748 @@ html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-contai
         line-height: 1.4 !important;
     }
 }
+
+
+/* === v1.5.4: Chat history — Slack-inspired modal, not a generic popup === */
+/* Scope all changes to the native past-chat overlay. Do not alter chat actions or other popups. */
+html body.slk-ui #shadow_select_chat_popup {
+    background: rgba(29, 28, 29, .50) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    z-index: 4100 !important;
+}
+html body.slk-ui #select_chat_popup {
+    box-sizing: border-box !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: min(720px, calc(100vw - 24px)) !important;
+    min-width: 0 !important;
+    max-width: 720px !important;
+    height: min(780px, calc(100dvh - 50px)) !important;
+    min-height: 200px !important;
+    max-height: calc(100dvh - 50px) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid #E3E3E3 !important;
+    border-radius: 18px !important;
+    background: #FFFFFF !important;
+    color: #1D1C1D !important;
+    box-shadow: 0 24px 72px rgba(29, 28, 29, .24), 0 3px 12px rgba(29, 28, 29, .10) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    overflow: hidden !important;
+    isolation: isolate;
+    font-family: var(--slk-font, 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
+    letter-spacing: -0.01em !important;
+    text-shadow: none !important;
+}
+/* Preserve icon font glyphs: apply family only to real textual content. */
+html body.slk-ui #select_chat_popup,
+html body.slk-ui #select_chat_popup :is(span, small, p, label, input, button, .select_chat_block_filename, .select_chat_block_mes,
+    .chatBackupsListItemName, .chatBackupsListItemInfo, #selectChatPopupHeaderText, .chat_messages_date,
+    .chat_file_size, .chat_messages_num) {
+    font-family: var(--slk-font, 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
+    font-variant-ligatures: normal !important;
+    letter-spacing: -0.01em !important;
+    text-shadow: none !important;
+}
+html body.slk-ui #select_chat_popup :is(i, .fa, .fa-solid, .fa-regular, .fa-brands, [class*='fa-'])::before,
+html body.slk-ui #select_chat_popup :is(.fa, .fa-solid, .fa-regular, .fa-brands, [class*='fa-'])::after {
+    /* Do not replace Font Awesome's icon content or family. */
+    text-shadow: none !important;
+}
+/* Header: title/close, primary actions, then search and backup filter. */
+html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] {
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 36px !important;
+    grid-template-rows: auto 42px 42px !important;
+    grid-template-areas: 'title title close' 'new import import' 'backup search search' !important;
+    align-items: center !important;
+    justify-items: stretch !important;
+    column-gap: 10px !important;
+    row-gap: 10px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 18px 20px 16px !important;
+    background: #FFFFFF !important;
+    border: none !important;
+    border-bottom: 1px solid #EBEBEB !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    flex: 0 0 auto !important;
+}
+html body.slk-ui #select_chat_popup #select_chat_import { display: none !important; }
+html body.slk-ui #select_chat_popup #selectChatPopupHeaderText {
+    grid-area: title !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    font-size: 20px !important;
+    line-height: 1.3 !important;
+    font-weight: 800 !important;
+    color: #1D1C1D !important;
+    text-align: left !important;
+    white-space: nowrap;
+}
+html body.slk-ui #select_chat_popup #ChatHistoryCharName:not(:empty) { margin-right: 4px !important; }
+html body.slk-ui #select_chat_popup #selectChatPopupHeaderText .notes-link,
+html body.slk-ui #select_chat_popup #selectChatPopupHeaderText .note-link-span {
+    color: #A0A0A0 !important;
+    font-size: 14px !important;
+    opacity: 1 !important;
+    border: none !important;
+    background: transparent !important;
+}
+html body.slk-ui #select_chat_popup #selectChatPopupHeaderText .notes-link:hover { color: #616061 !important; }
+/* The native #select_chat_cross keeps its click listener. Replace ONLY its circle icon visually. */
+html body.slk-ui #select_chat_popup #select_chat_cross {
+    grid-area: close !important;
+    box-sizing: border-box !important;
+    justify-self: end !important;
+    align-self: center !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    color: #616061 !important;
+    opacity: 1 !important;
+    filter: none !important;
+    font-size: 0 !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+}
+html body.slk-ui #select_chat_popup #select_chat_cross::before {
+    content: '' !important;
+    display: block !important;
+    width: 18px !important;
+    height: 18px !important;
+    background: currentColor !important;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E") center/contain no-repeat !important;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E") center/contain no-repeat !important;
+}
+html body.slk-ui #select_chat_popup #select_chat_cross:hover { background: #F2F2F2 !important; color: #1D1C1D !important; }
+/* Primary header actions: quiet neutral + one aubergine action. */
+html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] :is(#newChatFromManageScreenButton, #chat_import_button, button.menu_button:has(.fa-box-open)) {
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding: 0 12px !important;
+    margin: 0 !important;
+    border: 1px solid #DDDDDD !important;
+    border-radius: 9px !important;
+    background: #FFFFFF !important;
+    color: #1D1C1D !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    box-shadow: none !important;
+    filter: none !important;
+    text-shadow: none !important;
+    cursor: pointer;
+}
+html body.slk-ui #select_chat_popup #newChatFromManageScreenButton { grid-area: new !important; background: #4A154B !important; border-color: #4A154B !important; color: white !important; }
+html body.slk-ui #select_chat_popup #newChatFromManageScreenButton :is(i,span) { color: #FFFFFF !important; }
+html body.slk-ui #select_chat_popup #chat_import_button { grid-area: import !important; }
+html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] button.menu_button:has(.fa-box-open) { grid-area: backup !important; justify-content: space-between !important; background: #F8F8F8 !important; }
+html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] button.menu_button:has(.fa-box-open):hover,
+html body.slk-ui #select_chat_popup #chat_import_button:hover { background: #F5F5F5 !important; }
+html body.slk-ui #select_chat_popup #newChatFromManageScreenButton:hover { background: #611F69 !important; }
+html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] :is(#newChatFromManageScreenButton, #chat_import_button, button.menu_button:has(.fa-box-open)) i {
+    flex: 0 0 auto !important;
+    display: inline-block !important;
+    font-family: 'Font Awesome 6 Free', 'Font Awesome 5 Free' !important;
+    font-weight: 900 !important;
+    font-size: 15px !important;
+    color: inherit !important;
+    background: none !important;
+    -webkit-text-fill-color: currentColor !important;
+    opacity: 1 !important;
+}
+html body.slk-ui #select_chat_popup #select_chat_search {
+    grid-area: search !important;
+    box-sizing: border-box !important;
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 0 13px !important;
+    margin: 0 !important;
+    border: 1px solid #C9C9C9 !important;
+    border-radius: 9px !important;
+    background: white !important;
+    color: #1D1C1D !important;
+    font-size: 14px !important;
+    line-height: normal !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+html body.slk-ui #select_chat_popup #select_chat_search::placeholder { color: #868686 !important; opacity: 1 !important; }
+html body.slk-ui #select_chat_popup #select_chat_search:focus { border-color: #611F69 !important; box-shadow: 0 0 0 3px rgba(74,21,75,.13) !important; }
+/* One scrolling region for the actual chats; backups remain a compact optional section. */
+html body.slk-ui #select_chat_popup #select_chat_div {
+    box-sizing: border-box !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding: 6px 0 16px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #FFFFFF !important;
+    box-shadow: none !important;
+}
+html body.slk-ui #select_chat_popup .select_chat_block_wrapper {
+    box-sizing: border-box !important;
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 12px !important;
+    border: 0 !important;
+    background: transparent !important;
+}
+html body.slk-ui #select_chat_popup .select_chat_block {
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 13px 14px !important;
+    border: 0 !important;
+    border-bottom: 1px solid #EEEEEE !important;
+    border-radius: 8px !important;
+    background: #FFFFFF !important;
+    color: #1D1C1D !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+html body.slk-ui #select_chat_popup .select_chat_block:hover { background: #F8F8F8 !important; }
+html body.slk-ui #select_chat_popup .select_chat_block[highlight] {
+    border-left: 3px solid #4A154B !important;
+    padding-left: 11px !important;
+    background: #F5EFF6 !important;
+}
+html body.slk-ui #select_chat_popup .select_chat_block[highlight]:hover { background: #F0E7F2 !important; }
+html body.slk-ui #select_chat_popup #select_chat_name_wrapper {
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    min-width: 0 !important;
+}
+html body.slk-ui #select_chat_popup #select_chat_name_wrapper > .flex-container:first-child {
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+}
+html body.slk-ui #select_chat_popup .select_chat_block_filename {
+    display: block !important;
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    color: #1D1C1D !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    line-height: 1.35 !important;
+    opacity: 1 !important;
+}
+html body.slk-ui #select_chat_popup #select_chat_name_wrapper > .flex-container:last-child {
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px 12px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+html body.slk-ui #select_chat_popup .select_chat_info {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    gap: 3px !important;
+    min-width: 0 !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    color: #747474 !important;
+    opacity: 1 !important;
+}
+html body.slk-ui #select_chat_popup :is(.chat_messages_date, .chat_file_size, .chat_messages_num) {
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+    color: #747474 !important;
+    font-weight: 400 !important;
+    opacity: 1 !important;
+    white-space: nowrap;
+}
+html body.slk-ui #select_chat_popup .select_chat_actions {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 3px !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+}
+html body.slk-ui #select_chat_popup :is(.renameChatButton, .exportRawChatButton, .exportChatButton, .PastChat_cross),
+html body.slk-ui #select_chat_popup .chatBackupsListItemActions .right_menu_button {
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 30px !important;
+    width: 30px !important;
+    min-width: 30px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 7px !important;
+    background: transparent !important;
+    color: #616061 !important;
+    font-family: 'Font Awesome 6 Free', 'Font Awesome 5 Free' !important;
+    font-weight: 900 !important;
+    font-size: 15px !important;
+    opacity: 1 !important;
+    filter: none !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+}
+html body.slk-ui #select_chat_popup :is(.renameChatButton, .exportRawChatButton, .exportChatButton, .PastChat_cross):hover,
+html body.slk-ui #select_chat_popup .chatBackupsListItemActions .right_menu_button:hover {
+    background: #EDEDED !important;
+    color: #1D1C1D !important;
+}
+html body.slk-ui #select_chat_popup :is(.PastChat_cross, .chatBackupsListItemActions .fa-trash):hover { color: #D72E50 !important; background: #FFF1F3 !important; }
+html body.slk-ui #select_chat_popup .select_chat_block_mes {
+    box-sizing: border-box !important;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    max-height: 3em !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #616061 !important;
+    font-family: var(--slk-font, 'Lato', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    letter-spacing: -0.01em !important;
+    text-overflow: ellipsis !important;
+}
+/* Backups: readable list, small neutral action icons, never a giant gray box. */
+html body.slk-ui #select_chat_popup .chatBackupsList {
+    box-sizing: border-box !important;
+    display: flex;
+    flex-direction: column !important;
+    flex: 0 0 auto !important;
+    gap: 0 !important;
+    width: auto !important;
+    max-height: min(205px, 28dvh) !important;
+    min-height: 0 !important;
+    margin: 10px 12px 2px !important;
+    padding: 0 !important;
+    border: 1px solid #E8E8E8 !important;
+    border-radius: 11px !important;
+    background: #FAFAFA !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    box-shadow: none !important;
+}
+html body.slk-ui #select_chat_popup .chatBackupsList:not(.open),
+html body.slk-ui #select_chat_popup .chatBackupsList:empty { display: none !important; }
+html body.slk-ui #select_chat_popup .chatBackupsListItem {
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
+    column-gap: 8px !important;
+    row-gap: 4px !important;
+    align-items: center !important;
+    justify-content: stretch !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 10px 12px !important;
+    border: 0 !important;
+    border-bottom: 1px solid #EBEBEB !important;
+    border-radius: 0 !important;
+    background: #FFFFFF !important;
+    color: #1D1C1D !important;
+    box-shadow: none !important;
+}
+html body.slk-ui #select_chat_popup .chatBackupsListItem:last-child { border-bottom: 0 !important; }
+html body.slk-ui #select_chat_popup .chatBackupsListItemName {
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    color: #1D1C1D !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+html body.slk-ui #select_chat_popup .chatBackupsListItemInfo {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    min-width: 0 !important;
+    color: #747474 !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+    font-weight: 400 !important;
+    opacity: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+html body.slk-ui #select_chat_popup .chatBackupsListItemActions {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: end !important;
+    gap: 2px !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+@media screen and (max-width: 560px) {
+    html body.slk-ui #select_chat_popup {
+        width: calc(100vw - 20px) !important;
+        height: min(740px, calc(100dvh - 46px)) !important;
+        max-height: calc(100dvh - 46px) !important;
+        border-radius: 16px !important;
+    }
+    html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 34px !important;
+        padding: 16px 14px 12px !important;
+        column-gap: 8px !important;
+        row-gap: 9px !important;
+    }
+    html body.slk-ui #select_chat_popup #selectChatPopupHeaderText { font-size: 19px !important; }
+    html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] :is(#newChatFromManageScreenButton, #chat_import_button, button.menu_button:has(.fa-box-open)) {
+        padding: 0 8px !important;
+        gap: 6px !important;
+        font-size: 13px !important;
+    }
+    html body.slk-ui #select_chat_popup .select_chat_block_wrapper { padding: 0 8px !important; }
+    html body.slk-ui #select_chat_popup .select_chat_block { padding: 12px 11px !important; }
+    html body.slk-ui #select_chat_popup .select_chat_block[highlight] { padding-left: 8px !important; }
+    html body.slk-ui #select_chat_popup :is(.renameChatButton, .exportRawChatButton, .exportChatButton, .PastChat_cross),
+    html body.slk-ui #select_chat_popup .chatBackupsListItemActions .right_menu_button {
+        width: 28px !important;
+        min-width: 28px !important;
+        flex-basis: 28px !important;
+        height: 28px !important;
+        min-height: 28px !important;
+        font-size: 14px !important;
+    }
+    html body.slk-ui #select_chat_popup .chatBackupsList { margin: 9px 8px 2px !important; }
+}
+/* v1.5.4 final: match the full header specificity so the primary action stays aubergine. */
+html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] #newChatFromManageScreenButton {
+    border-color: #4A154B !important;
+    background: #4A154B !important;
+    color: #FFFFFF !important;
+}
+html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] #newChatFromManageScreenButton :is(i, span) {
+    color: #FFFFFF !important;
+}
+html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] #newChatFromManageScreenButton:hover {
+    border-color: #611F69 !important;
+    background: #611F69 !important;
+}
+/* v1.5.5 — User Settings header alignment and account control fix.
+   Mobile only. All existing tab content, logic, and other pages are untouched. */
+@media screen and (max-width: 1000px) {
+  /* The native first settings row retains an extra left inset after its
+     decoration was removed; align both title and language to section rows. */
+  html body.slk-ui #user-settings-block [name="userSettingsRowOne"] {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
+    align-items: center !important;
+    column-gap: 10px !important;
+    row-gap: 14px !important;
+    margin: 0 0 0 -12px !important;
+    padding: 0 !important;
+    width: calc(100% + 12px) !important;
+    max-width: calc(100% + 12px) !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background-image: none !important;
+  }
+  html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-container:first-child {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-items: center !important;
+  }
+  html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-container:first-child > .flex-container {
+    display: flex !important;
+    align-items: center !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  html body.slk-ui #user-settings-block [name="userSettingsRowOne"] h3 {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    min-height: 30px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.25 !important;
+  }
+  html body.slk-ui #user-settings-block [name="userSettingsRowOne"] h3 > span {
+    display: inline-block !important;
+    line-height: 1.25 !important;
+  }
+  html body.slk-ui #user-settings-block [name="userSettingsRowOne"] h3 .notes-link {
+    display: inline-flex !important;
+    flex: 0 0 22px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 22px !important;
+    height: 22px !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+    position: static !important;
+  }
+  html body.slk-ui #user-settings-block [name="userSettingsRowOne"] h3 .note-link-span {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 0 !important;
+    font-size: 0 !important;
+  }
+  html body.slk-ui #user-settings-block [name="userSettingsRowOne"] h3 .note-link-span::before {
+    display: block !important;
+    flex: 0 0 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+  }
+  html body.slk-ui #user-settings-block #version_display {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    justify-self: end !important;
+    align-self: center !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    line-height: 1.3 !important;
+    white-space: nowrap !important;
+    font-size: 11px !important;
+  }
+  html body.slk-ui #user-settings-block #UI-language-block {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 52%) !important;
+    align-items: center !important;
+    justify-content: stretch !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 56px !important;
+    margin: 0 !important;
+    padding: 0 0 10px !important;
+    border: 0 !important;
+    border-bottom: 1px solid #EFEFEF !important;
+  }
+  html body.slk-ui #user-settings-block #UI-language-block > span {
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+    text-align: left !important;
+  }
+  html body.slk-ui #user-settings-block #ui_language_select {
+    display: block !important;
+    flex: none !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding-left: 14px !important;
+    margin: 0 !important;
+  }
+  /* Account / admin / sign-out are original buttons; only fix their content
+     geometry. The original handlers stay attached to the original elements. */
+  html body.slk-ui #user-settings-block [name="UserSettingsRowTwo"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  html body.slk-ui #user-settings-block #account_controls {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  html body.slk-ui #user-settings-block #account_controls > .menu_button {
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: max-content !important;
+    min-height: 44px !important;
+    height: 44px !important;
+    padding: 0 11px !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+  html body.slk-ui #user-settings-block #account_controls > .menu_button > i {
+    display: inline-flex !important;
+    flex: 0 0 18px !important;
+    width: 18px !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 0 !important;
+    font-size: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  html body.slk-ui #user-settings-block #account_controls > .menu_button > i::before {
+    content: '' !important;
+    display: block !important;
+    width: 18px !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  html body.slk-ui #user-settings-block #account_controls > .menu_button > span {
+    display: inline-block !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.25 !important;
+    white-space: nowrap !important;
+  }
+  html body.slk-ui #user-settings-block #settingsSearch {
+    flex: 1 1 160px !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 150px !important;
+    margin: 0 !important;
+  }
+}
+
+@media screen and (max-width: 359px) {
+  /* Preserve a readable heading on narrow phones instead of splitting Korean
+     title characters to make room for the long staging version string. */
+  html body.slk-ui #user-settings-block [name="userSettingsRowOne"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto auto !important;
+    row-gap: 8px !important;
+  }
+  html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-container:first-child {
+    grid-row: 1 !important;
+  }
+  html body.slk-ui #user-settings-block #version_display {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    justify-self: start !important;
+    white-space: normal !important;
+  }
+  html body.slk-ui #user-settings-block #UI-language-block {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+  }
+}
