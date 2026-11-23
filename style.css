@@ -42,7 +42,7 @@ body.slk-ui {
     display: none;
 }
 
-@media screen and (max-width: 1000px) {
+@media screen {
 
     /* ===================================================
        1) 헤더
@@ -10833,7 +10833,7 @@ body.slk-ui {
 
 
 /* === MOBILE FOOTER-ONLY FIX v1.4.5 === */
-@media screen and (max-width: 1000px) {
+@media screen {
     body.slk-footer-only-active #top-settings-holder::before {
         display: none !important;
     }
@@ -10850,7 +10850,7 @@ body.slk-ui {
    - 전체보기(확대 편집) 팝업 textarea에 기본 본문색/흰 배경 고정
    - 헤더, 탭바, 입력 컴포저, 외부 확장의 카드 내용은 손대지 않음
    ===================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 기존 테마의 background-image가 background-color:transparent 위에 남는 현상.
        내부 버튼이나 카드 전체를 리셋하지 않고 제목/접힘 헤더로 한정. */
     body.slk-ui #AdvancedFormatting :is(h3.standoutHeader, h4.standoutHeader, .range-block-title),
@@ -10906,7 +10906,7 @@ body.slk-ui {
    v1.4.14 — API 제목 좌측 정렬 + 비활성 설정 필드 밝기 개선
    기존 헤더/바텀바/입력창/탭 전환 및 활성 입력 스타일은 변경하지 않음.
    ============================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 기존 h3 일괄 padding-left:0 의 예외로 두되, 테마가 또 덮어써도
        선택 상자와 같은 16px 인셋이 유지되게 제목에만 최종 명시. */
     html body.slk-ui:not(#slk-a):not(#slk-b) #rm_api_block.drawer-content > h3#title_api {
@@ -10960,7 +10960,7 @@ body.slk-ui {
    v1.4.15 — 모바일 채팅 통계 색상 / 접힌 입력창 배치 / 키보드 위 배경
    기존 헤더, 탭 전환, 바텀바, 열린 입력창, 기타 패널은 그대로 유지.
    ================================================================ */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 최근 채팅 개수와 용량은 내부 small/i가 별도 테마색을 갖기 때문에
        부모만 지정하지 말고 통계 텍스트/아이콘까지 직접 중립 회색 적용. */
     html body.slk-ui .welcomePanel .welcomeRecent .recentChat .chatStats,
@@ -11102,7 +11102,7 @@ body.slk-ui {
      코드가 실제 계산색을 확인한 경우에만 회색으로 치환한다.
    - 헤더 / 바텀바 / 프롬프트 기능 / 활성 설정 입력칸은 변경하지 않음.
    ============================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 부모 요소의 50% 밝기 필터를 해제해야 자식의 밝은 배경이 실제로 보임. */
     html body.slk-ui #AdvancedFormatting .disabled {
         filter: none !important;
@@ -11240,7 +11240,7 @@ body.slk-ui {
 
 
 /* OFF restores the native SillyTavern UI; keep only the settings entry. */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body:not(.slk-ui) #slk-header,
     html body:not(.slk-ui) #slk-settings-menu,
     html body:not(.slk-ui) #slk-wi-menu {
@@ -11254,7 +11254,7 @@ body.slk-ui {
    v1.4.19 — Extensions screen, manager popup and notification polish
    Scoped to Slack UI on mobile. All existing behavior is unchanged.
    ================================================================ */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* Extension header: remove the stray vertical rule/decoration beside the title. */
     html body.slk-ui #rm_extensions_block .extensions_block > .flex-container:first-child::before,
     html body.slk-ui #rm_extensions_block .extensions_block > .flex-container:first-child::after,
@@ -11553,7 +11553,7 @@ body.slk-ui {
    Only the extension-manager popup, existing notification container,
    and collapsed chat composer are affected.
    ============================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* SillyTavern generates these as .menu_button controls inside .extension_actions.
        Override the native square black-outline style at the actual button level. */
     html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions > button.menu_button {
@@ -11698,7 +11698,7 @@ body.slk-ui {
 
 /* Notices are appended by toastr, sometimes outside <body>. 
    Match through <html> instead of assuming #toast-container is a body descendant. */
-@media screen and (max-width: 1000px) {
+@media screen {
     html:has(body.slk-ui) #toast-container {
         max-width: calc(100vw - 24px) !important;
         z-index: 2147483647 !important;
@@ -11751,7 +11751,7 @@ body.slk-ui {
    - 접힌 상태에서 native textarea의 마지막 줄이 비쳐 보이는 현상 방지.
    - 새 줄이 있다면 첫 줄 뒤에 …, 첫 줄이 길면 CSS ellipsis.
    ======================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     body.slk-ui #form_sheld #send_form .slk-compose-first-line {
         display: none !important;
     }
@@ -11791,7 +11791,7 @@ body.slk-ui {
 
 /* v1.4.24: mobile navigation suppresses ST's native fallback drawers only
    while the Slack bottom/header navigation owns a visible page. */
-@media screen and (max-width:1000px) {
+@media screen {
     html body.slk-ui.slk-managed-navigation .drawer-content.slk-nav-hidden {
         display: none !important;
         visibility: hidden !important;
@@ -11851,7 +11851,7 @@ body.slk-ui {
    Slack UI v1.4.26 — popup layering, manager controls, character toolbar
    Scoped to Slack mobile. Do not modify the header, composer or bottom tabs.
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* Manager: opaque, permanently visible action header ABOVE the scrolling
        extension list. JS moves this exact toolbar out of popup-content. */
     html body.slk-ui dialog.popup:has(.extensions_info) > .popup-body > .slk-manager-toolbar {
@@ -12021,7 +12021,7 @@ body.slk-ui {
    Affects only checkbox, type icon, title spacing and author @ glyph in the
    extension manager popup. All existing controls and interactions are intact.
    ============================================================================ */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* Previous version reduced icon size but retained large gaps around the
        14px column. Pull the title left to match the smaller 12px type icon. */
     html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block {
@@ -12077,7 +12077,7 @@ body.slk-ui {
    Target: #WorldInfo. Restore header/create, selector + five tools, and
    genuine Select2 multiselect appearance (the hidden <select> is not UI).
    ======================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* The active-world control is rendered by Select2, not the original select. */
     body.slk-ui #WorldInfo #WIMultiSelector .range-block-range {
         border: 0 !important;
@@ -12263,7 +12263,7 @@ body.slk-ui {
 }
 
 /* v1.4.28 Select2 structural guard: select2 uses nested inline spans and an UL. */
-@media screen and (max-width: 1000px) {
+@media screen {
     body.slk-ui #WorldInfo #WIMultiSelector .select2-container > .selection {
         display: block !important;
         width: 100% !important;
@@ -12299,7 +12299,7 @@ body.slk-ui {
    3) '깊이'는 @D 위치일 때만 칸이 생기게 (아닐 땐 이름만 남던 문제)
    4) 좁은 화면에서 헤더 버전 글자가 톱니와 겹치던 문제
    ======================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 1) Select2가 숨긴 원래 선택칸은 계속 숨김 */
     html body.slk-ui #WorldInfo #WIMultiSelector #world_info.select2-hidden-accessible,
     html body.slk-ui #WorldInfo #world_popup #world_editor_select.select2-hidden-accessible {
@@ -12439,7 +12439,7 @@ body.slk-ui {
 }
 
 /* Slack UI 1.4.30 — 로어북 선택칸: 글자 왼쪽 여백 + 오른쪽 버튼 알약과 간격 */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui #WorldInfo #world_popup #world_editor_select:not(.select2-hidden-accessible),
     html body.slk-ui #WorldInfo #world_popup #world_editor_select ~ .select2-container {
         justify-self: start !important;
@@ -12455,7 +12455,7 @@ body.slk-ui {
 
 /* Slack UI 1.4.31 — 로어북 카드: 제목 왼쪽의 불필요한 빈 그리드 열 제거.
    접기 화살표와 제목 입력칸만 왼쪽으로 당기며 나머지 기능/배치는 유지. */
-@media screen and (max-width: 1000px) {
+@media screen {
     body.slk-ui #WorldInfo .world_entry .inline-drawer-header {
         grid-template-columns: 28px minmax(0, 1fr) 60px 44px !important;
     }
@@ -12484,7 +12484,7 @@ body.slk-ui {
 
 /* Slack UI v1.4.32 — 로어북 상세 필터 두 목록의 진한 회색 배경 제거.
    다른 select, 카드, 전역 옵션 스타일은 바꾸지 않습니다. */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui #WorldInfo .world_entry_edit select[name="characterFilter"][multiple],
     html body.slk-ui #WorldInfo .world_entry_edit select[name="triggers"][multiple] {
         background: #FFFFFF !important;
@@ -12512,7 +12512,7 @@ body.slk-ui {
 /* Slack UI v1.4.33 — 로어북 항목 상세 두 곳만 조정.
    - 키워드 입력 방식 토글은 키보드 아이콘으로 고정, 직접 클릭 불가 (현재 입력 모드/데이터는 유지).
    - Group Scoring / Recursion Level을 같은 행에 배치하고 Automation ID는 다음 행 전체 폭. */
-@media screen and (max-width: 1000px) {
+@media screen {
     body.slk-ui #WorldInfo .world_entry_edit .switch_input_type_icon {
         pointer-events: none !important;
         cursor: default !important;
@@ -12544,7 +12544,7 @@ body.slk-ui {
    explicit column direction, label and Select2 control sit side by side,
    sending the control beyond the right edge on mobile.
    ====================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui #WorldInfo #wiTopBlock {
         width: 100% !important;
         min-width: 0 !important;
@@ -12609,7 +12609,7 @@ body.slk-ui {
    The title must be INSIDE the bordered picker, not beside an off-screen
    Select2/native multi-select. Limited to the Lorebook active-world control.
    ===================================================================== */
-@media screen and (max-width: 1200px) {
+@media screen {
     html body.slk-ui #WorldInfo #wiTopBlock > #WIMultiSelector {
         display: grid !important;
         grid-template-columns: minmax(0, 1fr) !important;
@@ -12701,7 +12701,7 @@ body.slk-ui {
    - 아이폰(한 줄 선택 형태): 다른 선택칸과 같은 42px + ⌄
    - 제목 왼쪽 검은 막대(다른 테마 장식) 제거
    ===================================================================== */
-@media screen and (max-width: 1200px) {
+@media screen {
     html body.slk-ui:not(#slk-a) #WorldInfo #wiTopBlock > #WIMultiSelector {
         display: flex !important;
         flex-direction: column !important;
@@ -12808,7 +12808,7 @@ body.slk-ui {
 
 /* 아이폰: 여러 개 선택도 한 줄 칸으로 보이므로 다른 선택칸과 같은 모양 */
 @supports (-webkit-touch-callout: none) {
-    @media screen and (max-width: 1200px) {
+    @media screen {
         html body.slk-ui:not(#slk-a) #WorldInfo #WIMultiSelector #world_info:not(.select2-hidden-accessible) {
             height: 42px !important;
             max-height: 42px !important;
@@ -12822,7 +12822,7 @@ body.slk-ui {
 }
 
 /* 1.4.36: 목록 높이 = 항목 수만큼 (빈 줄 없이) */
-@media screen and (max-width: 1200px) {
+@media screen {
     html body.slk-ui:not(#slk-a) #WorldInfo #WIMultiSelector #world_info:not(.select2-hidden-accessible) {
         field-sizing: content;
     }
@@ -12830,7 +12830,7 @@ body.slk-ui {
 
 /* 1.4.37: 활성 월드 = 한 줄 드롭다운 (원래 목록/Select2는 숨김) */
 #slk-wi-dd { display: none; }
-@media screen and (max-width: 1200px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo #WIMultiSelector #world_info,
     html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo #WIMultiSelector #world_info ~ .select2-container {
         position: absolute !important;
@@ -12955,14 +12955,14 @@ body.slk-ui {
 }
 
 /* 1.4.38: '선택 안 됨' 항목 */
-@media screen and (max-width: 1200px) {
+@media screen {
     html body.slk-ui #slk-wi-dd .slk-wi-dd-item.is-none { color: #8B8B8B; }
     html body.slk-ui #slk-wi-dd .slk-wi-dd-item.is-none.is-on { color: #616061; }
 }
 
 
 /* 1.4.40: 로어북 항목 필터(캐릭터/태그, 생성 트리거) = 한 줄 드롭다운 */
-@media screen and (max-width: 1200px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo select[name="characterFilter"][multiple],
     html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo select[name="triggers"][multiple],
     html body.slk-ui:not(#slk-a):not(#slk-b) #WorldInfo select[name="characterFilter"][multiple] ~ .select2-container,
@@ -13084,7 +13084,7 @@ body.slk-ui {
 }
 
 /* 1.4.40: 항목 상세 라벨 높이 통일 + ⓘ 아이콘 수직 가운데 (Recursion Level 칸 내려앉음 수정) */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a) #WorldInfo .world_entry_edit [name="perEntryOverridesBlock"] > .world_entry_form_control {
         align-self: start !important;
     }
@@ -13132,7 +13132,7 @@ body.slk-ui {
    1.4.41 — 페르소나/캐릭터 탭 재정리 + 외부 테마 잔여 효과 차단 + 토스트 위치
    (외부 테마가 덮어써도 지지 않도록 선택자를 강하게)
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* --- 스크롤바: 검은 막대 제거 (모바일 화면이라 숨김) --- */
     html body.slk-ui *,
     html body.slk-ui {
@@ -13420,7 +13420,7 @@ body.slk-ui {
     }
 }
 
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 페르소나 페이지 줄: 한 줄 유지 */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_pagination_container .paginationjs {
         display: flex !important;
@@ -13459,7 +13459,7 @@ body.slk-ui {
 }
 
 /* 1.4.42: 페르소나 '만들기' 아이콘 = 흰색 (테마가 아이콘 색을 검정으로 덮던 문제) */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #create_dummy_persona,
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #create_dummy_persona > *,
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_button_create,
@@ -13475,7 +13475,7 @@ body.slk-ui {
 }
 
 /* 1.4.43: 캐릭터 탭 정리 */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 필터 칩: 동그라미 안에 갇혀 글자가 겹치던 문제 → 글자 폭만큼 늘어나는 알약 */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block .rm_tag_filter > .tag {
         flex: 0 0 auto !important;
@@ -13546,7 +13546,7 @@ body.slk-ui {
 }
 
 /* 1.4.44: 캐릭터 탭 페이지 줄 — '50 / page' 칸 오른쪽 테두리 잘림 */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #right-nav-panel #rm_characters_block #rm_print_characters_pagination > .paginationjs {
         display: flex !important;
         flex-wrap: nowrap !important;
@@ -13595,7 +13595,7 @@ body.slk-ui {
    1.4.45 — 알림(토스트) 전체 새 디자인: 슬랙식 어두운 카드
    왼쪽 색 아이콘(정보·성공·경고·오류) + 굵은 제목 + 본문 + 닫기
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div,
     html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast {
         position: relative !important;
@@ -13736,7 +13736,7 @@ body.slk-ui {
 }
 
 /* 1.4.46: 확장이 직접 띄우는 진행 알림(번역 중 등) = 알림 카드와 같은 모양 */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) .slk-notice {
         border: 0 !important;
         border-radius: 12px !important;
@@ -13766,7 +13766,7 @@ body.slk-ui {
 
 /* 1.4.48: 페르소나 Connections 버튼(기본값/캐릭터/채팅) = 같은 너비로 한 줄 꽉, 아이콘·글자 겹침 수정
    (실제 ST에선 이 버튼들이 펼친 페르소나 카드 안에 있어 기존 규칙이 안 걸렸음) */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #persona_connections_buttons {
         display: grid !important;
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -13844,7 +13844,7 @@ body.slk-ui {
    - 대사("…") 글자 뒤에 연한 회색 배경
    - `…` 인라인 텍스트: 기호까지 보이게, 문자 메시지 말풍선 모양
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text {
         font-size: 15px !important;
         line-height: 1.6 !important;
@@ -13913,7 +13913,7 @@ body.slk-ui {
 /* =====================================================================
    1.4.51 — 받은 확장 설정 화면: 남아 있던 테마 색 제거 + 토글 스위치 보이게
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 테마 변수 자체를 슬랙 라이트 값으로 (확장 CSS가 이 변수를 많이 씀) */
     body.slk-ui:is(.slk-ui) {
         --SmartThemeBodyColor: #1D1C1D;
@@ -14135,7 +14135,7 @@ body.slk-ui {
 @keyframes slk-spin { to { transform: rotate(360deg); } }
 
 /* 1.4.52: 받은 확장의 토글 스위치 / 세그먼트 버튼 (index.js가 구조로 찾아 클래스 부여) */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block .slk-switch-track {
         background-color: #D1D1D1 !important;
         border: 0 !important;
@@ -14231,7 +14231,7 @@ body.slk-ui {
 }
 
 /* 1.4.52b: 우리 스위치 */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block .slk-sw-orig { display: none !important; }
     html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block .slk-sw-host {
         position: relative !important;
@@ -14276,7 +14276,7 @@ body.slk-ui {
 }
 
 /* 1.4.53: 진행 알림(번역 중 등) — 로딩 아이콘·글자·✕ 세로 가운데 정렬 */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) .slk-notice {
         display: flex !important;
         align-items: center !important;
@@ -14327,7 +14327,7 @@ body.slk-ui {
 }
 
 /* 1.4.54: 세그먼트 안쪽(라벨 속 span 등) 확장 자체 장식 제거 → 글자만 */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block .slk-seg > * * {
         margin: 0 !important;
         padding: 0 !important;
@@ -14349,7 +14349,7 @@ body.slk-ui {
    1.4.56 — 아직 테마 모양이 남아 있던 기본 버튼·입력칸·선택칸 공통 정리
    (개별로 디자인한 곳은 더 구체적인 규칙이 우선이라 그대로 유지)
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui .menu_button {
         display: inline-flex;
         align-items: center !important;
@@ -14432,7 +14432,7 @@ body.slk-ui {
    본문은 프사 아래부터 좌우 꽉 (좌우 여백 16px = 다른 화면과 동일)
    유저 메시지도 AI 메시지와 같은 왼쪽 정렬
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes {
         display: grid !important;
         grid-template-columns: 50px auto auto auto auto auto minmax(0, 1fr) auto !important;
@@ -14550,7 +14550,7 @@ body.slk-ui {
         font-size: 19px;
     }
 }
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 1.4.57b: 스와이프 ‹ 1/1 › 는 본문 아래 오른쪽 끝 한 줄 */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes > .swipe_left {
         grid-column: 7 !important;
@@ -14572,7 +14572,7 @@ body.slk-ui {
    - ``` 코드 블록 : 연회색 네모 + 검정 글자 (본문 글꼴)
    - ⋯ 펼침 / ✎ 편집 중 : 이름·날짜 줄을 숨기고 그 자리에 버튼을 오른쪽 정렬
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text :not(pre) > code::before,
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text :not(pre) > code::after {
         content: none !important;
@@ -14644,7 +14644,7 @@ body.slk-ui {
 }
 
 /* 시작 화면: ST 버전마다 구조가 조금 달라서 더 넓게 잡음 */
-@media screen and (max-width: 1000px) {
+@media screen {
     body.slk-ui dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo), :has(#load-spinner)) {
         position: fixed !important;
         inset: 0 !important;
@@ -14679,7 +14679,7 @@ body.slk-ui {
 /* =====================================================================
    1.4.60
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 1) ⋯ 펼친 아이콘이 많으면 줄바꿈 (오른쪽 정렬 유지, 밖으로 안 밀려남) */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])) .mes_buttons {
         justify-self: stretch !important;
@@ -14861,7 +14861,7 @@ body.slk-ui {
 /* =====================================================================
    1.4.61
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 2) 확장 탭 '?' 두 개 → 동그라미 아이콘 하나만 (글자 ? 숨김) */
     html body.slk-ui:not(#slk-a):not(#slk-b) #rm_extensions_block .note-link-span {
         font-size: 0 !important;
@@ -14938,7 +14938,7 @@ body.slk-ui {
         margin: 0 !important;
     }
 }
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 4) 옮겨 온 확장 버튼: 다른 아이콘과 같은 크기·색 */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons > .slk-adopted-btn {
         position: static !important;
@@ -14965,7 +14965,7 @@ body.slk-ui {
         color: inherit !important;
     }
 }
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 4b) ⋯ 안 확장 버튼이 margin-auto 등으로 혼자 떨어지는 것 방지 */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons > :not(.extraMesButtons),
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes .mes_buttons .extraMesButtons > * {
@@ -14981,7 +14981,7 @@ body.slk-ui {
 /* =====================================================================
    1.4.62
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 1) ⋯ 펼친 아이콘: 한 줄 우선, 자리 모자랄 때만 줄바꿈 (아이콘 폭 30px로 촘촘히) */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])) .mes_buttons {
         grid-column: 2 / -1 !important;
@@ -15095,7 +15095,7 @@ body.slk-ui {
 /* =====================================================================
    1.4.63
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 1) 슬라이더: 입력 자체에 걸린 어둡게/흐리게 효과 제거 → 손잡이 흰색이 그대로 보이게 */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d) input[type="range"] {
         filter: none !important;
@@ -15151,7 +15151,7 @@ body.slk-ui {
 /* =====================================================================
    1.4.64
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 3) 날짜 · #번호 · 시간 · 토큰 사이 가운데 점 */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes :is(.mesIDDisplay, .mes_timer, .tokenCounterDisplay) {
         margin-left: 0 !important;
@@ -15267,7 +15267,7 @@ body.slk-ui {
         box-shadow: none !important;
     }
 }
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 1.4.64b: 펼침 상태를 클래스(slk-mes-expanded)로도 인식 */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost) {
         visibility: hidden !important;
@@ -15293,7 +15293,7 @@ body.slk-ui {
    1.4.65
    ===================================================================== */
 :root { --slk-css-version: '1.4.86'; }
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 고급 서식: 구역을 감싸는 테마 상자 테두리·그림자 전부 제거 (입력칸은 그대로) */
     html body.slk-ui:not(#slk-a):not(#slk-b) #AdvancedFormatting div:not(.menu_button):not([class*="select2"]):not(:has(> select[data-preset-manager-for])):not([data-preset-manager-for]) {
         border-top-color: transparent !important;
@@ -15323,7 +15323,7 @@ body.slk-ui {
    1.4.69 — ⋯ 펼침 메뉴: 모든 실제 버튼을 .extraMesButtons 안에서 정렬.
    닫힌 메뉴와 다른 화면에는 적용하지 않습니다.
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons {
         grid-column: 2 / -1 !important;
         grid-row: 1 / 3 !important;
@@ -15405,7 +15405,7 @@ body.slk-ui {
    1.4.70 — mobile panel polish (character list / section headings / paging)
    Only these three requested areas change; message buttons are untouched.
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* 1. 캐릭터 목록: 열려 있는 채팅의 '선택된 캐릭터 이름' 헤더가
        상위의 강한 display:flex 룰 때문에 44px 빈 공간으로 남던 문제.
        편집 화면은 건드리지 않고 목록에서만 완전히 접습니다. */
@@ -15532,7 +15532,7 @@ body.slk-ui {
    1) Remove the *actual header row* left accent (not an inner unrelated heading)
    2) Give all four pagination chevrons one common, centered icon box
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* The two ST sections have different header wrappers.
        Reset only their top header rows and contained title, never the other fields. */
     html body.slk-ui #WorldInfo > .flex-container.alignitemscenter.gap10px,
@@ -15661,7 +15661,7 @@ body.slk-ui {
 
 /* v1.4.72 — expanded message actions: metadata is never an action slot.
    ST hides these with visibility:hidden, which still reserves a 30px flex cell. */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons > .extraMesButtons > :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost) {
         display: none !important;
         flex: 0 0 0 !important;
@@ -15675,7 +15675,7 @@ body.slk-ui {
 
 /* Persona grid toggle: restore the native three-column list and put the
    selected persona editor below the full list. The row/accordion mode is unchanged. */
-@media screen and (max-width: 1000px) {
+@media screen {
     body.slk-ui #PersonaManagement #user_avatar_block.gridView {
         display: flex !important;
         flex-direction: row !important;
@@ -15738,7 +15738,7 @@ body.slk-ui {
    2) A single aligned, compact pager / page-size / grid-toggle toolbar.
    The regular row-list/accordion and character pagination are unchanged.
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* Preserve grid mode's compact cards, replace only its row distribution. */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #PersonaManagement #user_avatar_block.gridView {
         display: grid !important;
@@ -15921,7 +15921,7 @@ body.slk-ui {
    pagination anchors, select, view toggle and bulk-edit buttons remain.
    The swipe controls are ST's original elements (no DOM moves / clones).
    ===================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* Character pager: match the integrated persona-toolbar design. */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
       #right-nav-panel #rm_characters_block #rm_print_characters_pagination {
@@ -16115,7 +16115,7 @@ body.slk-ui {
 /* 1.4.77 — 모바일 번역 진행 알림만 컴팩트하게 (텍스트/스피너 크기 유지).
    같은 .slk-notice가 다른 고정형 로딩 알림에도 쓰일 수 있으므로
    기능이나 DOM은 수정하지 않고 카드 크기·닫기 아이콘·입력창 간격만 보정. */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) .slk-notice {
         width: max-content !important;
         min-width: 0 !important;
@@ -16142,7 +16142,7 @@ body.slk-ui {
 
 
 /* v1.4.79 — Character pager height fix retained. */
-@media screen and (max-width: 1000px) {
+@media screen {
   /* Character pager: inactive bulk-selection second row must have no height.
      Switching bulk edit mode back on restores its second row and native controls. */
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
@@ -16168,7 +16168,7 @@ body.slk-ui {
    Move the existing left arrow into that real sibling (not into .mes_block).
    All three controls share a single flex layout; no artificial grid columns,
    absolute-positioned buttons, pseudo-buttons or duplicated click targets. */
-@media screen and (max-width: 1000px) {
+@media screen {
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
     #chat .mes > .swipeRightBlock.slk-swipe-inline {
     display: flex !important;
@@ -16282,7 +16282,7 @@ body.slk-ui {
 }
 
 /* v1.4.81 — empty/hidden slots should never reserve space. */
-@media screen and (max-width: 1000px) {
+@media screen {
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons > .extraMesButtons > :is(.slk-action-noicon, .slk-flow-hidden, [hidden]) {
     display: none !important;
     flex: 0 0 0 !important;
@@ -16294,7 +16294,7 @@ body.slk-ui {
 
 /* v1.4.82 — ⋯ 아이콘 메뉴: 확장 새로고침과 ST 버튼을 단일 flex-flow에 배열.
    주변 채팅과 닫힌 메뉴는 수정하지 않습니다. */
-@media screen and (max-width: 1000px) {
+@media screen {
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[data-slk-actions-flow] .mes_buttons {
     display: block !important;
     box-sizing: border-box !important;
@@ -16341,7 +16341,7 @@ body.slk-ui {
 }
 
 /* v1.4.82 — ST 기본 액션 → 타 확장 액션. 둘 다 같은 행 흐름 안에서만 줄바꿈. */
-@media screen and (max-width: 1000px) {
+@media screen {
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[data-slk-actions-flow] .mes_buttons > .extraMesButtons > :not(.slk-foreign-action) {
     order: 0 !important;
   }
@@ -16354,7 +16354,7 @@ body.slk-ui {
 /* v1.4.83 — ⋯ 메뉴는 기존 아이콘 흐름만 표시하고 중복된 연필은 제외.
    펼친 줄이 한 줄이면 ⋯ 버튼이 있던 헤더 행과 같은 높이에 놓습니다.
    두 줄 이상도 이 헤더 행을 시작점으로 아래로 줄바꿈합니다. */
-@media screen and (max-width: 1000px) {
+@media screen {
   /* Edit belongs to the collapsed header only. It is never a ⋯ action. */
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[data-slk-actions-flow] .mes_buttons > .mes_edit,
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[data-slk-actions-flow] .mes_buttons > .extraMesButtons > :is(.mes_edit, .slk-action-pencil-duplicate) {
@@ -16386,7 +16386,7 @@ body.slk-ui {
   }
 }
 
-@media screen and (max-width: 1000px) {
+@media screen {
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes[data-slk-actions-flow] .mes_buttons > .extraMesButtons {
     transform: translateY(var(--slk-actions-shift, 0px)) !important;
   }
@@ -16395,7 +16395,7 @@ body.slk-ui {
 /* 1.4.84 — Keep all installed extension actions visible in the expanded
    message menu. Third-party icons can use Font Awesome, SVG, CSS backgrounds,
    masks or emoji; do not reset their typography/background to transparent. */
-@media screen and (max-width: 1000px) {
+@media screen {
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
     #chat .mes[data-slk-actions-flow] .mes_buttons > .extraMesButtons
     > .slk-foreign-action:not(.slk-action-noicon):not([hidden]):not(.displayNone) {
@@ -16415,7 +16415,7 @@ body.slk-ui {
    여러 줄: 모든 아이콘 줄의 중앙을 같은 기준점에 맞춥니다.
    기존 이름/시간 행을 visibility:hidden 상태로 유지하여 펼침 시 헤더가
    재계산되거나 본문이 위아래로 덜컹거리지 않게 합니다. */
-@media screen and (max-width: 1000px) {
+@media screen {
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c)
     #chat .mes.slk-mes-expanded[data-slk-actions-flow] {
     grid-template-rows: var(--slk-actions-closed-rows, 20px 34px) auto !important;
@@ -16442,7 +16442,7 @@ body.slk-ui {
 
 
 /* === v1.4.87: Slack UI settings — live chat typography and dialogue tint === */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text {
         font-size: var(--slk-chat-font-size, 15px) !important;
         line-height: var(--slk-chat-line-height, 1.6) !important;
@@ -16669,7 +16669,7 @@ body.slk-ui {
    v1.4.95 — chat-only solid upper header + three independent ink colors
    Keep purple navigation outside chats, and preserve user color choices.
    ==================================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     /* Keep the iPhone safe-area/status strip in the same chat canvas color. */
     html:has(body.slk-ui.slk-in-chat:is(.slk-ui)) {
         background-color: #FFFFFF !important;
@@ -16774,505 +16774,9 @@ body.slk-ui {
    Mobile remains untouched. Reuse native SillyTavern drawer toggles,
    panels and their existing JS click handlers (no cloned controls).
    ================================================================ */
-@media screen and (min-width: 1001px) {
-    html body.slk-ui {
-        --slk-pc-top: 64px;
-        --slk-pc-sidebar: 238px;
-        --slk-pc-gutter: 16px;
-        --topBarBlockSize: var(--slk-pc-top) !important;
-        background: #F8F7F8 !important;
-        color: #1D1C1D;
-        font-family: var(--slk-font);
-    }
-    /* Native desktop top icons are repositioned, not removed. */
-    html body.slk-ui #top-bar { display: none !important; }
-    html body.slk-ui #slk-mobile-footer { display: none !important; }
-    html body.slk-ui #slk-header {
-        display: flex !important;
-        position: fixed !important;
-        inset: 0 0 auto 0 !important;
-        box-sizing: border-box;
-        z-index: 3050 !important;
-        width: 100%;
-        height: var(--slk-pc-top);
-        padding: 0 20px 0 18px;
-        align-items: center;
-        justify-content: space-between;
-        background: #350D36;
-        color: #FFF;
-        border: 0;
-        box-shadow: none;
-    }
-    html body.slk-ui #slk-header button {
-        appearance: none;
-        -webkit-appearance: none;
-        cursor: pointer;
-        font-family: var(--slk-font);
-    }
-    html body.slk-ui #slk-header > #slk-ws {
-        display: flex;
-        align-items: center;
-        flex: 0 0 var(--slk-pc-sidebar);
-        min-width: 0;
-        padding: 0;
-        gap: 10px;
-        border: 0;
-        background: transparent;
-        color: #FFF;
-        text-align: left;
-    }
-    html body.slk-ui #slk-header .slk-ws-avatar {
-        flex: 0 0 36px;
-        position: relative;
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        overflow: hidden;
-        display: grid;
-        place-items: center;
-        color: #4A154B;
-        background: #FFF;
-    }
-    html body.slk-ui #slk-header .slk-ws-avatar img {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: inherit;
-    }
-    html body.slk-ui #slk-header .slk-ws-avatar:not(.has-img) img {display: none;}
-    html body.slk-ui #slk-header .slk-ws-initial {
-        display: none;
-        font-size: 18px;
-        font-weight: 900;
-    }
-    html body.slk-ui #slk-header .slk-ws-avatar:not(.has-img) .slk-ws-initial {display: block;}
-    html body.slk-ui #slk-header .slk-ws-text {
-        display: flex;
-        align-items: baseline;
-        min-width: 0;
-        gap: 7px;
-        overflow: hidden;
-        white-space: nowrap;
-    }
-    html body.slk-ui #slk-header .slk-ws-name {
-        font-size: 19px;
-        font-weight: 900;
-        letter-spacing: -0.3px;
-    }
-    html body.slk-ui #slk-header :is(.slk-ws-ver, .slk-ws-branch) {
-        font-size: 12px;
-        color: rgba(255,255,255,.67);
-    }
-    html body.slk-ui #slk-header .slk-ws-branch[hidden] {display: none;}
-    html body.slk-ui #slk-header .slk-header-actions {display: flex; align-items: center; margin-left: auto;}
-    html body.slk-ui #slk-header #slk-settings-btn {
-        display: grid;
-        place-items: center;
-        flex: 0 0 36px;
-        width: 36px;
-        height: 36px;
-        padding: 0;
-        border: 1px solid rgba(255,255,255,.27);
-        border-radius: 10px;
-        background: rgba(255,255,255,.10);
-        color: #FFF;
-        transition: background .15s;
-    }
-    html body.slk-ui #slk-header #slk-settings-btn:hover,
-    html body.slk-ui #slk-header #slk-settings-btn.slk-active {
-        background: rgba(255,255,255,.24);
-    }
-    /* Chat identity sits in the desktop top bar, not in the sidebar. */
-    html body.slk-ui #slk-header #slk-chat-head {
-        display: flex;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: calc(var(--slk-pc-sidebar) + 31px);
-        right: 94px;
-        align-items: center;
-        pointer-events: none;
-    }
-    html body.slk-ui:not(.slk-in-chat) #slk-chat-head {display: none !important;}
-    html body.slk-ui #slk-header #slk-chat-back {display: none !important;}
-    html body.slk-ui #slk-header #slk-chat-title {
-        display: inline-flex;
-        max-width: 100%;
-        min-width: 0;
-        align-items: center;
-        gap: 10px;
-        padding: 4px 10px;
-        border: 0;
-        border-radius: 9px;
-        background: transparent;
-        color: #FFF;
-        text-align: left;
-        pointer-events: auto;
-    }
-    html body.slk-ui #slk-header #slk-chat-title:hover {background: rgba(255,255,255,.11);}
-    html body.slk-ui #slk-chat-title .slk-ch-av {
-        width: 30px;
-        height: 30px;
-        border-radius: 8px;
-        object-fit: cover;
-    }
-    html body.slk-ui #slk-chat-title .slk-ch-av[hidden] {display: none;}
-    html body.slk-ui #slk-chat-title .slk-ch-text {display:flex; flex-direction:column; min-width:0; line-height:1.1; gap:4px;}
-    html body.slk-ui #slk-chat-title .slk-ch-name {font-size:14px; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-    html body.slk-ui #slk-chat-title .slk-ch-count {display:inline-flex; align-items:center; gap:5px; font-size:11px; color:rgba(255,255,255,.75);}
-    /* Settings dropdown is outside the sidebar and remains clickable. */
-    html body.slk-ui #slk-settings-menu {
-        display: block;
-        position: fixed;
-        top: calc(var(--slk-pc-top) + 8px);
-        right: 17px;
-        z-index: 3060;
-        width: 218px;
-        box-sizing: border-box;
-        padding: 6px;
-        border: 1px solid #E9E5E9;
-        border-radius: 13px;
-        background: #FFF;
-        box-shadow: 0 12px 36px rgba(35,15,35,.16);
-    }
-    html body.slk-ui #slk-settings-menu[hidden] {display: none !important;}
-    html body.slk-ui #slk-settings-menu .slk-menu-item {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        box-sizing: border-box;
-        gap: 11px;
-        padding: 11px 12px;
-        border: 0;
-        border-radius: 8px;
-        background: transparent;
-        color: #373238;
-        font: 600 13px var(--slk-font);
-        cursor: pointer;
-        text-align: left;
-    }
-    html body.slk-ui #slk-settings-menu .slk-menu-item:hover {background: #F4EFF5;}
-    html body.slk-ui #slk-settings-menu .slk-menu-icon {display:grid; place-items:center; color:#645764;}
-    html body.slk-ui #slk-settings-menu .slk-menu-icon svg {width:19px; height:19px;}
 
-    /* True desktop workspace navigation: 7 original SillyTavern drawers. */
-    html body.slk-ui #top-settings-holder {
-        position: fixed !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
-        justify-content: flex-start !important;
-        gap: 4px !important;
-        box-sizing: border-box !important;
-        top: var(--slk-pc-top) !important;
-        left: 0 !important;
-        bottom: 0 !important;
-        right: auto !important;
-        width: var(--slk-pc-sidebar) !important;
-        max-width: var(--slk-pc-sidebar) !important;
-        height: calc(100dvh - var(--slk-pc-top)) !important;
-        min-height: 0 !important;
-        margin: 0 !important;
-        padding: 50px 12px 30px !important;
-        background: #F7F4F7 !important;
-        border: 0 !important;
-        border-right: 1px solid #E9E3E9 !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        transform: none !important;
-        filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        backdrop-filter: none !important;
-        overflow: visible !important;
-        z-index: 3010 !important;
-    }
-    html body.slk-ui #top-settings-holder::before {
-        content: 'WORKSPACE';
-        position: absolute;
-        top: 20px;
-        left: 22px;
-        font: 800 10px var(--slk-font);
-        letter-spacing: 1.4px;
-        color: #938393;
-        pointer-events: none;
-    }
-    html body.slk-ui #top-settings-holder::after {
-        content: 'SLACK UI  ·  SILLYTAVERN';
-        position: absolute;
-        left: 21px;
-        bottom: 20px;
-        font: 700 10px var(--slk-font);
-        letter-spacing: .45px;
-        color: #A79BA7;
-        pointer-events: none;
-    }
-    html body.slk-ui #top-settings-holder > .drawer {
-        display: flex !important;
-        flex: 0 0 45px !important;
-        justify-content: stretch !important;
-        align-items: center !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        min-height: 45px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: 0 !important;
-        background: transparent !important;
-        overflow: visible !important;
-    }
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle {
-        display: flex !important;
-        flex: 1 1 100% !important;
-        width: 100% !important;
-        height: 43px !important;
-        min-height: 43px !important;
-        box-sizing: border-box !important;
-        padding: 0 12px !important;
-        margin: 0 !important;
-        justify-content: flex-start !important;
-        align-items: center !important;
-        gap: 13px !important;
-        border: 0 !important;
-        border-radius: 9px !important;
-        background: transparent !important;
-        color: #5D535E !important;
-        cursor: pointer !important;
-        box-shadow: none !important;
-        transition: background .15s ease, color .15s ease;
-        text-decoration: none;
-    }
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle:hover {background: #ECE5EC !important;}
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle > .drawer-icon {display: none !important;}
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle > .slk-tab-icon {
-        display: grid !important;
-        flex: 0 0 22px;
-        place-items: center;
-        color: inherit !important;
-        line-height: 1;
-    }
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle .slk-tab-icon svg {
-        display: block;
-        width: 21px !important;
-        height: 21px !important;
-        stroke-width: 1.85;
-    }
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle::after {
-        content: attr(aria-label);
-        display: block;
-        min-width: 0;
-        font: 700 14px var(--slk-font);
-        white-space: nowrap;
-    }
-    html body.slk-ui #top-settings-holder > .drawer:has(.drawer-icon.openIcon) > .drawer-toggle {
-        background: #EDE3EF !important;
-        color: #4A154B !important;
-    }
-    html body.slk-ui #top-settings-holder > .drawer:has(.drawer-icon.openIcon) > .drawer-toggle::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        width: 3px;
-        height: 23px;
-        border-radius: 0 5px 5px 0;
-        background: #611F69;
-    }
-    /* Header gear opens native drawers for these hidden navigation icons. */
-    html body.slk-ui #top-settings-holder > :is(#user-settings-button, #backgrounds-button) {
-        width: 0 !important;
-        height: 0 !important;
-        min-height: 0 !important;
-        flex: 0 0 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        /* Keep these drawers visible to the header menu; hide only their rail toggles. */
-        visibility: visible;
-    }
-    html body.slk-ui #top-settings-holder > :is(#user-settings-button, #backgrounds-button) > .drawer-toggle {
-        display: none !important;
-    }
-    /* Live native content panels: slide over workspace, not inside rail. */
-    html body.slk-ui #top-settings-holder .drawer-content,
-    html body.slk-ui #left-nav-panel,
-    html body.slk-ui #right-nav-panel {
-        position: fixed !important;
-        top: calc(var(--slk-pc-top) + var(--slk-pc-gutter)) !important;
-        bottom: var(--slk-pc-gutter) !important;
-        right: var(--slk-pc-gutter) !important;
-        left: auto !important;
-        width: min(630px, calc(100vw - var(--slk-pc-sidebar) - 42px)) !important;
-        max-width: calc(100vw - var(--slk-pc-sidebar) - 42px) !important;
-        height: calc(100dvh - var(--slk-pc-top) - 2 * var(--slk-pc-gutter)) !important;
-        max-height: calc(100dvh - var(--slk-pc-top) - 2 * var(--slk-pc-gutter)) !important;
-        box-sizing: border-box !important;
-        padding: 20px 22px 25px !important;
-        border: 1px solid #E8E3E9 !important;
-        border-radius: 15px !important;
-        background: #FFF !important;
-        box-shadow: -12px 0 44px rgba(32,18,36,.09), 0 8px 22px rgba(0,0,0,.05) !important;
-        z-index: 3030 !important;
-        overflow-y: auto !important;
-        overscroll-behavior: contain;
-    }
-    html body.slk-ui #top-settings-holder .drawer-content:not(.openDrawer) {
-        pointer-events: none !important;
-    }
-    html body.slk-ui #top-settings-holder .drawer-content :is(h2, h3, h4) {
-        color: #1D1C1D;
-    }
-    html body.slk-ui #top-settings-holder .drawer-content :is(input[type='text'],input[type='number'],input[type='search'],textarea,select) {
-        border-color: #DEDADE;
-        border-radius: 8px;
-        background-color: #FFF;
-        color: #1D1C1D;
-    }
-    html body.slk-ui #top-settings-holder .drawer-content .menu_button:not(.fa-solid):not(.fa-regular) {
-        border-radius: 8px;
-    }
-    /* Main conversation canvas, independent from the native floating panel. */
-    html body.slk-ui #sheld {
-        position: fixed !important;
-        display: flex !important;
-        flex-direction: column !important;
-        top: calc(var(--slk-pc-top) + var(--slk-pc-gutter)) !important;
-        bottom: var(--slk-pc-gutter) !important;
-        left: calc(var(--slk-pc-sidebar) + var(--slk-pc-gutter)) !important;
-        right: var(--slk-pc-gutter) !important;
-        width: auto !important;
-        max-width: none !important;
-        height: calc(100dvh - var(--slk-pc-top) - 2 * var(--slk-pc-gutter)) !important;
-        max-height: none !important;
-        min-width: 0 !important;
-        min-height: 0 !important;
-        box-sizing: border-box !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: 1px solid #EBE6EB !important;
-        border-radius: 16px !important;
-        background: #FFF !important;
-        box-shadow: 0 3px 18px rgba(35,25,35,.035) !important;
-        overflow: hidden !important;
-    }
-    html body.slk-ui #sheldheader {display: none !important;}
-    html body.slk-ui #sheld #chat {
-        position: relative !important;
-        display: block !important;
-        flex: 1 1 auto !important;
-        min-width: 0 !important;
-        min-height: 0 !important;
-        width: 100% !important;
-        height: auto !important;
-        max-height: none !important;
-        box-sizing: border-box !important;
-        margin: 0 !important;
-        padding: 18px 28px 24px !important;
-        border: 0 !important;
-        background: #FFF !important;
-        box-shadow: none !important;
-        overflow-y: auto !important;
-    }
-    html body.slk-ui #chat > .mes,
-    html body.slk-ui #chat > .welcomePanel {
-        max-width: 970px;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-    html body.slk-ui #chat .mes {border-color: #F0EDF0;}
-    html body.slk-ui #chat .mes_text {
-        font-family: var(--slk-font) !important;
-        font-size: var(--slk-chat-font-size, 15px) !important;
-        line-height: var(--slk-chat-line-height, 1.6) !important;
-        letter-spacing: calc(-.01em + var(--slk-chat-letter-spacing-adjust, 0px)) !important;
-        color: #1D1C1D;
-    }
-    html body.slk-ui #chat .mes_text q {
-        box-decoration-break: clone;
-        -webkit-box-decoration-break: clone;
-        padding: 2px 4px;
-        border-radius: 5px;
-        background-color: var(--slk-dialogue-bg, #EFEFEF) !important;
-    }
-    html body.slk-ui #sheld #form_sheld {
-        position: relative !important;
-        display: block !important;
-        flex: 0 0 auto !important;
-        top: auto !important;
-        bottom: auto !important;
-        left: auto !important;
-        right: auto !important;
-        width: 100% !important;
-        max-width: none !important;
-        box-sizing: border-box !important;
-        margin: 0 !important;
-        padding: 12px clamp(20px, 5vw, 56px) 20px !important;
-        border: 0 !important;
-        background: #FFF !important;
-        box-shadow: 0 -8px 22px rgba(255,255,255,.96);
-    }
-    html body.slk-ui #sheld #send_form {
-        position: relative !important;
-        display: flex;
-        width: min(100%, 970px) !important;
-        max-width: 970px !important;
-        box-sizing: border-box !important;
-        margin: 0 auto !important;
-        padding: 8px 13px !important;
-        min-height: 58px;
-        border: 1px solid #D7D3D8 !important;
-        border-radius: 12px !important;
-        background: #FFF !important;
-        box-shadow: none !important;
-    }
-    html body.slk-ui #sheld #send_textarea {
-        min-height: 32px;
-        max-height: 220px;
-        border: 0 !important;
-        outline-offset: 3px;
-        background: transparent !important;
-        font-family: var(--slk-font);
-    }
-    /* Desktop skin on global overlays (preserve native scrolling). */
-    html body.slk-ui dialog.popup {
-        border: 1px solid #E5DFE5 !important;
-        border-radius: 17px !important;
-        background: #FFF !important;
-        color: #1D1C1D;
-        box-shadow: 0 20px 70px rgba(31,15,33,.20) !important;
-    }
-    html body.slk-ui dialog.popup .popup-body {background: #FFF; border-radius: inherit;}
-    html body.slk-ui dialog.popup :is(.popup-content, .popup-controls) {background: #FFF;}
-    /* Set only requested text colors; prose, *emphasis*, dialogue and code are independent. */
-    html body.slk-ui.slk-ink-narration #chat .mes_text,
-    html body.slk-ui.slk-ink-narration #chat .mes_text :is(p,span,div,li,blockquote,strong,b,u):not(q *):not(pre *):not(code *) {
-        color: var(--slk-ink-narration) !important;
-    }
-    html body.slk-ui.slk-ink-dialogue #chat .mes_text q,
-    html body.slk-ui.slk-ink-dialogue #chat .mes_text q * {
-        color: var(--slk-ink-dialogue) !important;
-    }
-    html body.slk-ui.slk-ink-ascii #chat .mes_text em:not(q em):not(pre em):not(code em),
-    html body.slk-ui.slk-ink-ascii #chat .mes_text em:not(q em):not(pre em):not(code em) * {
-        color: var(--slk-ink-ascii, #999999) !important;
-    }
-    html body.slk-ui.slk-ink-code #chat .mes_text pre,
-    html body.slk-ui.slk-ink-code #chat .mes_text pre *,
-    html body.slk-ui.slk-ink-code #chat .mes_text .code-block,
-    html body.slk-ui.slk-ink-code #chat .mes_text .code-block * {
-        color: var(--slk-ink-code) !important;
-    }
-}
 /* A narrower desktop retains the workspace layout, with a compact nav. */
-@media screen and (min-width: 1001px) and (max-width: 1199px) {
-    html body.slk-ui {--slk-pc-sidebar: 194px; --slk-pc-gutter: 12px;}
-    html body.slk-ui #top-settings-holder {padding-left: 8px !important; padding-right: 8px !important;}
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle {gap: 10px !important; padding-left: 10px !important;}
-    html body.slk-ui #top-settings-holder .drawer-content,
-    html body.slk-ui #right-nav-panel,
-    html body.slk-ui #left-nav-panel {
-        width: min(530px, calc(100vw - 220px)) !important;
-        max-width: calc(100vw - 220px) !important;
-    }
-}
+
 
 
 /* v1.5.1 — Home shortcut labels and User Settings header only. */
@@ -17304,7 +16808,7 @@ html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-contai
 /* ===================================================
    v1.5.2 — Chat history popup polish
    =================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui .slk-modal {
         position: relative !important;
         width: calc(100vw - 24px) !important;
@@ -17464,7 +16968,7 @@ html body.slk-ui #user-settings-block [name="userSettingsRowOne"] > .flex-contai
 /* v1.5.3 — Chat-history popup typography.
    The chat history is #select_chat_popup, NOT a .popup or .slk-modal.
    Preserve Font Awesome icon fonts and change text nodes only. */
-@media screen and (max-width: 1000px) {
+@media screen {
     html body.slk-ui #select_chat_popup,
     html body.slk-ui #select_chat_popup :not(i):not(svg):not([class*="fa-"]):not(.fa) {
         font-family: var(--slk-font, 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif) !important;
@@ -18016,7 +17520,7 @@ html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] #newChatFromM
 }
 /* v1.5.5 — User Settings header alignment and account control fix.
    Mobile only. All existing tab content, logic, and other pages are untouched. */
-@media screen and (max-width: 1000px) {
+@media screen {
   /* The native first settings row retains an extra left inset after its
      decoration was removed; align both title and language to section rows. */
   html body.slk-ui #user-settings-block [name="userSettingsRowOne"] {
@@ -18254,7 +17758,7 @@ html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] #newChatFromM
 
 
 /* v1.5.6 — Match User Settings title, language and search to one inset. */
-@media screen and (max-width: 1000px) {
+@media screen {
   /* v1.5.5's -12px margin pulled the heading/label out of alignment. */
   html body.slk-ui #user-settings-block [name="userSettingsRowOne"] {
     margin: 0 !important;
@@ -18293,7 +17797,7 @@ html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] #newChatFromM
   }
 }
 /* v1.5.7 — Chat history modal: keep above footer, contain long chat rows. */
-@media screen and (max-width: 1000px) {
+@media screen {
   html body.slk-ui #select_chat_popup {
     /* Center in the usable area ABOVE the floating footer, not the full viewport. */
     top: calc((100dvh - var(--slk-footer-h, 80px)) / 2) !important;
@@ -18415,7 +17919,7 @@ html body.slk-ui #select_chat_popup [name='selectChatPopupHeader'] #newChatFromM
   }
 }
 /* v1.5.8 — Chat history cards: no left stripe and no horizontal clipping. */
-@media screen and (max-width: 1000px) {
+@media screen {
   /* The scroller itself owns the side gutters.  Every card uses that same width. */
   html body.slk-ui #select_chat_popup #select_chat_div {
     width: 100% !important;
@@ -18561,7 +18065,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
    v1.5.9 | Chat History: proper Backups dropdown + full metadata
    Only affects SillyTavern's native #select_chat_popup.
    =========================================================== */
-@media screen and (max-width: 1000px) {
+@media screen {
   /* Keep the header text clean: no stray help / inherited icon next to title. */
   html body.slk-ui #select_chat_popup #selectChatPopupHeaderText .notes-link,
   html body.slk-ui #select_chat_popup #selectChatPopupHeaderText .note-link-span {
@@ -18704,1158 +18208,421 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
 }
 
 /* On wider PC panels, never shorten the final backup message count either. */
-@media screen and (min-width: 1001px) {
-  html body.slk-ui #select_chat_popup .chatBackupsListItem {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: auto auto auto !important;
-    min-height: 100px !important;
-  }
-  html body.slk-ui #select_chat_popup .chatBackupsListItemInfo {
-    grid-column: 1 / -1 !important;
-    grid-row: 2 !important;
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-    overflow-wrap: anywhere !important;
-    word-break: keep-all !important;
-  }
-  html body.slk-ui #select_chat_popup .chatBackupsListItemActions {
-    grid-column: 1 / -1 !important;
-    grid-row: 3 !important;
-    justify-content: flex-end !important;
-  }
-}
+
 /* ============================================================
    Slack UI v1.5.11 — desktop three-column layout
    Original mobile footer and mobile drawers remain untouched.
    ① 76px workspace icon rail ② 300px native settings sidebar
    ③ remaining width: live chat, never covered by a settings panel
    ============================================================ */
-@media screen and (min-width: 1001px) {
-    html body.slk-ui {
-        --slk-pc-top: 52px;
-        --slk-pc-rail: 76px;
-        --slk-pc-sidebar: 76px;
-        --slk-pc-detail: 304px;
-        --slk-pc-open-width: 0px;
-        --slk-pc-gutter: 0px;
-        --topBarBlockSize: 52px !important;
-        background: #FFFFFF !important;
-    }
-    html body.slk-ui.slk-pc-panel-open {
-        --slk-pc-open-width: var(--slk-pc-detail);
-    }
 
-    /* The Slack title bar belongs above both the rail and the conversation. */
-    html body.slk-ui #slk-header {
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: auto !important;
-        width: 100% !important;
-        height: var(--slk-pc-top) !important;
-        min-height: var(--slk-pc-top) !important;
-        padding: 0 18px !important;
-        background: #350D36 !important;
-        color: #FFFFFF !important;
-        border-bottom: 1px solid #4A154B !important;
-        border-radius: 0 !important;
-        z-index: 3050 !important;
-        overflow: visible !important;
-    }
-    html body.slk-ui #slk-header > #slk-ws {
-        flex: 0 1 auto !important;
-        width: auto !important;
-        max-width: min(44vw, 410px) !important;
-        min-width: 0 !important;
-        height: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        align-items: center !important;
-        gap: 9px !important;
-        display: flex !important;
-        background: none !important;
-        color: #FFFFFF !important;
-        border: 0 !important;
-    }
-    html body.slk-ui #slk-header #slk-panel-back,
-    html body.slk-ui #slk-header #slk-chat-head,
-    html body.slk-ui #slk-header #slk-chat-back {
-        display: none !important;
-    }
-    html body.slk-ui #slk-header .slk-ws-avatar {
-        width: 30px !important;
-        height: 30px !important;
-        flex: 0 0 30px !important;
-        border-radius: 7px !important;
-    }
-    html body.slk-ui #slk-header .slk-ws-name { font-size: 17px !important; }
-    html body.slk-ui #slk-header .slk-ws-ver,
-    html body.slk-ui #slk-header .slk-ws-branch { font-size: 11px !important; }
-    html body.slk-ui #slk-header .slk-header-actions {
-        display: flex !important;
-        visibility: visible !important;
-        margin-left: auto !important;
-    }
-
-    /* Primary rail — identical seven icons/order to the mobile tab bar. */
-    html body.slk-ui #top-settings-holder {
-        display: flex !important;
-        position: fixed !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        gap: 5px !important;
-        top: var(--slk-pc-top) !important;
-        left: 0 !important;
-        right: auto !important;
-        bottom: 0 !important;
-        width: var(--slk-pc-rail) !important;
-        max-width: var(--slk-pc-rail) !important;
-        min-width: var(--slk-pc-rail) !important;
-        height: calc(100dvh - var(--slk-pc-top)) !important;
-        max-height: none !important;
-        min-height: 0 !important;
-        margin: 0 !important;
-        padding: 15px 6px 12px !important;
-        box-sizing: border-box !important;
-        background: #350D36 !important;
-        border: 0 !important;
-        border-right: 1px solid #612A62 !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        z-index: 3010 !important;
-        overflow-y: auto !important;
-        overflow-x: visible !important;
-        scrollbar-width: none;
-    }
-    html body.slk-ui #top-settings-holder::-webkit-scrollbar { display: none; }
-    html body.slk-ui #top-settings-holder::before,
-    html body.slk-ui #top-settings-holder::after {
-        content: none !important;
-        display: none !important;
-    }
-    html body.slk-ui #top-settings-holder > .drawer:not(#user-settings-button):not(#backgrounds-button) {
-        position: static !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        height: 62px !important;
-        min-height: 62px !important;
-        max-height: 62px !important;
-        flex: 0 0 62px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        justify-content: center !important;
-        align-items: center !important;
-        background: transparent !important;
-        border: 0 !important;
-    }
-    html body.slk-ui #top-settings-holder > .drawer:not(#user-settings-button):not(#backgrounds-button) > .drawer-toggle {
-        position: relative !important;
-        display: flex !important;
-        flex-direction: column !important;
-        width: 60px !important;
-        height: 60px !important;
-        min-height: 60px !important;
-        flex: 0 0 60px !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 4px !important;
-        padding: 4px 0 !important;
-        box-sizing: border-box !important;
-        border: 0 !important;
-        border-radius: 12px !important;
-        background: transparent !important;
-        color: rgba(255,255,255,.79) !important;
-        box-shadow: none !important;
-        text-align: center !important;
-        cursor: pointer !important;
-        transition: background-color .12s ease, color .12s ease;
-    }
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle > .drawer-icon {
-        display: none !important;
-    }
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle > .slk-tab-icon {
-        display: grid !important;
-        width: 25px !important;
-        height: 25px !important;
-        flex: 0 0 25px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        place-items: center !important;
-        background: none !important;
-        color: inherit !important;
-    }
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle .slk-tab-icon svg {
-        display: block !important;
-        width: 23px !important;
-        height: 23px !important;
-        stroke-width: 1.9 !important;
-        color: inherit !important;
-    }
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle::after {
-        content: attr(aria-label) !important;
-        display: block !important;
-        min-width: 0 !important;
-        max-width: 60px !important;
-        font: 500 10px/1.15 var(--slk-font) !important;
-        color: inherit !important;
-        letter-spacing: -.03em !important;
-        white-space: nowrap !important;
-    }
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle:focus-visible {
-        outline: 2px solid #FFFFFF !important;
-        outline-offset: 2px !important;
-    }
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle:hover {
-        background: rgba(255,255,255,.12) !important;
-        color: #FFFFFF !important;
-    }
-    html body.slk-ui #top-settings-holder > .drawer.slk-pc-selected > .drawer-toggle,
-    html body.slk-ui #top-settings-holder > .drawer:has(.drawer-icon.openIcon) > .drawer-toggle {
-        background: rgba(255,255,255,.18) !important;
-        color: #FFFFFF !important;
-    }
-    html body.slk-ui #top-settings-holder > .drawer > .drawer-toggle::before,
-    html body.slk-ui #top-settings-holder > .drawer:has(.drawer-icon.openIcon) > .drawer-toggle::before {
-        content: none !important;
-        display: none !important;
-    }
-    /* Hidden utility drawers remain available from the top-right gear. */
-    html body.slk-ui #top-settings-holder > :is(#user-settings-button, #backgrounds-button) {
-        flex: 0 0 0 !important;
-        height: 0 !important;
-        min-height: 0 !important;
-        max-height: 0 !important;
-        width: 0 !important;
-        min-width: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: 0 !important;
-        overflow: visible !important;
-    }
-    html body.slk-ui #top-settings-holder > :is(#user-settings-button, #backgrounds-button) > .drawer-toggle { display: none !important; }
-
-    /* Native SillyTavern drawers become a fixed SECOND column immediately
-       beside the rail. No drawer floats over the chat surface. */
-    html body.slk-ui #top-settings-holder .drawer-content,
-    html body.slk-ui #left-nav-panel,
-    html body.slk-ui #right-nav-panel {
-        position: fixed !important;
-        top: var(--slk-pc-top) !important;
-        bottom: 0 !important;
-        left: var(--slk-pc-rail) !important;
-        right: auto !important;
-        width: var(--slk-pc-detail) !important;
-        min-width: 0 !important;
-        max-width: var(--slk-pc-detail) !important;
-        height: calc(100dvh - var(--slk-pc-top)) !important;
-        min-height: 0 !important;
-        max-height: calc(100dvh - var(--slk-pc-top)) !important;
-        margin: 0 !important;
-        padding: 68px 14px 22px !important;
-        box-sizing: border-box !important;
-        border: 0 !important;
-        border-right: 1px solid #E5E1E6 !important;
-        border-radius: 0 !important;
-        background: #F8F7F9 !important;
-        color: #1D1C1D !important;
-        box-shadow: none !important;
-        transform: none !important;
-        filter: none !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        z-index: 3020 !important;
-        overflow-x: hidden !important;
-        overflow-y: auto !important;
-        overscroll-behavior: contain;
-    }
-    html body.slk-ui #top-settings-holder .drawer-content:not(.openDrawer),
-    html body.slk-ui #left-nav-panel:not(.openDrawer),
-    html body.slk-ui #right-nav-panel:not(.openDrawer) {
-        display: none !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-    }
-    html body.slk-ui #top-settings-holder .drawer-content.openDrawer,
-    html body.slk-ui #left-nav-panel.openDrawer,
-    html body.slk-ui #right-nav-panel.openDrawer {
-        display: block !important;
-        visibility: visible !important;
-        pointer-events: auto !important;
-    }
-    html body.slk-ui #slk-pc-panel-heading {
-        display: flex !important;
-        position: fixed !important;
-        top: var(--slk-pc-top) !important;
-        left: var(--slk-pc-rail) !important;
-        right: auto !important;
-        width: var(--slk-pc-detail) !important;
-        height: 58px !important;
-        min-height: 58px !important;
-        box-sizing: border-box !important;
-        padding: 0 15px 0 20px !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        background: #F8F7F9 !important;
-        border-bottom: 1px solid #E5E1E6 !important;
-        border-right: 1px solid #E5E1E6 !important;
-        z-index: 3030 !important;
-    }
-    html body.slk-ui #slk-pc-panel-heading[aria-hidden="true"] { display: none !important; }
-    html body.slk-ui #slk-pc-panel-heading h2 {
-        font: 750 18px/1.2 var(--slk-font) !important;
-        color: #1D1C1D !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    html body.slk-ui #slk-pc-panel-close {
-        display: grid !important;
-        place-items: center !important;
-        width: 30px !important;
-        height: 30px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: 0 !important;
-        border-radius: 7px !important;
-        background: transparent !important;
-        color: #616061 !important;
-        cursor: pointer !important;
-    }
-    html body.slk-ui #slk-pc-panel-close:hover { background: #ECE8EF !important; }
-
-    /* Chat area immediately resizes when a panel opens/closes. */
-    html body.slk-ui #sheld {
-        display: flex !important;
-        flex-direction: column !important;
-        position: fixed !important;
-        top: var(--slk-pc-top) !important;
-        bottom: 0 !important;
-        left: calc(var(--slk-pc-rail) + var(--slk-pc-open-width)) !important;
-        right: 0 !important;
-        width: auto !important;
-        height: calc(100dvh - var(--slk-pc-top)) !important;
-        max-height: none !important;
-        min-height: 0 !important;
-        min-width: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: 0 !important;
-        border-radius: 0 !important;
-        background: #FFFFFF !important;
-        box-shadow: none !important;
-        overflow: hidden !important;
-    }
-    html body.slk-ui #slk-pc-channel-heading {
-        position: fixed !important;
-        display: flex !important;
-        top: var(--slk-pc-top) !important;
-        left: calc(var(--slk-pc-rail) + var(--slk-pc-open-width)) !important;
-        right: 0 !important;
-        width: auto !important;
-        height: 58px !important;
-        box-sizing: border-box !important;
-        align-items: center !important;
-        gap: 10px !important;
-        padding: 0 24px !important;
-        background: #FFFFFF !important;
-        color: #1D1C1D !important;
-        border-bottom: 1px solid #E8E8E8 !important;
-        z-index: 3015 !important;
-        pointer-events: none !important;
-    }
-    html body.slk-ui #slk-pc-channel-heading[aria-hidden="true"] {display: none !important;}
-    html body.slk-ui #slk-pc-channel-heading strong {
-        font: 750 16px/1.2 var(--slk-font) !important;
-        white-space: nowrap !important;
-        text-overflow: ellipsis !important;
-        overflow: hidden !important;
-    }
-    html body.slk-ui #slk-pc-channel-heading .slk-pc-channel-symbol {
-        font: 700 21px var(--slk-font) !important;
-        color: #817984 !important;
-    }
-    html body.slk-ui #slk-pc-channel-heading:not(.slk-pc-is-chat) .slk-pc-channel-symbol { display: none !important; }
-    html body.slk-ui #sheld #chat {
-        width: 100% !important;
-        max-width: none !important;
-        flex: 1 1 auto !important;
-        min-height: 0 !important;
-        padding: 76px clamp(16px, 2.5vw, 36px) 24px !important;
-        background: #FFFFFF !important;
-        box-sizing: border-box !important;
-        overflow-y: auto !important;
-    }
-    html body.slk-ui #sheld #chat > .mes,
-    html body.slk-ui #sheld #chat > .welcomePanel {
-        max-width: none !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-    html body.slk-ui #sheld #form_sheld {
-        width: 100% !important;
-        padding: 14px clamp(18px, 2.5vw, 36px) 16px !important;
-        border-top: 1px solid #ECEAEC !important;
-        background: #FFFFFF !important;
-        box-shadow: none !important;
-    }
-    html body.slk-ui #sheld #send_form {
-        width: 100% !important;
-        max-width: none !important;
-        border-color: #CFCACF !important;
-        border-radius: 10px !important;
-        min-height: 58px !important;
-    }
-    /* Make the home recent-chat list look like Slack messages/DM rows. */
-    html body.slk-ui #chat .welcomePanel .welcomeRecent .recentChatList .recentChat {
-        border: 0 !important;
-        border-bottom: 1px solid #ECEAEC !important;
-        border-radius: 0 !important;
-        background: #FFFFFF !important;
-        box-shadow: none !important;
-        padding: 12px 14px !important;
-    }
-    html body.slk-ui #chat .welcomePanel .welcomeRecent .recentChatList .recentChat:hover {
-        background: #F8F6F8 !important;
-    }
-    html body.slk-ui #chat .welcomePanel .welcomeShortcuts .menu_button {
-        border: 1px solid #E8E5EA !important;
-        background: #FFFFFF !important;
-        box-shadow: none !important;
-        border-radius: 10px !important;
-    }
-}
 /* Tighter desktop keeps both the panel and chat usable. */
-@media screen and (min-width: 1001px) and (max-width: 1220px) {
-    html body.slk-ui { --slk-pc-detail: 264px; }
-    html body.slk-ui #slk-pc-panel-heading { padding-left: 14px !important; }
-    html body.slk-ui #top-settings-holder .drawer-content,
-    html body.slk-ui #left-nav-panel,
-    html body.slk-ui #right-nav-panel { padding-left: 10px !important; padding-right: 10px !important; }
-}
+
 /* ====================================================================
    Slack UI v1.5.12 — DESKTOP COMPONENT DESIGN SYSTEM
    Scope: desktop only; preserve mobile and every native ST handler.
    ==================================================================== */
-@media screen and (min-width:1001px) {
-  html body.slk-ui {
-    --slk-pc-detail: 360px;
-    --slk-pc-ink: #1D1C1D;
-    --slk-pc-secondary: #69646C;
-    --slk-pc-accent: #4A154B;
-    --slk-pc-border: #E7E3E9;
-    --slk-pc-tint: #F7F5F8;
-    --slk-pc-hover: #F0ECF2;
-    --slk-pc-paper: #FFFFFF;
-    font-family: var(--slk-font) !important;
-  }
-  html body.slk-ui #top-settings-holder .drawer-content,
-  html body.slk-ui #left-nav-panel,
-  html body.slk-ui #right-nav-panel {
-    padding: 78px 16px 30px !important;
-    background: #F8F6F9 !important;
-    color: var(--slk-pc-ink) !important;
-    border-right: 1px solid #E5DFE8 !important;
-    scrollbar-color: #D2C8D6 transparent;
-    scrollbar-width: thin;
-  }
-  html body.slk-ui #slk-pc-panel-heading {
-    background: #F8F6F9 !important;
-    height: 64px !important;
-    border-bottom: 1px solid var(--slk-pc-border) !important;
-    padding: 0 16px 0 20px !important;
-  }
-  html body.slk-ui #slk-pc-panel-heading h2 {font-size: 17px !important; font-weight: 750 !important;}
-  html body.slk-ui #slk-pc-panel-close {width:32px !important;height:32px !important;border-radius:9px !important;}
-  html body.slk-ui #slk-pc-panel-close:hover {background:#E9E3EC !important;}
 
-  /* All seven native settings panels, without replacing interactive elements. */
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) {
-    font-family: var(--slk-font) !important;
-    font-size: 13px !important;
-    line-height: 1.5 !important;
-    overflow-wrap: break-word;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(h1,h2,h3,h4,h5,h6),
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(.range-block-title,.inline-drawer-header,.standoutHeader) {
-    font-family:var(--slk-font) !important;
-    color:var(--slk-pc-ink) !important;
-    text-shadow:none !important;
-    background-image:none !important;
-    box-shadow:none !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(h2,h3) {
-    font-size:16px !important;
-    font-weight:750 !important;
-    line-height:1.35 !important;
-    margin:0 0 10px !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(h4,h5,.range-block-title) {
-    font-size:13px !important;
-    font-weight:700 !important;
-    line-height:1.4 !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(.scrollableInner,.inline-drawer-content,.range-block-content) {
-    max-width:100% !important;
-    min-width:0 !important;
-    background:transparent !important;
-    color:var(--slk-pc-ink) !important;
-  }
-  html body.slk-ui #left-nav-panel .scrollableInner,
-  html body.slk-ui #right-nav-panel .scrollableInner {
-    padding:0 0 24px !important;
-    overflow-x:hidden !important;
-    box-shadow:none !important;
-  }
-  /* Native prompt sliders used to render as black bars and huge outlines. */
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(.range-block,.range-block-range) {
-    min-width:0 !important;
-    max-width:100% !important;
-    box-sizing:border-box !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) .range-block:has(input[type="range"]) {
-    display:flex !important;
-    flex-direction:column !important;
-    align-items:stretch !important;
-    gap:10px !important;
-    background:#FFFFFF !important;
-    border:1px solid #EBE7EC !important;
-    border-radius:13px !important;
-    padding:14px !important;
-    margin:7px 0 12px !important;
-    box-shadow:none !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) .range-block .range-block-range {
-    display:flex !important;
-    align-items:center !important;
-    gap:10px !important;
-    width:100% !important;
-    flex-wrap:wrap !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) input[type="range"] {
-    appearance:none !important;
-    -webkit-appearance:none !important;
-    height:5px !important;
-    border:0 !important;
-    border-radius:999px !important;
-    background:#E3DDE6 !important;
-    box-shadow:none !important;
-    accent-color:#6E3276 !important;
-    max-width:100% !important;
-    min-width:60px !important;
-    flex:1 1 100px !important;
-    cursor:pointer !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) input[type="range"]::-webkit-slider-thumb {
-    appearance:none !important;
-    -webkit-appearance:none !important;
-    width:15px !important;
-    height:15px !important;
-    background:#FFFFFF !important;
-    border:3px solid #6E3276 !important;
-    border-radius:50% !important;
-    box-shadow:0 1px 4px rgba(30,20,30,.13) !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) input[type="range"]::-moz-range-thumb {
-    width:11px !important;height:11px !important;background:#FFFFFF !important;
-    border:3px solid #6E3276 !important;border-radius:50% !important;
-  }
-  /* Inputs, selects, textareas — consistent controls in every settings tab. */
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(input[type="text"],input[type="number"],input[type="search"],input[type="password"],textarea,select,.text_pole,.select2-selection) {
-    box-sizing:border-box !important;
-    max-width:100% !important;
-    min-width:0 !important;
-    min-height:36px;
-    padding:8px 11px !important;
-    background:#FFFFFF !important;
-    color:#1D1C1D !important;
-    border:1px solid #CFC8D2 !important;
-    border-radius:9px !important;
-    box-shadow:none !important;
-    outline:none !important;
-    font-family:var(--slk-font) !important;
-    font-size:13px !important;
-    font-weight:450 !important;
-    line-height:1.35 !important;
-    text-shadow:none !important;
-    background-image:none !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(input[type="number"],.range-block input[type="text"]) {
-    text-align:right;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(input,select,textarea):focus {
-    border-color:#611F69 !important;
-    box-shadow:0 0 0 3px rgba(97,31,105,.14) !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) textarea {
-    height:auto !important;
-    min-height:72px;
-    resize:vertical;
-    text-align:left !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(input[type="checkbox"],input[type="radio"]) {
-    accent-color:#611F69 !important;
-    width:16px;
-    height:16px;
-    margin-right:5px;
-    vertical-align:middle;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(label,.text_label,.slider_hint,.range-block-counter,.note-link-span,small) {
-    font-family:var(--slk-font) !important;
-    color:#69646C !important;
-    font-size:12px !important;
-    line-height:1.5 !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(label,.text_label) {
-    color:#353037 !important;
-    font-weight:600 !important;
-  }
-  /* Sections and collapsible groups with Slack-style dividing rhythm. */
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) .inline-drawer {
-    min-width:0 !important;
-    max-width:100% !important;
-    background:transparent !important;
-    background-image:none !important;
-    border:0 !important;
-    border-radius:0 !important;
-    box-shadow:none !important;
-    margin:0 0 7px !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) .inline-drawer > .inline-drawer-toggle,
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(.inline-drawer-header,.standoutHeader) {
-    display:flex !important;
-    align-items:center !important;
-    gap:7px !important;
-    justify-content:space-between !important;
-    min-height:38px !important;
-    margin:0 !important;
-    padding:9px 8px !important;
-    color:#322B34 !important;
-    font-size:13px !important;
-    font-weight:750 !important;
-    background:transparent !important;
-    background-image:none !important;
-    border:0 !important;
-    border-bottom:1px solid #E9E4EC !important;
-    border-radius:0 !important;
-    box-shadow:none !important;
-    text-align:left !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) .inline-drawer > .inline-drawer-content {
-    border:0 !important;
-    border-radius:0 !important;
-    padding:10px 0 14px !important;
-    background:transparent !important;
-  }
-  /* Button system: functional DOM stays intact, native square outlines disappear. */
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(button,.menu_button,.menu_button_icon,.right_menu_button):not(.fa-solid):not(.fa-regular):not(.fa-brands) {
-    box-sizing:border-box !important;
-    min-height:33px !important;
-    max-width:100% !important;
-    padding:6px 10px !important;
-    display:inline-flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    gap:7px !important;
-    background:#FFFFFF !important;
-    background-image:none !important;
-    border:1px solid #DED7E1 !important;
-    border-radius:9px !important;
-    box-shadow:none !important;
-    color:#383039 !important;
-    font-family:var(--slk-font) !important;
-    font-size:12px !important;
-    line-height:1.3 !important;
-    font-weight:650 !important;
-    text-shadow:none !important;
-    filter:none !important;
-    white-space:normal !important;
-    word-break:keep-all !important;
-    cursor:pointer;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(button,.menu_button,.menu_button_icon):not(.fa-solid):not(.fa-regular):hover {
-    border-color:#C9BDCB !important;
-    background:#F2EEF5 !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(.menu_button_icon i,.menu_button i,button i) {
-    font-size:14px !important;
-    color:inherit !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(.menu_button_icon span,.menu_button span,button span) {
-    font-size:inherit !important;
-    color:inherit !important;
-  }
-  /* Controls with explicitly native primary/disabled status retain their meaning. */
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(button,.menu_button)[disabled] {
-    opacity:.46 !important;
-    cursor:not-allowed !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(hr) {
-    margin:14px 0 !important;
-    border:0 !important;
-    border-top:1px solid #E7E3E9 !important;
-  }
-  /* Themed list selectors and persona/character tiles. */
-  html body.slk-ui :is(#PersonaManagement,#right-nav-panel,#WorldInfo) :is(.avatar-container,.character_select,.world_entry,.list-group-item) {
-    min-width:0 !important;
-    max-width:100% !important;
-    box-sizing:border-box !important;
-    border:1px solid transparent !important;
-    border-radius:11px !important;
-    background:transparent !important;
-    box-shadow:none !important;
-  }
-  html body.slk-ui :is(#PersonaManagement,#right-nav-panel,#WorldInfo) :is(.avatar-container,.character_select,.world_entry):hover {
-    background:#ECE7EF !important;
-  }
-  html body.slk-ui :is(#PersonaManagement,#right-nav-panel,#WorldInfo) :is(.avatar-container.selected,.character_select.selected,.world_entry.selected) {
-    background:#EEE6F0 !important;
-    border-color:#DACDDD !important;
-  }
-  html body.slk-ui :is(#PersonaManagement,#right-nav-panel) :is(.avatar img,.avatar-container img,.character_select img) {
-    width:42px !important;
-    height:42px !important;
-    border-radius:10px !important;
-    object-fit:cover !important;
-  }
-  html body.slk-ui :is(#PersonaManagement,#right-nav-panel,#WorldInfo) :is(.paginationjs,.paginationjs-pages,.paginationjs-size-changer) {
-    max-width:100% !important;
-    min-width:0 !important;
-    border:0 !important;
-    box-shadow:none !important;
-    font-family:var(--slk-font) !important;
-    font-size:12px !important;
-  }
-  html body.slk-ui :is(#PersonaManagement,#right-nav-panel) :is(.paginationjs a,.paginationjs button) {
-    border-radius:7px !important;
-    border:0 !important;
-    background:transparent !important;
-    color:#514A53 !important;
-    min-width:28px;
-  }
-  html body.slk-ui :is(#PersonaManagement,#right-nav-panel) :is(.paginationjs a,.paginationjs button):hover {
-    background:#ECE6EF !important;
-  }
-  /* Native third-party expansion cards get the same typography, not altered behavior. */
-  html body.slk-ui #extensions_settings :is(.extension_block,.inline-drawer,.flex-container),
-  html body.slk-ui #extensions_settings2 :is(.extension_block,.inline-drawer) {
-    max-width:100% !important;
-    min-width:0 !important;
-  }
-  html body.slk-ui #slk-extension-settings {
-    max-width:100% !important;
-    border:1px solid #E8E2E8 !important;
-    border-radius:13px !important;
-    background:#FFFFFF !important;
-    overflow:hidden !important;
-  }
-  html body.slk-ui #slk-extension-settings :is(.slk-settings-row,.slk-color-row,.slk-ink-setting) {
-    min-width:0 !important;
-    max-width:100% !important;
-    flex-wrap:wrap !important;
-  }
-  html body.slk-ui #slk-extension-settings .slk-color-row input[type="text"] {
-    flex:1 1 110px !important;
-    min-width:95px !important;
-  }
 
-  /* Workspace home: strip the old ST framed widget. Use real Slack DM rows. */
-  html body.slk-ui #sheld #chat > .welcomePanel {
-    display:flex !important;
-    flex-direction:column !important;
-    align-items:stretch !important;
-    width:100% !important;
-    max-width:100% !important;
-    min-width:0 !important;
-    margin:0 !important;
-    padding:0 0 32px !important;
-    border:0 !important;
-    border-radius:0 !important;
-    background:#FFFFFF !important;
-    box-shadow:none !important;
-    gap:0 !important;
-    color:#1D1C1D !important;
-    font-family:var(--slk-font) !important;
-  }
-  html body.slk-ui #chat .welcomePanel .welcomeHeader,
-  html body.slk-ui #chat .welcomePanel .welcomeHeaderTitle {
-    display:none !important;
-  }
-  html body.slk-ui #chat .welcomePanel :is(.welcomeShortcuts,.recentChatsTitle,.welcomeRecent,.recentChatList) {
-    width:100% !important;
-    max-width:100% !important;
-    box-sizing:border-box !important;
-    min-width:0 !important;
-    background:#FFFFFF !important;
-    box-shadow:none !important;
-  }
-  html body.slk-ui #chat .welcomePanel .welcomeShortcuts {
-    display:flex !important;
-    align-items:center !important;
-    justify-content:flex-start !important;
-    flex-wrap:wrap !important;
-    gap:8px !important;
-    margin:0 !important;
-    padding:18px 22px !important;
-    border:0 !important;
-    border-bottom:1px solid #EFECEF !important;
-  }
-  html body.slk-ui #chat .welcomePanel .welcomeShortcuts :is(a,.menu_button) {
-    display:inline-flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    flex:0 0 auto !important;
-    min-width:0 !important;
-    min-height:34px !important;
-    width:auto !important;
-    height:34px !important;
-    gap:6px !important;
-    padding:0 12px !important;
-    margin:0 !important;
-    border:1px solid #E2DDE3 !important;
-    border-radius:9px !important;
-    background:#FFFFFF !important;
-    box-shadow:none !important;
-    color:#49404B !important;
-    font:600 12px/1.3 var(--slk-font) !important;
-    white-space:nowrap !important;
-  }
-  html body.slk-ui #chat .welcomePanel .welcomeShortcuts :is(a,.menu_button):hover {
-    background:#F2EDF4 !important;
-    border-color:#CEBFCE !important;
-  }
-  html body.slk-ui #chat .welcomePanel .welcomeShortcuts :is(a,.menu_button) span {
-    display:inline !important;
-    width:auto !important;
-    white-space:nowrap !important;
-    color:inherit !important;
-    font-size:12px !important;
-    line-height:1 !important;
-  }
-  html body.slk-ui #chat .welcomePanel .welcomeShortcuts :is(i,svg) {
-    width:15px !important;
-    height:15px !important;
-    font-size:15px !important;
-    flex:0 0 15px !important;
-  }
-  html body.slk-ui #chat .welcomePanel .recentChatsTitle {
-    display:flex !important;
-    align-items:center !important;
-    justify-content:space-between !important;
-    padding:20px 22px 12px !important;
-    margin:0 !important;
-    border:0 !important;
-    color:#1D1C1D !important;
-    font-size:20px !important;
-    font-weight:750 !important;
-    line-height:1.3 !important;
-  }
-  html body.slk-ui #chat .welcomePanel .welcomeRecent {
-    margin:0 !important;
-    padding:0 12px 25px !important;
-    border:0 !important;
-    border-radius:0 !important;
-    background:#FFFFFF !important;
-    overflow:visible !important;
-  }
-  html body.slk-ui #chat .welcomePanel .recentChatList {
-    display:flex !important;
-    flex-direction:column !important;
-    gap:0 !important;
-    overflow:visible !important;
-    background:transparent !important;
-    border:0 !important;
-    border-radius:0 !important;
-  }
-  html body.slk-ui #chat .welcomeRecent .recentChatList .recentChat {
-    display:flex !important;
-    align-items:flex-start !important;
-    width:100% !important;
-    min-width:0 !important;
-    box-sizing:border-box !important;
-    gap:12px !important;
-    margin:0 !important;
-    padding:12px 14px !important;
-    border:0 !important;
-    border-radius:9px !important;
-    background:transparent !important;
-    box-shadow:none !important;
-    color:#1D1C1D !important;
-    transition:background-color .13s ease;
-  }
-  html body.slk-ui #chat .welcomeRecent .recentChatList .recentChat + .recentChat {border-top:1px solid #F2EFF2 !important;}
-  html body.slk-ui #chat .welcomeRecent .recentChatList .recentChat:hover {background:#F5F1F6 !important;}
-  html body.slk-ui #chat .welcomeRecent .recentChat .avatar,
-  html body.slk-ui #chat .welcomeRecent .recentChat .avatar img {
-    flex:0 0 42px !important;
-    width:42px !important;
-    height:42px !important;
-    border-radius:10px !important;
-    object-fit:cover !important;
-    box-shadow:none !important;
-  }
-  html body.slk-ui #chat .welcomeRecent .recentChat .recentChatInfo {
-    display:grid !important;
-    grid-template-columns:minmax(0,1fr) auto !important;
-    grid-template-rows:auto auto auto !important;
-    gap:3px 16px !important;
-    flex:1 1 auto !important;
-    min-width:0 !important;
-    width:auto !important;
-    align-items:start !important;
-  }
-  html body.slk-ui #chat .welcomeRecent .recentChat :is(.chatNameContainer,.chatMessageContainer) {display:contents !important;}
-  html body.slk-ui #chat .welcomeRecent .recentChat .chatName {
-    grid-column:1 !important; grid-row:1 !important;
-    min-width:0 !important;
-    overflow:hidden !important;
-    white-space:nowrap !important;
-    text-overflow:ellipsis !important;
-    font-size:14px !important;
-    line-height:1.35 !important;
-    color:#716975 !important;
-  }
-  html body.slk-ui #chat .welcomeRecent .recentChat .chatName .characterName {
-    font-size:14px !important;
-    font-weight:750 !important;
-    color:#1D1C1D !important;
-  }
-  html body.slk-ui #chat .welcomeRecent .recentChat .chatDate {
-    grid-column:2 !important;grid-row:1 !important;
-    align-self:center !important;
-    color:#8C848F !important;
-    font-size:11px !important;
-    font-weight:400 !important;
-    text-align:right !important;
-    white-space:nowrap !important;
-  }
-  html body.slk-ui #chat .welcomeRecent .recentChat .chatMessage {
-    grid-column:1 / -1 !important;grid-row:2 !important;
-    min-width:0 !important;
-    overflow:hidden !important;
-    white-space:nowrap !important;
-    text-overflow:ellipsis !important;
-    color:#68616C !important;
-    font-size:13px !important;
-    line-height:1.5 !important;
-  }
-  html body.slk-ui #chat .welcomeRecent .recentChat .chatStats {
-    grid-column:1 !important;grid-row:3 !important;
-    font-size:11px !important;
-    color:#938B94 !important;
-    min-width:0 !important;
-  }
-  html body.slk-ui #chat .welcomeRecent .recentChat .chatActions {
-    grid-column:2 !important;grid-row:3 !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:flex-end !important;
-    flex:0 0 auto !important;
-    gap:4px !important;
-  }
-  html body.slk-ui #chat .welcomeRecent .recentChat .chatActions .menu_button {
-    display:grid !important;
-    place-items:center !important;
-    padding:0 !important;
-    margin:0 !important;
-    width:28px !important;
-    height:28px !important;
-    min-width:28px !important;
-    min-height:28px !important;
-    border:0 !important;
-    border-radius:7px !important;
-    background:transparent !important;
-    color:#7A727C !important;
-    box-shadow:none !important;
-  }
-  html body.slk-ui #chat .welcomeRecent .recentChat .chatActions .menu_button:hover {background:#EDE6EE !important;color:#4A154B !important;}
-  html body.slk-ui #chat .welcomeRecent .recentChat .chatActions .menu_button :is(i,svg) {width:16px !important;height:16px !important;}
-  html body.slk-ui #chat .welcomePanel .showMoreChats {margin:8px 14px !important;border-radius:9px !important;}
-
-  /* Actual message canvas: full-width Slack channel messages, not gray ST cards. */
-  html body.slk-ui #sheld #chat {padding:74px 0 26px !important;scrollbar-width:thin;scrollbar-color:#D8D2DA transparent;}
-  html body.slk-ui #chat > .mes {
-    display:flex !important;
-    align-items:flex-start !important;
-    gap:11px !important;
-    width:100% !important;
-    min-width:0 !important;
-    max-width:none !important;
-    box-sizing:border-box !important;
-    margin:0 !important;
-    padding:12px clamp(22px,3vw,52px) !important;
-    border:0 !important;
-    border-radius:0 !important;
-    background:transparent !important;
-    box-shadow:none !important;
-    color:#1D1C1D !important;
-  }
-  html body.slk-ui #chat > .mes:hover {background:#FAF8FA !important;}
-  html body.slk-ui #chat > .mes .mesAvatarWrapper {flex:0 0 40px !important; width:40px !important;min-width:40px !important;}
-  html body.slk-ui #chat > .mes .avatar img {width:40px !important;height:40px !important;border-radius:9px !important;object-fit:cover !important;}
-  html body.slk-ui #chat > .mes .mes_block {flex:1 1 auto !important;min-width:0 !important;width:auto !important;background:transparent !important;border:0 !important;box-shadow:none !important;}
-  html body.slk-ui #chat > .mes .ch_name {font-size:14px !important;font-weight:750 !important;color:#1D1C1D !important;}
-  html body.slk-ui #chat > .mes .timestamp {font-size:11px !important;font-weight:450 !important;color:#89818B !important;margin-left:8px !important;}
-  html body.slk-ui #chat > .mes .mes_text {font-family:var(--slk-font) !important;font-size:var(--slk-chat-font-size,15px) !important;line-height:var(--slk-chat-line-height,1.6) !important;min-width:0 !important;overflow-wrap:anywhere;}
-  html body.slk-ui #chat > .mes .mes_buttons {border:0 !important;box-shadow:none !important;background:transparent !important;}
-  html body.slk-ui #chat > .mes .mes_button {color:#786F79 !important;}
-
-  /* Slack desktop composer: compose area and a real bottom action row. */
-  html body.slk-ui #sheld #form_sheld {
-    flex:0 0 auto !important;
-    padding:14px clamp(22px,3vw,52px) 22px !important;
-    margin:0 !important;
-    background:#FFFFFF !important;
-    border-top:1px solid #F0ECF1 !important;
-    box-shadow:none !important;
-  }
-  html body.slk-ui #sheld #send_form {
-    display:block !important;
-    width:100% !important;
-    max-width:1200px !important;
-    min-height:118px !important;
-    margin:0 auto !important;
-    padding:0 !important;
-    border:1px solid #CFC8D1 !important;
-    border-radius:12px !important;
-    background:#FFFFFF !important;
-    box-shadow:0 2px 6px rgba(40,20,40,.025) !important;
-    overflow:visible !important;
-  }
-  html body.slk-ui #sheld #send_form:focus-within {
-    border-color:#6B3874 !important;
-    box-shadow:0 0 0 3px rgba(97,31,105,.10) !important;
-  }
-  html body.slk-ui #send_form #nonQRFormItems {
-    display:grid !important;
-    grid-template-columns:minmax(0,1fr) auto !important;
-    grid-template-rows:minmax(64px,auto) 43px !important;
-    gap:0 !important;
-    width:100% !important;
-    min-height:116px !important;
-    box-sizing:border-box !important;
-    background:#FFFFFF !important;
-    border-radius:12px !important;
-  }
-  html body.slk-ui #send_form #send_textarea {
-    grid-column:1 / -1 !important;
-    grid-row:1 !important;
-    width:100% !important;
-    max-width:100% !important;
-    min-height:61px !important;
-    max-height:220px !important;
-    margin:0 !important;
-    padding:16px 18px 8px !important;
-    box-sizing:border-box !important;
-    background:transparent !important;
-    border:0 !important;
-    border-radius:12px 12px 0 0 !important;
-    box-shadow:none !important;
-    outline:none !important;
-    resize:vertical !important;
-    color:#1D1C1D !important;
-    font:450 14px/1.55 var(--slk-font) !important;
-    text-align:left !important;
-  }
-  html body.slk-ui #send_form #send_textarea::placeholder {color:#89818B !important;opacity:1 !important;}
-  html body.slk-ui #send_form #leftSendForm,
-  html body.slk-ui #send_form #rightSendForm {
-    display:flex !important;
-    align-items:center !important;
-    justify-content:flex-start !important;
-    gap:5px !important;
-    min-width:0 !important;
-    max-width:100% !important;
-    height:43px !important;
-    margin:0 !important;
-    padding:0 12px !important;
-    background:#FBFAFB !important;
-    border:0 !important;
-    border-top:1px solid #F0EDF1 !important;
-  }
-  html body.slk-ui #send_form #leftSendForm {grid-column:1 !important;grid-row:2 !important;border-radius:0 0 0 12px !important;}
-  html body.slk-ui #send_form #rightSendForm {grid-column:2 !important;grid-row:2 !important;justify-content:flex-end !important;border-radius:0 0 12px 0 !important;}
-  html body.slk-ui #send_form :is(#options_button,#extensionsMenuButton,#ai_retry_button,#auto_completion_button,#send_but,#mes_stop,#mes_continue,#mes_impersonate,.stscript_btn) {
-    align-items:center !important;
-    justify-content:center !important;
-    box-sizing:border-box !important;
-    flex:0 0 32px !important;
-    width:32px !important;
-    min-width:32px !important;
-    height:32px !important;
-    min-height:32px !important;
-    padding:0 !important;
-    margin:0 !important;
-    background:transparent !important;
-    border:0 !important;
-    border-radius:8px !important;
-    box-shadow:none !important;
-    color:#6D6470 !important;
-    font-size:16px !important;
-    cursor:pointer !important;
-  }
-  html body.slk-ui #send_form :is(#options_button,#extensionsMenuButton,#ai_retry_button,#auto_completion_button,#send_but,#mes_stop,#mes_continue,#mes_impersonate,.stscript_btn):hover {background:#EFEAF1 !important;color:#4A154B !important;}
-  html body.slk-ui #send_form #send_but:not(.displayNone) {color:#FFFFFF !important;background:#4A154B !important;}
-  html body.slk-ui #send_form #send_but:not(.displayNone):hover {background:#612465 !important;}
-  html body.slk-ui #send_form .displayNone {display:none !important;}
-  html body.slk-ui #send_form :is(.fa-solid,.fa-regular,.fa-brands) {font-family:'Font Awesome 6 Free','Font Awesome 5 Free' !important;}
-  html body.slk-ui #send_form .fa-brands {font-family:'Font Awesome 6 Brands','Font Awesome 5 Brands' !important;}
-
-  html body.slk-ui #slk-pc-channel-heading {height:60px !important;padding-left:clamp(24px,3vw,52px) !important;}
-}
-@media screen and (min-width:1001px) and (max-width:1280px) {
-  html body.slk-ui {--slk-pc-detail:320px;}
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) {padding-left:12px !important;padding-right:12px !important;}
-  html body.slk-ui #chat .welcomePanel .recentChat .chatDate {font-size:10px !important;}
-}
 /* Addendum: native icon-only menu controls and in-panel tab bars. */
-@media screen and (min-width:1001px) {
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(.menu_button.fa-solid,.menu_button.fa-regular,.right_menu_button.fa-solid,.right_menu_button.fa-regular,.menu_button_icon.fa-solid) {
-    box-sizing:border-box !important;
-    display:inline-grid !important;
-    place-items:center !important;
-    width:33px !important;
-    height:33px !important;
-    min-height:33px !important;
-    min-width:33px !important;
-    padding:0 !important;
-    margin:0 !important;
-    background:#FFFFFF !important;
-    border:1px solid #DDD6DF !important;
-    border-radius:9px !important;
-    box-shadow:none !important;
-    color:#655C66 !important;
-    font-size:14px !important;
-    text-shadow:none !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(.menu_button.fa-solid,.menu_button.fa-regular,.right_menu_button.fa-solid,.right_menu_button.fa-regular,.menu_button_icon.fa-solid):hover {
-    background:#EEE8F1 !important;
-    color:#4A154B !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(.nav-tabs,.tabs,.flex-container:has(> .slk-aitab)) {
-    max-width:100% !important;
-    min-width:0 !important;
-    display:flex !important;
-    flex-wrap:wrap !important;
-    gap:5px !important;
-    padding:6px 0 !important;
-    border-bottom:1px solid #E7E3E9 !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(.slk-aitab,.nav-link,[role="tab"]) {
-    min-height:32px !important;
-    padding:6px 9px !important;
-    background:transparent !important;
-    color:#67606A !important;
-    border:0 !important;
-    border-radius:7px !important;
-    font:650 12px/1.4 var(--slk-font) !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) :is(.slk-aitab.active,.slk-aitab[aria-selected="true"],.nav-link.active,[role="tab"][aria-selected="true"]) {
-    background:#EEE6F0 !important;
-    color:#4A154B !important;
-  }
-  html body.slk-ui :is(#left-nav-panel,#right-nav-panel,#top-settings-holder .drawer-content) .slk-preference-section {
-    max-width:100% !important;
-    min-width:0 !important;
-  }
+
+
+/* =====================================================================
+   v1.6.0 — PC 슬랙 레이아웃 (1001px 이상)
+   [위 막대: 검색] / [왼쪽 레일: 로고·메뉴 9개] [패널 400px] [채널(채팅)]
+   패널 안 디자인은 모바일 디자인을 그대로 씀 (패널 폭이 모바일과 비슷)
+   ===================================================================== */
+@media screen and (min-width: 1001px) {
+    html body.slk-ui.slk-pc {
+        --pc-top: 44px;
+        --pc-rail: 76px;
+        --pc-panel: 400px;
+        --pc-gap: 8px;
+        --pc-head: 50px;
+        --pc-main-left: var(--pc-rail);
+        --slk-top-h: 0px;
+        --slk-footer-h: 0px;
+        background: #3F0E40 !important;
+        background-image: none !important;
+        overflow: hidden !important;
+    }
+    html body.slk-ui.slk-pc.slk-pc-panel-open {
+        --pc-main-left: calc(var(--pc-rail) + var(--pc-panel));
+    }
+    html:has(body.slk-ui.slk-pc) { background: #3F0E40 !important; }
+    html body.slk-ui.slk-pc :is(#bg1, #bg_custom) { display: none !important; }
+    html:has(body.slk-ui.slk-pc) #slk-mobile-footer,
+    html body.slk-ui.slk-pc #slk-settings-menu,
+    html body.slk-ui.slk-pc #top-bar,
+    html body.slk-ui.slk-pc #top-settings-holder > .drawer > .drawer-toggle {
+        display: none !important;
+    }
+
+    /* ---------- 위 막대 ---------- */
+    html body.slk-ui.slk-pc #slk-header {
+        position: fixed !important;
+        top: 0 !important; left: 0 !important; right: 0 !important;
+        height: var(--pc-top) !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #350D36 !important;
+        background-image: none !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+        z-index: 60 !important;
+    }
+    html body.slk-ui.slk-pc #slk-header > * { display: none !important; }
+    html body.slk-ui.slk-pc #slk-pc-search {
+        position: fixed;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 61;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: min(720px, calc(100vw - 420px));
+        height: 28px;
+        margin: 0;
+        padding: 0 12px;
+        border: 1px solid rgba(255, 255, 255, .22);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, .16);
+        color: rgba(255, 255, 255, .85);
+        font: 400 13px/1 var(--slk-font, sans-serif);
+        cursor: pointer;
+        box-shadow: none;
+    }
+    html body.slk-ui.slk-pc #slk-pc-search:hover { background: rgba(255, 255, 255, .24); }
+    html body.slk-ui.slk-pc #slk-pc-search[hidden] { display: none; }
+
+    /* ---------- 왼쪽 레일 ---------- */
+    html body.slk-ui.slk-pc #slk-pc-rail {
+        position: fixed;
+        top: var(--pc-top);
+        left: 0;
+        bottom: 0;
+        width: var(--pc-rail);
+        z-index: 55;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 0 14px;
+        box-sizing: border-box;
+        background: #3F0E40;
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+    html body.slk-ui.slk-pc #slk-pc-rail[hidden] { display: none; }
+    html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-ws {
+        width: 40px;
+        height: 40px;
+        margin: 0 0 10px;
+        padding: 0;
+        border: 0;
+        border-radius: 10px;
+        background: #FFFFFF;
+        overflow: hidden;
+        cursor: pointer;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, .0);
+        flex: 0 0 auto;
+    }
+    html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-ws img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-items {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+    html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-spacer { flex: 1 1 auto; min-height: 12px; }
+    html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        width: 64px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: #FFFFFF;
+        cursor: pointer;
+        box-shadow: none;
+    }
+    html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-item-icon {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        color: rgba(255, 255, 255, .9);
+        transition: background-color .12s;
+    }
+    html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-item-icon svg { width: 20px; height: 20px; }
+    html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-item-label {
+        font: 600 11px/1.2 var(--slk-font, sans-serif);
+        color: rgba(255, 255, 255, .9);
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+    }
+    html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-item:hover .slk-pc-item-icon { background: rgba(255, 255, 255, .14); }
+    html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-item.active .slk-pc-item-icon {
+        background: rgba(255, 255, 255, .24);
+        color: #FFFFFF;
+    }
+    html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-item.active .slk-pc-item-label { color: #FFFFFF; font-weight: 800; }
+
+    /* ---------- 패널(사이드바) 칸 ---------- */
+    html body.slk-ui.slk-pc #slk-pc-panel-heading {
+        position: fixed;
+        top: var(--pc-top);
+        left: var(--pc-rail);
+        width: var(--pc-panel);
+        height: var(--pc-head);
+        z-index: 52;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 12px 0 20px;
+        box-sizing: border-box;
+        background: #FFFFFF;
+        border-radius: 8px 0 0 0;
+        border-bottom: 1px solid #E8E8E8;
+        border-right: 1px solid #E8E8E8;
+    }
+    html body.slk-ui.slk-pc #slk-pc-panel-heading[aria-hidden="true"] { display: none; }
+    html body.slk-ui.slk-pc #slk-pc-panel-title {
+        margin: 0;
+        color: #1D1C1D;
+        font: 900 18px/1.2 var(--slk-font, sans-serif);
+        letter-spacing: -0.02em;
+    }
+    html body.slk-ui.slk-pc #slk-pc-panel-close {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: #616061;
+        cursor: pointer;
+    }
+    html body.slk-ui.slk-pc #slk-pc-panel-close:hover { background: #F2F2F2; }
+
+    html body.slk-ui.slk-pc :is(#top-settings-holder > .drawer > .drawer-content, #left-nav-panel, #right-nav-panel).openDrawer {
+        position: fixed !important;
+        top: calc(var(--pc-top) + var(--pc-head)) !important;
+        left: var(--pc-rail) !important;
+        right: auto !important;
+        bottom: var(--pc-gap) !important;
+        width: var(--pc-panel) !important;
+        min-width: 0 !important;
+        max-width: var(--pc-panel) !important;
+        height: auto !important;
+        max-height: none !important;
+        margin: 0 !important;
+        transform: none !important;
+        border: 0 !important;
+        border-right: 1px solid #E8E8E8 !important;
+        border-radius: 0 0 0 8px !important;
+        background: #FFFFFF !important;
+        box-shadow: none !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        z-index: 51 !important;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    html body.slk-ui.slk-pc :is(#top-settings-holder > .drawer > .drawer-content, #left-nav-panel, #right-nav-panel):not(.openDrawer) {
+        display: none !important;
+    }
+
+    /* ---------- 채널(채팅) 칸 ---------- */
+    html body.slk-ui.slk-pc #slk-pc-channel-heading {
+        position: fixed;
+        top: var(--pc-top);
+        left: var(--pc-main-left);
+        right: var(--pc-gap);
+        height: var(--pc-head);
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 20px;
+        box-sizing: border-box;
+        background: #FFFFFF;
+        border-radius: 8px 8px 0 0;
+        border-bottom: 1px solid #E8E8E8;
+        color: #1D1C1D;
+        font: 900 18px/1.2 var(--slk-font, sans-serif);
+        letter-spacing: -0.02em;
+    }
+    html body.slk-ui.slk-pc.slk-pc-panel-open #slk-pc-channel-heading { border-top-left-radius: 0; }
+    html body.slk-ui.slk-pc #slk-pc-channel-heading[aria-hidden="true"] { display: none; }
+    html body.slk-ui.slk-pc #slk-pc-channel-heading .slk-pc-channel-symbol {
+        color: #616061;
+        font-weight: 400;
+    }
+
+    html body.slk-ui.slk-pc #sheld {
+        position: fixed !important;
+        top: calc(var(--pc-top) + var(--pc-head)) !important;
+        left: var(--pc-main-left) !important;
+        right: var(--pc-gap) !important;
+        bottom: var(--pc-gap) !important;
+        width: auto !important;
+        max-width: none !important;
+        height: auto !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        background: #FFFFFF !important;
+        border: 0 !important;
+        border-radius: 0 0 8px 8px !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+        transform: none !important;
+        z-index: 40 !important;
+    }
+    html body.slk-ui.slk-pc.slk-pc-panel-open #sheld { border-bottom-left-radius: 0 !important; }
+    html body.slk-ui.slk-pc #chat {
+        position: relative !important;
+        inset: auto !important;
+        flex: 1 1 auto !important;
+        height: auto !important;
+        max-height: none !important;
+        min-height: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 8px 0 16px !important;
+        overflow-y: auto !important;
+        background: #FFFFFF !important;
+    }
+    html body.slk-ui.slk-pc #chat .mes {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+    html body.slk-ui.slk-pc #chat .mes:hover { background: #F8F8F8 !important; }
+
+    /* 입력창: 채널 아래 고정 (모바일의 떠 있는 유리 입력창 대신) */
+    html body.slk-ui.slk-pc #form_sheld {
+        position: relative !important;
+        inset: auto !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        margin: 0 20px 20px !important;
+        padding: 0 !important;
+        background: transparent !important;
+        transform: none !important;
+        z-index: 2 !important;
+    }
 }
+@media screen and (min-width: 1001px) {
+    /* 원래 아래 탭바로 쓰던 #top-settings-holder: 보이지 않게, 안의 패널 위치를 가두지 않게 */
+    html body.slk-ui.slk-pc #top-settings-holder {
+        position: fixed !important;
+        inset: auto !important;
+        top: 0 !important; left: 0 !important;
+        width: 0 !important; height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important; padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        transform: none !important;
+        filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+        contain: none !important;
+        overflow: visible !important;
+        z-index: 51 !important;
+    }
+    html body.slk-ui.slk-pc #top-settings-holder::before,
+    html body.slk-ui.slk-pc #top-settings-holder::after { content: none !important; display: none !important; }
+    html body.slk-ui.slk-pc #top-settings-holder > .drawer {
+        position: static !important;
+        transform: none !important;
+        filter: none !important;
+    }
+    html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-items { gap: 2px; }
+}
+@media screen and (min-width: 1001px) {
+    html body.slk-ui.slk-pc #slk-panel-back,
+    html body.slk-ui.slk-pc #slk-chat-head,
+    html body.slk-ui.slk-pc #slk-pc-panel-heading { display: none !important; }
+    /* 패널은 제목 막대 없이 맨 위부터 (패널 안에 자기 제목이 있음) */
+    html body.slk-ui.slk-pc :is(#top-settings-holder > .drawer > .drawer-content, #left-nav-panel, #right-nav-panel).openDrawer {
+        top: var(--pc-top) !important;
+        border-radius: 8px 0 0 8px !important;
+        padding-top: 4px !important;
+    }
+}
+@media screen and (min-width: 1001px) {
+    /* 슬랙 데스크톱 입력창: 둥근 네모 테두리, 위 입력칸 + 아래 도구 줄 */
+    html body.slk-ui.slk-pc #form_sheld #send_form {
+        border: 1px solid #BBBBBB !important;
+        border-radius: 8px !important;
+        background: #FFFFFF !important;
+        box-shadow: none !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+    }
+    html body.slk-ui.slk-pc #form_sheld #send_form:focus-within {
+        border-color: #868686 !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .08) !important;
+    }
+    html body.slk-ui.slk-pc #form_sheld #send_form #send_textarea {
+        min-height: 44px !important;
+        max-height: 40vh !important;
+        font-size: 15px !important;
+    }
+}
+@media screen and (min-width: 1001px) {
+    html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c) #slk-header > *,
+    html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c) #slk-panel-back,
+    html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c) #slk-chat-head {
+        display: none !important;
+    }
+    html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c) #slk-header {
+        height: var(--pc-top) !important;
+        background: #350D36 !important;
+        border-radius: 0 !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+}
+@media screen and (min-width: 1001px) {
+    html body.slk-ui.slk-pc :is(#top-settings-holder > .drawer > .drawer-content, #left-nav-panel, #right-nav-panel).openDrawer {
+        padding-top: 12px !important;
+    }
+    /* 알림: 위 막대 바로 아래 오른쪽 */
+    html:has(body.slk-ui.slk-pc) #toast-container {
+        top: calc(44px + 12px) !important;
+        left: auto !important;
+        right: 20px !important;
+        transform: none !important;
+        width: 360px !important;
+    }
+}
+@media screen and (min-width: 1001px) and (max-width: 1199px) {
+    html body.slk-ui.slk-pc { --pc-panel: 360px; }
+    html body.slk-ui.slk-pc #slk-pc-search { width: min(520px, calc(100vw - 300px)); }
+}
+:root { --slk-css-version: '1.6.0'; }

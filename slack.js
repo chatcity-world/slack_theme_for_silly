@@ -822,7 +822,7 @@ function setupPersonaAccordion() {
     if (!panel || !block || !list || !editor || panel.dataset.slkAccordion) return;
     panel.dataset.slkAccordion = '1';
 
-    const mq = window.matchMedia('(max-width: 1000px)');
+    const mq = window.matchMedia('(min-width: 0px)');
     const slot = document.createElement('div');
     slot.className = 'slk-persona-slot';
     let collapsed = false;
@@ -965,13 +965,15 @@ function setupComposer() {
     const updateDisplay = () => {
         // 프로그램에서 입력 내용이 바뀌거나 번역/생성 중이어도 확장을 유지하지 않음.
         const focused = document.activeElement === ta;
-        const open = focused && !keyboardDismissed && (keyboardVisible || pendingFocus);
+        // PC: 슬랙 데스크톱처럼 입력창은 항상 펼친 모양(입력칸 + 아래 도구 줄)
+        const pc = window.matchMedia('(min-width: 1001px)').matches && SLK_UI_SETTINGS.enabled;
+        const open = pc || (focused && !keyboardDismissed && (keyboardVisible || pendingFocus));
         const content = ta.value;
         const firstLine = content.split(/\r\n|\n|\r/, 1)[0];
         preview.textContent = firstLine + (/[\r\n]/.test(content) ? '…' : '');
         form.classList.toggle('slk-compose-open', open);
         form.classList.toggle('slk-compose-previewing', !open && content.length > 0);
-        document.body.classList.toggle('slk-composing', open);
+        document.body.classList.toggle('slk-composing', open && !pc);
     };
 
     const syncHeight = () => {
@@ -1035,6 +1037,7 @@ function setupComposer() {
         if (document.activeElement === ta && !e.target.closest('#send_textarea')) e.preventDefault();
     });
     form.addEventListener('click', () => requestAnimationFrame(syncHeight));
+    window.matchMedia('(min-width: 1001px)').addEventListener?.('change', updateDisplay);
     updateDisplay();
     setupMenuSwitch();
 }
@@ -1327,7 +1330,7 @@ function setupExtensionNeutralColors() {
     const panel = document.getElementById('rm_extensions_block');
     if (!panel || panel.dataset.slkBlueNeutralizer) return;
     panel.dataset.slkBlueNeutralizer = '1';
-    const mq = window.matchMedia('(max-width: 1000px)');
+    const mq = window.matchMedia('(min-width: 0px)');
     const isLightBlue = (raw) => {
         if (!raw || raw === 'none' || raw === 'currentcolor') return false;
         const m = raw.match(/^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
@@ -1685,7 +1688,7 @@ else init();
     let queued = false;
     let syncing = false;
     const isMobileSlack = () => document.body?.classList.contains('slk-ui') &&
-        matchMedia('(max-width: 1000px)').matches;
+        matchMedia('(min-width: 0px)').matches;
 
     function sync() {
         if (syncing || !document.body) return;
@@ -1762,7 +1765,7 @@ else init();
 // v1.4.35 — fix only the active-world selector in the Lorebook panel.
 // Keep its title INSIDE its own bordered control (never in a separate column).
 (function slkContainActiveWorldPicker() {
-    const query = '(max-width: 1200px)';
+    const query = '(min-width: 0px)';
     let observedPicker = null;
     let pickerObserver = null;
     const overridden = new Map();
@@ -2279,7 +2282,7 @@ else init();
 (function slkBootSplashCss() {
     const START = '/* ==== Slack UI 시작 화면 (자동 추가 — 지우지 마세요) ==== */';
     const END = '/* ==== /Slack UI 시작 화면 ==== */';
-    const BOOT_CSS = "@media screen and (max-width: 1000px) { #preloader { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: #4A154B !important; box-shadow: none !important; outline: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo))::backdrop { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content) { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; overflow: hidden !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) .popup-controls { display: none !important; } #loader { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 28px !important; width: 100% !important; height: 100% !important; background: transparent !important; color: #FFFFFF !important; } #loader::before { content: 'Slack'; order: 1; margin: -10px 0 0; color: #FFFFFF; font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -0.02em; } #loader .splash-logo { order: 0; width: 96px !important; height: 96px !important; object-fit: cover !important; border-radius: 24px !important; filter: none !important; box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important; } #loader #load-spinner, #preloader #load-spinner { order: 2; position: static !important; width: 28px !important; height: 28px !important; margin-top: 18px; font-size: 0 !important; color: transparent !important; border: 3px solid rgba(255, 255, 255, .25) !important; border-top-color: #FFFFFF !important; border-radius: 50% !important; box-sizing: border-box !important; animation: slk-boot-spin .8s linear infinite !important; } #loader #load-spinner::before { content: none !important; display: none !important; } #loader .splash-message { order: 3; margin: -12px 0 0 !important; color: rgba(255, 255, 255, .82) !important; font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important; font-size: 15px !important; font-weight: 600 !important; text-shadow: none !important; } } @keyframes slk-boot-spin { to { transform: rotate(360deg); } } @media screen and (max-width: 1000px) { dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) * { border-color: transparent !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content, #loader, .splash-screen) { background: transparent !important; border: 0 !important; box-shadow: none !important; outline: none !important; } }";
+    const BOOT_CSS = "@media screen { #preloader { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: #4A154B !important; box-shadow: none !important; outline: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo))::backdrop { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content) { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; overflow: hidden !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) .popup-controls { display: none !important; } #loader { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 28px !important; width: 100% !important; height: 100% !important; background: transparent !important; color: #FFFFFF !important; } #loader::before { content: 'Slack'; order: 1; margin: -10px 0 0; color: #FFFFFF; font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -0.02em; } #loader .splash-logo { order: 0; width: 96px !important; height: 96px !important; object-fit: cover !important; border-radius: 24px !important; filter: none !important; box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important; } #loader #load-spinner, #preloader #load-spinner { order: 2; position: static !important; width: 28px !important; height: 28px !important; margin-top: 18px; font-size: 0 !important; color: transparent !important; border: 3px solid rgba(255, 255, 255, .25) !important; border-top-color: #FFFFFF !important; border-radius: 50% !important; box-sizing: border-box !important; animation: slk-boot-spin .8s linear infinite !important; } #loader #load-spinner::before { content: none !important; display: none !important; } #loader .splash-message { order: 3; margin: -12px 0 0 !important; color: rgba(255, 255, 255, .82) !important; font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important; font-size: 15px !important; font-weight: 600 !important; text-shadow: none !important; } } @keyframes slk-boot-spin { to { transform: rotate(360deg); } } @media screen { dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) * { border-color: transparent !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content, #loader, .splash-screen) { background: transparent !important; border: 0 !important; box-shadow: none !important; outline: none !important; } }";
     const buildBlock = () => {
         // custom_css is loaded by SillyTavern before extensions: this also matches the chosen
         // logo on the *next initial loading screen*, before slack.js is evaluated.
@@ -2357,7 +2360,7 @@ else init();
 (function slkUnifiedMessageActions() {
     const states = new WeakMap();
     const mobile = () => document.body.classList.contains('slk-ui') &&
-        window.matchMedia('(max-width: 1000px)').matches;
+        window.matchMedia('(min-width: 0px)').matches;
 
     function isOpen(extra) {
         if (document.body.classList.contains('expandMessageActions')) return true;
@@ -2598,7 +2601,7 @@ else init();
 // The original elements are moved, NOT cloned; SillyTavern handlers survive.
 (function slkGroupNativeSwipeControls() {
     const isEnabled = () => document.body.classList.contains('slk-ui') &&
-        window.matchMedia('(max-width: 1000px)').matches;
+        window.matchMedia('(min-width: 0px)').matches;
 
     const sync = () => {
         const enabled = isEnabled();
@@ -2661,7 +2664,7 @@ else init();
         const account = panel?.querySelector('#account_controls');
         if (!row || !search || !account) return;
         if (!document.body.classList.contains('slk-ui') ||
-            !window.matchMedia('(max-width: 1000px)').matches) return;
+            !window.matchMedia('(min-width: 0px)').matches) return;
         const langRect = row.getBoundingClientRect();
         const searchRect = search.getBoundingClientRect();
         const accountRect = account.getBoundingClientRect();
@@ -2714,7 +2717,7 @@ else init();
     function sync() {
         scheduled = false;
         if (!document.body.classList.contains('slk-ui') ||
-            !window.matchMedia('(max-width: 1000px)').matches) return;
+            !window.matchMedia('(min-width: 0px)').matches) return;
         const popup = document.getElementById('select_chat_popup');
         const panel = popup?.querySelector('.chatBackupsList');
         const trigger = popup?.querySelector('[name="selectChatPopupHeader"] button.menu_button:has(.fa-box-open)');
@@ -2831,6 +2834,7 @@ else init();
             document.getElementById('rm_print_characters_block')?.dispatchEvent(new Event('scroll'));
         }
         syncContext();
+        window.dispatchEvent(new CustomEvent('slk-pc-active', { detail: active }));
     }
 
     function toggle(selector) {
@@ -2908,4 +2912,86 @@ else init();
     new MutationObserver(triggerRefresh).observe(document.body, { attributes: true, attributeFilter: ['class'] });
     document.getElementById('slk-chat-head') &&
         new MutationObserver(triggerRefresh).observe(document.getElementById('slk-chat-head'), { subtree: true, childList: true, characterData: true });
+})();
+
+
+// v1.6.0 — PC(데스크톱) 슬랙 레이아웃
+// 왼쪽 레일: 워크스페이스 로고 + 7개 메뉴 + (아래) 사용자 설정·배경
+// 위 막대: 가운데 검색창 (누르면 캐릭터 목록 검색으로 이동)
+(function mountSlackPcChrome() {
+    const desktop = window.matchMedia('(min-width: 1001px)');
+    const ITEMS = [
+        ...TABS.map(([selector, icon, label]) => ({ selector, icon: ICONS[icon], label })),
+    ];
+    const SHORT = { '프롬프트': '프롬프트', '연결': '연결', '고급 서식': '서식', '로어북': '로어북', '확장': '확장', '페르소나': '페르소나', '캐릭터': '캐릭터' };
+    const BOTTOM = [
+        { selector: DRAWERS.userSettings, icon: ICONS.userSettings, label: '설정' },
+        { selector: DRAWERS.backgrounds, icon: ICONS.backgrounds, label: '배경' },
+    ];
+    const SEARCH_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+    let rail = null, search = null;
+
+    const nav = () => window.__slkDesktopRailNavigation;
+    const btn = ({ selector, icon, label }) =>
+        `<button type="button" class="slk-pc-item" data-drawer="${selector}" title="${label}" aria-label="${label}">` +
+        `<span class="slk-pc-item-icon">${icon}</span><span class="slk-pc-item-label">${SHORT[label] || label}</span></button>`;
+
+    function build() {
+        if (!document.body) return;
+        if (!rail) {
+            rail = document.createElement('nav');
+            rail.id = 'slk-pc-rail';
+            rail.setAttribute('aria-label', '워크스페이스 메뉴');
+            rail.innerHTML =
+                `<button type="button" class="slk-pc-ws" title="최근 채팅"><img alt="" src="${slkSelectedLogoUrl()}"></button>` +
+                `<div class="slk-pc-items">${ITEMS.map(btn).join('')}</div>` +
+                `<div class="slk-pc-spacer"></div>` +
+                `<div class="slk-pc-items slk-pc-bottom">${BOTTOM.map(btn).join('')}</div>`;
+            document.body.appendChild(rail);
+            for (const type of ['touchstart', 'mousedown']) rail.addEventListener(type, e => e.stopPropagation());
+            rail.addEventListener('click', (e) => {
+                const item = e.target.closest('.slk-pc-item');
+                if (item) { e.preventDefault(); nav()?.toggle(item.dataset.drawer); return; }
+                if (e.target.closest('.slk-pc-ws')) nav()?.close();
+            });
+        }
+        if (!search) {
+            search = document.createElement('button');
+            search.type = 'button';
+            search.id = 'slk-pc-search';
+            search.innerHTML = `${SEARCH_SVG}<span>캐릭터 검색</span>`;
+            document.body.appendChild(search);
+            for (const type of ['touchstart', 'mousedown']) search.addEventListener(type, e => e.stopPropagation());
+            search.addEventListener('click', () => {
+                if (nav()?.getCurrent() !== DRAWERS.character) nav()?.toggle(DRAWERS.character);
+                // 캐릭터 목록 화면으로 + 검색칸 열기
+                setTimeout(() => {
+                    const back = document.getElementById('rm_button_characters');
+                    if (back && getComputedStyle(document.getElementById('rm_characters_block') || back).display === 'none') back.click();
+                    const bar = document.getElementById('character_search_bar');
+                    const toggle = document.getElementById('rm_button_search');
+                    if (bar && getComputedStyle(bar).display === 'none' && toggle) toggle.click();
+                    setTimeout(() => document.getElementById('character_search_bar')?.focus(), 60);
+                }, 60);
+            });
+        }
+        const img = rail.querySelector('.slk-pc-ws img');
+        const src = slkSelectedLogoUrl();
+        if (img && img.getAttribute('src') !== src) img.src = src;
+        const on = desktop.matches && SLK_UI_SETTINGS.enabled;
+        document.body.classList.toggle('slk-pc', on);
+        rail.hidden = !on;
+        search.hidden = !on;
+        mark(nav()?.getCurrent?.() ?? null);
+    }
+
+    function mark(active) {
+        rail?.querySelectorAll('.slk-pc-item').forEach(b => b.classList.toggle('active', b.dataset.drawer === active));
+    }
+
+    window.addEventListener('slk-pc-active', e => mark(e.detail));
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build, { once: true });
+    else build();
+    desktop.addEventListener?.('change', build);
+    window.addEventListener('slk-ui-settings-changed', build);
 })();
