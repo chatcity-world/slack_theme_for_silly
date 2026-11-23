@@ -2338,3 +2338,58 @@ else init();
     const tick = () => { if (!add()) setTimeout(tick, 1000); };
     tick();
 })();
+
+
+// v1.4.79 — Keep the original swipe controls in ONE parent, avoiding
+// competing absolute/grid positioning of .swipe_left versus .swipeRightBlock.
+// The original elements are moved, NOT cloned; SillyTavern handlers survive.
+(function slkGroupNativeSwipeControls() {
+    const isEnabled = () => document.body.classList.contains('slk-ui') &&
+        window.matchMedia('(max-width: 1000px)').matches;
+
+    const sync = () => {
+        const enabled = isEnabled();
+        document.querySelectorAll('#chat .mes').forEach(mes => {
+            const mesBlock = mes.querySelector(':scope > .mes_block');
+            const holder = mesBlock?.querySelector(':scope > .swipeRightBlock');
+            if (!mesBlock || !holder) return;
+            const left = mes.querySelector(':scope > .swipe_left') ||
+                holder.querySelector(':scope > .swipe_left');
+            const counter = holder.querySelector(':scope > .swipes-counter');
+            const right = holder.querySelector(':scope > .swipe_right');
+            if (!left || !counter || !right) return;
+
+            if (enabled) {
+                // Three original nodes in a stable, direct flex row.
+                if (holder.firstElementChild !== left) holder.insertBefore(left, holder.firstElementChild);
+                if (left.nextElementSibling !== counter) holder.insertBefore(counter, left.nextSibling);
+                if (counter.nextElementSibling !== right) holder.insertBefore(right, counter.nextSibling);
+                if (!holder.classList.contains('slk-swipe-inline')) holder.classList.add('slk-swipe-inline');
+            } else if (holder.classList.contains('slk-swipe-inline')) {
+                // Restore native structure when Slack UI is disabled or on desktop.
+                mes.insertBefore(left, mesBlock);
+                if (right.nextElementSibling !== counter) holder.insertBefore(right, counter);
+                holder.classList.remove('slk-swipe-inline');
+            }
+        });
+    };
+
+    let timer = null;
+    const schedule = () => {
+        if (timer !== null) return;
+        timer = setTimeout(() => { timer = null; sync(); }, 50);
+    };
+    const start = () => {
+        const chat = document.getElementById('chat');
+        if (!chat) { setTimeout(start, 500); return; }
+        sync();
+        new MutationObserver(schedule).observe(chat, {
+            childList: true, subtree: true, attributes: true,
+            attributeFilter: ['class'],
+        });
+        window.addEventListener('slk-ui-settings-changed', schedule);
+        window.addEventListener('resize', schedule);
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();
