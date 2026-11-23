@@ -2151,6 +2151,20 @@ else init();
         if (first) dest.insertBefore(el, dest.firstChild);
         else dest.appendChild(el);
     }
+    // Remember the actual two header track heights while the ⋯ menu is closed.
+    // The visible message title/timestamp vary by message, so a hardcoded
+    // header height would make some menus jump when expanded.
+    function rememberClosedHeaderRows(mes) {
+        if (mes.classList.contains('slk-mes-expanded')) return;
+        const computed = getComputedStyle(mes).gridTemplateRows;
+        const tracks = [...computed.matchAll(/(?:^|\s)(\d+(?:\.\d+)?)px(?=\s|$)/g)]
+            .slice(0, 2).map(match => match[1] + 'px');
+        if (tracks.length !== 2) return;
+        const value = tracks.join(' ');
+        if (mes.style.getPropertyValue('--slk-actions-closed-rows') !== value) {
+            mes.style.setProperty('--slk-actions-closed-rows', value);
+        }
+    }
     function sync(mes) {
         const box = mes.querySelector(':scope > .mes_block > .ch_name > .mes_buttons');
         const extra = box?.querySelector(':scope > .extraMesButtons');
@@ -2167,6 +2181,7 @@ else init();
             }
             if (mes.classList.contains('slk-mes-expanded')) mes.classList.remove('slk-mes-expanded');
             if (mes.hasAttribute('data-slk-actions-flow')) mes.removeAttribute('data-slk-actions-flow');
+            rememberClosedHeaderRows(mes);
             return;
         }
         states.set(mes, state);
