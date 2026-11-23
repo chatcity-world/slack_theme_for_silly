@@ -12,16 +12,15 @@ const SLK_UI_SETTINGS = (() => {
         return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
     };
     const color = read('slk-ui-dialogue-color', '').trim();
-    const headerImageMode = read('slk-ui-header-image-mode', 'default');
-    const headerImageData = read('slk-ui-header-image-data', '');
+    const headerImageMode = read('slk-ui-header-image-mode', 'slack');
     return {
         enabled: read('slk-ui-enabled', 'true') !== 'false',
         theme: read('slk-ui-theme', 'light') === 'dark' ? 'dark' : 'light',
         fontSize: Math.round(clamp(read('slk-ui-font-size', '15'), 15, 11, 26)),
         lineHeight: Math.round(clamp(read('slk-ui-line-height', '1.6'), 1.6, 1.2, 2.4) * 10) / 10,
+        letterSpacing: Math.round(clamp(read('slk-ui-letter-spacing', '0'), 0, -1.5, 3) * 10) / 10,
         dialogueColor: /^#[0-9a-f]{6}$/i.test(color) ? color.toUpperCase() : '',
-        headerImageMode: ['default', 'slack', 'custom'].includes(headerImageMode) ? headerImageMode : 'default',
-        headerImageData: /^data:image\/(?:png|jpe?g|webp|gif);base64,/i.test(headerImageData) ? headerImageData : '',
+        headerImageMode: headerImageMode === 'custom' ? 'custom' : 'slack',
     };
 })();
 
@@ -35,9 +34,9 @@ function slkApplyHeaderImage() {
     const image = avatar?.querySelector('img');
     if (!image) return;
     const mode = SLK_UI_SETTINGS.headerImageMode;
-    const src = mode === 'slack' ? SLK_SLACK_HEADER_IMAGE
-        : mode === 'custom' && SLK_UI_SETTINGS.headerImageData ? SLK_UI_SETTINGS.headerImageData
-        : SLK_DEFAULT_HEADER_IMAGE;
+    const src = mode === 'custom'
+        ? SLK_DEFAULT_HEADER_IMAGE
+        : SLK_SLACK_HEADER_IMAGE;
     if (image.getAttribute('src') !== src) image.src = src;
     avatar.classList.add('has-img');
 }
@@ -47,6 +46,7 @@ function applySlackUiSettings() {
     document.body.classList.toggle('slk-dark', SLK_UI_SETTINGS.enabled && SLK_UI_SETTINGS.theme === 'dark');
     document.body.style.setProperty('--slk-chat-font-size', `${SLK_UI_SETTINGS.fontSize}px`);
     document.body.style.setProperty('--slk-chat-line-height', String(SLK_UI_SETTINGS.lineHeight));
+    document.body.style.setProperty('--slk-chat-letter-spacing-adjust', `${SLK_UI_SETTINGS.letterSpacing}px`);
     document.body.classList.toggle('slk-dialogue-custom', Boolean(SLK_UI_SETTINGS.dialogueColor));
     if (SLK_UI_SETTINGS.dialogueColor) document.body.style.setProperty('--slk-dialogue-bg', SLK_UI_SETTINGS.dialogueColor);
     else document.body.style.removeProperty('--slk-dialogue-bg');
@@ -117,6 +117,18 @@ function buildSlackUiExtensionSettings() {
                             <button type="button" id="slk-line-height-reset" class="slk-preference-button slk-pref-reset" aria-label="줄간격 초기화">초기화</button>
                         </div>
                     </div>
+                    <div class="slk-settings-row">
+                        <label for="slk-letter-spacing-value">자간</label>
+                        <div class="slk-preference-controls">
+                            <div class="slk-stepper" data-pref="letterSpacing" data-min="-1.5" data-max="3" data-step="0.1">
+                                <button type="button" data-direction="-1" aria-label="자간 좁히기">−</button>
+                                <output id="slk-letter-spacing-value">0.0px</output>
+                                <button type="button" data-direction="1" aria-label="자간 넓히기">+</button>
+                            </div>
+                            <button type="button" id="slk-letter-spacing-reset" class="slk-preference-button slk-pref-reset" aria-label="자간 초기화">초기화</button>
+                        </div>
+                    </div>
+                    <div class="slk-preference-hint">자간 0.0px는 기존 디자인의 자간을 유지합니다.</div>
                 </section>
                 <section class="slk-preference-section" aria-label="대사 배경색 설정">
                     <div class="slk-preference-heading">대사 배경색</div>
@@ -131,17 +143,8 @@ function buildSlackUiExtensionSettings() {
                 <section class="slk-preference-section" aria-label="헤더 이미지 설정">
                     <div class="slk-preference-heading">헤더 이미지</div>
                     <div class="slk-header-image-options" role="radiogroup" aria-label="헤더 이미지 종류">
-                        <label><input type="radio" name="slk-header-image-mode" value="default"><span>기존</span></label>
                         <label><input type="radio" name="slk-header-image-mode" value="slack"><span>Slack</span></label>
-                        <label><input type="radio" name="slk-header-image-mode" value="custom"><span>직접 등록</span></label>
-                    </div>
-                    <div class="slk-avatar-setting-preview">
-                        <img id="slk-avatar-preview" src="img/logo.png" alt="선택한 헤더 이미지 미리보기">
-                        <div class="slk-avatar-setting-actions">
-                            <label for="slk-avatar-upload" class="slk-preference-button" role="button" tabindex="0">이미지 등록</label>
-                            <input type="file" id="slk-avatar-upload" class="slk-avatar-file-input" accept="image/png,image/jpeg,image/webp,image/gif" tabindex="-1">
-                            <button type="button" id="slk-avatar-delete" class="slk-preference-button" hidden>등록 이미지 삭제</button>
-                        </div>
+                        <label><input type="radio" name="slk-header-image-mode" value="custom"><span>등록한 이미지</span></label>
                     </div>
                 </section>
             </div>
@@ -192,8 +195,8 @@ function buildSlackUiExtensionSettings() {
     });
 
     // Steppers update the actual chat text, not the settings panel itself.
-    const prefStorageKeys = { fontSize: 'slk-ui-font-size', lineHeight: 'slk-ui-line-height' };
-    const prefDefaults = { fontSize: 15, lineHeight: 1.6 };
+    const prefStorageKeys = { fontSize: 'slk-ui-font-size', lineHeight: 'slk-ui-line-height', letterSpacing: 'slk-ui-letter-spacing' };
+    const prefDefaults = { fontSize: 15, lineHeight: 1.6, letterSpacing: 0 };
     container.querySelectorAll('.slk-stepper').forEach(stepper => {
         const pref = stepper.dataset.pref;
         const output = stepper.querySelector('output');
@@ -201,7 +204,9 @@ function buildSlackUiExtensionSettings() {
         const max = Number(stepper.dataset.max);
         const step = Number(stepper.dataset.step);
         const draw = () => {
-            output.textContent = pref === 'fontSize' ? `${SLK_UI_SETTINGS[pref]}px` : SLK_UI_SETTINGS[pref].toFixed(1);
+            output.textContent = pref === 'fontSize' ? `${SLK_UI_SETTINGS[pref]}px`
+                : pref === 'letterSpacing' ? `${SLK_UI_SETTINGS[pref].toFixed(1)}px`
+                : SLK_UI_SETTINGS[pref].toFixed(1);
             stepper.querySelector('[data-direction="-1"]').disabled = SLK_UI_SETTINGS[pref] <= min;
             stepper.querySelector('[data-direction="1"]').disabled = SLK_UI_SETTINGS[pref] >= max;
         };
@@ -253,22 +258,11 @@ function buildSlackUiExtensionSettings() {
     container.querySelector('#slk-dialogue-reset').addEventListener('click', () => setDialogueColor(''));
     syncColorFields();
 
-    // Keep the existing ST logo as the default, with optional Slack or a saved uploaded picture.
+    // The registered image is SillyTavern's own logo, already replaced by the user.
+    // Never store or require a separate Slack UI upload.
     const modes = container.querySelectorAll('input[name="slk-header-image-mode"]');
-    const avatarPreview = container.querySelector('#slk-avatar-preview');
-    const upload = container.querySelector('#slk-avatar-upload');
-    const deleteButton = container.querySelector('#slk-avatar-delete');
-    container.querySelector('label[for="slk-avatar-upload"]').addEventListener('keydown', event => {
-        if (event.key !== 'Enter' && event.key !== ' ') return;
-        event.preventDefault();
-        upload.click();
-    });
     const syncAvatarFields = () => {
         modes.forEach(radio => { radio.checked = radio.value === SLK_UI_SETTINGS.headerImageMode; });
-        avatarPreview.src = SLK_UI_SETTINGS.headerImageMode === 'slack' ? SLK_SLACK_HEADER_IMAGE
-            : SLK_UI_SETTINGS.headerImageMode === 'custom' && SLK_UI_SETTINGS.headerImageData
-                ? SLK_UI_SETTINGS.headerImageData : SLK_DEFAULT_HEADER_IMAGE;
-        deleteButton.hidden = !SLK_UI_SETTINGS.headerImageData;
     };
     modes.forEach(radio => radio.addEventListener('change', () => {
         if (!radio.checked) return;
@@ -277,51 +271,6 @@ function buildSlackUiExtensionSettings() {
         syncAvatarFields();
         slkApplyHeaderImage();
     }));
-    upload.addEventListener('change', async () => {
-        const file = upload.files?.[0];
-        if (!file) return;
-        try {
-            if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type) || file.size > 15 * 1024 * 1024)
-                throw new Error('15MB 이하의 PNG, JPG, WEBP, GIF 이미지를 선택해 주세요.');
-            const source = await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = () => reject(new Error('이미지를 읽지 못했습니다.'));
-                reader.readAsDataURL(file);
-            });
-            const picture = await new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = () => resolve(img);
-                img.onerror = () => reject(new Error('지원되지 않는 이미지입니다.'));
-                img.src = source;
-            });
-            const canvas = document.createElement('canvas');
-            canvas.width = canvas.height = 256;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) throw new Error('이미지 변환을 사용할 수 없습니다.');
-            const side = Math.min(picture.naturalWidth, picture.naturalHeight);
-            ctx.drawImage(picture, (picture.naturalWidth - side) / 2,
-                (picture.naturalHeight - side) / 2, side, side, 0, 0, 256, 256);
-            const encoded = canvas.toDataURL('image/webp', 0.84);
-            if (!slkSavePreference('slk-ui-header-image-data', encoded)) return;
-            SLK_UI_SETTINGS.headerImageData = encoded;
-            SLK_UI_SETTINGS.headerImageMode = 'custom';
-            slkSavePreference('slk-ui-header-image-mode', 'custom');
-            syncAvatarFields();
-            slkApplyHeaderImage();
-        } catch (error) { window.toastr?.error(error.message); }
-        finally { upload.value = ''; }
-    });
-    deleteButton.addEventListener('click', () => {
-        SLK_UI_SETTINGS.headerImageData = '';
-        slkSavePreference('slk-ui-header-image-data', '');
-        if (SLK_UI_SETTINGS.headerImageMode === 'custom') {
-            SLK_UI_SETTINGS.headerImageMode = 'default';
-            slkSavePreference('slk-ui-header-image-mode', 'default');
-        }
-        syncAvatarFields();
-        slkApplyHeaderImage();
-    });
     syncAvatarFields();
 }
 
@@ -445,7 +394,7 @@ function buildHeader() {
     header.id = 'slk-header';
     header.innerHTML = `
         <button id="slk-ws" type="button" title="캐릭터 목록">
-            <span class="slk-ws-avatar has-img"><img src="img/logo.png" alt="" onerror="this.parentElement.classList.remove('has-img')" /><span class="slk-ws-initial">S</span></span>
+            <span class="slk-ws-avatar has-img"><img src="${SLK_UI_SETTINGS.headerImageMode === 'custom' ? SLK_DEFAULT_HEADER_IMAGE : SLK_SLACK_HEADER_IMAGE}" alt="" onerror="this.parentElement.classList.remove('has-img')" /><span class="slk-ws-initial">S</span></span>
             <span class="slk-ws-text">
                 <span class="slk-ws-name">Slack</span>
                 <span class="slk-ws-ver"></span>
@@ -2526,48 +2475,6 @@ else init();
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
 })();
-
-// v1.4.65 — 진단: Slack UI 설정에 버전 표시 + '진단 정보 복사' 버튼
-(function slkDiagnostics() {
-    const VERSION = '1.4.87';
-    const add = () => {
-        const content = document.getElementById('slk-extension-settings-content');
-        if (!content || document.getElementById('slk-diag-row')) return !!content;
-        const row = document.createElement('div');
-        row.className = 'slk-settings-row';
-        row.id = 'slk-diag-row';
-        const cssVer = getComputedStyle(document.documentElement).getPropertyValue('--slk-css-version').trim().replace(/['"]/g, '') || '?';
-        row.innerHTML = `<span style="font-size:13px;color:#8A8A8A">버전 JS ${VERSION} · CSS ${cssVer}</span><button type="button" class="menu_button" id="slk-diag-copy" style="margin-left:auto">진단 정보 복사</button>`;
-        content.appendChild(row);
-        row.querySelector('#slk-diag-copy').addEventListener('click', async () => {
-            const out = [`JS ${VERSION} / CSS ${cssVer} / UA ${navigator.userAgent}`];
-            const mes = [...document.querySelectorAll('#chat .mes')].reverse().find(m => m.querySelector('.extraMesButtons')) || null;
-            if (mes) {
-                const clone = mes.cloneNode(true);
-                clone.querySelectorAll('.mes_text, .mes_reasoning_details, .mes_media_wrapper, .mes_file_wrapper').forEach(e => e.remove());
-                out.push('--- MES ---', clone.outerHTML.slice(0, 6000));
-            }
-            const h = [...document.querySelectorAll('#AdvancedFormatting h4, #AdvancedFormatting h3')].find(e => /컨텍스트 서식|Context Formatting/i.test(e.textContent));
-            if (h) {
-                const chain = [];
-                let el = h;
-                for (let i = 0; i < 6 && el; i++, el = el.parentElement) {
-                    const cs = getComputedStyle(el);
-                    chain.push(`${el.tagName}#${el.id}.${[...el.classList].join('.')} border:${cs.borderTopWidth} ${cs.borderTopStyle} ${cs.borderTopColor} radius:${cs.borderTopLeftRadius} shadow:${cs.boxShadow.slice(0, 60)}`);
-                }
-                const prev = h.parentElement?.previousElementSibling;
-                out.push('--- AF ---', ...chain, 'prev: ' + (prev ? prev.outerHTML.slice(0, 600) : '-'));
-            }
-            const text = out.join('\n');
-            try { await navigator.clipboard.writeText(text); window.toastr?.success('복사됐어요. 대화창에 붙여넣어 주세요.'); }
-            catch { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); window.toastr?.success('복사됐어요.'); }
-        });
-        return true;
-    };
-    const tick = () => { if (!add()) setTimeout(tick, 1000); };
-    tick();
-})();
-
 
 // v1.4.80 — Keep the original swipe controls in ONE parent, avoiding
 // competing absolute/grid positioning of .swipe_left versus .swipeRightBlock.

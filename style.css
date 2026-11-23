@@ -16640,6 +16640,8 @@ body.slk-ui.slk-dark {
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text {
         font-size: var(--slk-chat-font-size, 15px) !important;
         line-height: var(--slk-chat-line-height, 1.6) !important;
+        /* 0px adjustment preserves the original -0.01em tracking. */
+        letter-spacing: calc(-0.01em + var(--slk-chat-letter-spacing-adjust, 0px)) !important;
     }
     html body.slk-ui.slk-dialogue-custom:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text q,
     html body.slk-ui.slk-dark.slk-dialogue-custom:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes_text q {
@@ -16800,7 +16802,7 @@ body.slk-ui.slk-dark {
 }
 #slk-extension-settings .slk-header-image-options {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
     gap: 5px;
     margin-bottom: 12px;
@@ -16840,28 +16842,6 @@ body.slk-ui.slk-dark {
     outline: 2px solid #7A3A82 !important;
     outline-offset: 2px;
 }
-#slk-extension-settings .slk-avatar-setting-preview {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-}
-#slk-extension-settings #slk-avatar-preview {
-    flex: 0 0 50px;
-    width: 50px !important;
-    height: 50px !important;
-    object-fit: cover;
-    border-radius: 12px;
-    border: 1px solid #E1E1E1;
-    background: #FFFFFF;
-}
-#slk-extension-settings .slk-avatar-setting-actions {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-    min-width: 0;
-}
 #slk-extension-settings .slk-visually-hidden {
     position: absolute !important;
     width: 1px !important;
@@ -16882,12 +16862,3 @@ body.slk-ui.slk-dark #slk-extension-settings .slk-header-image-options input:che
     border-color: #96629B;
 }
 
-#slk-extension-settings .slk-avatar-file-input {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    overflow: hidden !important;
-}
