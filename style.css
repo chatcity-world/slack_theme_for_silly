@@ -18627,7 +18627,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     html body.slk-ui.slk-pc { --pc-panel: 360px; }
     html body.slk-ui.slk-pc #slk-pc-search { width: min(520px, calc(100vw - 300px)); }
 }
-:root { --slk-css-version: '1.6.1'; }
+:root { --slk-css-version: '1.6.2'; }
 
 
 /* ===============================================================
@@ -18764,5 +18764,61 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     min-height: 57px !important;
     flex-basis: 57px !important;
     gap: 3px !important;
+  }
+}
+
+
+/* ==============================================================
+   v1.6.2 — desktop sidebar sizing, faithful aubergine and corners
+   Only PC chrome; mobile footer and native form styles untouched.
+   ============================================================== */
+@media screen and (min-width: 1001px) {
+  html body.slk-ui.slk-pc {
+    /* 126px was wider than the real Slack navigation rail. */
+    --pc-sidebar: 86px !important;
+  }
+
+  /* First rail stays dark. Second rail uses the muted secondary purple,
+     matching the two-surface hierarchy of the supplied Slack reference. */
+  html body.slk-ui.slk-pc #slk-pc-sidebar {
+    width: var(--pc-sidebar) !important;
+    background: linear-gradient(180deg, #562E5B 0%, #512A56 100%) !important;
+    border-radius: 12px 0 0 12px !important;
+    border-right: 0 !important;
+    padding: 10px 4px 12px !important;
+  }
+
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item {
+    min-height: 60px !important;
+    flex-basis: 60px !important;
+    gap: 4px !important;
+    padding: 4px 2px !important;
+    border-radius: 9px !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item-label {
+    font-size: 11px !important;
+  }
+
+  /* White workspace forms a single rectangular left edge and only two
+     rounded outer right corners. Do not round the side that touches the menu. */
+  html body.slk-ui.slk-pc #slk-pc-channel-heading {
+    border-radius: 0 12px 0 0 !important;
+  }
+  html body.slk-ui.slk-pc.slk-pc-panel-open #slk-pc-channel-heading {
+    border-radius: 0 12px 0 0 !important;
+  }
+  html body.slk-ui.slk-pc #sheld,
+  html body.slk-ui.slk-pc.slk-pc-panel-open #sheld {
+    border-radius: 0 0 12px 0 !important;
+  }
+  html body.slk-ui.slk-pc :is(#top-settings-holder > .drawer > .drawer-content, #left-nav-panel, #right-nav-panel).openDrawer {
+    border-radius: 0 !important;
+  }
+}
+@media screen and (min-width: 1001px) and (max-height: 690px) {
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item {
+    min-height: 51px !important;
+    flex-basis: 51px !important;
+    gap: 2px !important;
   }
 }
