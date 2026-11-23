@@ -3013,6 +3013,21 @@ else init();
 // SillyTavern's original save/reset/close event listeners and input IDs.
 (function slkPolishNativePromptEditor() {
     function prepare() {
+        // The native prompt dialog lives inside a drawer. The drawer's positioning
+        // and older high-specificity transform resets can make fixed positioning
+        // relative to the drawer, cutting off half the editor on small screens.
+        // Portal only this dialog to <body>; the original element, IDs, event
+        // listeners and SillyTavern save/reset/close actions are preserved.
+        const popup = document.getElementById('completion_prompt_manager_popup');
+        if (popup && document.body.classList.contains('slk-ui') && popup.parentElement !== document.body) {
+            if (!popup.slkHomeMarker) {
+                popup.slkHomeMarker = document.createComment('Slack UI: original prompt dialog position');
+                popup.parentNode.insertBefore(popup.slkHomeMarker, popup);
+            }
+            document.body.appendChild(popup);
+        } else if (popup && !document.body.classList.contains('slk-ui') && popup.slkHomeMarker?.parentNode) {
+            popup.slkHomeMarker.parentNode.insertBefore(popup, popup.slkHomeMarker);
+        }
         const editor = document.getElementById('completion_prompt_manager_popup_edit');
         const form = editor?.querySelector('.completion_prompt_manager_popup_entry_form');
         const footer = form?.querySelector(':scope > .completion_prompt_manager_popup_entry_form_footer');
@@ -3038,4 +3053,5 @@ else init();
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prepare, { once: true });
     else prepare();
+    window.addEventListener('slk-ui-settings-changed', prepare);
 })();

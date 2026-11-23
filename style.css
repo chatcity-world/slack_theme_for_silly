@@ -18627,7 +18627,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     html body.slk-ui.slk-pc { --pc-panel: 360px; }
     html body.slk-ui.slk-pc #slk-pc-search { width: min(520px, calc(100vw - 300px)); }
 }
-:root { --slk-css-version: '1.6.2'; }
+:root { --slk-css-version: '1.6.4'; }
 
 
 /* ===============================================================
@@ -19157,5 +19157,62 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     right: auto !important;
     transform: translateX(-50%) !important;
     z-index: 3100 !important;
+  }
+}
+
+
+/* ===============================================================
+   v1.6.4 — Prompt editor actual-device clipping fix
+   Explicit viewport centering (no translateX), and no drawer-relative
+   containing block. Target only the native prompt editor dialog.
+   =============================================================== */
+@media screen {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #completion_prompt_manager_popup.openDrawer {
+    position: fixed !important;
+    inset: auto 0 auto 0 !important;
+    top: calc(var(--slk-top-h, 60px) + 10px) !important;
+    right: 0 !important;
+    left: 0 !important;
+    width: min(820px, calc(100vw - 24px)) !important;
+    min-width: 0 !important;
+    max-width: calc(100vw - 24px) !important;
+    height: calc(100dvh - var(--slk-top-h, 60px) - var(--slk-footer-h, 80px) - 24px) !important;
+    max-height: calc(100dvh - var(--slk-top-h, 60px) - var(--slk-footer-h, 80px) - 24px) !important;
+    margin: 0 auto !important;
+    transform: none !important;
+    translate: none !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    contain: none !important;
+    z-index: 3055 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup.openDrawer #completion_prompt_manager_popup_edit,
+  html body.slk-ui #completion_prompt_manager_popup.openDrawer .completion_prompt_manager_popup_entry_form,
+  html body.slk-ui #completion_prompt_manager_popup.openDrawer .slk-prompt-form-fields,
+  html body.slk-ui #completion_prompt_manager_popup.openDrawer .completion_prompt_manager_popup_entry_form_footer {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup.openDrawer .completion_prompt_manager_popup_entry_form_footer {
+    overflow: visible !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup.openDrawer .select2-container {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup.openDrawer .select2-selection__choice {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}
+@media screen and (min-width: 1001px) {
+  html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c) #completion_prompt_manager_popup.openDrawer {
+    top: 60px !important;
+    width: min(820px, calc(100vw - 48px)) !important;
+    max-width: calc(100vw - 48px) !important;
+    height: calc(100dvh - 110px) !important;
+    max-height: calc(100dvh - 110px) !important;
   }
 }
