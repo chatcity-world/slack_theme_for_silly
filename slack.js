@@ -2132,69 +2132,81 @@ else init();
     }, true);
 })();
 
-// v1.4.64 — ⋯ 펼침 아이콘 정리를 인라인(!important)로 강제: 어떤 확장 CSS보다 우선
+// v1.4.68 — 메시지 ⋯ 메뉴: 표시되는 액션만 한 흐름에 놓기.
+// 이전 코드가 숨겨진 버튼에도 30px 슬롯을 고정하던 문제와,
+// MutationObserver가 자기 자신의 style 변경을 반복 감지하던 문제를 제거합니다.
 (function slkForceButtonRow() {
-    const ICON_W = '30px';
-    const force = (el, props) => { for (const [k, v] of Object.entries(props)) el.style.setProperty(k, v, 'important'); };
-    const tidy = (mes) => {
+    const HIDDEN_CLASS = 'slk-flow-hidden';
+    const isEmptyPlaceholder = (el) => {
+        if ((el.textContent || '').trim()) return false;
+        if (el.matches('button, input, [role="button"], [class*="fa-"]')) return false;
+        if (el.querySelector('svg, img, i, button, [class*="fa-"]')) return false;
+        const cs = getComputedStyle(el);
+        if (cs.backgroundImage !== 'none' || cs.maskImage !== 'none' || cs.webkitMaskImage !== 'none') return false;
+        const before = getComputedStyle(el, '::before');
+        if (before.content && before.content !== 'none' && before.content !== 'normal') return false;
+        return true;
+    };
+    const sync = (mes) => {
         const box = mes.querySelector('.ch_name > .mes_buttons');
-        if (!box) return;
-        const extra = box.querySelector('.extraMesButtons');
-        const sd = extra ? (extra.style.display || '') : '';
-        const open = !!extra && sd !== '' && sd !== 'none';
+        const extra = box?.querySelector(':scope > .extraMesButtons');
+        if (!extra) return;
+        // SillyTavern은 메뉴를 열고 닫으며 인라인 display 값을 바꿉니다.
+        const open = extra.style.display !== '' && extra.style.display !== 'none';
         mes.classList.toggle('slk-mes-expanded', open);
-        // 바깥에 있는 확장 아이콘을 묶음 맨 앞으로
-        const outside = [
+        const items = [...box.children].filter(el => el !== extra).concat([...extra.children]);
+        if (!open) {
+            items.forEach(el => el.classList.remove(HIDDEN_CLASS));
+            return;
+        }
+        // ch_name 밖에 있던 확장 버튼도 같은 flex 컨테이너 안으로 이동합니다.
+        const outsiders = [
             ...mes.querySelectorAll(':scope > .mesAvatarWrapper > :not(.avatar):not(.mesIDDisplay):not(.mes_timer):not(.tokenCounterDisplay)'),
             ...mes.querySelectorAll(':scope .ch_name > :not(.mes_buttons):not(.mes_edit_buttons):not(.flex-container)'),
             ...mes.querySelectorAll(':scope .ch_name > .flex-container > :not(.alignItemsBaseline)'),
             ...mes.querySelectorAll(':scope .ch_name .alignItemsBaseline > :not(.name_text):not(.mes_ghost):not(.timestamp)'),
         ];
-        outside.forEach(el => { if (!el.closest('.mes_buttons')) { el.classList.add('slk-adopted-btn'); box.insertBefore(el, box.firstChild); } });
-        if (!open) {
-            // 펼친 상태에서 숨긴 빈 버튼 자리를 원상복구 (기존 ⋯/편집 동작 보존)
-            box.querySelectorAll('.slk-empty-action-slot').forEach(el => el.classList.remove('slk-empty-action-slot'));
-            ['display','flex-wrap','justify-content','align-items','gap','width','max-width'].forEach(k => box.style.removeProperty(k));
-            return;
-        }
-        force(box, { 'display': 'flex', 'flex-wrap': 'wrap', 'justify-content': 'flex-start', 'align-items': 'center', 'gap': '0', 'width': '100%', 'max-width': 'none' });
-        const items = [...box.children].filter(c => c !== extra).concat(extra ? [...extra.children] : []);
-        items.forEach(el => {
-            // ⋯ 토글이나 실제로 안 보이는 버튼도 30px을 차지하던 것이 빈칸의 원인.
-            // 펼친 동안에만 공간에서 제외하고 닫으면 자동으로 복원합니다.
-            if (el.classList.contains('slk-empty-action-slot')) return;
-            const cs = getComputedStyle(el);
-            const isHint = el.classList.contains('extraMesButtonsHint');
-            const hidden = cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0;
-            if (isHint || hidden) {
-                el.classList.add('slk-empty-action-slot');
-                return;
-            }
-            force(el, { 'flex': `0 0 ${ICON_W}`, 'width': ICON_W, 'min-width': ICON_W, 'max-width': ICON_W, 'margin': '0', 'padding': '0', 'position': 'static', 'float': 'none', 'order': '0', 'justify-content': 'center', 'align-items': 'center', 'transform': 'none' });
-            [...el.children].forEach(ch => force(ch, { 'margin': '0', 'position': 'static', 'transform': 'none' }));
+        outsiders.forEach(el => {
+            if (el.closest('.mes_buttons')) return;
+            el.classList.add('slk-adopted-btn');
+            box.insertBefore(el, box.firstChild);
         });
-        window.__slkLastButtons = box.outerHTML;
+        // 화면에 보이지 않는 요소는 30px을 점유하지 않도록 제외합니다.
+        // CSS 클래스만 변경하며, 버튼 자체와 이벤트 핸들러는 건드리지 않습니다.
+        [...box.children].filter(el => el !== extra).concat([...extra.children]).forEach(el => {
+            if (el.classList.contains(HIDDEN_CLASS)) return;
+            const cs = getComputedStyle(el);
+            const invisible = el.matches('.extraMesButtonsHint, [hidden], .displayNone') ||
+                cs.display === 'none' || cs.visibility !== 'visible' ||
+                Number(cs.opacity) === 0 || isEmptyPlaceholder(el);
+            if (invisible) el.classList.add(HIDDEN_CLASS);
+        });
     };
     const run = () => {
         if (!document.body?.classList.contains('slk-ui')) return;
-        document.querySelectorAll('#chat .mes').forEach(m => {
-            const ex = m.querySelector('.extraMesButtons');
-            const sd = ex ? (ex.style.display || '') : '';
-            const open = !!ex && sd !== '' && sd !== 'none';
-            if (open || m.classList.contains('slk-mes-expanded')) tidy(m);
+        document.querySelectorAll('#chat .mes').forEach(mes => {
+            const extra = mes.querySelector('.ch_name > .mes_buttons > .extraMesButtons');
+            if (extra && (extra.style.display !== '' && extra.style.display !== 'none' || mes.classList.contains('slk-mes-expanded'))) sync(mes);
         });
     };
-    document.addEventListener('click', (e) => {
-        if (e.target.closest?.('#chat .extraMesButtonsHint, #chat .mes_buttons')) {
-            setTimeout(run, 0); setTimeout(run, 80); setTimeout(run, 400);
+    let timer = null;
+    const schedule = () => {
+        if (timer !== null) return;
+        timer = setTimeout(() => { timer = null; run(); }, 50);
+    };
+    document.addEventListener('click', (event) => {
+        if (event.target.closest?.('#chat .extraMesButtonsHint, #chat .mes_buttons')) {
+            setTimeout(run, 0);
+            setTimeout(run, 80);
         }
     }, true);
     const start = () => {
         const chat = document.getElementById('chat');
         if (!chat) { setTimeout(start, 500); return; }
-        let t = null;
-        new MutationObserver(() => { if (!t) t = setTimeout(() => { t = null; run(); }, 60); })
-            .observe(chat, { subtree: true, attributes: true, attributeFilter: ['style', 'class'], childList: true });
+        run();
+        new MutationObserver(schedule).observe(chat, {
+            childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'],
+        });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();

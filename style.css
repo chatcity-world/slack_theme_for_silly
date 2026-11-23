@@ -15575,3 +15575,35 @@ body.slk-ui.slk-dark {
         padding: 0 !important;
     }
 }
+
+/* 1.4.68 — 메시지 ⋯ 펼침 메뉴: 실제로 표시되는 버튼만 30px 슬롯에 배치 */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons {
+        display: flex !important;
+        flex-flow: row wrap !important;
+        justify-content: flex-start !important;
+        align-content: flex-start !important;
+        align-items: center !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        gap: 2px 0 !important;
+        overflow: visible !important;
+    }
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons > .extraMesButtons {
+        display: contents !important;
+    }
+    /* 힌트와 숨긴 아이콘은 레이아웃 슬롯 자체를 만들지 않습니다. */
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons .extraMesButtonsHint,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons .slk-flow-hidden,
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons .extraMesButtons > [hidden],
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes.slk-mes-expanded .mes_buttons .extraMesButtons > [style*="display: none"] {
+        display: none !important;
+        flex: none !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
