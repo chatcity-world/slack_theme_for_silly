@@ -2480,7 +2480,7 @@ if (SLK_UI_SETTINGS.enabled) {
 
     const markSwitches = (root) => {
         root.querySelectorAll('.inline-drawer-content input[type="checkbox"]:not([data-slk-sw])').forEach(input => {
-            if (input.closest('#slk-extension-settings')) { input.dataset.slkSw = 'own'; return; }
+            if (input.closest('#slk-extension-settings, .regex_settings')) { input.dataset.slkSw = 'own'; return; }
             const host = input.parentElement;
             if (!shown(host)) return; // 펼쳐졌을 때 다시
             const r = input.getBoundingClientRect();
@@ -2519,7 +2519,7 @@ if (SLK_UI_SETTINGS.enabled) {
         !!el.querySelector('input:checked');
     const markSegments = (root) => {
         root.querySelectorAll('.inline-drawer-content *:not([data-slk-seg])').forEach(box => {
-            if (box.closest('#slk-extension-settings')) return; // Slack UI 자체 설정은 건드리지 않음
+            if (box.closest('#slk-extension-settings, .regex_settings')) return; // Slack UI 자체 설정은 건드리지 않음
             const kids = [...box.children];
             // 모든 칸에 글자가 있어야 하고, 토글(체크박스) 줄은 제외
             if (kids.some(k => !(k.textContent || '').trim())) return;
