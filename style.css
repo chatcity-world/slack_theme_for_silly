@@ -21311,12 +21311,8 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
    .slk-in-chat alone; chat remains mounted underneath navigation panels.
    =================================================================== */
 @media screen and (max-width:1000px) {
-  /* Shared floating header for every NON-PROMPT settings panel.
-     It must never turn into a solid white slab as the panel scrolls. */
-  html body.slk-ui[data-slk-header-view="panel"]:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header,
-  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header,
-  html body.slk-ui[data-slk-header-view="panel"].slk-panel-opening:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header,
-  html body.slk-ui[data-slk-header-view="panel"].slk-in-chat:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header {
+  /* ONLY scrolled settings panels are glass. Non-scrolled panels remain purple. */
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header {
     background: linear-gradient(180deg, rgba(255,255,255,.90) 0%, rgba(255,255,255,.66) 49%, rgba(255,255,255,0) 100%) !important;
     background-color: transparent !important;
     color: #1D1C1D !important;
@@ -21325,17 +21321,17 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
-  html body.slk-ui[data-slk-header-view="panel"] #slk-header::before,
-  html body.slk-ui[data-slk-header-view="panel"] #slk-header::after {
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header::before,
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header::after {
     content: none !important;
     display: none !important;
   }
-  html body.slk-ui[data-slk-header-view="panel"] #slk-header #slk-chat-head {display:none!important;}
-  html body.slk-ui[data-slk-header-view="panel"] #slk-header > #slk-ws,
-  html body.slk-ui[data-slk-header-view="panel"] #slk-header > .slk-header-actions {
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header #slk-chat-head {display:none!important;}
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header > #slk-ws,
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header > .slk-header-actions {
     display: flex !important;
   }
-  html body.slk-ui[data-slk-header-view="panel"] #slk-header #slk-ws {
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header #slk-ws {
     flex: 0 0 46px !important;
     display: flex !important;
     align-items: center !important;
@@ -21356,8 +21352,8 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
     box-sizing: border-box !important;
   }
-  html body.slk-ui[data-slk-header-view="panel"] #slk-header .slk-ws-text {display:none!important;}
-  html body.slk-ui[data-slk-header-view="panel"] #slk-header .slk-ws-avatar {
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header .slk-ws-text {display:none!important;}
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header .slk-ws-avatar {
     flex:0 0 38px !important;
     position:relative !important;
     inset:auto !important;
@@ -21377,7 +21373,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     place-items:center !important;
     overflow:hidden !important;
   }
-  html body.slk-ui[data-slk-header-view="panel"] #slk-header .slk-ws-avatar.has-img > img {
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header .slk-ws-avatar.has-img > img {
     inset: 0 !important;
     width:38px !important;
     height:38px !important;
@@ -21388,7 +21384,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     border-radius:50% !important;
     object-fit:cover !important;
   }
-  html body.slk-ui[data-slk-header-view="panel"] #slk-header #slk-panel-back {
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header #slk-panel-back {
     display:flex!important;
     align-items:center!important;
     justify-content:center!important;
@@ -21406,7 +21402,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     -webkit-backdrop-filter:blur(20px) saturate(150%) !important;
     box-sizing:border-box !important;
   }
-  html body.slk-ui[data-slk-header-view="panel"] #slk-header > .slk-header-actions {
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header > .slk-header-actions {
     height:46px !important;
     min-height:46px !important;
     padding:0 5px !important;
@@ -21418,7 +21414,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     -webkit-backdrop-filter:blur(20px) saturate(150%) !important;
     color:#1D1C1D !important;
   }
-  html body.slk-ui[data-slk-header-view="panel"] #slk-header #slk-settings-btn { color:#1D1C1D !important; }
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header #slk-settings-btn { color:#1D1C1D !important; }
 
   /* Prompt tab retains the original full Slack purple header (requested exception). */
   html body.slk-ui[data-slk-header-view="prompt"]:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header {
@@ -21463,14 +21459,17 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   html body.slk-ui[data-slk-header-view="chat"] #slk-header > #slk-ws,
   html body.slk-ui[data-slk-header-view="chat"] #slk-header > .slk-header-actions,
   html body.slk-ui[data-slk-header-view="chat"] #slk-header #slk-panel-back {display:none!important;}
+  /* v1.8.10: Restore the two floating-pill shadows, without bringing back
+     the opaque rectangular header slab. The overall header keeps its
+     existing white-to-transparent gradient. */
   html body.slk-ui[data-slk-header-view="chat"] #slk-header #slk-chat-back,
   html body.slk-ui[data-slk-header-view="chat"] #slk-header #slk-chat-title {
-    background:transparent!important;
+    background:rgba(255,255,255,.22)!important;
     border:0!important;
     outline:0!important;
-    box-shadow:none!important;
-    backdrop-filter:none!important;
-    -webkit-backdrop-filter:none!important;
+    box-shadow:0 7px 22px rgba(20,16,30,.13), 0 1px 3px rgba(20,16,30,.035)!important;
+    backdrop-filter:blur(16px) saturate(125%)!important;
+    -webkit-backdrop-filter:blur(16px) saturate(125%)!important;
     filter:none!important;
     color:#1D1C1D!important;
   }
@@ -21490,4 +21489,151 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     stroke-linecap:round!important;
     stroke-linejoin:round!important;
   }
+}
+
+
+/* v1.8.11: Fix the compact Slack-logo crop in non-prompt panels.
+   v1.7.6 centered the img using translate(-50%, -50%). v1.8.9
+   later set its inset to 0 without undoing that translation, which
+   pushed most of the icon outside the clipped circular avatar. */
+@media screen and (max-width:1000px) {
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact #slk-header .slk-ws-avatar.has-img > img {
+    position: absolute !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    display: block !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    border-radius: 50% !important;
+  }
+}
+
+
+/* v1.8.12: Restore the original unscrolled purple Slack header.
+   1.8.9 applied the glass-header rules at every scroll position.
+   Only non-prompt settings screens are changed here; chat and prompt are intact. */
+@media screen and (max-width: 1000px) {
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header {
+    background: var(--slk-header-grad) !important;
+    background-color: var(--slk-header-grad) !important;
+    color: var(--slk-header-fg) !important;
+    box-shadow: none !important;
+    border: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header #slk-chat-head {
+    display: none !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header > #slk-ws,
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header > .slk-header-actions {
+    display: flex !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header #slk-ws {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: calc(100% - 118px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin-right: auto !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header .slk-ws-text {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 7px !important;
+    flex: 0 1 auto !important;
+    white-space: nowrap !important;
+    min-width: 0 !important;
+    color: #fff !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header .slk-ws-name { color: #fff !important; }
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header .slk-ws-ver,
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header .slk-ws-branch { color: rgba(255,255,255,.72) !important; }
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header .slk-ws-avatar {
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    max-width: 44px !important;
+    max-height: 44px !important;
+    border: 1.5px solid var(--slk-pill-border) !important;
+    border-radius: 50% !important;
+    background: var(--slk-pill-bg) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    display: grid !important;
+    place-items: center !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header .slk-ws-avatar.has-img > img {
+    position: absolute !important;
+    inset: auto !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%,-50%) !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+    max-width: 34px !important;
+    max-height: 34px !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    display: block !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header #slk-panel-back {
+    display: flex !important;
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    margin-right: 10px !important;
+    padding: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1.5px solid var(--slk-pill-border) !important;
+    border-radius: 50% !important;
+    background: var(--slk-pill-bg) !important;
+    box-shadow: none !important;
+    color: #fff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header > .slk-header-actions {
+    display: flex !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 4px !important;
+    border: 1.5px solid var(--slk-pill-border) !important;
+    border-radius: 22px !important;
+    background: var(--slk-pill-bg) !important;
+    box-shadow: none !important;
+    color: #fff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header #slk-settings-btn { color: #fff !important; }
 }
