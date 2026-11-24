@@ -1060,9 +1060,29 @@ function setupComposer() {
         updateDisplay();
         requestAnimationFrame(syncHeight);
     };
-    // 키보드를 내린 후에도 동일 textarea에 포커스가 남았다면, 다음 직접 터치로 재확장.
-    ta.addEventListener('pointerdown', requestExpand);
-    ta.addEventListener('focus', requestExpand);
+    // v1.8.43: allow the native iOS tap to finish before changing geometry.
+    // ST can leave the textarea focused before the first real tap. Expanding
+    // it on pointerdown (or focus during a tap) moves the touch target while
+    // WebKit is still deciding whether to open the software keyboard.
+    const mobile = () => window.matchMedia('(max-width: 1000px)').matches;
+    ta.addEventListener('focus', () => {
+        if (!mobile()) requestExpand();
+        // On mobile, programmatic focus alone is not a keyboard gesture.
+        // The trusted click or actual keyboard viewport resize expands it.
+    });
+    ta.addEventListener('click', (event) => {
+        if (!mobile() || !event.isTrusted) return;
+        // Stay in the original user gesture; never blur/refocus or defer
+        // focus itself. Let native selection and IME composition survive.
+        if (document.activeElement !== ta) ta.focus({preventScroll: true});
+        if (document.activeElement !== ta) return;
+        pendingFocus = true;
+        keyboardDismissed = false;
+        // The click/default focus has completed before geometry changes.
+        requestAnimationFrame(() => {
+            if (document.activeElement === ta) syncHeight();
+        });
+    });
     ta.addEventListener('blur', () => {
         keyboardVisible = false;
         keyboardDismissed = true;
