@@ -1,7 +1,12 @@
 // Keep the native in-document loading stage white before the extension JS finishes loading.
 (() => {
     if (document.getElementById('slk-early-splash-style')) return;
-    const icon = new URL('./slack-splash-logo.png', import.meta.url).href;
+    // Match the saved '시작화면 / 헤더 이미지' choice even before slack.js loads.
+    let mode = 'slack';
+    try { mode = localStorage.getItem('slk-ui-header-image-mode') === 'custom' ? 'custom' : 'slack'; } catch { /* noop */ }
+    const icon = mode === 'custom'
+        ? new URL('img/logo.png', document.baseURI).href
+        : new URL('./slack-splash-logo.png', import.meta.url).href;
     const el = document.createElement('style');
     el.id = 'slk-early-splash-style';
     el.textContent = `:root { --slk-loader-icon:url(${JSON.stringify(icon)}); }

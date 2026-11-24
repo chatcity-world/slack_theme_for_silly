@@ -19578,3 +19578,305 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     background-color:#fff !important;pointer-events:none !important;z-index:4001 !important;
   }
 }
+
+/* ============ Slack UI v1.8.2: focused mobile fixes ============ */
+/* This extension uses the native SillyTavern connection-profile popup.
+   Its template has input[name="exclude"] checkboxes, not drawer checkboxes. */
+@media screen and (max-width:1000px) {
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) {
+    width: min(440px, calc(100vw - 28px)) !important;
+    max-width: calc(100vw - 28px) !important;
+    max-height: calc(100dvh - 80px) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 20px !important;
+    border: 1px solid #E8E5E8 !important;
+    box-shadow: 0 20px 60px rgba(31, 19, 39, .20) !important;
+    background: #FFFFFF !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-body {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - 80px) !important;
+    width: 100% !important;
+    background: #FFFFFF !important;
+    box-sizing: border-box !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content {
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 22px 20px 16px !important;
+    box-sizing: border-box !important;
+    background: #FFFFFF !important;
+    color: #1D1C1D !important;
+    text-align: left !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content h3 {
+    margin: 0 0 13px !important;
+    padding: 0 !important;
+    text-align: left !important;
+    font: 700 17px/1.3 var(--slk-font,'Pretendard',sans-serif) !important;
+    color: #1D1C1D !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content :is(.flex-container.flexFlowColumn.flexNoGap, .flex-container.flexFlowColumn):has(> label.checkbox_label) {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important;
+    gap: 7px 10px !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 0 24px !important;
+    box-sizing: border-box !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    min-height: 38px !important;
+    margin: 0 !important;
+    padding: 7px 8px !important;
+    border: 1px solid #ECE8ED !important;
+    border-radius: 9px !important;
+    background: #FAF9FB !important;
+    box-sizing: border-box !important;
+    cursor: pointer !important;
+    color: #333033 !important;
+    font: 500 13px/1.35 var(--slk-font,'Pretendard',sans-serif) !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label > span {
+    min-width: 0 !important;
+    overflow-wrap: anywhere !important;
+    color: #1D1C1D !important;
+    font-weight: 550 !important;
+  }
+  /* Native input and form logic remain untouched. */
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label input[type="checkbox"] {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    flex: 0 0 19px !important;
+    width: 19px !important;
+    height: 19px !important;
+    min-width: 19px !important;
+    min-height: 19px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1.5px solid #C7C3CA !important;
+    border-radius: 5px !important;
+    background: #FFFFFF !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    accent-color: #4A154B !important;
+    cursor: pointer !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label input[type="checkbox"]::before,
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label input[type="checkbox"]::after {
+    display: none !important;
+    content: none !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label input[type="checkbox"]:checked {
+    background-color: #4A154B !important;
+    border-color: #4A154B !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-size: 14px 14px !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label:has(input:checked) {
+    border-color: #DCCEE1 !important;
+    background: #F7F1F8 !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) :is(.popup-inputs,.popup-input) {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-input {
+    width: 100% !important;
+    height: 44px !important;
+    padding: 0 12px !important;
+    border: 1px solid #C9C5CB !important;
+    border-radius: 9px !important;
+    background: #FFFFFF !important;
+    color: #1D1C1D !important;
+    font-size: 15px !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls {
+    display: grid !important;
+    flex: 0 0 auto !important;
+    grid-template-columns: minmax(0,1fr) minmax(0,1.53fr) minmax(0,1fr) !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    border-top: 1px solid #EEEAEF !important;
+    box-sizing: border-box !important;
+    background: #FFFFFF !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 5px !important;
+    margin: 0 !important;
+    border: 1px solid #D9D5DA !important;
+    border-radius: 10px !important;
+    background: #FFFFFF !important;
+    box-sizing: border-box !important;
+    font: 600 13px/1.3 var(--slk-font,'Pretendard',sans-serif) !important;
+    color: #1D1C1D !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-align: center !important;
+    letter-spacing: -.02em !important;
+    box-shadow: none !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button.popup-button-ok,
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button:has(+ .popup-button-ok) {
+    background: #4A154B !important;
+    color: #FFFFFF !important;
+    border-color: #4A154B !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button.popup-button-cancel {
+    background: #FFFFFF !important;
+    color: #1D1C1D !important;
+    border-color: #D9D5DA !important;
+  }
+  /* Connection manager uses a custom DIV action (Save and Update), not a button.
+     Give each real action an explicit grid slot to prevent overflow/reordering. */
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > .popup-button-cancel {
+    grid-column: 1 !important; order: 0 !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > .popup-button-custom {
+    grid-column: 2 !important; order: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 44px !important;
+    height: 44px !important;
+    margin: 0 !important;
+    padding: 0 6px !important;
+    border-radius: 10px !important;
+    border: 1px solid #4A154B !important;
+    background: #4A154B !important;
+    color: #FFFFFF !important;
+    white-space: nowrap !important;
+    font: 600 13px/1.3 var(--slk-font,'Pretendard',sans-serif) !important;
+    letter-spacing: -.03em !important;
+    box-shadow: none !important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button.popup-button-ok {
+    grid-column: 3 !important; order: 2 !important;
+    background: #FFFFFF !important;
+    color: #4A154B !important;
+    border: 1px solid #C9B4D0 !important;
+  }
+  /* Extra toolbar/header styles are scoped to the connection-manager popup. */
+}
+
+/* iOS white status canvas for chat only; retain the fading white chat header. */
+@media screen and (max-width:1000px) {
+  html.slk-status-chat,
+  html.slk-status-chat body,
+  html:has(body.slk-ui.slk-in-chat) {
+    background-color: #FFFFFF !important;
+  }
+  html.slk-status-chat body.slk-ui.slk-in-chat #slk-header {
+    background: linear-gradient(to bottom,
+      #FFFFFF 0px,
+      #FFFFFF max(58px, env(safe-area-inset-top, 0px)),
+      rgba(255,255,255,.96) calc(max(58px, env(safe-area-inset-top, 0px)) + 20px),
+      rgba(255,255,255,.68) calc(max(58px, env(safe-area-inset-top, 0px)) + 62px),
+      rgba(255,255,255,0) 100%) !important;
+    color: #1D1C1D !important;
+  }
+  html.slk-status-chat body.slk-ui.slk-in-chat #slk-header::before {
+    content:"" !important;
+    display: block !important;
+    position:absolute !important;
+    top:0 !important;
+    left:0 !important;
+    width:100% !important;
+    height: max(58px, env(safe-area-inset-top, 0px)) !important;
+    background:#FFFFFF !important;
+    pointer-events:none !important;
+    z-index:0 !important;
+  }
+  html.slk-status-chat body.slk-ui.slk-in-chat #slk-header > * { position:relative !important; z-index:1 !important; }
+  html body.slk-ui.slk-in-chat #slk-chat-head,
+  html body.slk-ui.slk-in-chat #slk-chat-back,
+  html body.slk-ui.slk-in-chat #slk-chat-title {
+    -webkit-backdrop-filter: saturate(1.15) blur(18px) !important;
+    backdrop-filter: saturate(1.15) blur(18px) !important;
+  }
+  html.slk-status-chat #slk-status-surface { background:#FFFFFF !important; }
+}
+
+/* Ensure icon is the same visual weight and optical size as the key control.
+   Use the original Font Awesome glyph, not the earlier thin custom mask. */
+@media screen and (max-width:1000px) {
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action {
+    width:42px !important; min-width:42px !important; height:42px !important;
+  }
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action .fa-pen-to-square::before,
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action .fa-pencil::before,
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action .fa-edit::before {
+    --slk-ico:none !important;
+    content:"" !important;
+    display:block !important;
+    width:26px !important;
+    height:26px !important;
+    margin:0 auto !important;
+    background-color:currentColor !important;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7'/%3E%3Cpath d='M18.4 2.6a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4Z'/%3E%3C/svg%3E") !important;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7'/%3E%3Cpath d='M18.4 2.6a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4Z'/%3E%3C/svg%3E") !important;
+    -webkit-mask-position:center !important;mask-position:center !important;
+    -webkit-mask-repeat:no-repeat !important;mask-repeat:no-repeat !important;
+    -webkit-mask-size:contain !important;mask-size:contain !important;
+  }
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action :is(.fa-pen-to-square,.fa-pencil,.fa-edit) {
+    display:grid !important;place-items:center !important;
+    width:28px !important; height:28px !important;
+    font-size:26px !important; line-height:1 !important;
+    flex: 0 0 28px !important;
+    color:#1D1C1D !important;
+  }
+}
+
+/* Toastr and common companion-extension toast libraries keep one Slack notice. */
+@media screen and (max-width:1000px) {
+  html:has(body.slk-ui) :is(#toast-container, .toastify-container, [data-sonner-toaster]) {
+    z-index:2147483647 !important;
+  }
+  html:has(body.slk-ui) :is(.toastify, .Toastify__toast, .notyf__toast, .iziToast, [data-sonner-toast]),
+  html:has(body.slk-ui) #toast-container > .toast,
+  html:has(body.slk-ui) #toast-container > div {
+    box-sizing:border-box !important;
+    max-width: min(370px, calc(100vw - 28px)) !important;
+    min-height:0 !important;
+    padding:12px 40px 12px 48px !important;
+    border:0 !important;
+    border-radius:12px !important;
+    color:#FFFFFF !important;
+    background:rgba(29,28,29,.96) !important;
+    box-shadow:0 8px 24px rgba(0,0,0,.22) !important;
+    font:500 13px/1.45 var(--slk-font,'Pretendard',sans-serif) !important;
+  }
+  html:has(body.slk-ui) :is(.toastify, .Toastify__toast, .notyf__toast, .iziToast, [data-sonner-toast]) :is(span,p,div),
+  html:has(body.slk-ui) #toast-container .toast-message {
+    color:inherit !important;
+    text-shadow:none !important;
+  }
+}

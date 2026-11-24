@@ -45,14 +45,23 @@ function slkSelectedLogoUrl() {
 }
 
 function slkSelectedSplashLogoUrl() {
-    return SLK_SPLASH_IMAGE;
+    // The extension setting controls both the header image and ST loading logo.
+    // Slack keeps its clean transparent splash glyph; the registered image uses
+    // the same SillyTavern logo URL that is used in the header.
+    return SLK_UI_SETTINGS.headerImageMode === 'custom'
+        ? SLK_DEFAULT_HEADER_IMAGE
+        : SLK_SPLASH_IMAGE;
 }
 
 
 function slkRememberSplashLogo(src) {
     const cssUrl = `url(${JSON.stringify(src)})`;
     try {
+        // Live loaders use --slk-loader-icon; older CSS uses --slk-splash-logo-url.
+        // Update both immediately when the extension radio option changes.
+        document.documentElement.style.setProperty('--slk-loader-icon', cssUrl, 'important');
         document.documentElement.style.setProperty('--slk-splash-logo-url', cssUrl);
+        document.body?.style?.setProperty('--slk-loader-icon', cssUrl, 'important');
         document.body?.style?.setProperty('--slk-splash-logo-url', cssUrl);
     } catch { /* noop */ }
 }
@@ -1221,8 +1230,17 @@ function slkSyncStatusBar() {
     const mobile = matchMedia('(max-width: 1000px)').matches;
     const enabled = SLK_UI_SETTINGS.enabled && document.body.classList.contains('slk-ui');
     const chat = mobile && enabled && document.body.classList.contains('slk-in-chat');
-    // A native settings drawer stays a distinct view; don't mix its header with chat state.
-    const drawerOpen = !!document.querySelector('#top-settings-holder > .drawer .drawer-icon.openIcon');
+    // Managed navigation leaves some hidden drawers with .openIcon.  Do not
+    // mistake a stale hidden icon for a visible panel: that kept the iOS
+    // status area aubergine after returning to chat.
+    const drawerOpen = [...document.querySelectorAll('#top-settings-holder > .drawer')].some(drawer => {
+        const content = drawer.querySelector('.drawer-content.openDrawer');
+        if (!content || content.classList.contains('slk-nav-hidden')) return false;
+        if (document.body.classList.contains('slk-managed-navigation') &&
+            document.body.classList.contains('slk-no-panel')) return false;
+        const style = getComputedStyle(content);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+    });
     const onChat = Boolean(chat && !drawerOpen && !document.body.classList.contains('slk-panel-opening'));
     document.documentElement.classList.toggle('slk-status-chat', onChat);
     const desired = onChat ? '#FFFFFF' : (slkOriginalThemeColor || '#3F1543');
@@ -1231,6 +1249,16 @@ function slkSyncStatusBar() {
         meta = document.createElement('meta'); meta.name='theme-color'; document.head.append(meta); slkAddedThemeColor=true;
     }
     if (meta.content !== desired) meta.content=desired;
+    // iOS standalone mode also reads this meta value. Browsers can defer
+    // changes until the next navigation, but keeping it in sync is harmless.
+    let iosMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if (!iosMeta) {
+        iosMeta = document.createElement('meta');
+        iosMeta.name = 'apple-mobile-web-app-status-bar-style';
+        document.head.append(iosMeta);
+    }
+    const iosStyle = onChat ? 'default' : 'black-translucent';
+    if (iosMeta.content !== iosStyle) iosMeta.content = iosStyle;
 }
 function slkWatchStatusBar() {
     // A real DOM surface (not a pseudo-element) can help iOS sample the right
@@ -1251,6 +1279,8 @@ function slkWatchStatusBar() {
     if (topSettings) obs.observe(topSettings,{attributes:true,attributeFilter:['class'],subtree:true});
     window.addEventListener('resize',schedule);
     window.addEventListener('pageshow',schedule);
+    window.addEventListener('focus',schedule);
+    document.addEventListener('visibilitychange',schedule);
     window.addEventListener('slk-ui-settings-changed',schedule);
     schedule();
 }
