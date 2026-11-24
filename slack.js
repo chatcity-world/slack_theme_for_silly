@@ -3062,6 +3062,25 @@ if (SLK_UI_SETTINGS.enabled) {
     let contextHeader = null;
     let panelTitle = null;
     let contextTitle = null;
+    // Native ST excludes pinned drawers from its outside-press auto-close.
+    // These pins are temporary PC navigation state, never persisted settings.
+    const pcPins = new Map();
+    function syncTemporaryPin(el, name, on) {
+        if (!el) return;
+        if (on) {
+            if (!el.classList.contains(name)) {
+                pcPins.set(el, name);
+                el.classList.add(name);
+            }
+        } else if (pcPins.get(el) === name) {
+            pcPins.delete(el);
+            el.classList.remove(name);
+        }
+    }
+    function releaseTemporaryPins() {
+        for (const [el, name] of pcPins) el.classList.remove(name);
+        pcPins.clear();
+    }
 
     const isDesktop = () => desktop.matches && SLK_UI_SETTINGS.enabled && document.body?.classList.contains('slk-ui');
     const partsFor = (selector) => {
@@ -3119,12 +3138,18 @@ if (SLK_UI_SETTINGS.enabled) {
             const setFlag = (el, name, value) => {
                 if (el && el.classList.contains(name) !== value) el.classList.toggle(name, value);
             };
+            syncTemporaryPin(parts.content, 'pinnedOpen', open);
+            syncTemporaryPin(parts.icon, 'drawerPinnedOpen', open);
             setFlag(parts.content, 'openDrawer', open);
             setFlag(parts.content, 'closedDrawer', !open);
             if (open) {
                 setFlag(parts.content, 'displayNone', false);
                 if (parts.content.hidden) parts.content.hidden = false;
                 if (parts.content.style.display === 'none') parts.content.style.removeProperty('display');
+                // A native close animation can leave a visible panel with
+                // a stale inline input/scroll lock. Only repair the panel root.
+                if (parts.content.style.pointerEvents === 'none') parts.content.style.removeProperty('pointer-events');
+                if (['hidden', 'clip'].includes(parts.content.style.overflowY)) parts.content.style.removeProperty('overflow-y');
             }
             setFlag(parts.icon, 'openIcon', open);
             setFlag(parts.icon, 'closedIcon', !open);
@@ -3196,6 +3221,7 @@ if (SLK_UI_SETTINGS.enabled) {
         if (!isDesktop()) {
             drawerObserver?.disconnect();
             drawerObserver = null;
+            releaseTemporaryPins();
             if (initialized && active) {
                 // The mobile controller owns the drawer classes after switching
                 // back to a narrow screen. Do not leave a desktop tab open.

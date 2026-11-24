@@ -23470,3 +23470,44 @@ html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):no
     font-weight:600!important;
   }
 }
+
+
+/* v1.8.81 — desktop drawer input and wheel hit-testing. The native holder
+   must have a real surface, not a zero-area compositor layer. Only the open
+   settings panel accepts input. Preserve native modal/top-layer priority. */
+@media screen and (min-width:1001px) {
+  html body.slk-ui.slk-pc #top-settings-holder {
+    pointer-events:none!important;
+    z-index:3005!important;
+    isolation:isolate!important;
+    overflow:visible!important;
+  }
+  html body.slk-ui.slk-pc.slk-pc-panel-open #top-settings-holder {
+    top:var(--pc-top)!important;
+    left:var(--pc-sidebar-edge)!important;
+    width:var(--pc-panel)!important;
+    height:calc(100dvh - var(--pc-top) - var(--pc-gap))!important;
+  }
+  html body.slk-ui.slk-pc #top-settings-holder > .drawer {
+    pointer-events:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    contain:none!important;
+  }
+  html body.slk-ui.slk-pc #top-settings-holder > .drawer.slk-pc-selected > .drawer-content.openDrawer {
+    pointer-events:auto!important;
+    overflow-y:auto!important;
+    transition:none!important;
+    animation:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    filter:none!important;
+  }
+  html body.slk-ui.slk-pc #top-settings-holder > .drawer:not(.slk-pc-selected) > .drawer-content {
+    pointer-events:none!important;
+  }
+  html body.slk-ui.slk-pc #top-settings-holder > .drawer.slk-pc-selected > .drawer-content.openDrawer::before,
+  html body.slk-ui.slk-pc #top-settings-holder > .drawer.slk-pc-selected > .drawer-content.openDrawer::after {
+    pointer-events:none!important;
+  }
+}
