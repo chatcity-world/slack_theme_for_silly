@@ -11346,7 +11346,7 @@ body.slk-ui {
     }
 
     /* Only the built-in Extensions Manager popup; leave every other popup untouched. */
-    html body.slk-ui dialog.popup:has(.extensions_info) {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) {
         width: calc(100vw - 32px) !important;
         max-width: 560px !important;
         max-height: calc(100dvh - 48px) !important;
@@ -11362,28 +11362,28 @@ body.slk-ui {
         box-shadow: 0 18px 60px rgba(29,28,29,.23) !important;
         font-family: var(--slk-font) !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info)::backdrop {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))::backdrop {
         background: rgba(29, 28, 29, .45) !important;
         backdrop-filter: blur(3px);
         -webkit-backdrop-filter: blur(3px);
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .popup-body,
-    html body.slk-ui dialog.popup:has(.extensions_info) .popup-content {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .popup-body,
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .popup-content {
         background: var(--slk-surface) !important;
         color: var(--slk-text) !important;
         min-width: 0 !important;
         max-width: 100% !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) > .popup-body {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) > .popup-body {
         border-radius: inherit !important;
         overflow: hidden !important;
         min-height: 0 !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .popup-content {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .popup-content {
         padding: 18px 16px 16px !important;
         overflow-x: hidden !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info {
         width: 100% !important;
         max-width: 100% !important;
         padding: 0 !important;
@@ -11391,7 +11391,7 @@ body.slk-ui {
         font-size: 14px !important;
         text-align: left !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar {
         position: sticky !important;
         top: 0 !important;
         display: flex !important;
@@ -11406,8 +11406,8 @@ body.slk-ui {
         box-shadow: none !important;
         z-index: 3 !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > .menu_button,
-    html body.slk-ui dialog.popup:has(.extensions_info) .third_party_toolbar > .menu_button {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar > .menu_button,
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .third_party_toolbar > .menu_button {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -11427,12 +11427,12 @@ body.slk-ui {
         box-shadow: none !important;
         filter: none !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > .menu_button:first-child {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar > .menu_button:first-child {
         background: #4A154B !important;
         color: #FFFFFF !important;
         border-color: #4A154B !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info h3 {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info h3 {
         margin: 16px 0 12px !important;
         padding: 0 !important;
         color: var(--slk-text) !important;
@@ -11441,7 +11441,7 @@ body.slk-ui {
         line-height: 1.4 !important;
         text-align: left !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_block {
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
@@ -11459,27 +11459,27 @@ body.slk-ui {
         box-shadow: none !important;
         color: var(--slk-text) !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block :is(.extension_name, .extension_text_block) {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block :is(.extension_name, .extension_text_block) {
         color: var(--slk-text) !important;
         min-width: 0 !important;
         font-weight: 600 !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block :is(.extension_version, .extension_author, .extension_modules) {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block :is(.extension_version, .extension_author, .extension_modules) {
         color: var(--slk-muted) !important;
         font-weight: 400 !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block .extension_actions {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block .extension_actions {
         display: flex !important;
         align-items: center !important;
         gap: 8px !important;
         margin: 0 !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block :is(input[type="checkbox"], .fa-gear) {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block :is(input[type="checkbox"], .fa-gear) {
         box-shadow: none !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .popup-controls {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .popup-controls {
         display: flex !important;
         justify-content: flex-end !important;
         margin: 0 !important;
@@ -11487,7 +11487,7 @@ body.slk-ui {
         border-top: 1px solid var(--slk-border) !important;
         background: var(--slk-surface) !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .popup-controls :is(.menu_button, button) {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .popup-controls :is(.menu_button, button) {
         min-width: 96px !important;
         min-height: 40px !important;
         border: none !important;
@@ -11557,7 +11557,7 @@ body.slk-ui {
 @media screen {
     /* SillyTavern generates these as .menu_button controls inside .extension_actions.
        Override the native square black-outline style at the actual button level. */
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions > button.menu_button {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_actions > button.menu_button {
         appearance: none !important;
         -webkit-appearance: none !important;
         display: grid !important;
@@ -11585,7 +11585,7 @@ body.slk-ui {
         line-height: 1 !important;
         font-size: 16px !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions > button.menu_button > i {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_actions > button.menu_button > i {
         display: block !important;
         color: inherit !important;
         font-size: 16px !important;
@@ -11593,19 +11593,19 @@ body.slk-ui {
         filter: none !important;
         text-shadow: none !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions > button.menu_button:active {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_actions > button.menu_button:active {
         background: #EFEAF0 !important;
         color: #4A154B !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions > button.menu_button:disabled {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_actions > button.menu_button:disabled {
         opacity: .45 !important;
         cursor: default !important;
     }
     /* Keep ST's displayNone functionality even when there is a forced display:grid above. */
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions > button.menu_button.displayNone {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_actions > button.menu_button.displayNone {
         display: none !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_actions {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_actions {
         display: flex !important;
         flex-flow: row nowrap !important;
         justify-content: flex-end !important;
@@ -11613,14 +11613,14 @@ body.slk-ui {
         flex: 0 0 auto !important;
     }
     /* Native checkbox is reset only within the manager popup. */
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_toggle {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_toggle {
         display: grid !important;
         place-items: center !important;
         flex: 0 0 24px !important;
         margin: 0 !important;
         padding: 0 !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_toggle > input[type="checkbox"] {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_toggle > input[type="checkbox"] {
         -webkit-appearance: none !important;
         appearance: none !important;
         display: block !important;
@@ -11640,7 +11640,7 @@ body.slk-ui {
         opacity: 1 !important;
         cursor: pointer !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_toggle > input[type="checkbox"]:checked {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_toggle > input[type="checkbox"]:checked {
         border-color: #4A154B !important;
         background-color: #4A154B !important;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' d='m5 12 4.5 4.5L19 7'/%3E%3C/svg%3E") !important;
@@ -11648,7 +11648,7 @@ body.slk-ui {
         background-position: center !important;
         background-repeat: no-repeat !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_toggle > input[type="checkbox"]:disabled {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_toggle > input[type="checkbox"]:disabled {
         border-color: #DDDDE1 !important;
         background-color: #F5F5F6 !important;
         opacity: .55 !important;
@@ -11656,7 +11656,7 @@ body.slk-ui {
     }
     /* Mobile rows: full extension title on top, action buttons beneath.
        Prevents controls eating the entire 303–390px row. */
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_block {
         display: grid !important;
         grid-template-columns: 24px 22px minmax(0, 1fr) !important;
         grid-template-rows: auto auto !important;
@@ -11665,11 +11665,11 @@ body.slk-ui {
         min-width: 0 !important;
         padding: 10px 12px !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_toggle {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block > .extension_toggle {
         grid-column: 1 !important;
         grid-row: 1 !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_icon {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block > .extension_icon {
         grid-column: 2 !important;
         grid-row: 1 !important;
         width: 22px !important;
@@ -11677,7 +11677,7 @@ body.slk-ui {
         text-align: center !important;
         color: var(--slk-muted, #616061) !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_text_block {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block > .extension_text_block {
         grid-column: 3 !important;
         grid-row: 1 !important;
         width: 100% !important;
@@ -11685,12 +11685,12 @@ body.slk-ui {
         overflow: hidden !important;
         text-overflow: ellipsis !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_actions {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block > .extension_actions {
         grid-column: 1 / -1 !important;
         grid-row: 2 !important;
         justify-self: end !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_actions:empty {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block > .extension_actions:empty {
         display: none !important;
     }
     
@@ -11855,7 +11855,7 @@ body.slk-ui {
 @media screen {
     /* Manager: opaque, permanently visible action header ABOVE the scrolling
        extension list. JS moves this exact toolbar out of popup-content. */
-    html body.slk-ui dialog.popup:has(.extensions_info) > .popup-body > .slk-manager-toolbar {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) > .popup-body > .slk-manager-toolbar {
         position: relative !important;
         top: auto !important;
         z-index: 10 !important;
@@ -11868,24 +11868,24 @@ body.slk-ui {
         border-bottom: 1px solid var(--slk-border, #E3E3E3) !important;
         box-shadow: none !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .popup-content {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .popup-content {
         margin-top: 0 !important;
         padding-top: 10px !important;
         background-color: var(--slk-surface, #fff) !important;
     }
     /* Smaller status/type icon beside each extension checkbox. */
-    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block {
         grid-template-columns: 24px 14px minmax(0,1fr) !important;
         gap: 6px 10px !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_icon {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block > .extension_icon {
         width: 14px !important;
         min-width: 14px !important;
         height: 18px !important;
         display: grid !important;
         place-items: center !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extension_block > .extension_icon > i {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block > .extension_icon > i {
         font-size: 12px !important;
         width: 12px !important;
         min-width: 12px !important;
@@ -11894,7 +11894,7 @@ body.slk-ui {
     }
     /* Native ST marks updateable names with update_available. Override the
        earlier generic .extension_name rule, which forced them all black. */
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block .extension_name.update_available {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_block .extension_name.update_available {
         color: #B45309 !important;
         -webkit-text-fill-color: #B45309 !important;
         font-weight: 800 !important;
@@ -12025,11 +12025,11 @@ body.slk-ui {
 @media screen {
     /* Previous version reduced icon size but retained large gaps around the
        14px column. Pull the title left to match the smaller 12px type icon. */
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_block {
         grid-template-columns: 24px 12px minmax(0, 1fr) !important;
         column-gap: 5px !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block > .extension_icon {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_block > .extension_icon {
         width: 12px !important;
         min-width: 12px !important;
         max-width: 12px !important;
@@ -12040,7 +12040,7 @@ body.slk-ui {
         display: grid !important;
         place-items: center !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block > .extension_icon > i {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_block > .extension_icon > i {
         display: block !important;
         font-size: 12px !important;
         line-height: 12px !important;
@@ -12052,13 +12052,13 @@ body.slk-ui {
     /* Native SillyTavern inserts an <i class="fa-solid fa-at fa-xs"> as a
        standalone element before the author. The glyph must not inherit the
        larger extension-name/icon typography. */
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block .extension_author {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_block .extension_author {
         font-size: 12px !important;
         line-height: 1.3 !important;
         vertical-align: baseline !important;
         gap: 2px !important;
     }
-    html body.slk-ui dialog.popup:has(.extensions_info) .extensions_info .extension_block .extension_author > i.fa-at {
+    html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_info .extension_block .extension_author > i.fa-at {
         display: inline-block !important;
         flex: 0 0 10px !important;
         font-size: 10px !important;
@@ -18548,6 +18548,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     min-width: 0 !important;
   }
   html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-section-main {
+    gap: 4px !important;
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow-y: auto !important;
@@ -19543,18 +19544,18 @@ html body.slk-ui #right-nav-panel #rm_characters_block .bogus_folder_select .ch_
   html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action svg :is(path,circle,rect,line,polyline){stroke-width:inherit !important;}
 }
 /* Extension manager: two equal update actions, sort remains a secondary toggle. */
-html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar {
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar {
   display:grid !important;grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important;
   gap:8px !important; align-items:center !important; padding:0 0 14px !important;margin:0 0 16px !important;
 }
-html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > .expander {display:none !important;}
-html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button.menu_button:first-child,
-html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button.menu_button:nth-child(2) {
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar > .expander {display:none !important;}
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar > button.menu_button:first-child,
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar > button.menu_button:nth-child(2) {
   width:100% !important; min-height:42px !important;height:42px !important;
   padding:8px 10px !important; font-size:13px !important; font-weight:650 !important;
   border-radius:10px !important; white-space:nowrap !important;
 }
-html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button.menu_button:last-child {
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar > button.menu_button:last-child {
   grid-column:1/-1 !important;justify-self:end !important;
   width:auto !important;min-height:32px !important; height:32px !important;
   border:1px solid #e3e3e3 !important; border-radius:8px !important;
@@ -22220,33 +22221,33 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   }
 
   /* Built-in extensions: name block should read semibold, not overly bold. */
-  html body.slk-ui dialog.popup:has(.extensions_info) .extension_block :is(.extension_name, .extension_text_block) {
+  html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extension_block :is(.extension_name, .extension_text_block) {
     font-weight: 600 !important;
   }
 
  }
 
 /* v1.8.52: all three controls share one row; native select is the hit target. */
-html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar.slk-native-sort-ready {
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar.slk-native-sort-ready {
   display:grid !important;
   grid-template-columns:minmax(0,1fr) minmax(0,1fr) 42px !important;
   grid-template-rows:42px !important;
   align-items:center !important;
   gap:8px !important;
 }
-html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar.slk-native-sort-ready > :is(.slk-sort-source,.expander) {
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar.slk-native-sort-ready > :is(.slk-sort-source,.expander) {
   display:none !important;
 }
-html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(1),
-html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(2) {
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(1),
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(2) {
   grid-row:1 !important; min-width:0 !important; width:100% !important;
   height:42px !important; min-height:42px !important;
   padding:4px 3px !important; white-space:normal !important;
   line-height:1.2 !important;
 }
-html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(1) {grid-column:1 !important;}
-html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(2) {grid-column:2 !important;}
-html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort {
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(1) {grid-column:1 !important;}
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(2) {grid-column:2 !important;}
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .slk-native-sort {
   position:relative !important; display:grid !important; place-items:center !important;
   grid-column:3 !important; grid-row:1 !important;
   width:42px !important; height:42px !important; min-width:42px !important;
@@ -22255,12 +22256,12 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort {
   border-radius:10px !important; background:var(--slk-surface,#fff) !important;
   color:var(--slk-text,#1D1C1D) !important;
 }
-html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort > svg {
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .slk-native-sort > svg {
   width:20px !important; height:20px !important; display:block !important;
   stroke:currentColor !important; fill:none !important; stroke-width:1.8 !important;
   stroke-linecap:round !important; stroke-linejoin:round !important; pointer-events:none !important;
 }
-html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort > select.slk-native-sort-select {
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .slk-native-sort > select.slk-native-sort-select {
   position:absolute !important; inset:0 !important; display:block !important;
   width:100% !important; height:100% !important; min-width:0 !important; min-height:0 !important;
   max-width:none !important; max-height:none !important; margin:0 !important; padding:0 !important;
@@ -22268,7 +22269,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort > select.sl
   cursor:pointer !important; font-size:16px !important; z-index:1 !important;
   appearance:auto !important; -webkit-appearance:menulist !important;
 }
-html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-within {
+html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .slk-native-sort:focus-within {
   outline:2px solid #1264A3 !important; outline-offset:2px !important;
 }
 
@@ -22920,20 +22921,20 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-withi
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) .slk-modal:not(:has(#loader))::backdrop,
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) .slk-modal-backdrop,
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #shadow_select_chat_popup { background:var(--slk-pop-dim)!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info,input[name="exclude"])):not(.wide,.large,.fullscreen,.popup-wide,.popup-large,.popup-fullscreen):not(:has(.maximized_textarea)) { width:min(var(--slk-pop-width),calc(100vw - 2 * var(--slk-pop-edge)))!important; max-width:calc(100vw - 2 * var(--slk-pop-edge))!important; }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info,input[name="exclude"])):has(.maximized_textarea) { width:min(760px,calc(100vw - 2 * var(--slk-pop-edge)))!important; max-width:calc(100vw - 2 * var(--slk-pop-edge))!important; }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info,input[name="exclude"])) { box-sizing:border-box!important; max-height:calc(100dvh - 2 * var(--slk-pop-edge) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important; overflow-y:auto!important; background:#FFF!important; border:1px solid #E8E5E8!important; box-shadow:0 18px 48px rgba(29,28,29,.20)!important; }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info,input[name="exclude"])) .popup-content { padding:var(--slk-pop-inset) var(--slk-pop-inset) 8px!important; box-sizing:border-box!important; text-align:left!important; font-size:var(--slk-pop-label)!important; line-height:1.5!important; }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info,input[name="exclude"])) .popup-inputs { padding:8px var(--slk-pop-inset) 0!important; box-sizing:border-box!important; }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info,input[name="exclude"])) .popup-body > .popup-input { width:calc(100% - 2 * var(--slk-pop-inset))!important; max-width:calc(100% - 2 * var(--slk-pop-inset))!important; margin:8px var(--slk-pop-inset) 0!important; }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info,input[name="exclude"])) .popup-inputs .text_label { gap:6px!important; margin:0 0 12px!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info:not(:where(.regex_editor *)),input[name="exclude"])):not(.wide,.large,.fullscreen,.popup-wide,.popup-large,.popup-fullscreen):not(:has(.maximized_textarea)) { width:min(var(--slk-pop-width),calc(100vw - 2 * var(--slk-pop-edge)))!important; max-width:calc(100vw - 2 * var(--slk-pop-edge))!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info:not(:where(.regex_editor *)),input[name="exclude"])):has(.maximized_textarea) { width:min(760px,calc(100vw - 2 * var(--slk-pop-edge)))!important; max-width:calc(100vw - 2 * var(--slk-pop-edge))!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info:not(:where(.regex_editor *)),input[name="exclude"])) { box-sizing:border-box!important; max-height:calc(100dvh - 2 * var(--slk-pop-edge) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important; overflow-y:auto!important; background:#FFF!important; border:1px solid #E8E5E8!important; box-shadow:0 18px 48px rgba(29,28,29,.20)!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info:not(:where(.regex_editor *)),input[name="exclude"])) .popup-content { padding:var(--slk-pop-inset) var(--slk-pop-inset) 8px!important; box-sizing:border-box!important; text-align:left!important; font-size:var(--slk-pop-label)!important; line-height:1.5!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info:not(:where(.regex_editor *)),input[name="exclude"])) .popup-inputs { padding:8px var(--slk-pop-inset) 0!important; box-sizing:border-box!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info:not(:where(.regex_editor *)),input[name="exclude"])) .popup-body > .popup-input { width:calc(100% - 2 * var(--slk-pop-inset))!important; max-width:calc(100% - 2 * var(--slk-pop-inset))!important; margin:8px var(--slk-pop-inset) 0!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info:not(:where(.regex_editor *)),input[name="exclude"])) .popup-inputs .text_label { gap:6px!important; margin:0 0 12px!important; }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)) .popup-content :is(h1,h2,h3):first-child,
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)) .popup-header,
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) .slk-modal:not(:has(#loader)) :is(h1,h2,h3):first-child,
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) .slk-modal:not(:has(#loader)) header > :is(h1,h2,h3),
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #select_chat_popup #selectChatPopupHeaderText,
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #completion_prompt_manager_popup #completion_prompt_manager_popup_edit h3.slk-prompt-editor-title { font-family:var(--slk-font)!important; font-size:var(--slk-pop-title)!important; font-weight:700!important; line-height:1.35!important; color:var(--slk-text)!important; letter-spacing:-.01em!important; text-align:left!important; }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info,input[name="exclude"])) .popup-content > :is(h1,h2,h3):first-child { margin:0 0 12px!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info:not(:where(.regex_editor *)),input[name="exclude"])) .popup-content > :is(h1,h2,h3):first-child { margin:0 0 12px!important; }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)) .popup-content :is(h2,h3,h4,h5):not(:first-child),
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) .slk-modal:not(:has(#loader)) :is(h2,h3,h4,h5):not(:first-child) { font-family:var(--slk-font)!important; font-size:var(--slk-pop-section)!important; font-weight:650!important; line-height:1.4!important; }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)) :is(label,.text_label,.text_label > span):not([class*="fa-"]),
@@ -22960,7 +22961,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-withi
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)) :is(.select2-selection__rendered,.select2-selection__choice__display),
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) .slk-modal:not(:has(#loader)) :is(.select2-selection__rendered,.select2-selection__choice__display),
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #completion_prompt_manager_popup :is(.select2-selection__rendered,.select2-selection__choice__display) { font-size:var(--slk-pop-label)!important; font-weight:400!important; }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info,input[name="exclude"])) .popup-controls { gap:var(--slk-pop-gap)!important; padding:12px var(--slk-pop-inset) var(--slk-pop-inset)!important; margin:8px 0 0!important; border-top:1px solid #E8E5E8!important; flex-wrap:wrap; box-sizing:border-box!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)):not(:has(.extensions_info:not(:where(.regex_editor *)),input[name="exclude"])) .popup-controls { gap:var(--slk-pop-gap)!important; padding:12px var(--slk-pop-inset) var(--slk-pop-inset)!important; margin:8px 0 0!important; border-top:1px solid #E8E5E8!important; flex-wrap:wrap; box-sizing:border-box!important; }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)) .popup-controls :is(button,.menu_button,[role="button"]):not(.slk-modal-close,.popup-button-close,.fa,[class*="fa-"],[hidden],.displayNone,.hidden):not(:has(> :is(i,svg):only-child)),
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) .slk-modal:not(:has(#loader)) :is(button,.menu_button,[role="button"]):not(.slk-modal-close,.popup-button-close,.fa,[class*="fa-"],[hidden],.displayNone,.hidden):not(:has(> :is(i,svg):only-child)),
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) :is(dialog.popup,.popup:has(> .popup-body)):not(:has(#loader)) .extensions_toolbar :is(button,.menu_button,[role="button"]):not(.slk-modal-close,.popup-button-close,.fa,[class*="fa-"],[hidden],.displayNone,.hidden):not(:has(> :is(i,svg):only-child)) { min-height:var(--slk-pop-control)!important; height:auto!important; padding:6px 12px!important; box-sizing:border-box!important; border-radius:var(--slk-pop-field-radius)!important; font-family:var(--slk-font)!important; font-size:var(--slk-pop-label)!important; font-weight:600!important; line-height:1.35!important; box-shadow:none!important; }
@@ -23948,9 +23949,9 @@ html body.slk-ui.slk-pc dialog.popup:has(input[name="exclude"]) .popup-content l
 /* v1.8.88 — Native Regex extension, scoped PC/mobile design system */
 
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings { --rx-height:34px; --rx-icon:18px; --rx-gap:6px; color:#1D1C1D!important; container-type:inline-size; }
-html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings > .inline-drawer > .inline-drawer-toggle { display:flex!important; flex-direction:row!important; justify-content:space-between!important; align-items:center!important; flex-wrap:nowrap!important; gap:8px!important; width:100%!important; min-height:32px!important; padding:0!important; margin:0!important; }
-html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings > .inline-drawer > .inline-drawer-toggle > b { flex:1 1 auto!important; font-size:14px!important; line-height:20px!important; font-weight:650!important; }
-html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings > .inline-drawer > .inline-drawer-toggle > .inline-drawer-icon { position:static!important; flex:0 0 20px!important; width:20px!important; height:20px!important; margin:0!important; align-self:center!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings > .inline-drawer > .inline-drawer-toggle { display:flex!important; flex-direction:row!important; justify-content:space-between!important; align-items:center!important; flex-wrap:nowrap!important; gap:8px!important; width:100%!important; box-sizing:border-box!important; height:52px!important; min-height:52px!important; padding:6px 0!important; margin:0!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings > .inline-drawer > .inline-drawer-toggle > b { flex:1 1 auto!important; font-size:15px!important; line-height:20px!important; font-weight:700!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings > .inline-drawer > .inline-drawer-toggle > .inline-drawer-icon { position:static!important; flex:0 0 28px!important; width:28px!important; height:28px!important; margin:0!important; align-self:center!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings > .inline-drawer > .inline-drawer-content { padding: 8px 0 12px!important; min-width:0!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings > .inline-drawer > .inline-drawer-content > .flex-container:has(>#open_regex_editor) { display:grid!important; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px!important; align-items:stretch!important; width:100%!important; margin:0!important; padding:0!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings .menu_button:where(:not([hidden],.displayNone,[style*="display: none"],[style*="display:none"])) { display:inline-flex!important; flex-direction:row!important; align-items:center!important; justify-content:center!important; gap:5px!important; box-sizing:border-box!important; width:auto!important; min-width:0!important; max-width:100%!important; height:var(--rx-height)!important; min-height:var(--rx-height)!important; max-height:none!important; padding:0 8px!important; margin:0!important; border:1px solid #DAD8DA!important; border-radius:8px!important; background:#FFF!important; color:#1D1C1D!important; font:600 13px/1.2 var(--slk-font,sans-serif)!important; box-shadow:none!important; text-shadow:none!important; transform:none!important; white-space:nowrap!important; }
@@ -24073,3 +24074,149 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings .menu_button:is(.fa-ellipsis), html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings .menu_button > :is(i,span).fa-ellipsis:not(.regex-toggle-on,.regex-toggle-off) { --rx-glyph:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%225%22%20cy%3D%2212%22%20r%3D%221%22%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%221%22%2F%3E%3Ccircle%20cx%3D%2219%22%20cy%3D%2212%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E"); mask:none!important; -webkit-mask:none!important; background-image:none!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings .menu_button > :is(i,span).fa-ellipsis:not(.regex-toggle-on,.regex-toggle-off) { display:grid!important; place-items:center!important; width:var(--rx-icon)!important; height:var(--rx-icon)!important; min-width:var(--rx-icon)!important; flex:0 0 var(--rx-icon)!important; margin:0!important; padding:0!important; font-size:0!important; background:transparent!important; color:inherit!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings .menu_button.fa-ellipsis::before, html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings .menu_button > :is(i,span).fa-ellipsis:not(.regex-toggle-on,.regex-toggle-off)::before { content:""!important; display:block!important; position:static!important; width:var(--rx-icon)!important; height:var(--rx-icon)!important; flex:0 0 var(--rx-icon)!important; background:currentColor!important; -webkit-mask:var(--rx-glyph) center/contain no-repeat!important; mask:var(--rx-glyph) center/contain no-repeat!important; margin:0!important; padding:0!important; transform:none!important; border:0!important; }
+
+/* v1.8.89 — Desktop message actions: preserve the author and metadata.
+   Mobile still replaces the author area with the expanded action strip. */
+@media screen and (min-width: 1001px) {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) {
+    grid-template-columns: 50px auto auto auto auto auto minmax(90px, 1fr) 0px !important;
+    grid-template-rows: auto auto !important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost):not([hidden]):not(.displayNone) {
+    visibility: visible !important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .name_text {
+    grid-column: 2 / 7 !important;
+    min-width: 0 !important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons {
+    grid-column: 7 / -1 !important;
+    grid-row: 1 / 3 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    justify-self: stretch !important;
+    align-self: center !important;
+    box-sizing: border-box !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 30px !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 0 0 8px !important;
+    overflow: visible !important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons > .extraMesButtons {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-flow: row wrap !important;
+    justify-content: flex-end !important;
+    align-content: center !important;
+    align-items: center !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+}
+
+
+/* v1.8.90 — Regex modal system and extension headers; preserve native controls. */
+@media screen {
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) #rm_extensions_block #memory_settings > .inline-drawer > .inline-drawer-toggle #summaryExtensionPopoutButton { display:none!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) #rm_extensions_block #memory_settings > .inline-drawer > .inline-drawer-toggle:has(> .inline-drawer-icon.up) #summaryExtensionPopoutButton { display:inline-grid!important;place-items:center!important;box-sizing:border-box!important;flex:0 0 28px!important;width:28px!important;height:28px!important;min-height:28px!important;min-width:28px!important;margin:0!important;padding:0!important;border:0!important;border-radius:8px!important;box-shadow:none!important;background:#F1F1F1!important;color:#616061!important;font-size:0!important;mask:none!important;-webkit-mask:none!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) #rm_extensions_block #memory_settings > .inline-drawer > .inline-drawer-toggle #summaryExtensionPopoutButton::before { content:""!important;display:block!important;position:static!important;width:16px!important;height:16px!important;transform:none!important;background:currentColor!important;mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%2213%22%20height%3D%2214%22%20rx%3D%222%22%2F%3E%3Cpath%20d%3D%22M8%207V3h13v13h-5%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat!important;-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%2213%22%20height%3D%2214%22%20rx%3D%222%22%2F%3E%3Cpath%20d%3D%22M8%207V3h13v13h-5%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup:has(.regex_editor,.regex-debugger-container,input[name="regex_import_target"]) .popup-content { padding:var(--slk-pop-inset) var(--slk-pop-inset) 8px!important;min-width:0!important;overflow-x:hidden!important;text-align:left!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) { min-width:0!important;max-width:100%!important;font:400 var(--slk-pop-label,13px)/1.45 var(--slk-font,sans-serif)!important;color:#1D1C1D!important;text-align:left!important;box-sizing:border-box!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(h3,h4) { font:700 var(--slk-pop-section,14px)/1.4 var(--slk-font,sans-serif)!important;color:#1D1C1D!important;text-align:left!important;margin:0 0 8px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) > h3 { display:flex!important;align-items:center!important;justify-content:flex-start!important;flex-wrap:nowrap!important;gap:5px!important;font-size:var(--slk-pop-title)!important;margin:0 0 10px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) > h3 > strong { font:inherit!important;white-space:normal!important;min-width:0!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) #regex_test_mode_toggle { margin-left:auto!important;flex:0 0 auto!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(small,label,span.note-link-span) { text-shadow:none!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) small { font:400 12px/1.45 var(--slk-font,sans-serif)!important;color:#616061!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) > small.extensions_info { display:block!important;font-size:12px!important;font-weight:400!important;color:#616061!important;line-height:1.45!important;margin:0 0 10px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(hr) { height:0!important;border:0!important;border-top:1px solid #E5E3E5!important;margin:12px 0!important;opacity:1!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(.menu_button,button):not([hidden],.displayNone,.hidden,[style*="display: none"],[style*="display:none"]) { display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-height:var(--slk-pop-control)!important;height:auto!important;padding:0 10px!important;margin-top:0!important;margin-bottom:0!important;border:1px solid #DAD8DA!important;border-radius:8px!important;background:#FFF!important;color:#1D1C1D!important;box-shadow:none!important;text-shadow:none!important;white-space:normal!important;font:600 13px/1.25 var(--slk-font,sans-serif)!important;box-sizing:border-box!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .menu_button :is(i,span.menu_button_text) { transform:none!important;position:static!important;margin:0!important;color:inherit!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(.menu_button,button):hover:not(:disabled,.disabled) { background:#F5F3F5!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(.menu_button,button):focus-visible { outline:2px solid #1264A3!important;outline-offset:2px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(input:not([type]),input[type="text"],input[type="number"],textarea,select):not(.select2-hidden-accessible) { box-sizing:border-box!important;width:100%!important;min-width:0!important;max-width:100%!important;font:400 var(--slk-pop-field)/1.45 var(--slk-font,sans-serif)!important;border:1px solid #DAD8DA!important;border-radius:8px!important;background-color:#FFF!important;color:#1D1C1D!important;box-shadow:none!important;margin:0!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(input,textarea)::placeholder { color:#8A8A8A!important;opacity:1!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) textarea { min-height:76px!important;padding:8px 10px!important;resize:vertical!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(.title_restorable, label[for^="regex_debugger_"]) { display:flex!important;align-items:center!important;font-size:13px!important;font-weight:500!important;margin:0 0 4px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) > .flex-container.flexFlowColumn { display:flex!important;flex-direction:column!important;gap:10px!important;margin:0 0 12px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) > .flex-container:has(> .wi-enter-footer-text) { display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;align-items:start!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .wi-enter-footer-text { display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:5px!important;min-width:0!important;width:100%!important;box-sizing:border-box!important;padding:10px!important;background:#F8F8F8!important;border:1px solid #EEE!important;border-radius:10px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .wi-enter-footer-text > small:first-child { font-size:13px!important;font-weight:600!important;color:#1D1C1D!important;margin-bottom:3px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .wi-enter-footer-text > .flex-container:has(input[name="min_depth"]) { display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;margin:6px 0 0!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .wi-enter-footer-text > .flex-container:has(input[name="min_depth"]) > div { display:flex!important;flex-direction:column!important;min-width:0!important;gap:4px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) label:has(> select[name="substitute_regex"]) { display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:4px!important;margin:4px 0!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) label:has(> input:is([type="checkbox"],[type="radio"])),html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup:has(.regex_editor,.regex-debugger-container,input[name="regex_import_target"]) label:has(>input[name="regex_import_target"]) { display:flex!important;align-items:center!important;gap:8px!important;min-width:0!important;min-height:32px!important;margin:0!important;padding:5px 7px!important;box-sizing:border-box!important;border:1px solid transparent!important;border-radius:8px!important;font:400 13px/1.35 var(--slk-font,sans-serif)!important;color:#1D1C1D!important;cursor:pointer!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) label:has(>input:is([type="checkbox"],[type="radio"]):checked),html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup:has(.regex_editor,.regex-debugger-container,input[name="regex_import_target"]) label:has(>input[name="regex_import_target"]:checked) { background:#F1EAF2!important;border-color:#E3D6E4!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input:is([type="checkbox"],[type="radio"]) { appearance:none!important;-webkit-appearance:none!important;display:inline-block!important;box-sizing:border-box!important;flex:0 0 18px!important;width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;max-width:18px!important;max-height:18px!important;margin:0!important;padding:0!important;border:1.5px solid #B8B5B9!important;border-radius:5px!important;background:#FFF!important;box-shadow:none!important;filter:none!important;opacity:1!important;transform:none!important;position:relative!important;cursor:pointer!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input:is([type="checkbox"],[type="radio"])::before,html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input:is([type="checkbox"],[type="radio"])::after { display:none!important;content:none!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input[type="checkbox"]:checked { background:#4A154B url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m5%2012%204%204%2010-10%22%2F%3E%3C%2Fsvg%3E") center/14px 14px no-repeat!important;border-color:#4A154B!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input[type="radio"] { border-radius:50%!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input[type="radio"]:checked { border:5px solid #4A154B!important;background:#FFF!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input:is([type="checkbox"],[type="radio"]):focus-visible { outline:2px solid #1264A3!important;outline-offset:2px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input:is([type="checkbox"],[type="radio"]):disabled { opacity:.45!important;cursor:default!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .note-link-span { display:inline-block!important;vertical-align:middle!important;width:16px!important;height:16px!important;min-width:16px!important;margin:0 2px!important;padding:0!important;font-size:0!important;color:#8A8A8A!important;background:currentColor!important;mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%2F%3E%3Cpath%20d%3D%22M9%209a3%203%200%201%201%204%203c-1%20.5-1%201.2-1%202m0%203h.01%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat!important;-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%2F%3E%3Cpath%20d%3D%22M9%209a3%203%200%201%201%204%203c-1%20.5-1%201.2-1%202m0%203h.01%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat!important;border:0!important;box-shadow:none!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .note-link-span::before { content:none!important;display:none!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) #regex_info_block { border-radius:8px!important;margin:0 0 10px!important;padding:8px 30px 8px 10px!important;font-size:12px!important;box-shadow:none!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup .regex-debugger-container { display:flex!important;flex-direction:column!important;gap:12px!important;width:100%!important;height:auto!important;min-height:0!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(.regex-debugger-rules-list,.regex-debugger-tester,.regex-debugger-io,.regex-debugger-results) { width:100%!important;min-width:0!important;max-width:100%!important;flex:0 0 auto!important;height:auto!important;box-sizing:border-box!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .regex-debugger-rules-list { border:1px solid #E5E3E5!important;background:#F8F8F8!important;border-radius:10px!important;padding:10px!important;max-height:220px!important;overflow:auto!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .regex-debugger-rule { display:flex!important;align-items:center!important;gap:7px!important;min-width:0!important;margin:5px 0!important;padding:7px!important;background:#FFF!important;border:1px solid #E5E3E5!important;border-radius:8px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .rule-details { flex:1 1 0!important;min-width:0!important;overflow-wrap:anywhere!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(#regex_debugger_run_test_header,.results-header) { display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:8px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .results-box { border:1px solid #DAD8DA!important;border-radius:8px!important;background:#F8F8F8!important;min-width:0!important;padding:10px!important;overflow:auto!important;overflow-wrap:anywhere!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .results-box pre { white-space:pre-wrap!important;overflow-wrap:anywhere!important; }
+}
+@media screen and (max-width:420px) { html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) > .flex-container:has(> .wi-enter-footer-text) {grid-template-columns:minmax(0,1fr)!important;} html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) #regex_test_mode {flex-wrap:wrap!important;} html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) #regex_test_mode > .flex1 {flex:1 1 100%!important;} }
+
+/* v1.8.91 — Mobile subtab weight parity and non-wrapping User Settings heading. */
+@media screen and (max-width:1000px) {
+  html body.slk-ui:not(.slk-pc) :is(#left-nav-panel,#user-settings-block) :is(#slk-aitabs,#slk-ustabs) > .slk-aitab,
+  html body.slk-ui:not(.slk-pc) :is(#left-nav-panel,#user-settings-block) :is(#slk-aitabs,#slk-ustabs) > .slk-aitab.active,
+  html body.slk-ui:not(.slk-pc) :is(#left-nav-panel,#user-settings-block) :is(#slk-aitabs,#slk-ustabs) > .slk-aitab > span {
+    font-weight:600!important;
+  }
+  html body.slk-ui:not(.slk-pc) #user-settings-block [name="userSettingsRowOne"] {
+    grid-template-columns:max-content minmax(0,1fr)!important;
+    grid-template-rows:auto auto!important;
+    column-gap:6px!important;
+    align-items:center!important;
+  }
+  html body.slk-ui:not(.slk-pc) #user-settings-block [name="userSettingsRowOne"] > .flex-container:first-child {
+    grid-column:1!important; grid-row:1!important;
+    min-width:max-content!important; flex-wrap:nowrap!important;
+  }
+  html body.slk-ui:not(.slk-pc) #user-settings-block [name="userSettingsRowOne"] > .flex-container:first-child > .flex-container {
+    min-width:max-content!important; flex-wrap:nowrap!important; gap:0!important;
+  }
+  html body.slk-ui:not(.slk-pc) #user-settings-block [name="userSettingsRowOne"] h3 {
+    white-space:nowrap!important; flex-wrap:nowrap!important;
+    width:max-content!important; min-width:max-content!important; max-width:none!important; gap:4px!important;
+  }
+  html body.slk-ui:not(.slk-pc) #user-settings-block [name="userSettingsRowOne"] h3 > span {
+    white-space:nowrap!important; flex:0 0 auto!important;
+    word-break:keep-all!important; overflow-wrap:normal!important;
+  }
+  html body.slk-ui:not(.slk-pc) #user-settings-block [name="userSettingsRowOne"] h3 .notes-link {
+    flex:0 0 18px!important; width:18px!important; min-width:18px!important;
+    margin:0!important; align-self:center!important;
+  }
+  html body.slk-ui:not(.slk-pc) #user-settings-block [name="userSettingsRowOne"] #version_display {
+    grid-column:2!important; grid-row:1!important; justify-self:end!important;
+    width:auto!important; min-width:0!important; max-width:100%!important;
+    white-space:normal!important; overflow-wrap:anywhere!important; text-align:right!important;
+  }
+  html body.slk-ui:not(.slk-pc) #user-settings-block [name="userSettingsRowOne"] #UI-language-block {
+    grid-column:1 / -1!important; grid-row:2!important;
+  }
+}
