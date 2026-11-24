@@ -23467,7 +23467,7 @@ html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):no
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l) #PersonaManagement #user_avatar_block .ch_name :is(b,strong),
   body.slk-ui .welcomeRecent .recentChat .chatName .characterName,
   body.slk-ui .welcomeRecent .recentChat .chatName .characterName :is(b,strong) {
-    font-weight:600!important;
+    font-weight:700!important;
   }
 }
 
