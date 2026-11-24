@@ -14027,113 +14027,8 @@ body.slk-ui {
         background-color: #007A5A !important;
     }
 
-    /* ================= 시작(로딩) 화면: 슬랙 앱처럼 =================
-       보라 전체 화면 + 가운데 둥근 로고 + 흰 링 스피너 + 안내 글씨 */
-    body.slk-ui #preloader {
-        background: #4A154B !important;
-        -webkit-backdrop-filter: none !important;
-        backdrop-filter: none !important;
-    }
-    body.slk-ui dialog.popup:has(#loader) {
-        position: fixed !important;
-        inset: 0 !important;
-        width: 100vw !important;
-        height: 100dvh !important;
-        max-width: none !important;
-        max-height: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: 0 !important;
-        border-radius: 0 !important;
-        background: #4A154B !important;
-        box-shadow: none !important;
-        outline: none !important;
-        -webkit-backdrop-filter: none !important;
-        backdrop-filter: none !important;
-    }
-    body.slk-ui dialog.popup:has(#loader:not(.splash-screen)) {
-        background: rgba(74, 21, 75, .55) !important;
-    }
-    body.slk-ui dialog.popup:has(#loader)::backdrop {
-        background: #4A154B !important;
-        -webkit-backdrop-filter: none !important;
-        backdrop-filter: none !important;
-    }
-    body.slk-ui dialog.popup:has(#loader:not(.splash-screen))::backdrop {
-        background: rgba(74, 21, 75, .35) !important;
-    }
-    body.slk-ui dialog.popup:has(#loader) :is(.popup-body, .popup-content, .popup-controls) {
-        width: 100% !important;
-        height: 100% !important;
-        max-width: none !important;
-        max-height: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: 0 !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        overflow: hidden !important;
-    }
-    body.slk-ui dialog.popup:has(#loader) .popup-controls { display: none !important; }
-    body.slk-ui #loader {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 28px !important;
-        width: 100% !important;
-        height: 100% !important;
-        background: transparent !important;
-        color: #FFFFFF !important;
-    }
-    body.slk-ui #loader .splash-logo {
-        width: 96px !important;
-        height: 96px !important;
-        object-fit: cover !important;
-        border-radius: 24px !important;
-        filter: none !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important;
-    }
-    body.slk-ui #loader #load-spinner,
-    body.slk-ui #preloader #load-spinner {
-        position: static !important;
-        width: 28px !important;
-        height: 28px !important;
-        font-size: 0 !important;
-        border: 3px solid rgba(255, 255, 255, .25) !important;
-        border-top-color: #FFFFFF !important;
-        border-radius: 50% !important;
-        box-sizing: border-box !important;
-        animation: slk-spin .8s linear infinite !important;
-        color: transparent !important;
-    }
-    body.slk-ui #loader #load-spinner::before { content: none !important; display: none !important; }
-    body.slk-ui #loader .splash-message {
-        margin: -12px 0 0 !important;
-        color: rgba(255, 255, 255, .82) !important;
-        -webkit-text-fill-color: rgba(255, 255, 255, .82) !important;
-        font-family: var(--slk-font, sans-serif) !important;
-        font-size: 15px !important;
-        font-weight: 600 !important;
-        letter-spacing: -0.01em !important;
-        text-shadow: none !important;
-    }
-    body.slk-ui #loader.splash-screen::before {
-        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important;
-        content: 'Slack' !important;
-        order: 1 !important;
-        margin: -10px 0 0 !important;
-        color: #FFFFFF !important;
-        font-family: var(--slk-font, sans-serif) !important;
-        font-size: 22px !important;
-        font-weight: 900 !important;
-        letter-spacing: -0.02em !important;
-    }
-    body.slk-ui #loader.splash-screen .splash-logo { order: 0 !important; }
-    body.slk-ui #loader.splash-screen #load-spinner { order: 2 !important; margin-top: 18px !important; }
-    body.slk-ui #loader.splash-screen .splash-message { order: 3 !important; }
+    /* Boot splash styling now lives in the early stylesheet and custom CSS block. */
 }
-@keyframes slk-spin { to { transform: rotate(360deg); } }
 
 /* 1.4.52: 받은 확장의 토글 스위치 / 세그먼트 버튼 (index.js가 구조로 찾아 클래스 부여) */
 @media screen {
@@ -14641,39 +14536,6 @@ body.slk-ui {
         justify-self: end !important;
         margin: 0 -4px 0 0 !important;
         z-index: 2 !important;
-    }
-}
-
-/* 시작 화면: ST 버전마다 구조가 조금 달라서 더 넓게 잡음 */
-@media screen {
-    body.slk-ui dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo), :has(#load-spinner)) {
-        position: fixed !important;
-        inset: 0 !important;
-        width: 100vw !important;
-        height: 100dvh !important;
-        max-width: none !important;
-        max-height: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: 0 !important;
-        border-radius: 0 !important;
-        background: #4A154B !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-    body.slk-ui dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo), :has(#load-spinner)) * {
-        border-color: transparent !important;
-        box-shadow: none;
-    }
-    body.slk-ui dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo), :has(#load-spinner)) :is(.popup-body, .popup-content, #loader, .splash-screen) {
-        background: transparent !important;
-        border: 0 !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-    body.slk-ui .splash-screen .splash-message,
-    body.slk-ui #loader .splash-message {
-        color: rgba(255, 255, 255, .82) !important;
     }
 }
 
@@ -19313,24 +19175,6 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
 }
 
 
-/* v1.7.5 — keep the chat header gradient for empty/new chats via JS state,
-   and make the startup logo visible even when the splash image node is late. */
-@media screen {
-    body.slk-ui #loader .splash-logo,
-    body.slk-ui #loader.splash-screen .splash-logo {
-        background-image: var(--slk-splash-logo-url) !important;
-        background-position: center !important;
-        background-size: cover !important;
-        background-repeat: no-repeat !important;
-        background-color: transparent !important;
-    }
-    body.slk-ui #loader.splash-screen::after {
-        content: none !important;
-        display: none !important;
-    }
-}
-
-
 /* ====================================================================
    Slack UI v1.7.6 — model edit control / character list / centered header
    circle (regular & scrolled) / EXACT four-column AI settings tabs.
@@ -19670,4 +19514,67 @@ html body.slk-ui #right-nav-panel #rm_characters_block .character_select .ch_nam
 html body.slk-ui #right-nav-panel #rm_characters_block .group_select .ch_name,
 html body.slk-ui #right-nav-panel #rm_characters_block .bogus_folder_select .ch_name {
   font-weight: 650 !important;
+}
+
+/* v1.8.0 stable splash and iOS chat chrome */
+@media screen and (max-width: 1000px) {
+  html.slk-status-chat, html.slk-status-chat body.slk-ui { background-color:#fff !important; }
+  html.slk-status-chat body.slk-ui::before {
+    content:""; position:fixed; z-index:4000; inset:0 0 auto; height:env(safe-area-inset-top,0px);
+    background:#fff; pointer-events:none;
+  }
+  html body.slk-ui #loader, html body.slk-ui #loader.splash-screen,
+  html body.slk-ui #preloader, html body.slk-ui dialog:has(#loader),
+  html body.slk-ui dialog:has(#loader)::backdrop {background:#fff !important;}
+  html body.slk-ui #loader > .splash-logo, html body.slk-ui #loader .splash-message,
+  html body.slk-ui #loader #load-spinner, html body.slk-ui #loader::before {display:none !important;}
+  html body.slk-ui #loader, html body.slk-ui #loader.splash-screen {position:relative !important;width:100% !important;height:100% !important;}
+  html body.slk-ui #loader.splash-screen {min-height:100dvh !important;}
+  html body.slk-ui #loader::after {display:block !important;content:"" !important;position:absolute !important;
+    width:68px !important;height:68px !important;left:50% !important;top:46.5% !important;
+    transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important;}
+  html body.slk-ui #slk-aitabs > .slk-aitab,
+  html body.slk-ui #left-nav-panel #slk-aitabs > .slk-aitab {border-bottom-width:2px !important;}
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action :is(i,svg,.fa,.fa-solid) {
+    font-size:22px !important; width:22px !important;height:22px !important; flex:0 0 22px !important; stroke-width:2.6px !important;
+  }
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action svg :is(path,circle,rect,line,polyline){stroke-width:2.6px !important;}
+}
+/* Extension manager: two equal update actions, sort remains a secondary toggle. */
+html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar {
+  display:grid !important;grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important;
+  gap:8px !important; align-items:center !important; padding:0 0 14px !important;margin:0 0 16px !important;
+}
+html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > .expander {display:none !important;}
+html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button.menu_button:first-child,
+html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button.menu_button:nth-child(2) {
+  width:100% !important; min-height:42px !important;height:42px !important;
+  padding:8px 10px !important; font-size:13px !important; font-weight:650 !important;
+  border-radius:10px !important; white-space:nowrap !important;
+}
+html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button.menu_button:last-child {
+  grid-column:1/-1 !important;justify-self:end !important;
+  width:auto !important;min-height:32px !important; height:32px !important;
+  border:1px solid #e3e3e3 !important; border-radius:8px !important;
+  background:#f6f6f6 !important;color:#505050 !important;font-size:12px !important;
+  padding:4px 10px !important;font-weight:550 !important;
+}
+
+@media screen and (max-width: 1000px) {
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action .fa-pen-to-square {
+    --slk-ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.8%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M12%203H5a2%202%200%200%200-2%202v14a2%202%200%200%200%202%202h14a2%202%200%200%200%202-2v-7%22%2F%3E%3Cpath%20d%3D%22M18.4%202.6a2.1%202.1%200%201%201%203%203L12%2015l-4%201%201-4Z%22%2F%3E%3C%2Fsvg%3E") !important;
+  }
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action .fa-pen-to-square::before,
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action .fa-pencil::before {
+    width:22px !important;height:22px !important; vertical-align:middle !important;
+  }
+}
+
+@media screen and (max-width:1000px) {
+  #slk-status-surface {display:none !important;}
+  html.slk-status-chat #slk-status-surface {
+    display:block !important;position:fixed !important;top:0 !important;left:0 !important;right:0 !important;
+    height:max(2px,env(safe-area-inset-top,0px)) !important;
+    background-color:#fff !important;pointer-events:none !important;z-index:4001 !important;
+  }
 }

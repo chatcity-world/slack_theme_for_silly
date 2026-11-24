@@ -3,7 +3,7 @@
 // Settings are kept independently of SillyTavern's extension loader state.
 const SLK_DEFAULT_HEADER_IMAGE = 'img/logo.png';
 const SLK_SLACK_HEADER_IMAGE = new URL('./slack-logo.webp', import.meta.url).href;
-const SLK_SPLASH_IMAGE = new URL('./slack-logo.webp', import.meta.url).href;
+const SLK_SPLASH_IMAGE = new URL('./slack-splash-logo.png', import.meta.url).href;
 const SLK_UI_SETTINGS = (() => {
     const read = (key, fallback) => {
         try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
@@ -57,22 +57,6 @@ function slkRememberSplashLogo(src) {
     } catch { /* noop */ }
 }
 
-function slkEnsureVisibleSplashLogo(src) {
-    document.querySelectorAll('#loader').forEach(loader => {
-        let logo = loader.querySelector('.splash-logo');
-        const spinner = loader.querySelector('#load-spinner');
-        if (!logo || logo.tagName !== 'IMG') {
-            logo?.remove?.();
-            logo = document.createElement('img');
-            logo.className = 'splash-logo';
-            logo.alt = 'Slack';
-            if (spinner) loader.insertBefore(logo, spinner);
-            else loader.prepend(logo);
-        }
-        if (logo.getAttribute('src') !== src) logo.setAttribute('src', src);
-    });
-}
-
 function slkApplyHeaderImage() {
     const src = slkSelectedLogoUrl();
     slkRememberSplashLogo(slkSelectedSplashLogoUrl());
@@ -84,11 +68,6 @@ function slkApplyHeaderImage() {
     }
     // Also update a currently visible splash and create a visible logo when ST
     // renders a splash container before our preferred logo node exists.
-    slkEnsureVisibleSplashLogo(slkSelectedSplashLogoUrl());
-    document.querySelectorAll('#loader.splash-screen .splash-logo').forEach(logo => {
-        const splashSrc = slkSelectedSplashLogoUrl();
-        if (logo.tagName === 'IMG' && logo.getAttribute('src') !== splashSrc) logo.src = splashSrc;
-    });
 }
 
 function applySlackUiSettings() {
@@ -1234,8 +1213,51 @@ function dedupeWelcomePanel() {
     panel.querySelectorAll(':scope > div, :scope > section, :scope > ul').forEach((node) => dedupeChildren(node));
 }
 
+
+// v1.8.0: chat system status strip (time / battery) follows the chat view.
+const slkOriginalThemeColor = document.querySelector('meta[name="theme-color"]')?.content ?? null;
+let slkAddedThemeColor = false;
+function slkSyncStatusBar() {
+    const mobile = matchMedia('(max-width: 1000px)').matches;
+    const enabled = SLK_UI_SETTINGS.enabled && document.body.classList.contains('slk-ui');
+    const chat = mobile && enabled && document.body.classList.contains('slk-in-chat');
+    // A native settings drawer stays a distinct view; don't mix its header with chat state.
+    const drawerOpen = !!document.querySelector('#top-settings-holder > .drawer .drawer-icon.openIcon');
+    const onChat = Boolean(chat && !drawerOpen && !document.body.classList.contains('slk-panel-opening'));
+    document.documentElement.classList.toggle('slk-status-chat', onChat);
+    const desired = onChat ? '#FFFFFF' : (slkOriginalThemeColor || '#3F1543');
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) {
+        meta = document.createElement('meta'); meta.name='theme-color'; document.head.append(meta); slkAddedThemeColor=true;
+    }
+    if (meta.content !== desired) meta.content=desired;
+}
+function slkWatchStatusBar() {
+    // A real DOM surface (not a pseudo-element) can help iOS sample the right
+    // page colour behind the system status bar in installed web apps.
+    if (!document.getElementById('slk-status-surface')) {
+        const surface=document.createElement('div');
+        surface.id='slk-status-surface';
+        surface.setAttribute('aria-hidden','true');
+        document.body.appendChild(surface);
+    }
+    let queued=false;
+    const schedule=()=>{ if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;slkSyncStatusBar();}); };
+    const obs=new MutationObserver(records=>{
+        if(records.some(r=>r.target===document.body || r.target.classList?.contains('drawer-icon'))) schedule();
+    });
+    obs.observe(document.body,{attributes:true,attributeFilter:['class']});
+    const topSettings = document.getElementById('top-settings-holder');
+    if (topSettings) obs.observe(topSettings,{attributes:true,attributeFilter:['class'],subtree:true});
+    window.addEventListener('resize',schedule);
+    window.addEventListener('pageshow',schedule);
+    window.addEventListener('slk-ui-settings-changed',schedule);
+    schedule();
+}
+
 function syncSlackSurfaces() {
     syncChatHead();
+    slkSyncStatusBar();
     dedupeWelcomePanel();
 }
 
@@ -1243,6 +1265,7 @@ function watchChat() {
     const chat = document.getElementById('chat');
     if (!chat) return;
     buildChatHead();
+    slkWatchStatusBar();
     let queued = false;
     const run = () => {
         if (queued) return;
@@ -2380,32 +2403,13 @@ else init();
 (function slkBootSplashCss() {
     const START = '/* ==== Slack UI 시작 화면 (자동 추가 — 지우지 마세요) ==== */';
     const END = '/* ==== /Slack UI 시작 화면 ==== */';
-    const BOOT_CSS = "@media screen { #preloader, #loader, #loader.splash-screen, dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; outline: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo))::backdrop { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content) { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; overflow: hidden !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) .popup-controls, #loader #load-spinner, #preloader #load-spinner, #loader .splash-message { display: none !important; } #loader { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 0 !important; width: 100% !important; height: 100% !important; background: #FFFFFF !important; color: transparent !important; position: relative !important; transform: translateY(-3.3%); } #loader::before, #loader::after { content: none !important; display: none !important; } #loader > :not(.splash-logo) { display: none !important; } #loader .splash-logo { order: 0; display: block !important; width: 68px !important; height: 68px !important; min-width: 68px !important; min-height: 68px !important; object-fit: contain !important; object-position: center !important; border-radius: 0 !important; filter: none !important; box-shadow: none !important; background: transparent !important; } } @media screen { dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) * { border-color: transparent !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content, #loader, .splash-screen) { background: transparent !important; border: 0 !important; box-shadow: none !important; outline: none !important; } }";
+    const BOOT_CSS = "@media screen {\n  #preloader { background: #fff !important; color: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }\n  #preloader #load-spinner { display: none !important; }\n  dialog:has(#loader) { background: #fff !important; border:0 !important; box-shadow:none !important; inset:0 !important; width:100vw !important; height:100dvh !important; max-width:none !important; max-height:none !important; position:fixed !important; padding:0 !important; margin:0 !important; border-radius:0 !important; }\n  dialog:has(#loader)::backdrop { background:#fff !important; }\n  dialog:has(#loader) :is(.popup-body,.popup-content) { background:#fff !important; box-shadow:none !important; border:0 !important; width:100% !important; height:100% !important; padding:0 !important; margin:0 !important; }\n  dialog:has(#loader) .popup-controls { display:none !important; }\n  #loader, #loader.splash-screen { display:block !important; background:#fff !important; width:100% !important; height:100% !important; position:relative !important; transform:none !important; }\n  #loader .splash-logo, #loader #load-spinner, #loader .splash-message, #loader::before { display:none !important; visibility:hidden !important; content:none !important; }\n  #loader::after { content:\"\" !important; position:absolute !important; top:46.5% !important; left:50% !important; display:block !important; width:68px !important; height:68px !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }\n  #preloader::after { content:\"\" !important; position:absolute !important; top:46.5% !important; left:50% !important; display:block !important; width:68px !important; height:68px !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; }\n}";
     const buildBlock = () => {
         // custom_css is loaded by SillyTavern before extensions: this also matches the chosen
         // logo on the *next initial loading screen*, before slack.js is evaluated.
         const imageUrl = slkSelectedSplashLogoUrl();
-        const quotedUrl = JSON.stringify(imageUrl);
-        const splashImageCss = `@media screen {
-            #loader.splash-screen .splash-logo {
-                display: block !important;
-                order: 0 !important;
-                flex: 0 0 60px !important;
-                width: 60px !important;
-                height: 60px !important;
-                min-width: 60px !important;
-                min-height: 60px !important;
-                border-radius: 0 !important;
-                background: none !important;
-                content: none !important;
-                box-shadow: none !important;
-            }
-            #loader.splash-screen::after {
-                content: none !important;
-                display: none !important;
-            }
-        }`;
-        return START + '\n' + BOOT_CSS + '\n' + splashImageCss + '\n' + END;
+        const imageCss = ':root { --slk-loader-icon: url(' + JSON.stringify(imageUrl) + ') !important; }';
+        return START + '\n' + imageCss + '\n' + BOOT_CSS + '\n' + END;
     };
     const strip = (s) => {
         const i = s.indexOf(START), j = s.indexOf(END);

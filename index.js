@@ -1,3 +1,18 @@
+// Keep the native in-document loading stage white before the extension JS finishes loading.
+(() => {
+    if (document.getElementById('slk-early-splash-style')) return;
+    const icon = new URL('./slack-splash-logo.png', import.meta.url).href;
+    const el = document.createElement('style');
+    el.id = 'slk-early-splash-style';
+    el.textContent = `:root { --slk-loader-icon:url(${JSON.stringify(icon)}); }
+    #preloader, #loader, #loader.splash-screen, dialog:has(#loader), dialog:has(#loader)::backdrop { background:#fff !important; }
+    #loader { position:relative !important; }
+    #loader > .splash-logo, #loader #load-spinner, #loader .splash-message, #loader::before { display:none !important; }
+    #loader::after { content:"" !important; display:block !important; position:absolute !important; width:68px !important; height:68px !important; left:50% !important; top:46.5% !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; }
+    #preloader::after { content:"" !important; display:block !important; position:absolute !important; width:68px !important; height:68px !important; left:50% !important; top:46.5% !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; }`;
+    document.head.appendChild(el);
+})();
+
 // Slack UI for SillyTavern — 로더
 // 브라우저(특히 iPhone)가 예전 파일을 붙잡고 있지 않도록, 매번 버전을 확인해 최신 파일을 불러옵니다.
 (async () => {
