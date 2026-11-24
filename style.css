@@ -11076,8 +11076,8 @@ body.slk-ui {
         content: none !important;
     }
 
-    /* 키보드가 열린 동안 웹 뷰 뒤쪽에 드러나는 빈 띠만 흰색으로.
-       실제 iOS 키보드/입력 보조 막대는 운영체제 UI이므로 CSS로 색을 지정할 수 없음. */
+    /* Keep the page light without painting an extra opaque composer strip.
+       The iOS form accessory bar itself is browser/system UI. */
     html:has(body.slk-ui.slk-composing) {
         background-color: #FFFFFF !important;
         color-scheme: light;
@@ -11087,7 +11087,7 @@ body.slk-ui {
         color-scheme: light;
     }
     body.slk-ui.slk-composing #form_sheld {
-        background: #FFFFFF !important;
+        background: transparent !important;
     }
     body.slk-ui #send_textarea {
         color-scheme: light;
@@ -22089,9 +22089,15 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     -webkit-backdrop-filter:none!important;
   }
   body.slk-ui.slk-composing #form_sheld #send_form.slk-compose-open {
-    background:rgba(255,255,255,.14)!important;
-    backdrop-filter:blur(8px) saturate(125%)!important;
-    -webkit-backdrop-filter:blur(8px) saturate(125%)!important;
+    /* v1.8.37: a clear, softly illuminated glass surface. Keep the existing
+       1px layout border transparent; draw only a hairline optical edge. */
+    background:linear-gradient(160deg,rgba(255,255,255,.32) 0%,rgba(255,255,255,.18) 48%,rgba(255,255,255,.26) 100%)!important;
+    background-color:transparent!important;
+    background-clip:padding-box!important;
+    border-color:transparent!important;
+    box-shadow:0 4px 14px rgba(0,0,0,.055),inset 0 0 0 .5px rgba(255,255,255,.68),inset 0 1px 1px rgba(255,255,255,.32)!important;
+    backdrop-filter:blur(5px) saturate(135%) brightness(1.13)!important;
+    -webkit-backdrop-filter:blur(5px) saturate(135%) brightness(1.13)!important;
   }
   /* The native textarea and its placeholder share exactly one text origin. */
   body.slk-ui #form_sheld #send_form.slk-compose-open #send_textarea {
