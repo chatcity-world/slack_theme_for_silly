@@ -18149,13 +18149,13 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
         display: flex;
         align-items: center;
         gap: 8px;
-        justify-content: center;
+        justify-content: flex-start;
         box-sizing: border-box;
         width: min(720px, calc(100vw - 420px));
         height: 28px;
         margin: 0;
         padding: 0 12px;
-        border: 1px solid rgba(255, 255, 255, .22);
+        border: 0;
         border-radius: 6px;
         background: rgba(255, 255, 255, .16);
         color: rgba(255, 255, 255, .85);
@@ -22287,4 +22287,103 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-withi
     fill: none !important;
     stroke: #FFFFFF !important;
   }
+}
+
+
+/* ==============================================================
+   v1.8.57 — PC rail width, decorative traffic lights and workspace ring
+   Scope: desktop only. Mobile remains unchanged.
+   ============================================================== */
+@media screen and (min-width: 1001px) {
+  html body.slk-ui.slk-pc {
+    --pc-rail: 54px !important;
+    --pc-sidebar-edge: calc(var(--pc-rail) + var(--pc-sidebar)) !important;
+  }
+
+  html body.slk-ui.slk-pc #slk-pc-search {
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    padding: 0 14px !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    text-align: left !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-search svg {
+    flex: 0 0 auto;
+    opacity: .94;
+  }
+  html body.slk-ui.slk-pc #slk-pc-search .slk-pc-version-label {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    text-align: left !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  html body.slk-ui.slk-pc #slk-pc-rail {
+    width: var(--pc-rail) !important;
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-ws {
+    position: relative;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    margin: 8px 0 10px !important;
+    border-radius: 10px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.96), 0 0 0 4px rgba(124,72,161,.96) !important;
+    overflow: hidden !important;
+  }
+
+  html body.slk-ui.slk-pc #slk-pc-traffic {
+    position: fixed;
+    top: 15px;
+    left: 14px;
+    z-index: 62;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+    height: 14px;
+    pointer-events: auto;
+    user-select: none;
+  }
+  html body.slk-ui.slk-pc #slk-pc-traffic[hidden] {
+    display: none !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light {
+    position: relative;
+    display: block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+  }
+  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light::after {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    color: rgba(0,0,0,.56);
+    opacity: 0;
+    transition: opacity .12s ease;
+  }
+  html body.slk-ui.slk-pc #slk-pc-traffic:hover .slk-pc-traffic-light::after {
+    opacity: 1;
+  }
+  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-close { background: #FF5F57; }
+  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-minimize { background: #FFBD2E; }
+  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-zoom { background: #28C840; }
+  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-close::after { content: '×'; }
+  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-minimize::after { content: '−'; }
+  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-zoom::after { content: '⟋'; }
 }

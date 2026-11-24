@@ -3211,6 +3211,7 @@ if (SLK_UI_SETTINGS.enabled) {
     let brandRail = null;
     let sectionMenu = null;
     let versionDisplay = null;
+    let trafficLights = null;
     let versionRequest = null;
     const nav = () => window.__slkDesktopRailNavigation;
     const itemMarkup = ({ selector, icon, label }) =>
@@ -3262,18 +3263,29 @@ if (SLK_UI_SETTINGS.enabled) {
             versionDisplay = document.createElement('div');
             versionDisplay.id = 'slk-pc-search';
             versionDisplay.setAttribute('aria-live', 'polite');
-            versionDisplay.textContent = 'SillyTavern';
+            versionDisplay.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="slk-pc-version-label">SillyTavern</span>';
             document.body.appendChild(versionDisplay);
+        }
+        if (!trafficLights) {
+            trafficLights = document.createElement('div');
+            trafficLights.id = 'slk-pc-traffic';
+            trafficLights.setAttribute('aria-hidden', 'true');
+            trafficLights.innerHTML = `
+                <span class="slk-pc-traffic-light is-close"></span>
+                <span class="slk-pc-traffic-light is-minimize"></span>
+                <span class="slk-pc-traffic-light is-zoom"></span>`;
+            document.body.appendChild(trafficLights);
         }
         const on = desktop.matches && SLK_UI_SETTINGS.enabled;
         document.body.classList.toggle('slk-pc', on);
         brandRail.hidden = !on;
         sectionMenu.hidden = !on;
         versionDisplay.hidden = !on;
+        trafficLights.hidden = !on;
         if (on && !versionRequest) {
             versionRequest = fetchVersion().then(v => {
                 const parts = [v?.pkgVersion, v?.gitBranch].filter(Boolean);
-                versionDisplay.textContent = parts.length ? parts.join(' ') : 'SillyTavern · 버전 확인 불가';
+                versionDisplay.querySelector('.slk-pc-version-label').textContent = parts.length ? parts.join(' ') : 'SillyTavern · 버전 확인 불가';
                 if (!v?.pkgVersion) versionRequest = null;
             });
         }
