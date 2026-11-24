@@ -2781,7 +2781,7 @@ if (SLK_UI_SETTINGS.enabled) {
 
 // v1.4.64 — 확장이 직접 만든 팝업(고정 위치 창)을 찾아 slk-modal 클래스 부여 → 슬랙 팝업 디자인
 (function slkForeignModals() {
-    const OURS = '#slk-header, #slk-mobile-footer, #slk-settings-menu, #toast-container, #send_form, #form_sheld, .drawer-content, #top-bar, #top-settings-holder, #chat, #bg1, #bg_custom, #preloader, dialog.popup';
+    const OURS = '#completion_prompt_manager_popup, #slk-header, #slk-mobile-footer, #slk-settings-menu, #toast-container, #send_form, #form_sheld, .drawer-content, #top-bar, #top-settings-holder, #chat, #bg1, #bg_custom, #preloader, dialog.popup';
     const PRIMARY = /^(send|save|ok|confirm|apply|submit|generate|확인|저장|전송|적용|보내기|생성|예)$/i;
     const mark = () => {
         if (!document.body?.classList.contains('slk-ui')) return;
@@ -3350,6 +3350,15 @@ if (SLK_UI_SETTINGS.enabled) {
         // Premature reparenting of controls can interfere with the native
         // prompt manager's own initialization and open/close behavior.
         if (!popup || popup.hidden || popup.classList.contains('displayNone')) return;
+        // PromptManager may render or replace this drawer after extension startup.
+        // Lift the SAME node out of the panel's clipping/stacking context on open.
+        if (popup.classList.contains('openDrawer') && popup.parentElement !== document.body) {
+            if (!popup.slkHomeMarker?.parentNode) {
+                popup.slkHomeMarker = document.createComment('Slack UI: original prompt dialog position');
+                popup.parentNode.insertBefore(popup.slkHomeMarker, popup);
+            }
+            document.body.appendChild(popup);
+        }
         const visible = popup.classList.contains('openDrawer') ||
             (getComputedStyle(popup).display !== 'none' &&
              getComputedStyle(popup).visibility !== 'hidden' &&
@@ -3520,10 +3529,14 @@ if (SLK_UI_SETTINGS.enabled) {
     };
     const start = () => {
         const popup = document.getElementById(popupId);
-        if (popup) { observePopup(popup); return; }
-        const rootObserver = new MutationObserver(() => {
+        if (popup) observePopup(popup);
+        // Retain discovery for late renders/replacements, without observing
+        // unrelated attribute changes or re-running layout for other panels.
+        const rootObserver = new MutationObserver(records => {
+            if (!records.some(record => [...record.addedNodes, ...record.removedNodes].some(node =>
+                node.nodeType === 1 && (node.id === popupId || node.querySelector?.('#' + popupId))))) return;
             const found = document.getElementById(popupId);
-            if (found) { rootObserver.disconnect(); observePopup(found); }
+            if (found) observePopup(found);
         });
         rootObserver.observe(document.body, { childList: true, subtree: true });
     };
