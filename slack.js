@@ -3271,9 +3271,9 @@ if (SLK_UI_SETTINGS.enabled) {
             trafficLights.id = 'slk-pc-traffic';
             trafficLights.setAttribute('aria-hidden', 'true');
             trafficLights.innerHTML = `
-                <span class="slk-pc-traffic-light is-close"></span>
-                <span class="slk-pc-traffic-light is-minimize"></span>
-                <span class="slk-pc-traffic-light is-zoom"></span>`;
+                <span class="slk-pc-traffic-light is-close"><svg viewBox="0 0 8 8" aria-hidden="true" focusable="false"><path d="M1.25 1.25 6.75 6.75M6.75 1.25 1.25 6.75" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+                <span class="slk-pc-traffic-light is-minimize"><svg viewBox="0 0 8 8" aria-hidden="true" focusable="false"><path d="M1 4h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+                <span class="slk-pc-traffic-light is-zoom"><svg viewBox="0 0 8 8" aria-hidden="true" focusable="false"><path d="M.5 .5H6.5L.5 6.5ZM7.5 7.5H1.5L7.5 1.5Z" fill="currentColor" stroke="none"/></svg></span>`;
             document.body.appendChild(trafficLights);
         }
         const on = desktop.matches && SLK_UI_SETTINGS.enabled;

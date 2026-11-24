@@ -22291,7 +22291,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-withi
 
 
 /* ==============================================================
-   v1.8.57 — PC rail width, decorative traffic lights and workspace ring
+   v1.8.59 — PC rail width, decorative traffic lights and workspace ring
    Scope: desktop only. Mobile remains unchanged.
    ============================================================== */
 @media screen and (min-width: 1001px) {
@@ -22327,17 +22327,38 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-withi
     padding-top: 14px !important;
     padding-bottom: 14px !important;
   }
+  /* 30px image, 2px clear gap, 1.5px detached lavender ring. */
   html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-ws {
     position: relative;
+    box-sizing: border-box !important;
     width: 30px !important;
     height: 30px !important;
     min-width: 30px !important;
     min-height: 30px !important;
     margin: 8px 0 10px !important;
-    border-radius: 10px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 7px !important;
     background: #FFFFFF !important;
-    box-shadow: 0 0 0 2px rgba(255,255,255,.96), 0 0 0 4px rgba(124,72,161,.96) !important;
-    overflow: hidden !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-ws::after {
+    content: '' !important;
+    position: absolute !important;
+    inset: -3.5px !important;
+    box-sizing: border-box !important;
+    border: 0 !important;
+    border-radius: 10.5px !important;
+    background: transparent !important;
+    pointer-events: none !important;
+    box-shadow: inset 0 0 0 1.5px #E1C3EB !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-ws img {
+    display: block !important;
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 7px !important;
   }
 
   html body.slk-ui.slk-pc #slk-pc-traffic {
@@ -22347,117 +22368,41 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-withi
     z-index: 62;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 9px;
     width: auto;
     height: 14px;
     pointer-events: auto;
     user-select: none;
   }
-  html body.slk-ui.slk-pc #slk-pc-traffic[hidden] {
-    display: none !important;
-  }
+  html body.slk-ui.slk-pc #slk-pc-traffic[hidden] { display: none !important; }
   html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light {
     position: relative;
-    display: block;
+    display: grid !important;
+    place-items: center;
+    flex: 0 0 14px;
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
-  }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light::after {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 10px;
-    font-weight: 800;
-    line-height: 1;
-    color: rgba(0,0,0,.56);
-    opacity: 0;
-    transition: opacity .12s ease;
-  }
-  html body.slk-ui.slk-pc #slk-pc-traffic:hover .slk-pc-traffic-light::after {
-    opacity: 1;
-  }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-close { background: #FF5F57; }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-minimize { background: #FFBD2E; }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-zoom { background: #28C840; }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-close::after { content: '×'; }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-minimize::after { content: '−'; }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-zoom::after { content: '⟋'; }
-}
-
-
-/* ==============================================================
-   v1.8.58 — refine desktop workspace badge and traffic-light hover glyphs
-   ============================================================== */
-@media screen and (min-width: 1001px) {
-  html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-ws {
-    border-radius: 8px !important;
-    background: #FFFFFF !important;
-    box-shadow: inset 0 0 0 1px rgba(58, 20, 72, .10) !important;
-    overflow: visible !important;
-    isolation: isolate;
-  }
-  html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-ws::after {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: 10px;
-    border: 1.5px solid #C9A7E8;
-    pointer-events: none;
-    z-index: 0;
-  }
-  html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-ws img {
-    position: relative;
-    z-index: 1;
-    border-radius: 6px !important;
-  }
-
-  html body.slk-ui.slk-pc #slk-pc-traffic {
-    gap: 9px !important;
-  }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light {
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,.18) !important;
-    overflow: hidden;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,.16);
   }
   html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light::before,
   html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 8px;
-    height: 1.6px;
-    border-radius: 999px;
-    background: rgba(54, 31, 31, .78);
-    transform-origin: center;
-    opacity: 0;
+    content: none !important;
+    display: none !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light > svg {
+    display: block !important;
+    width: 8px !important;
+    height: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    opacity: 0 !important;
+    pointer-events: none;
     transition: opacity .12s ease;
   }
-  html body.slk-ui.slk-pc #slk-pc-traffic:hover .slk-pc-traffic-light::before,
-  html body.slk-ui.slk-pc #slk-pc-traffic:hover .slk-pc-traffic-light::after {
-    opacity: 1;
-  }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-close::before {
-    transform: translate(-50%, -50%) rotate(45deg);
-  }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-close::after {
-    transform: translate(-50%, -50%) rotate(-45deg);
-  }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-minimize::before {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-minimize::after {
-    opacity: 0 !important;
-  }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-zoom::before {
-    width: 8px;
-    transform: translate(-50%, -50%) rotate(-45deg);
-    background: rgba(22, 72, 30, .80);
-  }
-  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-zoom::after {
-    opacity: 0 !important;
-  }
+  html body.slk-ui.slk-pc #slk-pc-traffic:hover .slk-pc-traffic-light > svg { opacity: 1 !important; }
+  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-close { background: #FF5F57; color: #8A211C; }
+  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-minimize { background: #FFBD2E; color: #805600; }
+  html body.slk-ui.slk-pc #slk-pc-traffic .slk-pc-traffic-light.is-zoom { background: #28C840; color: #146326; }
 }
