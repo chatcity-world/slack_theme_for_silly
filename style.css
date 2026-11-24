@@ -21871,12 +21871,15 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
       display:flex!important; flex-direction:column!important;
       visibility:visible!important; opacity:1!important;
       pointer-events:auto!important;
-      inset:calc(var(--slk-top-h,74px) + 8px) 16px auto 16px!important;
+      /* Use the visible viewport, not the prompt drawer's scroll offset.
+         Both vertical edges and a definite height avoid intrinsic flex collapse. */
+      inset:calc(var(--slk-safe-top,0px) + 12px) 16px calc(var(--slk-safe-bottom,0px) + 12px) 16px!important;
       width:calc(100% - 32px)!important;
       min-width:0!important; max-width:820px!important;
-      height:max-content!important; min-height:0!important;
-      max-height:max(0px,calc(100dvh - var(--slk-top-h,74px) - var(--slk-footer-h,80px) - 20px))!important;
-      margin:0 auto!important; padding:0!important;
+      height:calc(100vh - var(--slk-safe-top,0px) - var(--slk-safe-bottom,0px) - 24px)!important;
+      height:calc(100dvh - var(--slk-safe-top,0px) - var(--slk-safe-bottom,0px) - 24px)!important;
+      min-height:0!important; max-height:680px!important;
+      margin:auto!important; padding:0!important;
       box-sizing:border-box!important;
       overflow:hidden!important;
       transform:none!important; translate:none!important;
@@ -21887,6 +21890,30 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
       box-shadow:0 14px 48px rgba(29,28,29,.14)!important;
       z-index:2147483646!important;
     }
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible) > #completion_prompt_manager_popup_edit {
+      position:relative!important; inset:auto!important; transform:none!important;
+      display:flex!important; flex-direction:column!important; flex:1 1 0px!important;
+      height:100%!important; min-height:0!important; max-height:100%!important;
+      overflow:hidden!important; visibility:visible!important; opacity:1!important;
+    }
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible) > #completion_prompt_manager_popup_edit > .completion_prompt_manager_popup_entry,
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible) > #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form {
+      flex:1 1 0px!important; height:auto!important; min-height:0!important; max-height:none!important;
+      overflow:hidden!important;
+    }
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible) > #completion_prompt_manager_popup_edit .slk-prompt-form-fields {
+      flex:1 1 0px!important; height:auto!important; min-height:0!important; max-height:none!important;
+      overflow-y:auto!important; overflow-x:hidden!important;
+    }
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible) > #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_footer {
+      flex:0 0 auto!important;
+    }
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible) > #completion_prompt_manager_popup_inspect {
+      flex:1 1 0px!important; min-height:0!important; height:auto!important; overflow:auto!important;
+    }
+    /* Native fallback can show the inspect pane without the adapter. */
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:not([data-slk-prompt-area]):has(> #completion_prompt_manager_popup_inspect[style*="display: flex"]) > #completion_prompt_manager_popup_edit,
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal[data-slk-prompt-area="inspect"] > #completion_prompt_manager_popup_edit {display:none!important;}
   }
 }
 /* Keep the desktop popup and its Select2 dropdowns above the native panels. */
