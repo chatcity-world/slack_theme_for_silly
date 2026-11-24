@@ -21304,3 +21304,190 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   }
   /* The chat gradient is unchanged; the iOS top chrome is white at launch. */
 }
+
+
+/* ===================================================================
+   v1.8.9 / surface-driven mobile header. Do not infer the page from
+   .slk-in-chat alone; chat remains mounted underneath navigation panels.
+   =================================================================== */
+@media screen and (max-width:1000px) {
+  /* Shared floating header for every NON-PROMPT settings panel.
+     It must never turn into a solid white slab as the panel scrolls. */
+  html body.slk-ui[data-slk-header-view="panel"]:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header,
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header,
+  html body.slk-ui[data-slk-header-view="panel"].slk-panel-opening:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header,
+  html body.slk-ui[data-slk-header-view="panel"].slk-in-chat:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header {
+    background: linear-gradient(180deg, rgba(255,255,255,.90) 0%, rgba(255,255,255,.66) 49%, rgba(255,255,255,0) 100%) !important;
+    background-color: transparent !important;
+    color: #1D1C1D !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"] #slk-header::before,
+  html body.slk-ui[data-slk-header-view="panel"] #slk-header::after {
+    content: none !important;
+    display: none !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"] #slk-header #slk-chat-head {display:none!important;}
+  html body.slk-ui[data-slk-header-view="panel"] #slk-header > #slk-ws,
+  html body.slk-ui[data-slk-header-view="panel"] #slk-header > .slk-header-actions {
+    display: flex !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"] #slk-header #slk-ws {
+    flex: 0 0 46px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 46px !important;
+    min-width: 46px !important;
+    max-width: 46px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
+    padding: 0 !important;
+    margin-right: auto !important;
+    border: 1px solid rgba(255,255,255,.62) !important;
+    border-radius: 50% !important;
+    background: rgba(255,255,255,.34) !important;
+    box-shadow: 0 5px 18px rgba(0,0,0,.07) !important;
+    backdrop-filter: blur(20px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
+    box-sizing: border-box !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"] #slk-header .slk-ws-text {display:none!important;}
+  html body.slk-ui[data-slk-header-view="panel"] #slk-header .slk-ws-avatar {
+    flex:0 0 38px !important;
+    position:relative !important;
+    inset:auto !important;
+    width:38px !important;
+    height:38px !important;
+    min-width:38px !important;
+    min-height:38px !important;
+    max-width:38px !important;
+    max-height:38px !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:50% !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    display:grid !important;
+    place-items:center !important;
+    overflow:hidden !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"] #slk-header .slk-ws-avatar.has-img > img {
+    inset: 0 !important;
+    width:38px !important;
+    height:38px !important;
+    max-width:38px !important;
+    max-height:38px !important;
+    min-width:38px !important;
+    min-height:38px !important;
+    border-radius:50% !important;
+    object-fit:cover !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"] #slk-header #slk-panel-back {
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 46px !important;
+    width:46px !important;
+    height:46px !important;
+    margin-right:8px !important;
+    padding:0 !important;
+    color:#1D1C1D !important;
+    border:1px solid rgba(255,255,255,.62) !important;
+    border-radius:50% !important;
+    background:rgba(255,255,255,.34) !important;
+    box-shadow:0 5px 18px rgba(0,0,0,.07) !important;
+    backdrop-filter:blur(20px) saturate(150%) !important;
+    -webkit-backdrop-filter:blur(20px) saturate(150%) !important;
+    box-sizing:border-box !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"] #slk-header > .slk-header-actions {
+    height:46px !important;
+    min-height:46px !important;
+    padding:0 5px !important;
+    border:1px solid rgba(255,255,255,.62) !important;
+    border-radius:23px !important;
+    background:rgba(255,255,255,.34) !important;
+    box-shadow:0 5px 18px rgba(0,0,0,.07) !important;
+    backdrop-filter:blur(20px) saturate(150%) !important;
+    -webkit-backdrop-filter:blur(20px) saturate(150%) !important;
+    color:#1D1C1D !important;
+  }
+  html body.slk-ui[data-slk-header-view="panel"] #slk-header #slk-settings-btn { color:#1D1C1D !important; }
+
+  /* Prompt tab retains the original full Slack purple header (requested exception). */
+  html body.slk-ui[data-slk-header-view="prompt"]:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header {
+    background:var(--slk-header-grad) !important;
+    color:var(--slk-header-fg) !important;
+  }
+  html body.slk-ui[data-slk-header-view="prompt"] #slk-header #slk-chat-head {display:none!important;}
+  html body.slk-ui[data-slk-header-view="prompt"] #slk-header > #slk-ws,
+  html body.slk-ui[data-slk-header-view="prompt"] #slk-header > .slk-header-actions {display:flex!important;}
+  html body.slk-ui[data-slk-header-view="prompt"] #slk-header #slk-panel-back {display:flex!important;}
+
+  /* Active chat ONLY: white fade, no pill fill/outline/extra glass background. */
+  html body.slk-ui[data-slk-header-view="chat"]:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header,
+  html body.slk-ui[data-slk-header-view="chat"].slk-header-compact:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header,
+  html body.slk-ui[data-slk-header-view="chat"].slk-panel-opening:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header,
+  html.slk-status-chat body.slk-ui[data-slk-header-view="chat"]:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #slk-header {
+    background:linear-gradient(180deg,rgba(255,255,255,1) 0%,rgba(255,255,255,.97) 45%,rgba(255,255,255,.74) 74%,rgba(255,255,255,0) 100%) !important;
+    background-color:transparent!important;
+    border:0!important;
+    box-shadow:none!important;
+    color:#1D1C1D!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  html body.slk-ui[data-slk-header-view="chat"] #slk-header::before {
+    content:none!important; display:none!important;
+  }
+  html body.slk-ui[data-slk-header-view="chat"] #slk-header::after {
+    content:''!important;
+    display:block!important;
+    position:absolute!important;
+    top:calc(100% - 1px)!important;
+    left:0!important;
+    width:100%!important;
+    height:44px!important;
+    background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0))!important;
+    pointer-events:none!important;
+    border:0!important;
+    box-shadow:none!important;
+  }
+  html body.slk-ui[data-slk-header-view="chat"] #slk-header #slk-chat-head {display:flex!important;}
+  html body.slk-ui[data-slk-header-view="chat"] #slk-header > #slk-ws,
+  html body.slk-ui[data-slk-header-view="chat"] #slk-header > .slk-header-actions,
+  html body.slk-ui[data-slk-header-view="chat"] #slk-header #slk-panel-back {display:none!important;}
+  html body.slk-ui[data-slk-header-view="chat"] #slk-header #slk-chat-back,
+  html body.slk-ui[data-slk-header-view="chat"] #slk-header #slk-chat-title {
+    background:transparent!important;
+    border:0!important;
+    outline:0!important;
+    box-shadow:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    filter:none!important;
+    color:#1D1C1D!important;
+  }
+
+  /* The key icon is a thin-outline icon. Model-edit must match its optical
+     stroke (previous releases had 28px/2.9px overrides and looked too bold). */
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action.slk-model-single-glyph > svg.slk-model-edit-glyph-v183,
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action > svg.slk-model-edit-glyph-v183 {
+    width:20px!important;
+    height:20px!important;
+    min-width:20px!important;
+    min-height:20px!important;
+    max-width:20px!important;
+    max-height:20px!important;
+    flex:0 0 20px!important;
+    stroke-width:1.55px!important;
+    stroke-linecap:round!important;
+    stroke-linejoin:round!important;
+  }
+}

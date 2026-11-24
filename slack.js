@@ -1245,7 +1245,7 @@ function slkSyncStatusBar() {
         const style = getComputedStyle(content);
         return style.display !== 'none' && style.visibility !== 'hidden';
     });
-    const onChat = Boolean(chat); // Chat always uses white iOS status chrome; stale drawers cannot override it.
+    const onChat = Boolean(chat && document.body.dataset.slkHeaderView === 'chat'); // Use actual visible pane, not a chat left mounted behind a drawer.
     document.documentElement.classList.toggle('slk-status-chat', onChat);
     const desired = mobile && enabled ? '#FFFFFF' : (slkOriginalThemeColor || '#3F1543');
     let meta = document.querySelector('meta[name="theme-color"]');
@@ -1274,7 +1274,7 @@ function slkWatchStatusBar() {
         document.body.appendChild(surface);
     }
     let queued=false;
-    const schedule=()=>{ if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;slkSyncStatusBar();}); };
+    const schedule=()=>{ if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;slkSyncHeaderView();slkSyncStatusBar();}); };
     const obs=new MutationObserver(records=>{
         if(records.some(r=>r.target===document.body || r.target.classList?.contains('drawer-icon'))) schedule();
     });
@@ -1289,8 +1289,45 @@ function slkWatchStatusBar() {
     schedule();
 }
 
+
+// v1.8.9 — One visible-surface source of truth for the header.
+// ST keeps chat loaded while opening drawers. Hidden/leftover drawer icons must
+// never decide whether the chat or a settings page is currently displayed.
+function slkActiveHeaderView() {
+    const current = window.__slkPanelNavigation?.getCurrent?.();
+    if (current) {
+        const root = document.querySelector(current);
+        const content = root?.querySelector(':scope > .drawer-content');
+        if (content && !content.classList.contains('slk-nav-hidden')) {
+            return current === '#ai-config-button' ? 'prompt' : 'panel';
+        }
+    }
+    const roots = ['#ai-config-button', '#sys-settings-button',
+        '#advanced-formatting-button', '#WI-SP-button',
+        '#extensions-settings-button', '#persona-management-button',
+        '#rightNavHolder', '#user-settings-button', '#backgrounds-button'];
+    for (const sel of roots) {
+        const content = document.querySelector(`${sel} > .drawer-content.openDrawer`);
+        if (!content || content.classList.contains('slk-nav-hidden')) continue;
+        const style = getComputedStyle(content);
+        if (style.display === 'none' || style.visibility === 'hidden') continue;
+        if (content.getBoundingClientRect().height < 24) continue;
+        return sel === '#ai-config-button' ? 'prompt' : 'panel';
+    }
+    return document.body.classList.contains('slk-in-chat') ? 'chat' : 'home';
+}
+function slkSyncHeaderView() {
+    if (!document.body?.classList.contains('slk-ui')) return;
+    const view = slkActiveHeaderView();
+    if (document.body.dataset.slkHeaderView !== view) {
+        document.body.dataset.slkHeaderView = view;
+    }
+    document.documentElement.classList.toggle('slk-status-chat', view === 'chat');
+}
+
 function syncSlackSurfaces() {
     syncChatHead();
+    slkSyncHeaderView();
     slkSyncStatusBar();
     dedupeWelcomePanel();
 }
@@ -1370,6 +1407,7 @@ function watchHeaderCompact() {
         const open = openDrawerEl();
         if (open ? !open.contains(t) : t.id !== 'chat') return;
         setHeaderCompact(t.scrollTop > 10);
+        slkSyncHeaderView();
     }, true);
     document.addEventListener('click', (e) => {
         if (e.target.closest('.drawer-toggle, #slk-settings-menu, #slk-ws, #slk-chat-title')) setTimeout(recomputeHeaderCompact, 80);
@@ -1671,7 +1709,7 @@ if (SLK_UI_SETTINGS.enabled) {
         updateActive();
         restoreScroll(layer);
         // Compact state will be calculated from the selected visible panel.
-        requestAnimationFrame(recomputeHeaderCompact);
+        requestAnimationFrame(() => { recomputeHeaderCompact(); slkSyncHeaderView(); slkSyncStatusBar(); });
     }
 
     // 지금 화면에 실제로 보이는 패널 (ST가 직접 연 경우 포함)
@@ -3524,11 +3562,11 @@ if (SLK_UI_SETTINGS.enabled) {
                     const glyph = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                     glyph.setAttribute('class', 'slk-model-edit-glyph-v183');
                     glyph.setAttribute('viewBox', '0 0 24 24');
-                    glyph.setAttribute('width', '18');
-                    glyph.setAttribute('height', '18');
+                    glyph.setAttribute('width', '20');
+                    glyph.setAttribute('height', '20');
                     glyph.setAttribute('fill', 'none');
                     glyph.setAttribute('stroke', 'currentColor');
-                    glyph.setAttribute('stroke-width', '2');
+                    glyph.setAttribute('stroke-width', '1.55');
                     glyph.setAttribute('stroke-linecap', 'round');
                     glyph.setAttribute('stroke-linejoin', 'round');
                     glyph.setAttribute('aria-hidden', 'true');
