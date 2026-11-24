@@ -3983,3 +3983,197 @@ function slkConnectPromptManager() {
 })();
 
 } // end enabled-only Slack UI runtime (v1.8.4)
+
+
+// v1.8.51 — make extension-list labels semibold and replace the awkward
+// standalone sort button with a toolbar sort icon + dropdown menu.
+(function slkEnhanceExtensionSortMenu() {
+    const DIALOG_SELECTOR = 'dialog.popup';
+    const isMobileSlack = () => document.body?.classList.contains('slk-ui') && matchMedia('(max-width: 1000px)').matches;
+    const waitFrame = () => new Promise(resolve => requestAnimationFrame(() => resolve()));
+    const normalizeLabel = (value) => (value || '').replace(/\s+/g, ' ').trim();
+    const getSortLabel = (source) => normalizeLabel(source?.textContent || source?.innerText || '');
+    const getSortValue = (label) => label.replace(/^Sort:\s*/i, '').trim();
+    const iconSvg = () => `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 7h10"></path>
+        <path d="M4 12h16"></path>
+        <path d="M4 17h12"></path>
+        <path d="M18 6l2 2 2-2"></path>
+        <path d="M20 8v8"></path>
+      </svg>`;
+
+    async function clickSource(source) {
+        source.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+        await waitFrame();
+    }
+
+    async function discoverSortOptions(source) {
+        const cached = source.__slkSortOptions;
+        if (Array.isArray(cached) && cached.length) return cached;
+
+        const initial = getSortLabel(source);
+        if (!initial) return [];
+
+        const labels = [initial];
+        const seen = new Set(labels);
+        for (let i = 0; i < 8; i += 1) {
+            await clickSource(source);
+            const next = getSortLabel(source);
+            if (!next || seen.has(next)) break;
+            seen.add(next);
+            labels.push(next);
+        }
+
+        let guard = 0;
+        while (getSortLabel(source) !== initial && guard < labels.length + 2) {
+            await clickSource(source);
+            guard += 1;
+        }
+
+        source.__slkSortOptions = labels;
+        return labels;
+    }
+
+    async function selectSortLabel(source, targetLabel) {
+        const desired = normalizeLabel(targetLabel);
+        if (!desired) return;
+        let current = getSortLabel(source);
+        if (current === desired) return;
+
+        const options = await discoverSortOptions(source);
+        const maxTurns = Math.max(options.length + 1, 8);
+        for (let i = 0; i < maxTurns; i += 1) {
+            await clickSource(source);
+            current = getSortLabel(source);
+            if (current === desired) break;
+        }
+    }
+
+    function closeMenus(exceptWrap = null) {
+        document.querySelectorAll('.slk-ext-sort-wrap.open').forEach(wrap => {
+            if (wrap !== exceptWrap) wrap.classList.remove('open');
+        });
+    }
+
+    function bindGlobalCloser() {
+        if (window.__slkExtSortCloserBound) return;
+        window.__slkExtSortCloserBound = true;
+        document.addEventListener('pointerdown', (event) => {
+            if (!(event.target instanceof Element) || !event.target.closest('.slk-ext-sort-wrap')) closeMenus();
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeMenus();
+        });
+    }
+
+    async function buildMenu(wrap, source) {
+        const menu = wrap.querySelector('.slk-ext-sort-menu');
+        if (!menu) return;
+
+        menu.innerHTML = '';
+        const labels = await discoverSortOptions(source);
+        const current = getSortLabel(source);
+
+        labels.forEach(label => {
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'slk-ext-sort-item';
+            if (normalizeLabel(label) === current) item.classList.add('is-active');
+            item.textContent = getSortValue(label) || label;
+            item.addEventListener('click', async (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                await selectSortLabel(source, label);
+                source.__slkSortOptions = null;
+                wrap.classList.remove('open');
+                await buildMenu(wrap, source);
+                const toggle = wrap.querySelector('.slk-ext-sort-toggle');
+                if (toggle) toggle.title = getSortLabel(source);
+            });
+            menu.appendChild(item);
+        });
+    }
+
+    function createSortControl(toolbar, source) {
+        const wrap = document.createElement('div');
+        wrap.className = 'slk-ext-sort-wrap';
+
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'menu_button slk-ext-sort-toggle';
+        toggle.innerHTML = iconSvg();
+        toggle.title = getSortLabel(source) || 'Sort';
+        toggle.setAttribute('aria-label', 'Sort extensions');
+
+        const menu = document.createElement('div');
+        menu.className = 'slk-ext-sort-menu';
+        menu.setAttribute('role', 'menu');
+
+        toggle.addEventListener('click', async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const willOpen = !wrap.classList.contains('open');
+            closeMenus(wrap);
+            if (!willOpen) {
+                wrap.classList.remove('open');
+                return;
+            }
+            await buildMenu(wrap, source);
+            toggle.title = getSortLabel(source) || 'Sort';
+            wrap.classList.add('open');
+        });
+
+        wrap.append(toggle, menu);
+        toolbar.appendChild(wrap);
+        return wrap;
+    }
+
+    function enhanceDialog(dialog) {
+        if (!(dialog instanceof Element)) return;
+        const toolbar = dialog.querySelector('.extensions_toolbar');
+        if (!toolbar) return;
+
+        const sortSource = [...dialog.querySelectorAll('.menu_button, button')]
+            .find(el => !el.classList.contains('slk-ext-sort-toggle') && /^Sort:/i.test(getSortLabel(el)));
+        if (!sortSource) return;
+
+        sortSource.classList.add('slk-sort-source');
+
+        let wrap = toolbar.querySelector('.slk-ext-sort-wrap');
+        if (!wrap) wrap = createSortControl(toolbar, sortSource);
+        const toggle = wrap.querySelector('.slk-ext-sort-toggle');
+        if (toggle) toggle.title = getSortLabel(sortSource) || 'Sort';
+    }
+
+    function scan(root = document) {
+        if (!isMobileSlack()) return;
+        bindGlobalCloser();
+        root.querySelectorAll?.(DIALOG_SELECTOR)?.forEach(dialog => {
+            if (dialog.querySelector('.extensions_info')) enhanceDialog(dialog);
+        });
+        if (root.matches?.(DIALOG_SELECTOR) && root.querySelector('.extensions_info')) enhanceDialog(root);
+    }
+
+    const observer = new MutationObserver(mutations => {
+        if (!isMobileSlack()) return;
+        for (const mutation of mutations) {
+            mutation.addedNodes.forEach(node => {
+                if (node.nodeType === 1) scan(node);
+            });
+        }
+    });
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            scan();
+            observer.observe(document.documentElement, { childList: true, subtree: true });
+        }, { once: true });
+    } else {
+        scan();
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+    }
+
+    window.addEventListener('pageshow', () => scan());
+    window.addEventListener('slk-ui-settings-changed', () => scan());
+})();

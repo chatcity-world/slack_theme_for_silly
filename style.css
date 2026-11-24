@@ -11462,7 +11462,7 @@ body.slk-ui {
     html body.slk-ui dialog.popup:has(.extensions_info) .extension_block :is(.extension_name, .extension_text_block) {
         color: var(--slk-text) !important;
         min-width: 0 !important;
-        font-weight: 700 !important;
+        font-weight: 600 !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
     }
@@ -22206,5 +22206,102 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   html body.slk-ui #chat .mes > .swipeRightBlock:not(.slk-swipe-inline) {
     visibility: hidden !important;
     pointer-events: none !important;
+  }
+}
+
+
+/* === Slack UI v1.8.51: extension popup semibold + toolbar sort dropdown === */
+@media screen and (max-width:1000px) {
+  /* Connection profile/include popup: lower only the bold emphasis next to checkboxes. */
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content label.checkbox_label :is(strong, b) {
+    font-weight: 600 !important;
+  }
+
+  /* Built-in extensions: name block should read semibold, not overly bold. */
+  html body.slk-ui dialog.popup:has(.extensions_info) .extension_block :is(.extension_name, .extension_text_block) {
+    font-weight: 600 !important;
+  }
+
+  /* Native sort button gets replaced by a compact toolbar icon + dropdown menu. */
+  html body.slk-ui dialog.popup:has(.extensions_info) .slk-sort-source {
+    display: none !important;
+  }
+  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-wrap {
+    position: relative !important;
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    margin-left: auto !important;
+  }
+  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 38px !important;
+    min-width: 38px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid var(--slk-border) !important;
+    border-radius: 10px !important;
+    background: var(--slk-surface) !important;
+    color: var(--slk-text) !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-toggle svg {
+    width: 18px !important;
+    height: 18px !important;
+    stroke: currentColor !important;
+    fill: none !important;
+    stroke-width: 1.8 !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+    pointer-events: none !important;
+  }
+  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-wrap.open .slk-ext-sort-toggle {
+    border-color: #C9B4D0 !important;
+    color: #441848 !important;
+    background: #F8F2FA !important;
+  }
+  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-menu {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: 0 !important;
+    display: none !important;
+    flex-direction: column !important;
+    min-width: 168px !important;
+    padding: 6px !important;
+    border: 1px solid var(--slk-border) !important;
+    border-radius: 12px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 14px 36px rgba(29, 28, 29, .14) !important;
+    z-index: 6 !important;
+  }
+  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-wrap.open .slk-ext-sort-menu {
+    display: flex !important;
+  }
+  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-item {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 34px !important;
+    padding: 8px 10px !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    color: var(--slk-text) !important;
+    font: 500 13px/1.3 var(--slk-font) !important;
+    text-align: left !important;
+    box-shadow: none !important;
+    white-space: nowrap !important;
+  }
+  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-item:hover {
+    background: #F8F8F8 !important;
+  }
+  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-item.is-active {
+    background: #F4EBF7 !important;
+    color: #441848 !important;
+    font-weight: 600 !important;
   }
 }
