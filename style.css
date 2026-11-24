@@ -22222,86 +22222,50 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     font-weight: 600 !important;
   }
 
-  /* Native sort button gets replaced by a compact toolbar icon + dropdown menu. */
-  html body.slk-ui dialog.popup:has(.extensions_info) .slk-sort-source {
-    display: none !important;
-  }
-  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-wrap {
-    position: relative !important;
-    display: inline-flex !important;
-    flex: 0 0 auto !important;
-    margin-left: auto !important;
-  }
-  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-toggle {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 38px !important;
-    min-width: 38px !important;
-    height: 38px !important;
-    min-height: 38px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 1px solid var(--slk-border) !important;
-    border-radius: 10px !important;
-    background: var(--slk-surface) !important;
-    color: var(--slk-text) !important;
-    box-shadow: none !important;
-    filter: none !important;
-  }
-  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-toggle svg {
-    width: 18px !important;
-    height: 18px !important;
-    stroke: currentColor !important;
-    fill: none !important;
-    stroke-width: 1.8 !important;
-    stroke-linecap: round !important;
-    stroke-linejoin: round !important;
-    pointer-events: none !important;
-  }
-  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-wrap.open .slk-ext-sort-toggle {
-    border-color: #C9B4D0 !important;
-    color: #441848 !important;
-    background: #F8F2FA !important;
-  }
-  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-menu {
-    position: absolute !important;
-    top: calc(100% + 8px) !important;
-    right: 0 !important;
-    display: none !important;
-    flex-direction: column !important;
-    min-width: 168px !important;
-    padding: 6px !important;
-    border: 1px solid var(--slk-border) !important;
-    border-radius: 12px !important;
-    background: #FFFFFF !important;
-    box-shadow: 0 14px 36px rgba(29, 28, 29, .14) !important;
-    z-index: 6 !important;
-  }
-  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-wrap.open .slk-ext-sort-menu {
-    display: flex !important;
-  }
-  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-item {
-    display: flex !important;
-    align-items: center !important;
-    width: 100% !important;
-    min-height: 34px !important;
-    padding: 8px 10px !important;
-    border: 0 !important;
-    border-radius: 8px !important;
-    background: transparent !important;
-    color: var(--slk-text) !important;
-    font: 500 13px/1.3 var(--slk-font) !important;
-    text-align: left !important;
-    box-shadow: none !important;
-    white-space: nowrap !important;
-  }
-  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-item:hover {
-    background: #F8F8F8 !important;
-  }
-  html body.slk-ui dialog.popup:has(.extensions_info) .slk-ext-sort-item.is-active {
-    background: #F4EBF7 !important;
-    color: #441848 !important;
-    font-weight: 600 !important;
-  }
+ }
+
+/* v1.8.52: all three controls share one row; native select is the hit target. */
+html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar.slk-native-sort-ready {
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) 42px !important;
+  grid-template-rows:42px !important;
+  align-items:center !important;
+  gap:8px !important;
+}
+html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar.slk-native-sort-ready > :is(.slk-sort-source,.expander) {
+  display:none !important;
+}
+html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(1),
+html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(2) {
+  grid-row:1 !important; min-width:0 !important; width:100% !important;
+  height:42px !important; min-height:42px !important;
+  padding:4px 3px !important; white-space:normal !important;
+  line-height:1.2 !important;
+}
+html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(1) {grid-column:1 !important;}
+html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(2) {grid-column:2 !important;}
+html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort {
+  position:relative !important; display:grid !important; place-items:center !important;
+  grid-column:3 !important; grid-row:1 !important;
+  width:42px !important; height:42px !important; min-width:42px !important;
+  box-sizing:border-box !important; margin:0 !important; padding:0 !important;
+  border:1px solid var(--slk-border,#E3E3E3) !important;
+  border-radius:10px !important; background:var(--slk-surface,#fff) !important;
+  color:var(--slk-text,#1D1C1D) !important;
+}
+html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort > svg {
+  width:20px !important; height:20px !important; display:block !important;
+  stroke:currentColor !important; fill:none !important; stroke-width:1.8 !important;
+  stroke-linecap:round !important; stroke-linejoin:round !important; pointer-events:none !important;
+}
+html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort > select.slk-native-sort-select {
+  position:absolute !important; inset:0 !important; display:block !important;
+  width:100% !important; height:100% !important; min-width:0 !important; min-height:0 !important;
+  max-width:none !important; max-height:none !important; margin:0 !important; padding:0 !important;
+  opacity:0 !important; visibility:visible !important; pointer-events:auto !important;
+  cursor:pointer !important; font-size:16px !important; z-index:1 !important;
+  appearance:auto !important; -webkit-appearance:menulist !important;
+}
+html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-within {
+  outline:2px solid #1264A3 !important; outline-offset:2px !important;
 }

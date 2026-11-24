@@ -3985,195 +3985,78 @@ function slkConnectPromptManager() {
 } // end enabled-only Slack UI runtime (v1.8.4)
 
 
-// v1.8.51 — make extension-list labels semibold and replace the awkward
-// standalone sort button with a toolbar sort icon + dropdown menu.
-(function slkEnhanceExtensionSortMenu() {
-    const DIALOG_SELECTOR = 'dialog.popup';
-    const isMobileSlack = () => document.body?.classList.contains('slk-ui') && matchMedia('(max-width: 1000px)').matches;
-    const waitFrame = () => new Promise(resolve => requestAnimationFrame(() => resolve()));
-    const normalizeLabel = (value) => (value || '').replace(/\s+/g, ' ').trim();
-    const getSortLabel = (source) => normalizeLabel(source?.textContent || source?.innerText || '');
-    const getSortValue = (label) => label.replace(/^Sort:\s*/i, '').trim();
-    const iconSvg = () => `
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M4 7h10"></path>
-        <path d="M4 12h16"></path>
-        <path d="M4 17h12"></path>
-        <path d="M18 6l2 2 2-2"></path>
-        <path d="M20 8v8"></path>
-      </svg>`;
-
-    async function clickSource(source) {
-        source.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-        await waitFrame();
-    }
-
-    async function discoverSortOptions(source) {
-        const cached = source.__slkSortOptions;
-        if (Array.isArray(cached) && cached.length) return cached;
-
-        const initial = getSortLabel(source);
-        if (!initial) return [];
-
-        const labels = [initial];
-        const seen = new Set(labels);
-        for (let i = 0; i < 8; i += 1) {
-            await clickSource(source);
-            const next = getSortLabel(source);
-            if (!next || seen.has(next)) break;
-            seen.add(next);
-            labels.push(next);
+// v1.8.52 — native sort picker; keep ST's existing sorting callback.
+(function slkNativeExtensionSort() {
+    const selector = 'dialog.popup:has(.extensions_info) .extensions_toolbar';
+    let storage, translate;
+    const active = () => document.body?.classList.contains('slk-ui');
+    const mode = source => {
+        try { if (storage) return storage.getItem('extensions_sortByName') === 'true' ? 'name' : 'order'; } catch {}
+        return /display name/i.test(source.textContent) ? 'name' : 'order';
+    };
+    const label = key => {
+        try { return translate ? (key === 'name' ? translate`Sort: Display Name` : translate`Sort: Loading Order`).replace(/^Sort:\s*/i, '') : (key === 'name' ? 'Display Name' : 'Loading Order'); }
+        catch { return key === 'name' ? 'Display Name' : 'Loading Order'; }
+    };
+    function enhance(toolbar) {
+        // ST creates [update all, update enabled, expander, sort]. Keep the
+        // native sort node and its registered callback, but never render it.
+        const nativeButtons = [...toolbar.children].filter(el => el.matches('button.menu_button'));
+        const source = nativeButtons.find(el => /^Sort:/i.test(el.textContent.trim())) || (nativeButtons.length === 3 ? nativeButtons[2] : null);
+        if (!source) return;
+        if (!active()) {
+            toolbar.querySelector('.slk-native-sort')?.remove();
+            toolbar.classList.remove('slk-native-sort-ready');
+            source.classList.remove('slk-sort-source');
+            return;
         }
-
-        let guard = 0;
-        while (getSortLabel(source) !== initial && guard < labels.length + 2) {
-            await clickSource(source);
-            guard += 1;
-        }
-
-        source.__slkSortOptions = labels;
-        return labels;
-    }
-
-    async function selectSortLabel(source, targetLabel) {
-        const desired = normalizeLabel(targetLabel);
-        if (!desired) return;
-        let current = getSortLabel(source);
-        if (current === desired) return;
-
-        const options = await discoverSortOptions(source);
-        const maxTurns = Math.max(options.length + 1, 8);
-        for (let i = 0; i < maxTurns; i += 1) {
-            await clickSource(source);
-            current = getSortLabel(source);
-            if (current === desired) break;
-        }
-    }
-
-    function closeMenus(exceptWrap = null) {
-        document.querySelectorAll('.slk-ext-sort-wrap.open').forEach(wrap => {
-            if (wrap !== exceptWrap) wrap.classList.remove('open');
-        });
-    }
-
-    function bindGlobalCloser() {
-        if (window.__slkExtSortCloserBound) return;
-        window.__slkExtSortCloserBound = true;
-        document.addEventListener('pointerdown', (event) => {
-            if (!(event.target instanceof Element) || !event.target.closest('.slk-ext-sort-wrap')) closeMenus();
-        });
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') closeMenus();
-        });
-    }
-
-    async function buildMenu(wrap, source) {
-        const menu = wrap.querySelector('.slk-ext-sort-menu');
-        if (!menu) return;
-
-        menu.innerHTML = '';
-        const labels = await discoverSortOptions(source);
-        const current = getSortLabel(source);
-
-        labels.forEach(label => {
-            const item = document.createElement('button');
-            item.type = 'button';
-            item.className = 'slk-ext-sort-item';
-            if (normalizeLabel(label) === current) item.classList.add('is-active');
-            item.textContent = getSortValue(label) || label;
-            item.addEventListener('click', async (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                await selectSortLabel(source, label);
-                source.__slkSortOptions = null;
-                wrap.classList.remove('open');
-                await buildMenu(wrap, source);
-                const toggle = wrap.querySelector('.slk-ext-sort-toggle');
-                if (toggle) toggle.title = getSortLabel(source);
+        source.classList.add('slk-sort-source');
+        toolbar.classList.add('slk-native-sort-ready');
+        let wrap = toolbar.querySelector(':scope > .slk-native-sort');
+        if (!wrap) {
+            wrap = document.createElement('div');
+            wrap.className = 'slk-native-sort';
+            wrap.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h12M4 11h9M4 16h6M19 7v12m-3-3 3 3 3-3"/></svg>';
+            const select = document.createElement('select');
+            select.className = 'slk-native-sort-select';
+            select.setAttribute('aria-label', 'Sort extensions');
+            for (const key of ['order','name']) select.add(new Option(label(key), key));
+            // Selecting the current option does nothing. Only a different
+            // selection invokes the original ST handler exactly once.
+            select.addEventListener('change', () => {
+                if (select.value !== mode(source)) source.click();
             });
-            menu.appendChild(item);
-        });
-    }
-
-    function createSortControl(toolbar, source) {
-        const wrap = document.createElement('div');
-        wrap.className = 'slk-ext-sort-wrap';
-
-        const toggle = document.createElement('button');
-        toggle.type = 'button';
-        toggle.className = 'menu_button slk-ext-sort-toggle';
-        toggle.innerHTML = iconSvg();
-        toggle.title = getSortLabel(source) || 'Sort';
-        toggle.setAttribute('aria-label', 'Sort extensions');
-
-        const menu = document.createElement('div');
-        menu.className = 'slk-ext-sort-menu';
-        menu.setAttribute('role', 'menu');
-
-        toggle.addEventListener('click', async (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const willOpen = !wrap.classList.contains('open');
-            closeMenus(wrap);
-            if (!willOpen) {
-                wrap.classList.remove('open');
-                return;
-            }
-            await buildMenu(wrap, source);
-            toggle.title = getSortLabel(source) || 'Sort';
-            wrap.classList.add('open');
-        });
-
-        wrap.append(toggle, menu);
-        toolbar.appendChild(wrap);
-        return wrap;
-    }
-
-    function enhanceDialog(dialog) {
-        if (!(dialog instanceof Element)) return;
-        const toolbar = dialog.querySelector('.extensions_toolbar');
-        if (!toolbar) return;
-
-        const sortSource = [...dialog.querySelectorAll('.menu_button, button')]
-            .find(el => !el.classList.contains('slk-ext-sort-toggle') && /^Sort:/i.test(getSortLabel(el)));
-        if (!sortSource) return;
-
-        sortSource.classList.add('slk-sort-source');
-
-        let wrap = toolbar.querySelector('.slk-ext-sort-wrap');
-        if (!wrap) wrap = createSortControl(toolbar, sortSource);
-        const toggle = wrap.querySelector('.slk-ext-sort-toggle');
-        if (toggle) toggle.title = getSortLabel(sortSource) || 'Sort';
-    }
-
-    function scan(root = document) {
-        if (!isMobileSlack()) return;
-        bindGlobalCloser();
-        root.querySelectorAll?.(DIALOG_SELECTOR)?.forEach(dialog => {
-            if (dialog.querySelector('.extensions_info')) enhanceDialog(dialog);
-        });
-        if (root.matches?.(DIALOG_SELECTOR) && root.querySelector('.extensions_info')) enhanceDialog(root);
-    }
-
-    const observer = new MutationObserver(mutations => {
-        if (!isMobileSlack()) return;
-        for (const mutation of mutations) {
-            mutation.addedNodes.forEach(node => {
-                if (node.nodeType === 1) scan(node);
-            });
+            wrap.appendChild(select);
+            toolbar.appendChild(wrap);
         }
-    });
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            scan();
-            observer.observe(document.documentElement, { childList: true, subtree: true });
-        }, { once: true });
-    } else {
+        const select = wrap.querySelector('select');
+        if (select.value !== mode(source)) select.value = mode(source);
+        for (const option of select.options) {
+            const text = label(option.value);
+            if (option.textContent !== text) option.textContent = text;
+        }
+    }
+    let queued = false;
+    function scan() {
+        document.querySelectorAll(selector).forEach(enhance);
+    }
+    function schedule() {
+        if (queued) return;
+        queued = true;
+        queueMicrotask(() => { queued = false; scan(); });
+    }
+    function start() {
         scan();
-        observer.observe(document.documentElement, { childList: true, subtree: true });
+        new MutationObserver(records => {
+            if (records.some(r => r.target.closest?.('.extensions_toolbar') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.matches?.('dialog.popup,.extensions_info,.extensions_toolbar') || n.querySelector?.('.extensions_toolbar'))))) schedule();
+        }).observe(document.documentElement, {childList:true, subtree:true});
+        // Optional native account setting and translated labels; no dependency
+        // on the import succeeding for the ordinary English toolbar.
+        import(new URL('scripts/util/AccountStorage.js', document.baseURI).href).then(m => { storage = m.accountStorage; schedule(); }).catch(() => {});
+        import(new URL('scripts/i18n.js', document.baseURI).href).then(m => { translate = m.t; schedule(); }).catch(() => {});
     }
-
-    window.addEventListener('pageshow', () => scan());
-    window.addEventListener('slk-ui-settings-changed', () => scan());
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
+    else start();
+    window.addEventListener('slk-ui-settings-changed', schedule);
+    window.addEventListener('pageshow', schedule);
 })();
