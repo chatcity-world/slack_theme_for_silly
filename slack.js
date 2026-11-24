@@ -2848,51 +2848,63 @@ if (SLK_UI_SETTINGS.enabled) {
 // competing absolute/grid positioning of .swipe_left versus .swipeRightBlock.
 // The original elements are moved, NOT cloned; SillyTavern handlers survive.
 (function slkGroupNativeSwipeControls() {
-    const isEnabled = () => document.body.classList.contains('slk-ui') &&
-        window.matchMedia('(min-width: 0px)').matches;
+    const isEnabled = () => document.body.classList.contains('slk-ui');
+    const syncMessage = (mes, enabled) => {
+        const mesBlock = mes.querySelector(':scope > .mes_block');
+        const holder = mes.querySelector(':scope > .swipeRightBlock');
+        if (!mesBlock || !holder) return;
+        const left = mes.querySelector(':scope > .swipe_left') ||
+            holder.querySelector(':scope > .swipe_left');
+        const counter = holder.querySelector(':scope > .swipes-counter');
+        const right = holder.querySelector(':scope > .swipe_right');
+        if (!left || !counter || !right) return;
 
+        if (enabled) {
+            // Preserve the original nodes and their click handlers. Complete the
+            // row in the same mutation-observer checkpoint, before the next paint.
+            if (holder.firstElementChild !== left) holder.insertBefore(left, holder.firstElementChild);
+            if (left.nextElementSibling !== counter) holder.insertBefore(counter, left.nextSibling);
+            if (counter.nextElementSibling !== right) holder.insertBefore(right, counter.nextSibling);
+            if (!holder.classList.contains('slk-swipe-inline')) holder.classList.add('slk-swipe-inline');
+        } else if (holder.classList.contains('slk-swipe-inline')) {
+            mes.insertBefore(left, mesBlock);
+            if (right.nextElementSibling !== counter) holder.insertBefore(right, counter);
+            holder.classList.remove('slk-swipe-inline');
+        }
+    };
     const sync = () => {
         const enabled = isEnabled();
-        document.querySelectorAll('#chat .mes').forEach(mes => {
-            const mesBlock = mes.querySelector(':scope > .mes_block');
-            const holder = mes.querySelector(':scope > .swipeRightBlock');
-            if (!mesBlock || !holder) return;
-            const left = mes.querySelector(':scope > .swipe_left') ||
-                holder.querySelector(':scope > .swipe_left');
-            const counter = holder.querySelector(':scope > .swipes-counter');
-            const right = holder.querySelector(':scope > .swipe_right');
-            if (!left || !counter || !right) return;
-
-            if (enabled) {
-                // Three original nodes in a stable, direct flex row.
-                if (holder.firstElementChild !== left) holder.insertBefore(left, holder.firstElementChild);
-                if (left.nextElementSibling !== counter) holder.insertBefore(counter, left.nextSibling);
-                if (counter.nextElementSibling !== right) holder.insertBefore(right, counter.nextSibling);
-                if (!holder.classList.contains('slk-swipe-inline')) holder.classList.add('slk-swipe-inline');
-            } else if (holder.classList.contains('slk-swipe-inline')) {
-                // Restore native structure when Slack UI is disabled or on desktop.
-                mes.insertBefore(left, mesBlock);
-                if (right.nextElementSibling !== counter) holder.insertBefore(right, counter);
-                holder.classList.remove('slk-swipe-inline');
-            }
-        });
-    };
-
-    let timer = null;
-    const schedule = () => {
-        if (timer !== null) return;
-        timer = setTimeout(() => { timer = null; sync(); }, 50);
+        document.querySelectorAll('#chat .mes').forEach(mes => syncMessage(mes, enabled));
     };
     const start = () => {
         const chat = document.getElementById('chat');
         if (!chat) { setTimeout(start, 500); return; }
         sync();
-        new MutationObserver(schedule).observe(chat, {
-            childList: true, subtree: true, attributes: true,
-            attributeFilter: ['class'],
-        });
-        window.addEventListener('slk-ui-settings-changed', schedule);
-        window.addEventListener('resize', schedule);
+        const structure = '.mes, .mes_block, .swipeRightBlock, .swipe_left, .swipe_right, .swipes-counter';
+        new MutationObserver(records => {
+            const changed = new Set();
+            for (const record of records) {
+                const target = record.target;
+                if (!(target instanceof Element)) continue;
+                const mes = target.closest('.mes');
+                if (record.type === 'attributes') {
+                    if (mes && target.matches(structure)) changed.add(mes);
+                    continue;
+                }
+                // Ignore ordinary text/token streaming; only the message shell
+                // or swipe-control structure needs to be regrouped.
+                if (mes && (target === mes || target.matches('.swipeRightBlock'))) changed.add(mes);
+                if (!mes) for (const node of record.addedNodes) {
+                    if (!(node instanceof Element)) continue;
+                    if (node.matches('.mes')) changed.add(node);
+                    else node.querySelectorAll('.mes').forEach(m => changed.add(m));
+                }
+            }
+            const enabled = isEnabled();
+            for (const mes of changed) if (chat.contains(mes)) syncMessage(mes, enabled);
+        }).observe(chat, {childList: true, subtree: true, attributes: true, attributeFilter: ['class']});
+        window.addEventListener('slk-ui-settings-changed', sync);
+        window.addEventListener('resize', sync);
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();

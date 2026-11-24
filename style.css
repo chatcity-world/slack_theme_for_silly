@@ -22197,3 +22197,14 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     vector-effect:non-scaling-stroke;
   }
 }
+
+/* v1.8.50: do not paint the temporary native swipe controls before grouping.
+   Visibility (not display:none) leaves native measurement and event setup intact.
+   The existing final row, spacing, icons and interaction rules are untouched. */
+@media screen {
+  html body.slk-ui #chat .mes > .swipe_left,
+  html body.slk-ui #chat .mes > .swipeRightBlock:not(.slk-swipe-inline) {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
