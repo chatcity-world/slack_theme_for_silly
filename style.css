@@ -21797,7 +21797,16 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   }
   body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-ws {margin-right:auto!important;}
   body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact .slk-ws-text {display:none!important;}
-  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-settings-btn {color:#1d1c1d!important;}
+  /* The outer settings circle carries exactly the same glass as the back/logo.
+     Do not paint a second opaque active/hover background over it. */
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-header > .slk-header-actions {
+    background:rgba(255,255,255,.22)!important;
+    backdrop-filter:blur(8px) saturate(180%)!important;-webkit-backdrop-filter:blur(8px) saturate(180%)!important;
+  }
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-header #slk-settings-btn {
+    color:#1d1c1d!important;background:transparent!important;box-shadow:none!important;
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  }
   body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact .slk-ws-avatar {
     position:relative!important;width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;max-width:38px!important;max-height:38px!important;
     flex:0 0 38px!important; margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;overflow:hidden!important;
@@ -21854,10 +21863,10 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
    independent of old unlayered drawer and mobile theme rules. */
 @layer slk-prompt-editor-overlay {
   @media screen and (max-width:1000px) {
-    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:not(.openDrawer) {
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:not(.openDrawer):not(.slk-prompt-visible) {
       display:none!important;
     }
-    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal.openDrawer {
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible) {
       position:fixed!important;
       display:flex!important; flex-direction:column!important;
       visibility:visible!important; opacity:1!important;
@@ -21884,4 +21893,16 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
 @media screen {
   html body.slk-ui #completion_prompt_manager_popup.openDrawer {position:fixed!important;z-index:2147483646!important;}
   html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer) > .select2-container--open {z-index:2147483647!important;}
+}
+
+/* v1.8.23: native PromptManager method owns the mobile editor visibility. */
+@layer slk-prompt-editor-overlay {
+ @media screen and (max-width:1000px) {
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal[data-slk-prompt-area="edit"] > #completion_prompt_manager_popup_inspect,
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal[data-slk-prompt-area="inspect"] > #completion_prompt_manager_popup_edit {display:none!important;}
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal.slk-prompt-visible {
+    display:flex!important; visibility:visible!important; opacity:1!important; pointer-events:auto!important;
+    z-index:2147483646!important;
+  }
+ }
 }

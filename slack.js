@@ -3259,6 +3259,12 @@ function slkPortalPromptEditor(popup = document.getElementById('completion_promp
             }
             if (!popup.classList.contains('slk-prompt-portal')) popup.classList.add('slk-prompt-portal');
             if (popup.classList.contains('slk-nav-hidden')) popup.classList.remove('slk-nav-hidden');
+            if (!popup.slkPromptTouchGuard) {
+                popup.slkPromptTouchGuard = event => {
+                    if (document.body.classList.contains('slk-ui') && matchMedia('(max-width:1000px)').matches) event.stopPropagation();
+                };
+                for (const type of ['touchstart','mousedown']) popup.addEventListener(type,popup.slkPromptTouchGuard);
+            }
         }
     } else if (popup.slkHomeMarker?.parentNode) {
         popup.slkHomeMarker.parentNode.insertBefore(popup, popup.slkHomeMarker);
@@ -3266,7 +3272,73 @@ function slkPortalPromptEditor(popup = document.getElementById('completion_promp
     if (!enabled || !mobile) {
         if (popup.classList.contains('slk-prompt-portal')) popup.classList.remove('slk-prompt-portal');
         if (popup.slkHadNativeDrawerClass && !popup.classList.contains('drawer-content')) popup.classList.add('drawer-content');
+        if (popup.classList.contains('slk-prompt-visible') || popup.style.getPropertyPriority('display') === 'important') {
+            popup.style.removeProperty('display');
+            popup.classList.remove('slk-prompt-visible');
+            if (popup.slkAddedPromptPin) {popup.classList.remove('pinnedOpen');popup.slkAddedPromptPin = false;}
+            delete popup.dataset.slkPromptArea;
+            if (!popup.classList.contains('openDrawer')) popup.style.display = 'none';
+        }
     }
+}
+
+// v1.8.23 — Use the actual ST PromptManager lifecycle instead of relying on
+// slideDown/slideUp (which conflict with forced display rules on mobile).
+// This is a runtime extension-only adapter; native form values, edit/save/reset
+// handlers and the desktop implementation remain intact.
+function slkInstallPromptManagerAdapter(PromptManager) {
+    const proto = PromptManager?.prototype;
+    if (!proto || proto.slkMobilePromptAdapter || typeof proto.showPopup !== 'function' || typeof proto.hidePopup !== 'function') return;
+    const originalShow = proto.showPopup;
+    const originalHide = proto.hidePopup;
+    const active = manager => manager.configuration?.prefix === 'completion_' &&
+        document.body?.classList.contains('slk-ui') && matchMedia('(max-width:1000px)').matches;
+    const popupFor = manager => document.getElementById(manager.configuration.prefix + 'prompt_manager_popup');
+    const stopNativeAnimation = popup => {
+        const jq = window.jQuery;
+        if (jq) jq(popup).stop(true, false);
+        // jQuery may leave animation dimensions on the element after stop().
+        for (const name of ['display','height','width','overflow','overflow-x','overflow-y','padding-top','padding-bottom','margin-top','margin-bottom','opacity']) popup.style.removeProperty(name);
+    };
+    proto.showPopup = function(area = 'edit') {
+        if (!active(this)) return originalShow.apply(this, arguments);
+        const popup = popupFor(this);
+        const content = document.getElementById(this.configuration.prefix + 'prompt_manager_popup_' + area);
+        if (!popup || !content) return originalShow.apply(this, arguments);
+        slkPortalPromptEditor(popup);
+        stopNativeAnimation(popup);
+        popup.hidden = false;
+        popup.classList.remove('closedDrawer','displayNone','slk-nav-hidden');
+        popup.dataset.slkPromptArea = area;
+        popup.slkPromptManager = this;
+        content.style.display = 'flex';
+        popup.classList.add('openDrawer','slk-prompt-visible');
+        // ST's global outside-touch handler otherwise treats the popup as a
+        // normal drawer. Only this editor is pinned; close/save still work.
+        if (!popup.classList.contains('pinnedOpen')) {popup.classList.add('pinnedOpen');popup.slkAddedPromptPin = true;}
+        popup.style.setProperty('display','flex','important');
+    };
+    proto.hidePopup = function() {
+        if (!active(this)) return originalHide.apply(this, arguments);
+        const popup = popupFor(this);
+        if (!popup) return originalHide.apply(this, arguments);
+        stopNativeAnimation(popup);
+        popup.classList.remove('openDrawer','slk-prompt-visible');
+        if (popup.slkAddedPromptPin) {popup.classList.remove('pinnedOpen');popup.slkAddedPromptPin = false;}
+        delete popup.dataset.slkPromptArea;
+        popup.slkPromptManager = null;
+        popup.style.setProperty('display','none','important');
+    };
+    Object.defineProperty(proto,'slkMobilePromptAdapter',{value:true,configurable:true});
+}
+
+// ST already imports this ES module. Import the same canonical URL (no cache
+// query) so the existing PromptManager instance sees the prototype adapter.
+// Older/custom ST builds fall back to the original observer-based editor.
+function slkConnectPromptManager() {
+    import(new URL('scripts/PromptManager.js', document.baseURI).href)
+        .then(module => slkInstallPromptManagerAdapter(module.PromptManager))
+        .catch(error => console.warn('[Slack UI] Native prompt adapter unavailable:', error));
 }
 
 // v1.6.3 — Native prompt editing dialog: scrollable fields + persistent,
@@ -3548,6 +3620,19 @@ function slkPortalPromptEditor(popup = document.getElementById('completion_promp
     const start = () => {
         const popup = document.getElementById(popupId);
         if (popup) observePopup(popup);
+        slkConnectPromptManager();
+        const panel = document.getElementById('left-nav-panel');
+        if (panel) for (const type of ['touchstart','mousedown']) panel.addEventListener(type, event => {
+            if (!document.body.classList.contains('slk-ui') || !matchMedia('(max-width:1000px)').matches) return;
+            if (event.target.closest?.('.prompt-manager-edit-action,.prompt-manager-inspect-action')) event.stopPropagation();
+        });
+        if (panel) new MutationObserver(() => {
+            const current = document.getElementById(popupId);
+            if (current?.classList.contains('slk-prompt-visible') &&
+                (!panel.classList.contains('openDrawer') || panel.classList.contains('slk-nav-hidden'))) {
+                current.slkPromptManager?.hidePopup();
+            }
+        }).observe(panel,{attributes:true,attributeFilter:['class']});
         // Retain discovery for late renders/replacements, without observing
         // unrelated attribute changes or re-running layout for other panels.
         const rootObserver = new MutationObserver(records => {
