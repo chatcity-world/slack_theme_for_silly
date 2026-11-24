@@ -21744,7 +21744,8 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   }
   body.slk-ui[data-slk-header-view] #slk-header::before,
   body.slk-ui[data-slk-header-view] #slk-header::after {content:none!important;display:none!important;}
-  body.slk-ui[data-slk-header-view] #slk-header > * {position:relative!important;z-index:1!important;}
+  /* v1.8.18: one identical 6px downward offset for every header state. */
+  body.slk-ui[data-slk-header-view] #slk-header > * {position:relative!important;top:6px!important;z-index:1!important;}
   body.slk-ui[data-slk-header-view] #slk-header button {pointer-events:auto!important;}
   /* Expanded panel/home: the original purple header and round controls. */
   body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact) #slk-header {

@@ -59,6 +59,7 @@
     const el = document.createElement('style');
     el.id = 'slk-early-splash-style';
     el.textContent = `:root { --slk-loader-icon:url(${JSON.stringify(icon)}); }
+    @media screen and (max-width:1000px) { html:not(:has(body.slk-ui)):has(#preloader:not([hidden]):not([style*="display: none"]):not([style*="display:none"])), html:not(:has(body.slk-ui)):has(dialog[open] #loader) { background-color:#fff !important; color-scheme:light !important; } }
     #preloader, #loader, #loader.splash-screen, dialog:has(#loader), dialog:has(#loader)::backdrop { background:#fff !important; }
     #loader { position:relative !important; }
     #loader > .splash-logo, #loader #load-spinner, #loader .splash-message, #loader::before { display:none !important; }

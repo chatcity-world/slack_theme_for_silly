@@ -1230,6 +1230,13 @@ function dedupeWelcomePanel() {
 // v1.8.17: actual fixed status-area colour sample, independent of header design.
 // The visible view and compact class are the same state used by the header.
 let slkStatusActive = false;
+function slkSplashIsVisible() {
+    for (const el of document.querySelectorAll('#preloader, dialog[open] #loader')) {
+        const style = getComputedStyle(el);
+        if (el.getClientRects().length && style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity) > 0) return true;
+    }
+    return false;
+}
 function slkSyncStatusBar() {
     const mobile = matchMedia('(max-width: 1000px)').matches;
     const body = document.body;
@@ -1245,7 +1252,7 @@ function slkSyncStatusBar() {
         return;
     }
     slkStatusActive = true;
-    const light = body.dataset.slkHeaderView === 'chat' || body.classList.contains('slk-header-compact');
+    const light = slkSplashIsVisible() || body.dataset.slkHeaderView === 'chat' || body.classList.contains('slk-header-compact');
     const state = light ? 'light' : 'purple';
     const desired = light ? '#FFFFFF' : '#3F1543';
     if (root.dataset.slkStatusColor !== state) root.dataset.slkStatusColor = state;
@@ -1272,6 +1279,28 @@ function slkWatchStatusBar() {
     if (topSettings) new MutationObserver(records => {
         if (records.some(r => r.target.classList?.contains('drawer-icon') || r.target.classList?.contains('drawer-content'))) schedule();
     }).observe(topSettings, {attributes:true,attributeFilter:['class'],subtree:true});
+    // Watch only loader lifecycle changes, not ordinary message/UI mutations.
+    const loaderSelector = '#preloader, dialog:has(#loader)';
+    const loaderNodes = new WeakSet();
+    const loaderObserver = new MutationObserver(schedule);
+    const watchLoader = el => {
+        if (!el || loaderNodes.has(el)) return;
+        loaderNodes.add(el);
+        loaderObserver.observe(el, {attributes:true,attributeFilter:['class','style','hidden','open']});
+    };
+    document.querySelectorAll(loaderSelector).forEach(watchLoader);
+    new MutationObserver(records => {
+        let changed = false;
+        for (const r of records) for (const n of [...r.addedNodes, ...r.removedNodes]) {
+            if (n.nodeType !== 1) continue;
+            const matches = n.matches(loaderSelector) ? [n] : [...n.querySelectorAll(loaderSelector)];
+            if (!matches.length) continue;
+            changed = true;
+            matches.filter(el => el.isConnected).forEach(watchLoader);
+        }
+        if (changed) schedule();
+    }).observe(document.body, {childList:true,subtree:true});
+    document.addEventListener('close', e => { if (e.target.querySelector?.('#loader')) schedule(); }, true);
     window.addEventListener('resize',schedule);
     window.addEventListener('pageshow',schedule);
     window.addEventListener('focus',schedule);
@@ -2497,7 +2526,7 @@ if (SLK_UI_SETTINGS.enabled) {
         // logo on the *next initial loading screen*, before slack.js is evaluated.
         const imageUrl = slkSelectedSplashLogoUrl();
         const imageCss = ':root { --slk-loader-icon: url(' + JSON.stringify(imageUrl) + ') !important; }';
-        return START + '\n' + imageCss + '\n' + BOOT_CSS + '\n' + END;
+        return START + '\n' + imageCss + '\n' + BOOT_CSS + '\n' + "@media screen and (max-width:1000px) { html:not(:has(body.slk-ui)):has(#preloader:not([hidden]):not([style*=\"display: none\"]):not([style*=\"display:none\"])), html:not(:has(body.slk-ui)):has(dialog[open] #loader) { background-color:#fff !important; color-scheme:light !important; } }" + '\n' + END;
     };
     const strip = (s) => {
         const i = s.indexOf(START), j = s.indexOf(END);
