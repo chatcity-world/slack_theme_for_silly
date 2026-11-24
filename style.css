@@ -21637,3 +21637,79 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   }
   html body.slk-ui[data-slk-header-view="panel"]:not(.slk-header-compact) #slk-header #slk-settings-btn { color: #fff !important; }
 }
+
+
+/* v1.8.14 — Full-height settings surface beneath the floating header.
+   The header stays translucent; the CURRENT drawer, not #sheld, is its backdrop.
+   Keep the prompt drawer and chat/home header untouched. */
+@media screen and (max-width: 1000px) {
+  html body.slk-ui #top-settings-holder > .drawer:not(#ai-config-button) > .drawer-content.openDrawer:not(.slk-nav-hidden) {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    max-height: 100dvh !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding-top: calc(var(--slk-top-h) + var(--slk-panel-start-gap, 0px)) !important;
+    background: var(--slk-surface, #fff) !important;
+    opacity: 1 !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: contain;
+    scroll-padding-top: var(--slk-top-h);
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    clip-path: none !important;
+  }
+  /* Preserve the original inner spacing of these panels. */
+  html body.slk-ui #top-settings-holder > .drawer > :is(#AdvancedFormatting, #WorldInfo, #rm_extensions_block, #PersonaManagement, #user-settings-block).openDrawer {
+    --slk-panel-start-gap: 16px;
+  }
+  /* The old top-strip patch is not needed when the drawer extends to y=0. */
+  html body.slk-ui #top-settings-holder > .drawer:not(#ai-config-button) > .drawer-content.openDrawer:not(.slk-nav-hidden)::after {
+    content: none !important;
+    display: none !important;
+  }
+  /* Restore the translucent compact header over the current tab only. */
+  html body.slk-ui[data-slk-header-view="panel"].slk-header-compact:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g) #slk-header {
+    background: linear-gradient(to bottom, rgba(255,255,255,.96) 0%, rgba(255,255,255,.78) 52%, rgba(255,255,255,0) 100%) !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  /* List only: use the existing character panel as the single scroll surface.
+     This includes the title, favorites, sort controls and list. The edit view
+     retains its original internal scrolling and toolbar. */
+  html body.slk-ui #top-settings-holder > #rightNavHolder > #right-nav-panel.openDrawer[data-slk-view="list"]:not(.slk-nav-hidden) {
+    overflow-y: auto !important;
+    padding-bottom: calc(var(--slk-footer-h) + 20px) !important;
+  }
+  html body.slk-ui #right-nav-panel[data-slk-view="list"] > .scrollableInner {
+    flex: 0 0 auto !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding-top: 3px !important;
+    padding-bottom: 0 !important;
+  }
+  html body.slk-ui #right-nav-panel[data-slk-view="list"] #CharListButtonAndHotSwaps,
+  html body.slk-ui #right-nav-panel[data-slk-view="list"] #charListFixedTop {
+    position: static !important;
+    top: auto !important;
+    flex-shrink: 0 !important;
+  }
+  html body.slk-ui #right-nav-panel[data-slk-view="list"] #CharListButtonAndHotSwaps > .flexFlowColumn::before {
+    content: '캐릭터' !important;
+  }
+  /* No synthetic second title; the original heading scrolls with its row. */
+  html body.slk-ui #right-nav-panel[data-slk-view="list"] #charListFixedTop::before {
+    content: none !important;
+    display: none !important;
+  }
+}
