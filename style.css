@@ -21215,3 +21215,42 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     pointer-events: none !important;
   }
 }
+
+
+/* ===== Slack UI v1.8.6 — remove stray top separator + right-size model edit icon ===== */
+@media screen and (max-width:1000px) {
+  /* Some ST panels render a default top <hr> right under the Slack header.
+     Hide only the first separator in top-level mobile panels. */
+  html body.slk-ui :is(#left-nav-panel, #right-nav-panel, #rm_api_block, #extensionsMenu, #extensions_settings, #WorldInfo, #AdvancedFormatting, #PersonaManagement) > hr:first-of-type,
+  html body.slk-ui :is(#left-nav-panel, #right-nav-panel, #rm_api_block, #extensionsMenu, #extensions_settings, #WorldInfo, #AdvancedFormatting, #PersonaManagement) > .inline-drawer > hr:first-of-type,
+  html body.slk-ui #right-nav-panel :is(#rm_characters_block, #rm_group_chats_block, #rm_api_block, #rm_extensions_block) > hr:first-of-type {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Match the model edit icon to the nearby key button: single icon only,
+     smaller and lighter than the accidental oversized v1.8.5 glyph. */
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action,
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action.slk-model-single-glyph {
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+  }
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action > svg.slk-model-edit-glyph-v183,
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action.slk-model-single-glyph > svg.slk-model-edit-glyph-v183 {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    max-width: 20px !important;
+    max-height: 20px !important;
+    flex: 0 0 20px !important;
+    stroke-width: 2.15px !important;
+  }
+}

@@ -3510,11 +3510,11 @@ if (SLK_UI_SETTINGS.enabled) {
                     const glyph = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                     glyph.setAttribute('class', 'slk-model-edit-glyph-v183');
                     glyph.setAttribute('viewBox', '0 0 24 24');
-                    glyph.setAttribute('width', '28');
-                    glyph.setAttribute('height', '28');
+                    glyph.setAttribute('width', '20');
+                    glyph.setAttribute('height', '20');
                     glyph.setAttribute('fill', 'none');
                     glyph.setAttribute('stroke', 'currentColor');
-                    glyph.setAttribute('stroke-width', '2.5');
+                    glyph.setAttribute('stroke-width', '2.15');
                     glyph.setAttribute('stroke-linecap', 'round');
                     glyph.setAttribute('stroke-linejoin', 'round');
                     glyph.setAttribute('aria-hidden', 'true');
