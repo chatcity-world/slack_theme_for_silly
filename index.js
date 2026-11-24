@@ -59,7 +59,12 @@
     const el = document.createElement('style');
     el.id = 'slk-early-splash-style';
     el.textContent = `:root { --slk-loader-icon:url(${JSON.stringify(icon)}); }
-    @media screen and (max-width:1000px) { html:not(:has(body.slk-ui)):has(#preloader:not([hidden]):not([style*="display: none"]):not([style*="display:none"])), html:not(:has(body.slk-ui)):has(dialog[open] #loader) { background-color:#fff !important; color-scheme:light !important; } }
+    @media screen and (max-width:1000px) {
+    html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"])), html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"])) > body,
+    html:has(dialog[open] #loader), html:has(dialog[open] #loader) > body { background-color:#fff!important; background-image:none!important; color-scheme:only light!important; }
+    html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"])) #preloader { position:fixed!important; inset:0!important; width:100%!important; height:100%!important; margin:0!important; background:#fff!important; color-scheme:only light!important; }
+    html:has(dialog[open] #loader) dialog[open]:has(#loader) { background-color:#fff!important; color-scheme:only light!important; }
+}
     #preloader, #loader, #loader.splash-screen, dialog:has(#loader), dialog:has(#loader)::backdrop { background:#fff !important; }
     #loader { position:relative !important; }
     #loader > .splash-logo, #loader #load-spinner, #loader .splash-message, #loader::before { display:none !important; }
