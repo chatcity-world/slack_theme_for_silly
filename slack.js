@@ -3298,10 +3298,15 @@ function slkPlacePromptEditor(popup) {
     const vw = vv?.width || window.innerWidth;
     const vh = vv?.height || window.innerHeight;
     const width = Math.min(820, vw - 32);
-    const viewportTop = vv?.offsetTop || 0;
+    // Convert page-space visual viewport bounds into the SAME coordinate
+    // space as getBoundingClientRect. iOS may pan the layout on textarea
+    // focus: offsetTop alone is not a client coordinate on all WebKit builds.
+    const rootRect = document.documentElement.getBoundingClientRect();
+    const pageTop = vv?.pageTop ?? ((window.scrollY || 0) + (vv?.offsetTop || 0));
+    const pageLeft = vv?.pageLeft ?? ((window.scrollX || 0) + (vv?.offsetLeft || 0));
+    const viewportTop = rootRect.top + pageTop;
+    const viewportLeft = rootRect.left + pageLeft;
     const viewportBottom = viewportTop + vh;
-    // The keyboard can shrink either the visual viewport alone (iOS), or both
-    // viewports. Retain the unoccluded height from before focus in either case.
     const focused = popup.contains(document.activeElement) &&
         document.activeElement.matches('input:not([type="checkbox"]):not([type="radio"]),textarea,[contenteditable="true"]');
     const normalHeight = Math.max(popup.slkEditorNormalHeight || 0, vh);
@@ -3310,29 +3315,38 @@ function slkPlacePromptEditor(popup) {
     const keyboard = Math.max(normalHeight, layoutHeight) - vh > 80 &&
         (focused || popup.slkEditorKeyboard === true);
     popup.slkEditorKeyboard = keyboard;
-    // Never subtract the floating app footer from the already reduced keyboard
-    // viewport. The editor is above it, and all editor content is scrollable.
+    if (popup.hasAttribute('data-slk-keyboard') !== keyboard) popup.toggleAttribute('data-slk-keyboard', keyboard);
     const footer = document.getElementById('slk-mobile-footer');
     const footerRect = footer?.getBoundingClientRect();
     const footerVisible = !keyboard && footerRect && footerRect.height > 0 &&
         getComputedStyle(footer).visibility !== 'hidden' &&
         footerRect.top < viewportBottom && footerRect.bottom > viewportTop;
+    // On iOS leave room for the accessory bar if it overlays the reported
+    // viewport. The app's own floating footer is irrelevant with the keyboard.
+    const apple = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const keyboardGap = apple && vh >= 300 ? 52 : 12;
     const upper = viewportTop + (keyboard ? 10 : safeTop + 12);
-    const lower = Math.min(viewportBottom - (keyboard ? 12 : safeBottom + 12),
+    const lower = Math.min(viewportBottom - (keyboard ? keyboardGap : safeBottom + 12),
         footerVisible ? footerRect.top - 16 : viewportBottom);
     const available = Math.max(1, lower - upper);
     const height = Math.min(600, available);
-    const left = (vv?.offsetLeft || 0) + (vw - width) / 2;
+    const left = viewportLeft + (vw - width) / 2;
     const top = upper + (available - height) / 2;
     const put = (key, n) => {
-        const val = `${n}px`;
+        const val = `${Math.round(n * 100) / 100}px`;
         if (popup.style.getPropertyValue(key) !== val) popup.style.setProperty(key, val);
     };
     put('--slk-editor-width', width); put('--slk-editor-height', height);
-    put('--slk-editor-top', top); put('--slk-editor-left', left);
+    // Calibrate against the current fixed-position origin, rather than
+    // assigning offsetTop and correcting it again. Both measurements are
+    // client coordinates, so a visual viewport pan cannot be counted twice.
     const rect = popup.getBoundingClientRect();
-    if (Math.abs(rect.top - top) > 1) put('--slk-editor-top', top + top - rect.top);
-    if (Math.abs(rect.left - left) > 1) put('--slk-editor-left', left + left - rect.left);
+    const resolved = getComputedStyle(popup);
+    const currentTop = parseFloat(resolved.top);
+    const currentLeft = parseFloat(resolved.left);
+    put('--slk-editor-top', (Number.isFinite(currentTop) ? currentTop : 0) + top - rect.top);
+    put('--slk-editor-left', (Number.isFinite(currentLeft) ? currentLeft : 0) + left - rect.left);
 }
 
 // Reveal the focused field once after the keyboard changes the viewport. Do
@@ -3342,12 +3356,18 @@ function slkRevealPromptField(popup) {
     if (!popup?.matches('.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)')) return;
     const field = document.activeElement;
     if (!popup.contains(field) || !field.matches('input:not([type="checkbox"]):not([type="radio"]),textarea,[contenteditable="true"]')) return;
-    const r = popup.getBoundingClientRect();
+    const scroller = popup.querySelector('.slk-prompt-form-fields');
+    if (!scroller || !scroller.contains(field)) return;
+    const r = scroller.getBoundingClientRect();
     const f = field.getBoundingClientRect();
-    const top = r.top + 12, bottom = r.bottom - 12;
+    const top = r.top + 8, bottom = r.bottom - 8;
+    // A long textarea need not fit in full. If part of it is already in view,
+    // leave native caret/selection and textarea scrolling alone.
+    if (field.tagName === 'TEXTAREA' && f.height > bottom - top &&
+        f.top <= top && f.bottom >= bottom) return;
     if (f.top < top || f.bottom > bottom) {
         const desired = f.height > bottom - top ? top : Math.max(top, (top + bottom - f.height) / 2);
-        popup.scrollTop += f.top - desired;
+        scroller.scrollTop += f.top - desired;
     }
 }
 
@@ -3401,6 +3421,7 @@ function slkInstallPromptManagerAdapter(PromptManager) {
         popup.slkPromptManager = null;
         popup.slkEditorNormalHeight = 0;
         popup.slkEditorKeyboard = false;
+        popup.removeAttribute('data-slk-keyboard');
         popup.style.setProperty('display','none','important');
     };
     Object.defineProperty(proto,'slkMobilePromptAdapter',{value:true,configurable:true});
@@ -3543,6 +3564,13 @@ function slkConnectPromptManager() {
             while (form.firstChild && form.firstChild !== footer) fields.appendChild(form.firstChild);
             form.insertBefore(fields, footer);
         }
+        // The title scrolls with the fields, while the native action row is
+        // a separate, non-scrolling flex sibling. Do not recreate any inputs.
+        if (heading && matchMedia('(max-width:1000px)').matches) {
+            if (heading.parentElement !== fields) fields.prepend(heading);
+        } else if (heading && heading.parentElement === fields) {
+            edit.prepend(heading);
+        }
         for (const [suffix, label] of [['close', '취소'], ['reset', '초기화'], ['save', '저장']]) {
             const button = footer.querySelector('#' + prefix + suffix);
             if (button && button.dataset.slkActionLabel !== label) {
@@ -3563,7 +3591,7 @@ function slkConnectPromptManager() {
         if (!layout) {
             layout = document.createElement('div');
             layout.className = 'slk-prompt-layout';
-            fields.insertBefore(layout, fields.firstChild);
+            fields.insertBefore(layout, heading?.parentElement === fields ? heading.nextSibling : fields.firstChild);
         }
         const nameRow = ensure(layout, 'slk-prompt-name-row');
         const roleRow = ensure(layout, 'slk-prompt-role-trigger-row');

@@ -21981,25 +21981,38 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
  }
 }
 
-/* v1.8.28 — One scroll surface for the mobile prompt editor, including its
-   title and action row. A smaller viewport must never compress the form. */
+/* v1.8.30 — Scroll the title and fields; keep actions anchored to the popup. */
 @layer slk-prompt-editor-overlay {
  @media screen and (max-width:1000px) {
+  /* v1.8.30: body-only scrolling, with the native actions fixed in the
+     popup's flex layout (never fixed to the document). */
   html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] {
-    display:block!important; overflow-y:auto!important; overflow-x:hidden!important;
-    overscroll-behavior-y:contain!important; scroll-behavior:auto!important;
-    scroll-padding:12px!important; -webkit-overflow-scrolling:touch;
+    display:flex!important; flex-direction:column!important; overflow:hidden!important;
+    overscroll-behavior:contain!important;
   }
   html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] > #completion_prompt_manager_popup_edit,
   html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] > #completion_prompt_manager_popup_edit > .completion_prompt_manager_popup_entry,
-  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] > #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form,
-  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] > #completion_prompt_manager_popup_edit .slk-prompt-form-fields {
-    flex:0 0 auto!important; height:auto!important; min-height:0!important;
-    max-height:none!important; overflow:visible!important;
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] > #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form {
+    display:flex!important; flex-direction:column!important; flex:1 1 0px!important;
+    height:auto!important; min-height:0!important; max-height:none!important; overflow:hidden!important;
   }
-  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit > h3,
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] > #completion_prompt_manager_popup_edit .slk-prompt-form-fields {
+    display:block!important; flex:1 1 0px!important; height:auto!important; min-height:0!important;
+    max-height:none!important; overflow-y:auto!important; overflow-x:hidden!important;
+    padding:0 24px 20px!important; scroll-padding:8px!important;
+    overscroll-behavior-y:contain!important; scroll-behavior:auto!important; -webkit-overflow-scrolling:touch;
+  }
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit .slk-prompt-form-fields > h3.slk-prompt-editor-title {
+    position:relative!important; inset:auto!important; flex:none!important;
+    width:calc(100% + 48px)!important; max-width:none!important;
+    margin:0 -24px 18px!important;
+  }
   html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_footer {
-    position:relative!important; inset:auto!important; flex:0 0 auto!important;
+    position:relative!important; inset:auto!important; flex:0 0 auto!important; z-index:2!important;
+  }
+  @media (max-width:520px) {
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] > #completion_prompt_manager_popup_edit .slk-prompt-form-fields {padding:0 18px 18px!important;}
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit .slk-prompt-form-fields > h3.slk-prompt-editor-title {width:calc(100% + 36px)!important;margin:0 -18px 16px!important;}
   }
   /* The Order info glyph must not increase the label's line box. All three
      field tops and bottoms align even with the native Font Awesome icon. */
