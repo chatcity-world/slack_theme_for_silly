@@ -19536,9 +19536,9 @@ html body.slk-ui #right-nav-panel #rm_characters_block .bogus_folder_select .ch_
   html body.slk-ui #slk-aitabs > .slk-aitab,
   html body.slk-ui #left-nav-panel #slk-aitabs > .slk-aitab {border-bottom-width:2px !important;}
   html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action :is(i,svg,.fa,.fa-solid) {
-    font-size:22px !important; width:22px !important;height:22px !important; flex:0 0 22px !important; stroke-width:2.6px !important;
+    font-size:22px !important; width:22px !important;height:22px !important; flex:0 0 22px !important; stroke-width:1px !important;
   }
-  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action svg :is(path,circle,rect,line,polyline){stroke-width:2.6px !important;}
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action svg :is(path,circle,rect,line,polyline){stroke-width:inherit !important;}
 }
 /* Extension manager: two equal update actions, sort remains a secondary toggle. */
 html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar {
@@ -19987,7 +19987,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     max-height: 28px !important;
     flex: 0 0 28px !important;
     stroke: #1D1C1D !important;
-    stroke-width: 2.5px !important;
+    stroke-width: 1px !important;
     fill: none !important;
     opacity: 1 !important;
     position: static !important;
@@ -21179,7 +21179,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     min-height: 28px !important;
     max-width: 28px !important;
     max-height: 28px !important;
-    stroke-width: 2.9px !important;
+    stroke-width: 1px !important;
     pointer-events: none !important;
   }
   /* Mobile prompt editor must be 2-column for Role and Triggers even when
@@ -21251,7 +21251,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     max-width: 20px !important;
     max-height: 20px !important;
     flex: 0 0 20px !important;
-    stroke-width: 2.15px !important;
+    stroke-width: 1px !important;
   }
 }
 
@@ -21298,7 +21298,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     max-width: 18px !important;
     max-height: 18px !important;
     flex: 0 0 18px !important;
-    stroke-width: 2px !important;
+    stroke-width: 1px !important;
     stroke-linecap: round !important;
     stroke-linejoin: round !important;
   }
@@ -21478,14 +21478,14 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
      stroke (previous releases had 28px/2.9px overrides and looked too bold). */
   html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action.slk-model-single-glyph > svg.slk-model-edit-glyph-v183,
   html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action > svg.slk-model-edit-glyph-v183 {
-    width:20px!important;
-    height:20px!important;
-    min-width:20px!important;
-    min-height:20px!important;
-    max-width:20px!important;
-    max-height:20px!important;
-    flex:0 0 20px!important;
-    stroke-width:1.55px!important;
+    width:18px!important;
+    height:18px!important;
+    min-width:18px!important;
+    min-height:18px!important;
+    max-width:18px!important;
+    max-height:18px!important;
+    flex:0 0 18px!important;
+    stroke-width:1px!important;
     stroke-linecap:round!important;
     stroke-linejoin:round!important;
   }
@@ -22089,11 +22089,12 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     -webkit-backdrop-filter:none!important;
   }
   body.slk-ui.slk-composing #form_sheld #send_form.slk-compose-open {
-    /* v1.8.40: 70% white glass, neutral brightness, inset highlight. */
-    background:rgba(255,255,255,.70)!important;
+    /* v1.8.45: 30% white glass with an inward-fading white rim.
+       Inset shadows fade from every rounded edge without a new overlay or box. */
+    background:rgba(255,255,255,.30)!important;
     background-clip:padding-box!important;
     border-color:transparent!important;
-    box-shadow:0 4px 14px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.9)!important;
+    box-shadow:0 4px 14px rgba(0,0,0,.10), inset 0 0 2px 1px rgba(255,255,255,.62), inset 0 0 5px 1px rgba(255,255,255,.20)!important;
     backdrop-filter:blur(8px) saturate(135%) brightness(1)!important;
     -webkit-backdrop-filter:blur(8px) saturate(135%) brightness(1)!important;
   }
@@ -22158,4 +22159,35 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
    }
   }
  }
+}
+
+
+/* v1.8.44 — mobile footer icon optical sizing only.
+   Normalize painted longest dimension and optical center; retain original paths,
+   button hit areas, and screen-space line weights (normal and active). */
+@media screen and (max-width:1000px) {
+  body.slk-ui #top-settings-holder > #ai-config-button { --slk-footer-icon-size:23.667px; --slk-footer-icon-x:0.000px; --slk-footer-icon-y:0.000px; --slk-footer-icon-stroke:1.7662px; --slk-footer-icon-stroke-active:2.1380px; }
+  body.slk-ui #top-settings-holder > #sys-settings-button { --slk-footer-icon-size:21.300px; --slk-footer-icon-x:0.000px; --slk-footer-icon-y:0.000px; --slk-footer-icon-stroke:1.9624px; --slk-footer-icon-stroke-active:2.3756px; }
+  body.slk-ui #top-settings-holder > #advanced-formatting-button { --slk-footer-icon-size:24.343px; --slk-footer-icon-x:0.254px; --slk-footer-icon-y:0.000px; --slk-footer-icon-stroke:1.7171px; --slk-footer-icon-stroke-active:2.0786px; }
+  body.slk-ui #top-settings-holder > #WI-SP-button { --slk-footer-icon-size:21.300px; --slk-footer-icon-x:0.000px; --slk-footer-icon-y:-0.444px; --slk-footer-icon-stroke:1.9624px; --slk-footer-icon-stroke-active:2.3756px; }
+  body.slk-ui #top-settings-holder > #extensions-settings-button { --slk-footer-icon-size:24.343px; --slk-footer-icon-x:0.000px; --slk-footer-icon-y:1.775px; --slk-footer-icon-stroke:1.7171px; --slk-footer-icon-stroke-active:2.0786px; }
+  body.slk-ui #top-settings-holder > #persona-management-button { --slk-footer-icon-size:22.421px; --slk-footer-icon-x:0.000px; --slk-footer-icon-y:0.000px; --slk-footer-icon-stroke:1.8643px; --slk-footer-icon-stroke-active:2.2568px; }
+  body.slk-ui #top-settings-holder > #rightNavHolder { --slk-footer-icon-size:22.421px; --slk-footer-icon-x:0.000px; --slk-footer-icon-y:-0.234px; --slk-footer-icon-stroke:1.8643px; --slk-footer-icon-stroke-active:2.2568px; }
+  body.slk-ui #top-settings-holder > .drawer > .drawer-toggle > .slk-tab-icon > svg {
+    width: var(--slk-footer-icon-size, 22px) !important;
+    height: var(--slk-footer-icon-size, 22px) !important;
+    transform: translate(var(--slk-footer-icon-x, 0px), var(--slk-footer-icon-y, 0px)) !important;
+    stroke-width: var(--slk-footer-icon-stroke, 1.9px) !important;
+  }
+  body.slk-ui #top-settings-holder > .drawer:has(.drawer-icon.openIcon) > .drawer-toggle > .slk-tab-icon > svg {
+    stroke-width: var(--slk-footer-icon-stroke-active, 2.3px) !important;
+  }
+}
+
+/* v1.8.47: model edit glyph only — exactly 1 CSS px painted stroke. */
+@media screen and (max-width:1000px) {
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action > svg.slk-model-edit-glyph-v183 > path {
+    stroke-width:1px!important;
+    vector-effect:non-scaling-stroke;
+  }
 }

@@ -3884,7 +3884,7 @@ function slkConnectPromptManager() {
                     glyph.setAttribute('height', '20');
                     glyph.setAttribute('fill', 'none');
                     glyph.setAttribute('stroke', 'currentColor');
-                    glyph.setAttribute('stroke-width', '1.55');
+                    glyph.setAttribute('stroke-width', '1');
                     glyph.setAttribute('stroke-linecap', 'round');
                     glyph.setAttribute('stroke-linejoin', 'round');
                     glyph.setAttribute('aria-hidden', 'true');
