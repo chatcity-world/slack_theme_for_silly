@@ -22745,3 +22745,153 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-withi
     font-size:var(--slk-ds-title) !important;
   }
 }
+
+
+/* v1.8.65 — Mobile nine-panel design tokens; desktop, navigation and chat untouched. */
+@media screen and (max-width: 1000px) {
+  html body.slk-ui:not(.slk-pc) {
+    --slk-ds-title:16px;
+    --slk-ds-section:14px;
+    --slk-ds-label:13px;
+    --slk-ds-field:14px;
+    --slk-ds-choice:14px;
+    --slk-ds-small:12px;
+    --slk-ds-control:40px;
+    --slk-ds-radius:8px;
+    --slk-ds-inset:16px;
+    --slk-ds-top:12px;
+    --slk-ds-gap:8px;
+    --slk-ds-border:#DAD8DA;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(h2,h3,h4,.standoutHeader,.range-block-title,.inline-drawer-header,.slk-preference-heading):not(.bg-header-row-1 h3):not(#rm_button_selected_ch h2):not(.fa):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands):not([class^="fa-"]):not([class*=" fa-"]):not(.drawer-icon):not(.inline-drawer-icon):not(.right_menu_button):not(.menu_button):not([aria-hidden="true"]) {
+    font-family:var(--slk-font) !important;
+     font-size:var(--slk-ds-section) !important;
+     font-weight:650 !important;
+     line-height:1.4 !important;
+     letter-spacing:-.01em !important;
+     text-shadow:none !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(h2,h3,h4,.standoutHeader,.range-block-title,.inline-drawer-header,.slk-preference-heading) > :is(b,strong,span,label):not(.bg-header-row-1 h3):not(#rm_button_selected_ch h2):not(.fa):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands):not([class^="fa-"]):not([class*=" fa-"]):not(.drawer-icon):not(.inline-drawer-icon):not(.right_menu_button):not(.menu_button):not([aria-hidden="true"]) {
+    font-family:var(--slk-font) !important;
+     font-size:inherit !important;
+     font-weight:inherit !important;
+     line-height:inherit !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(.standoutHeader,.range-block-title,.inline-drawer-header):not(.fa):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands):not([class^="fa-"]):not([class*=" fa-"]):not(.drawer-icon):not(.inline-drawer-icon):not(.right_menu_button):not(.menu_button):not([aria-hidden="true"]) {
+    row-gap:var(--slk-ds-gap) !important;
+     column-gap:var(--slk-ds-gap) !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(label,.checkbox_label,.radio_label):not(.fa):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands):not([class^="fa-"]):not([class*=" fa-"]):not(.drawer-icon):not(.inline-drawer-icon):not(.right_menu_button):not(.menu_button):not([aria-hidden="true"]) {
+    font-family:var(--slk-font) !important;
+     font-size:var(--slk-ds-label) !important;
+     line-height:1.45 !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(label,.checkbox_label) > :is(span,b,strong):not(.fa):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands):not([class^="fa-"]):not([class*=" fa-"]):not(.drawer-icon):not(.inline-drawer-icon):not(.right_menu_button):not(.menu_button):not([aria-hidden="true"]) {
+    font-size:inherit !important;
+     line-height:inherit !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(small,.slk-preference-hint,.form-text,.description):not(.fa):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands):not([class^="fa-"]):not([class*=" fa-"]):not(.drawer-icon):not(.inline-drawer-icon):not(.right_menu_button):not(.menu_button):not([aria-hidden="true"]) {
+    font-size:var(--slk-ds-small) !important;
+     line-height:1.45 !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(input:not([type]),input:is([type="text"],[type="search"],[type="password"],[type="email"],[type="url"],[type="tel"],[type="number"]),select,textarea,[contenteditable="true"]):not(.select2-hidden-accessible):not(.slk-native-sort-select) {
+    font-family:var(--slk-font) !important;
+     font-size:var(--slk-ds-field) !important;
+     font-weight:400 !important;
+     line-height:1.4 !important;
+     letter-spacing:0 !important;
+     box-sizing:border-box !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(input,textarea)::placeholder {
+    font-size:var(--slk-ds-field) !important;
+     font-weight:400 !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) select option {
+    font-size:var(--slk-ds-field) !important;
+     font-weight:400 !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(input:not([type]),input:is([type="text"],[type="search"],[type="password"],[type="email"],[type="url"],[type="tel"],[type="number"]),select:not([multiple]):not([size])):not(.select2-search__field):not(.select2-hidden-accessible):not([hidden]):not([type="hidden"]):not(.slk-native-sort-select) {
+    border-radius:var(--slk-ds-radius) !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(input:not([type]),input:is([type="text"],[type="search"],[type="password"],[type="email"],[type="url"],[type="tel"],[type="number"]),select:not([multiple]):not([size])):not(.select2-search__field):not(.select2-hidden-accessible):not([hidden]):not([type="hidden"]):not(.slk-native-sort-select):not(:disabled):not([readonly]):not([aria-disabled="true"]):not(.disabled):not(.select2-search__field) {
+    border-color:var(--slk-ds-border) !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(input:not([type]),input:is([type="text"],[type="search"],[type="password"],[type="email"],[type="url"],[type="tel"],[type="number"]),select:not([multiple]):not([size])):not(.select2-search__field):not(.select2-hidden-accessible):not([hidden]):not([type="hidden"]):not(.slk-native-sort-select):is(.wide100p,.text_pole):not([class*="small"]):not([class*="range"]):not([type="number"]),
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) select:not([multiple]):not([size]):not(.select2-hidden-accessible):not(.slk-native-sort-select):not([class*="pagination"]) {
+    height:auto !important;
+     min-height:var(--slk-ds-control) !important;
+     border-radius:var(--slk-ds-radius) !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) textarea:not(.select2-search__field) {
+    border-radius:var(--slk-ds-radius) !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(button,input:is([type="button"],[type="submit"],[type="reset"])):not(.fa):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not([class^="fa-"]):not([class*=" fa-"]):not(.right_menu_button):not(.slk-preference-button):not(.slk-model-edit-action):not(.slk-native-sort):not(.slk-aitab):not(.paginationjs-pages *):not(.expander):not(.drag-handle):not(.slk-stepper *):not([class*="icon-button"]):not(:has(> :is(i,svg):only-child)):not([aria-hidden="true"]) {
+    font-size:13px !important;
+     font-weight:600 !important;
+     line-height:1.3 !important;
+     border-radius:var(--slk-ds-radius) !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(button,input:is([type="button"],[type="submit"],[type="reset"])):not(.fa):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not([class^="fa-"]):not([class*=" fa-"]):not(.right_menu_button):not(.slk-preference-button):not(.slk-model-edit-action):not(.slk-native-sort):not(.slk-aitab):not(.paginationjs-pages *):not(.expander):not(.drag-handle):not(.slk-stepper *):not([class*="icon-button"]):not(:has(> :is(i,svg):only-child)):not([aria-hidden="true"]):is(.wide100p,input[type="button"],input[type="submit"],input[type="reset"]) {
+    height:auto !important;
+     min-height:var(--slk-ds-control) !important;
+     padding-block:6px !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(.menu_button,button):focus-visible {
+    outline:2px solid #1264A3 !important;
+     outline-offset:2px !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(.inline-drawer-content,.extensions_block,#persona_controls,#ai_response_configuration) > .flex-container.flexFlowColumn {
+    row-gap:var(--slk-ds-gap) !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(.range-block,.inline-drawer-content) > .flex-container:has(> label):has(> :is(input,select,textarea)) {
+    row-gap:6px !important;
+     column-gap:var(--slk-ds-gap) !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(.range-block,.inline-drawer-content) > :is(.range-block-title,h4.standoutHeader) {
+    margin-bottom:8px !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(.select2-selection__rendered,.select2-selection__placeholder,.select2-selection__choice,.select2-search__field) {
+    font-family:var(--slk-font) !important;
+     font-size:var(--slk-ds-choice) !important;
+     line-height:1.4 !important;
+     font-weight:400 !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) .select2-selection {
+    border-radius:var(--slk-ds-radius) !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):has(#top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds):not(.slk-nav-hidden) .select2-container--open) > .select2-container--open :is(.select2-results__option,.select2-results__option > span,.select2-results__option > label,.select2-search__field) {
+    font-family:var(--slk-font) !important;
+     font-size:var(--slk-ds-choice) !important;
+     line-height:1.4 !important;
+     font-weight:400 !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):has(#top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds):not(.slk-nav-hidden) .select2-container--open) > .select2-container--open .select2-results__option {
+    padding:7px 10px !important;
+     min-height:40px !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) .select2-container--open :is(.select2-results__option,.select2-search__field) {
+    font-family:var(--slk-font) !important;
+     font-size:var(--slk-ds-choice) !important;
+     line-height:1.4 !important;
+     font-weight:400 !important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) {font-family:var(--slk-font)!important;font-size:var(--slk-ds-label)!important;line-height:1.5!important;}
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) :is(#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#user-settings-block).drawer-content {padding-top:var(--slk-ds-top)!important;}
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) :is(#left-nav-panel #respective-presets-block,#rm_api_block > .wide100p:has(#connection_profiles),#Backgrounds #bg-header-fixed,#right-nav-panel[data-slk-view="list"] #CharListButtonAndHotSwaps) {padding-top:var(--slk-ds-top)!important;padding-inline:var(--slk-ds-inset)!important;}
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(#left-nav-panel #respective-presets-block .standoutHeader > :is(strong,span,b),#rm_api_block > .wide100p:has(#connection_profiles) > .flex-container:first-child :is(h3,h4,strong,b),#rm_api_block > #title_api,#AdvancedFormatting > .flex-container.alignItemsBaseline:first-child > h3,#AdvancedFormatting > h3,#rm_extensions_block .extensions_block > .flex-container:first-child > h3,#PersonaManagement > .flex-container > .flex-container:first-child h3,#user-settings-block [name="userSettingsRowOne"] h3):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not(.menu_button):not(.right_menu_button):not([aria-hidden="true"]) {font-size:var(--slk-ds-title)!important;font-weight:700!important;line-height:1.35!important;letter-spacing:-.015em!important;}
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(#left-nav-panel #respective-presets-block .standoutHeader > :is(strong,span,b),#rm_api_block > .wide100p:has(#connection_profiles) > .flex-container:first-child :is(h3,h4,strong,b),#rm_api_block > #title_api,#AdvancedFormatting > .flex-container.alignItemsBaseline:first-child > h3,#AdvancedFormatting > h3,#rm_extensions_block .extensions_block > .flex-container:first-child > h3,#PersonaManagement > .flex-container > .flex-container:first-child h3,#user-settings-block [name="userSettingsRowOne"] h3):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not(.menu_button):not(.right_menu_button):not([aria-hidden="true"]) > :is(span,strong,b):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not(.menu_button):not(.right_menu_button):not([aria-hidden="true"]) {font-size:inherit!important;font-weight:inherit!important;line-height:inherit!important;}
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #WorldInfo #world_popup > .flex-container:first-of-type::before,
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #right-nav-panel[data-slk-view="list"] #CharListButtonAndHotSwaps > .flexFlowColumn::before,
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #Backgrounds .bg-header-row-1 h3::before {font-family:var(--slk-font)!important;font-size:var(--slk-ds-title)!important;font-weight:700!important;line-height:1.35!important;letter-spacing:-.015em!important;}
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #Backgrounds .bg-header-row-1 h3 {font-size:0!important;}
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) .select2-search__field {font-size:var(--slk-ds-field)!important;}
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):has(#top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds):not(.slk-nav-hidden) .select2-container--open) > .select2-container--open .select2-search__field {font-size:var(--slk-ds-field)!important;}
+  html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(#extensions_details,#third_party_extension_button,.user_stats_button,.slk-preference-button):not([aria-hidden="true"]) {font-size:13px!important;font-weight:600!important;border-radius:var(--slk-ds-radius)!important;}
+
+}
+/* Keep editable iOS fields at 16px to avoid Safari's focus zoom. */
+@supports (-webkit-touch-callout: none) {
+  @media screen and (max-width: 1000px) {
+    html body.slk-ui:not(.slk-pc) { --slk-ds-field:16px; }
+  }
+}
