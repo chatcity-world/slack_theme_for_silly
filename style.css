@@ -19636,3 +19636,38 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     font-weight: 600 !important;
   }
 }
+
+
+/* ===== Slack UI v1.7.9 hard fixes ===== */
+html body.slk-ui.slk-in-chat #slk-header,
+html body.slk-ui.slk-in-chat:has(#top-settings-holder > .drawer .drawer-icon.openIcon) #slk-header,
+html body.slk-ui.slk-panel-opening.slk-in-chat #slk-header {
+  background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.93) 54%, rgba(255,255,255,0.00) 100%) !important;
+  box-shadow: none !important;
+}
+html body.slk-ui.slk-in-chat #slk-topbar,
+html body.slk-ui.slk-in-chat #top-bar,
+html body.slk-ui.slk-in-chat #top-settings-holder,
+html body.slk-ui.slk-panel-opening.slk-in-chat #slk-topbar,
+html body.slk-ui.slk-panel-opening.slk-in-chat #top-bar,
+html body.slk-ui.slk-panel-opening.slk-in-chat #top-settings-holder {
+  background: transparent !important;
+}
+html body.slk-ui #slk-chat-back,
+html body.slk-ui #slk-chat-title {
+  background: rgba(255,255,255,0.72) !important;
+  -webkit-backdrop-filter: saturate(1.15) blur(20px) !important;
+  backdrop-filter: saturate(1.15) blur(20px) !important;
+  border: 1px solid rgba(255,255,255,0.68) !important;
+  box-shadow: 0 8px 22px rgba(25, 15, 35, 0.08) !important;
+}
+
+/* Character list names: unmistakable semibold. */
+html body.slk-ui #right-nav-panel #rm_characters_block .character_name_block,
+html body.slk-ui #right-nav-panel #rm_characters_block .character_name_block > :first-child,
+html body.slk-ui #right-nav-panel #rm_characters_block .character_name_block *:not(.avatar),
+html body.slk-ui #right-nav-panel #rm_characters_block .character_select .ch_name,
+html body.slk-ui #right-nav-panel #rm_characters_block .group_select .ch_name,
+html body.slk-ui #right-nav-panel #rm_characters_block .bogus_folder_select .ch_name {
+  font-weight: 650 !important;
+}

@@ -3,7 +3,7 @@
 // Settings are kept independently of SillyTavern's extension loader state.
 const SLK_DEFAULT_HEADER_IMAGE = 'img/logo.png';
 const SLK_SLACK_HEADER_IMAGE = new URL('./slack-logo.webp', import.meta.url).href;
-const SLK_SPLASH_IMAGE = new URL('./slack-splash-logo.png', import.meta.url).href;
+const SLK_SPLASH_IMAGE = new URL('./slack-logo.webp', import.meta.url).href;
 const SLK_UI_SETTINGS = (() => {
     const read = (key, fallback) => {
         try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
@@ -61,14 +61,15 @@ function slkEnsureVisibleSplashLogo(src) {
     document.querySelectorAll('#loader').forEach(loader => {
         let logo = loader.querySelector('.splash-logo');
         const spinner = loader.querySelector('#load-spinner');
-        if (!logo && (loader.classList.contains('splash-screen') || loader.id === 'loader')) {
+        if (!logo || logo.tagName !== 'IMG') {
+            logo?.remove?.();
             logo = document.createElement('img');
             logo.className = 'splash-logo';
             logo.alt = 'Slack';
             if (spinner) loader.insertBefore(logo, spinner);
             else loader.prepend(logo);
         }
-        if (logo && logo.tagName === 'IMG' && logo.getAttribute('src') !== src) logo.setAttribute('src', src);
+        if (logo.getAttribute('src') !== src) logo.setAttribute('src', src);
     });
 }
 
@@ -1207,6 +1208,37 @@ function syncChatHead() {
     head.querySelector('.slk-ch-n').textContent = Number(count).toLocaleString();
 }
 
+
+function dedupeWelcomePanel() {
+    const panel = document.querySelector('#chat .welcomePanel');
+    if (!panel) return;
+
+    const normalize = (text) => (text || '')
+        .replace(/\s+/g, ' ')
+        .replace(/[​-‍﻿]/g, '')
+        .trim();
+
+    const dedupeChildren = (root) => {
+        const seen = new Set();
+        [...root.children].forEach((child) => {
+            if (!(child instanceof HTMLElement)) return;
+            if (child.matches('style,script,template')) return;
+            const keyText = normalize(child.textContent).slice(0, 360);
+            const key = `${child.tagName}|${child.className}|${child.id}|${keyText}`;
+            if (keyText && seen.has(key)) child.remove();
+            else if (keyText) seen.add(key);
+        });
+    };
+
+    dedupeChildren(panel);
+    panel.querySelectorAll(':scope > div, :scope > section, :scope > ul').forEach((node) => dedupeChildren(node));
+}
+
+function syncSlackSurfaces() {
+    syncChatHead();
+    dedupeWelcomePanel();
+}
+
 function watchChat() {
     const chat = document.getElementById('chat');
     if (!chat) return;
@@ -1217,10 +1249,14 @@ function watchChat() {
         queued = true;
         requestAnimationFrame(() => {
             queued = false;
-            syncChatHead();
+            syncSlackSurfaces();
         });
     };
     new MutationObserver(run).observe(chat, { childList: true });
+    const routeRun = () => requestAnimationFrame(syncSlackSurfaces);
+    window.addEventListener('hashchange', routeRun, { passive: true });
+    document.addEventListener('click', () => requestAnimationFrame(syncSlackSurfaces), { passive: true, capture: true });
+    setTimeout(syncSlackSurfaces, 0);
     const ctx = stContext();
     const types = ctx?.eventTypes || ctx?.event_types;
     if (ctx?.eventSource && types) {
@@ -2344,7 +2380,7 @@ else init();
 (function slkBootSplashCss() {
     const START = '/* ==== Slack UI 시작 화면 (자동 추가 — 지우지 마세요) ==== */';
     const END = '/* ==== /Slack UI 시작 화면 ==== */';
-    const BOOT_CSS = "@media screen { #preloader { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: #FFFFFF !important; box-shadow: none !important; outline: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo))::backdrop { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content) { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; overflow: hidden !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) .popup-controls { display: none !important; } #loader { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 0 !important; width: 100% !important; height: 100% !important; background: transparent !important; color: transparent !important; } #loader::before, #loader::after { content: none !important; display: none !important; } #loader > :not(.splash-logo) { display: none !important; } #loader .splash-logo { order: 0; display: block !important; width: 60px !important; height: 60px !important; min-width: 60px !important; min-height: 60px !important; object-fit: contain !important; object-position: center !important; border-radius: 0 !important; filter: none !important; box-shadow: none !important; background: transparent !important; } #loader #load-spinner, #preloader #load-spinner, #loader .splash-message { display: none !important; } } @media screen { dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) * { border-color: transparent !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content, #loader, .splash-screen) { background: transparent !important; border: 0 !important; box-shadow: none !important; outline: none !important; } }";
+    const BOOT_CSS = "@media screen { #preloader, #loader, #loader.splash-screen, dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; outline: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo))::backdrop { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content) { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; overflow: hidden !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) .popup-controls, #loader #load-spinner, #preloader #load-spinner, #loader .splash-message { display: none !important; } #loader { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 0 !important; width: 100% !important; height: 100% !important; background: #FFFFFF !important; color: transparent !important; position: relative !important; transform: translateY(-3.3%); } #loader::before, #loader::after { content: none !important; display: none !important; } #loader > :not(.splash-logo) { display: none !important; } #loader .splash-logo { order: 0; display: block !important; width: 68px !important; height: 68px !important; min-width: 68px !important; min-height: 68px !important; object-fit: contain !important; object-position: center !important; border-radius: 0 !important; filter: none !important; box-shadow: none !important; background: transparent !important; } } @media screen { dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) * { border-color: transparent !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content, #loader, .splash-screen) { background: transparent !important; border: 0 !important; box-shadow: none !important; outline: none !important; } }";
     const buildBlock = () => {
         // custom_css is loaded by SillyTavern before extensions: this also matches the chosen
         // logo on the *next initial loading screen*, before slack.js is evaluated.
@@ -2360,7 +2396,8 @@ else init();
                 min-width: 60px !important;
                 min-height: 60px !important;
                 border-radius: 0 !important;
-                background: url(${quotedUrl}) center / contain no-repeat !important;
+                background: none !important;
+                content: none !important;
                 box-shadow: none !important;
             }
             #loader.splash-screen::after {
@@ -3330,7 +3367,11 @@ else init();
         const mobile = document.body?.classList.contains('slk-ui') && window.matchMedia('(max-width: 1000px)').matches;
         for (const id of targetSelects) {
             const select = document.getElementById(id);
-            const group = select?.parentElement;
+            // Once wrapped, the select's immediate parent is our own row.
+            // Always resolve its original form group; otherwise every
+            // MutationObserver pass creates another row inside the last row.
+            const group = select?.parentElement?.classList.contains('slk-model-select-row')
+                ? select.parentElement.parentElement : select?.parentElement;
             if (!group) continue;
             if (!mobile) {
                 restoreDesktop(group, select);
