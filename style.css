@@ -11,7 +11,7 @@
 body.slk-ui {
     --slk-aubergine: #4A154B;
     --slk-aubergine-deep: #3F0E40;
-    --slk-header-grad: #3F1543;
+    --slk-header-grad: #441848;
     --slk-header-fg: #FFFFFF;
     --slk-pill-bg: #4F1756;
     --slk-pill-border: #9B3BA4;
@@ -21835,7 +21835,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   body.slk-ui[data-slk-header-view="chat"] #slk-chat-title {border-radius:23px!important;}
   /* Safe-area paint follows visible surface rather than any mounted chat. */
   html:has(body.slk-ui[data-slk-header-view="chat"]),html:has(body.slk-ui[data-slk-header-view].slk-header-compact) {background-color:#fff!important;}
-  html:has(body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact)) {background-color:#3f1543!important;}
+  html:has(body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact)) {background-color:#441848!important;}
   body.slk-ui[data-slk-header-view]::before {content:none!important;display:none!important;}
   /* v1.8.17: only the status-area colour sample. Never resize or restyle header buttons. */
   html[data-slk-status-color] body.slk-ui #slk-status-surface[data-slk-status-color] {
@@ -21849,9 +21849,9 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     transition:none!important;
   }
   html[data-slk-status-color="light"] body.slk-ui #slk-status-surface {background-color:#fff!important;}
-  html[data-slk-status-color="purple"] body.slk-ui #slk-status-surface {background-color:#3f1543!important;}
+  html[data-slk-status-color="purple"] body.slk-ui #slk-status-surface {background-color:#441848!important;}
   html[data-slk-status-color="light"] {background-color:#fff!important;}
-  html[data-slk-status-color="purple"] {background-color:#3f1543!important;}
+  html[data-slk-status-color="purple"] {background-color:#441848!important;}
   body.slk-ui #slk-status-surface:not([data-slk-status-color]) {display:none!important;}
  }
  @media screen and (min-width:1001px) {#slk-status-surface {display:none!important;}}
@@ -21962,5 +21962,21 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     justify-content:flex-start!important; margin:0!important; padding:0!important; gap:6px!important;
   }
   html body.slk-ui #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit #completion_prompt_manager_popup_entry_source_block:is([hidden],.displayNone,[style*="display:none"],[style*="display: none"]) {display:none!important; height:0!important; min-height:0!important; margin:0!important; padding:0!important;}
+ }
+}
+
+/* v1.8.26 — Prompt editor only: remove invisible depth/order tracks entirely.
+   Native ST uses visibility:hidden, which leaves their full help-text height. */
+@layer slk-prompt-editor-overlay {
+ @media screen and (max-width:1000px) {
+  html body.slk-ui #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit .slk-prompt-position-row > .slk-prompt-native-hidden,
+  html body.slk-ui #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit .slk-prompt-position-row[data-slk-position-mode="relative"] > :is(#completion_prompt_manager_depth_block,#completion_prompt_manager_order_block) {
+    display:none!important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit .slk-prompt-position-row[data-slk-position-mode="relative"] {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-rows:min-content!important;
+    grid-auto-rows:min-content!important;
+  }
  }
 }

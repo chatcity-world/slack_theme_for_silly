@@ -1254,7 +1254,7 @@ function slkSyncStatusBar() {
     slkStatusActive = true;
     const light = slkSplashIsVisible() || body.dataset.slkHeaderView === 'chat' || body.classList.contains('slk-header-compact');
     const state = light ? 'light' : 'purple';
-    const desired = light ? '#FFFFFF' : '#3F1543';
+    const desired = light ? '#FFFFFF' : '#441848';
     if (root.dataset.slkStatusColor !== state) root.dataset.slkStatusColor = state;
     if (surface && surface.dataset.slkStatusColor !== state) surface.dataset.slkStatusColor = state;
     // Both the early loader and live view use the same metadata owner.
@@ -3298,9 +3298,21 @@ function slkPlacePromptEditor(popup) {
     const vw = vv?.width || window.innerWidth;
     const vh = vv?.height || window.innerHeight;
     const width = Math.min(820, vw - 32);
-    const height = Math.max(80, Math.min(680, vh - safeTop - safeBottom - 24));
+    const viewportTop = vv?.offsetTop || 0;
+    const viewportBottom = viewportTop + vh;
+    // Reserve the actual floating bottom bar and 16px of clearance.
+    const footer = document.getElementById('slk-mobile-footer');
+    const footerRect = footer?.getBoundingClientRect();
+    const footerVisible = footerRect && footerRect.height > 0 &&
+        getComputedStyle(footer).visibility !== 'hidden' &&
+        footerRect.top < viewportBottom && footerRect.bottom > viewportTop;
+    const upper = viewportTop + safeTop + 12;
+    const lower = Math.min(viewportBottom - safeBottom - 12,
+        footerVisible ? footerRect.top - 16 : viewportBottom - safeBottom - 12);
+    const available = Math.max(1, lower - upper);
+    const height = Math.min(600, available);
     const left = (vv?.offsetLeft || 0) + (vw - width) / 2;
-    const top = (vv?.offsetTop || 0) + safeTop + Math.max(12, (vh - safeTop - safeBottom - height) / 2);
+    const top = upper + (available - height) / 2;
     const put = (key, n) => {
         const val = `${n}px`;
         if (popup.style.getPropertyValue(key) !== val) popup.style.setProperty(key, val);
@@ -3583,13 +3595,24 @@ function slkConnectPromptManager() {
         // Read NATIVE hide state, not a computed 'display:none' created by our
         // own .slk-prompt-native-hidden class. Never toggle off and immediately
         // toggle on in the same frame (that previously caused endless rerenders).
+        const positionSelect = fields.querySelector('#' + prefix + 'injection_position');
+        const mobileEditor = matchMedia('(max-width:1000px)').matches;
+        // Native ST uses visibility:hidden for relative prompts. Invisible
+        // grid items still reserve the full height of their long help text.
+        const relative = positionSelect && (positionSelect.value === '0' ||
+            (positionSelect.value !== '1' && positionSelect.selectedIndex === 0));
         for (const { block: nativeBlock, control } of [depth, order]) {
             if (!control) continue;
             const nativeHidden = isNativeHidden(nativeBlock, control) ||
                 (nativeBlock && nativeBlock !== control &&
                  getComputedStyle(nativeBlock).display === 'none');
-            setClass(control, 'slk-prompt-native-hidden', Boolean(nativeHidden));
+            const invisible = [nativeBlock, control].some(el => el?.style.visibility === 'hidden');
+            setClass(control, 'slk-prompt-native-hidden', Boolean(nativeHidden || (mobileEditor && (relative || invisible))));
         }
+        if (mobileEditor && positionSelect) {
+            const mode = relative ? 'relative' : 'depth';
+            if (posRow.dataset.slkPositionMode !== mode) posRow.dataset.slkPositionMode = mode;
+        } else if (posRow.hasAttribute('data-slk-position-mode')) delete posRow.dataset.slkPositionMode;
         setClass(posRow, 'slk-prompt-has-depth', [depth, order].some(({control}) =>
             control && !control.classList.contains('slk-prompt-native-hidden')));
 
