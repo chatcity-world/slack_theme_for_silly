@@ -21643,7 +21643,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
    The header stays translucent; the CURRENT drawer, not #sheld, is its backdrop.
    Keep the prompt drawer and chat/home header untouched. */
 @media screen and (max-width: 1000px) {
-  html body.slk-ui #top-settings-holder > .drawer:not(#ai-config-button) > .drawer-content.openDrawer:not(.slk-nav-hidden) {
+  html body.slk-ui #top-settings-holder > .drawer > .drawer-content.openDrawer:not(.slk-nav-hidden) {
     position: fixed !important;
     inset: 0 !important;
     width: 100% !important;
@@ -21669,7 +21669,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     --slk-panel-start-gap: 16px;
   }
   /* The old top-strip patch is not needed when the drawer extends to y=0. */
-  html body.slk-ui #top-settings-holder > .drawer:not(#ai-config-button) > .drawer-content.openDrawer:not(.slk-nav-hidden)::after {
+  html body.slk-ui #top-settings-holder > .drawer > .drawer-content.openDrawer:not(.slk-nav-hidden)::after {
     content: none !important;
     display: none !important;
   }
@@ -21712,4 +21712,118 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     content: none !important;
     display: none !important;
   }
+}
+
+/* v1.8.15 — one mobile header state, independent of a mounted background chat.
+   Important declarations in this named layer isolate this component from legacy
+   unlayered header rules. No changes to popup controls, footer or desktop. */
+@layer slk-mobile-header-state {
+ @media screen and (max-width:1000px) {
+  body.slk-ui #top-settings-holder > #ai-config-button > #left-nav-panel.openDrawer:not(.slk-nav-hidden) {
+    position:fixed!important; inset:0!important; width:100%!important;
+    max-width:none!important; height:100dvh!important; max-height:100dvh!important;
+    min-height:0!important; overflow-y:auto!important; overflow-x:hidden!important;
+    box-sizing:border-box!important; padding:var(--slk-top-h) 0 calc(var(--slk-footer-h) + 20px)!important;
+    background:#fff!important;
+  }
+  body.slk-ui #left-nav-panel > .scrollableInner {
+    flex:0 0 auto!important; height:auto!important; min-height:0!important; max-height:none!important;
+    overflow:visible!important; padding:0!important;
+  }
+  body.slk-ui #left-nav-panel #slk-aitabs {
+    position:static!important; inset:auto!important; z-index:auto!important;
+  }
+  body.slk-ui[data-slk-header-view] #slk-header {
+    position:fixed!important; inset:0 0 auto 0!important; width:100%!important;
+    height:var(--slk-top-h)!important; margin:0!important;
+    padding:var(--slk-safe-top) 14px 0 12px!important;
+    box-sizing:border-box!important; border:0!important; border-radius:0!important;
+    box-shadow:none!important; filter:none!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important;
+    overflow:visible!important; isolation:isolate!important; transition:none!important;
+    pointer-events:none!important;
+  }
+  body.slk-ui[data-slk-header-view] #slk-header::before,
+  body.slk-ui[data-slk-header-view] #slk-header::after {content:none!important;display:none!important;}
+  body.slk-ui[data-slk-header-view] #slk-header > * {position:relative!important;z-index:1!important;}
+  body.slk-ui[data-slk-header-view] #slk-header button {pointer-events:auto!important;}
+  /* Expanded panel/home: the original purple header and round controls. */
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact) #slk-header {
+    background:var(--slk-header-grad)!important; color:#fff!important;
+  }
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]) #slk-chat-head {display:none!important;}
+  body.slk-ui[data-slk-header-view="panel"] #slk-panel-back {display:grid!important;place-items:center!important;}
+  body.slk-ui[data-slk-header-view="home"] #slk-panel-back {display:none!important;}
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]) #slk-ws,
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]) #slk-header > .slk-header-actions {display:flex!important;align-items:center!important;}
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact) #slk-ws {
+    flex:1 1 auto!important; width:auto!important; height:auto!important; min-width:0!important; max-width:70vw!important;
+    padding:0!important; margin-right:auto!important; gap:10px!important; justify-content:flex-start!important;
+    background:transparent!important; border:0!important; border-radius:0!important; box-shadow:none!important;
+    backdrop-filter:none!important; -webkit-backdrop-filter:none!important;
+  }
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact) .slk-ws-text {display:flex!important;align-items:baseline!important;gap:7px!important;color:#fff!important;}
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact) .slk-ws-name {color:#fff!important;}
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact) :is(.slk-ws-ver,.slk-ws-branch) {color:rgba(255,255,255,.72)!important;}
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact) #slk-header :is(#slk-panel-back,.slk-header-actions,.slk-ws-avatar) {
+    width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;max-width:44px!important;max-height:44px!important;
+    flex:0 0 44px!important; padding:0!important; border:1.5px solid var(--slk-pill-border)!important; border-radius:50%!important;
+    background:var(--slk-pill-bg)!important;color:#fff!important;box-shadow:none!important;
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-sizing:border-box!important;justify-content:center!important;
+  }
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact) #slk-header #slk-settings-btn {color:#fff!important;}
+  /* Chat and scrolled pages: ONE continuous full-width fade, no rectangular
+     blur on the header or the chat row. Individual pills keep their shadows. */
+  body.slk-ui[data-slk-header-view="chat"] #slk-header,
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-header {
+    background:transparent!important;color:#1d1c1d!important;
+  }
+  body.slk-ui[data-slk-header-view="chat"] #slk-header::after,
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-header::after {
+    content:""!important;display:block!important;position:absolute!important;inset:0 0 -30px 0!important;
+    width:100%!important;height:auto!important; margin:0!important;border:0!important;box-shadow:none!important;
+    background:linear-gradient(to bottom,#fff 0%,#fff var(--slk-safe-top),rgba(255,255,255,.96) calc(var(--slk-safe-top) + 8px),rgba(255,255,255,.78) calc(var(--slk-safe-top) + 40px),rgba(255,255,255,0) 100%)!important;
+    opacity:1!important;z-index:0!important;pointer-events:none!important;filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  }
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-header :is(#slk-ws,#slk-panel-back,.slk-header-actions) {
+    width:46px!important;height:46px!important;min-width:46px!important;min-height:46px!important;max-width:46px!important;max-height:46px!important;
+    flex:0 0 46px!important;padding:0!important;border:0!important;border-radius:50%!important;
+    background:rgba(255,255,255,.48)!important;box-shadow:0 4px 16px rgba(0,0,0,.10)!important;
+    backdrop-filter:blur(20px) saturate(150%)!important;-webkit-backdrop-filter:blur(20px) saturate(150%)!important;
+    align-items:center!important;justify-content:center!important;color:#1d1c1d!important;box-sizing:border-box!important;
+  }
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-ws {margin-right:auto!important;}
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact .slk-ws-text {display:none!important;}
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-settings-btn {color:#1d1c1d!important;}
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact .slk-ws-avatar {
+    position:relative!important;width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;max-width:38px!important;max-height:38px!important;
+    flex:0 0 38px!important; margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;overflow:hidden!important;
+  }
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]) .slk-ws-avatar.has-img > img {
+    position:absolute!important;inset:50% auto auto 50%!important;transform:translate(-50%,-50%)!important;
+    display:block!important;object-fit:cover!important;object-position:center!important;border-radius:50%!important;
+    width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;max-width:34px!important;max-height:34px!important;
+  }
+  body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact .slk-ws-avatar.has-img > img {
+    width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;max-width:38px!important;max-height:38px!important;
+  }
+  body.slk-ui[data-slk-header-view="chat"] #slk-header > :is(#slk-ws,#slk-panel-back,.slk-header-actions) {display:none!important;}
+  body.slk-ui[data-slk-header-view="chat"] #slk-chat-head {
+    display:flex!important;align-items:center!important;gap:8px!important;width:100%!important;min-width:0!important;
+    background:transparent!important;border:0!important;box-shadow:none!important;outline:0!important;
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;filter:none!important;
+  }
+  body.slk-ui[data-slk-header-view="chat"] #slk-header :is(#slk-chat-back,#slk-chat-title) {
+    background:rgba(255,255,255,.48)!important;border:0!important;outline:0!important;
+    box-shadow:0 7px 22px rgba(20,16,30,.13),0 1px 3px rgba(20,16,30,.035)!important;
+    backdrop-filter:blur(16px) saturate(125%)!important;-webkit-backdrop-filter:blur(16px) saturate(125%)!important;
+    color:#1d1c1d!important;
+  }
+  body.slk-ui[data-slk-header-view="chat"] #slk-chat-back {border-radius:50%!important;}
+  body.slk-ui[data-slk-header-view="chat"] #slk-chat-title {border-radius:23px!important;}
+  /* Safe-area paint follows visible surface rather than any mounted chat. */
+  html:has(body.slk-ui[data-slk-header-view="chat"]),html:has(body.slk-ui[data-slk-header-view].slk-header-compact) {background-color:#fff!important;}
+  html:has(body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact)) {background-color:#3f1543!important;}
+  body.slk-ui[data-slk-header-view]::before {content:none!important;display:none!important;}
+  body.slk-ui[data-slk-header-view] #slk-status-surface {display:none!important;}
+ }
 }

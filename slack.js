@@ -721,7 +721,7 @@ function buildAiTabs() {
         if (!btn) return;
         setAiTab(btn.dataset.tab);
         const scroller = bar.closest('.scrollableInner');
-        if (scroller && scroller.scrollTop > bar.offsetTop) scroller.scrollTop = bar.offsetTop;
+        if (window.matchMedia('(min-width: 1001px)').matches && scroller && scroller.scrollTop > bar.offsetTop) scroller.scrollTop = bar.offsetTop;
     });
 
     tagAiBlocks();
@@ -1247,7 +1247,8 @@ function slkSyncStatusBar() {
     });
     const onChat = Boolean(chat && document.body.dataset.slkHeaderView === 'chat'); // Use actual visible pane, not a chat left mounted behind a drawer.
     document.documentElement.classList.toggle('slk-status-chat', onChat);
-    const desired = mobile && enabled ? '#FFFFFF' : (slkOriginalThemeColor || '#3F1543');
+    const lightSurface = onChat || document.body.classList.contains('slk-header-compact');
+    const desired = mobile && enabled ? (lightSurface ? '#FFFFFF' : '#3F1543') : (slkOriginalThemeColor || '#3F1543');
     let meta = document.querySelector('meta[name="theme-color"]');
     if (!meta) {
         meta = document.createElement('meta'); meta.name='theme-color'; document.head.append(meta); slkAddedThemeColor=true;
@@ -1299,8 +1300,11 @@ function slkActiveHeaderView() {
         const root = document.querySelector(current);
         const content = root?.querySelector(':scope > .drawer-content');
         if (content && !content.classList.contains('slk-nav-hidden')) {
-            return current === '#ai-config-button' ? 'prompt' : 'panel';
+            return 'panel';
         }
+    }
+    if (document.body.classList.contains('slk-managed-navigation') && document.body.classList.contains('slk-no-panel')) {
+        return document.body.classList.contains('slk-in-chat') ? 'chat' : 'home';
     }
     const roots = ['#ai-config-button', '#sys-settings-button',
         '#advanced-formatting-button', '#WI-SP-button',
@@ -1312,7 +1316,7 @@ function slkActiveHeaderView() {
         const style = getComputedStyle(content);
         if (style.display === 'none' || style.visibility === 'hidden') continue;
         if (content.getBoundingClientRect().height < 24) continue;
-        return sel === '#ai-config-button' ? 'prompt' : 'panel';
+        return 'panel';
     }
     return document.body.classList.contains('slk-in-chat') ? 'chat' : 'home';
 }
@@ -1379,18 +1383,28 @@ function setHeaderCompact(on) {
 }
 
 function openDrawerEl() {
-    return document.querySelector('.drawer-content.openDrawer, #left-nav-panel.openDrawer, #right-nav-panel.openDrawer');
+    const current = window.__slkPanelNavigation?.getCurrent?.();
+    if (current) {
+        const content = document.querySelector(`${current} > .drawer-content`);
+        if (content && !content.classList.contains('slk-nav-hidden')) return content;
+    }
+    if (document.body.classList.contains('slk-managed-navigation') && document.body.classList.contains('slk-no-panel')) return null;
+    return [...document.querySelectorAll('#top-settings-holder > .drawer > .drawer-content.openDrawer')].find(el =>
+        !el.classList.contains('slk-nav-hidden') && getComputedStyle(el).display !== 'none' &&
+        getComputedStyle(el).visibility !== 'hidden' && el.getBoundingClientRect().height > 0) || null;
 }
 
 function recomputeHeaderCompact() {
     const open = openDrawerEl();
     if (open) {
-        // 열린 패널 안에서 이미 스크롤된 곳이 있으면 접힌 상태 유지
-        const scrolled = open.scrollTop > 10 || [...open.querySelectorAll('*')].some((el) => el.scrollTop > 10 && el.scrollHeight > el.clientHeight + 40);
-        setHeaderCompact(scrolled);
+        // Only the visible page's scroll surface, not hidden drawers or textareas.
+        const inner = [...open.querySelectorAll('.scrollableInner')].filter(el => el.getClientRects().length && /auto|scroll/.test(getComputedStyle(el).overflowY));
+        setHeaderCompact(open.scrollTop > 10 || inner.some(el => el.scrollTop > 10));
     } else {
         setHeaderCompact((document.getElementById('chat')?.scrollTop || 0) > 10);
     }
+    slkSyncHeaderView();
+    slkSyncStatusBar();
 }
 
 function watchHeaderCompact() {
@@ -1405,9 +1419,8 @@ function watchHeaderCompact() {
         if (!t.closest(SCROLL_ROOTS)) return;
         // 패널이 열려 있으면 그 패널 안의 스크롤만, 아니면 채팅 영역 스크롤만 반영
         const open = openDrawerEl();
-        if (open ? !open.contains(t) : t.id !== 'chat') return;
-        setHeaderCompact(t.scrollTop > 10);
-        slkSyncHeaderView();
+        if (open ? !(t === open || (open.contains(t) && t.matches('.scrollableInner'))) : t.id !== 'chat') return;
+        recomputeHeaderCompact();
     }, true);
     document.addEventListener('click', (e) => {
         if (e.target.closest('.drawer-toggle, #slk-settings-menu, #slk-ws, #slk-chat-title')) setTimeout(recomputeHeaderCompact, 80);
@@ -1707,9 +1720,10 @@ if (SLK_UI_SETTINGS.enabled) {
         applyManagedVisibility();
         document.body.classList.remove('slk-header-compact');
         updateActive();
+        // Set the visible header before the browser paints the new page.
+        recomputeHeaderCompact();
         restoreScroll(layer);
-        // Compact state will be calculated from the selected visible panel.
-        requestAnimationFrame(() => { recomputeHeaderCompact(); slkSyncHeaderView(); slkSyncStatusBar(); });
+        requestAnimationFrame(recomputeHeaderCompact);
     }
 
     // 지금 화면에 실제로 보이는 패널 (ST가 직접 연 경우 포함)
