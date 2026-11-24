@@ -4150,3 +4150,42 @@ function slkConnectPromptManager() {
     window.addEventListener('slk-ui-settings-changed', schedule);
     window.addEventListener('pageshow', schedule);
 })();
+
+// v1.8.70 — move the existing sampler help anchor into the OpenAI preset title.
+// Keep the original node, href and listeners. Restore it when leaving OpenAI.
+(function slkAlignPresetHelp() {
+    function start() {
+        const panel = document.getElementById('left-nav-panel');
+        const presets = document.getElementById('respective-presets-block');
+        const link = panel?.querySelector('a:has([name="samplerHelpButton"]), a.topRightInset:has(.note-link-span)');
+        if (!panel || !presets || !link) return;
+        const marker = document.createComment('slk native sampler help position');
+        link.before(marker);
+        let previousTitle = null, queued = false;
+        function sync() {
+            queued = false;
+            const block = presets.querySelector('#openai_api-presets');
+            const title = block?.querySelector('.standoutHeader > strong, .standoutHeader > b, .standoutHeader > h3, .standoutHeader > span:not(.note-link-span)');
+            const enabled = document.body.classList.contains('slk-ui');
+            const visible = block && !block.hidden && getComputedStyle(block).display !== 'none';
+            if (enabled && visible && title) {
+                if (previousTitle && previousTitle !== title) previousTitle.classList.remove('slk-preset-help-title');
+                previousTitle = title;
+                if (!title.classList.contains('slk-preset-help-title')) title.classList.add('slk-preset-help-title');
+                if (!link.classList.contains('slk-preset-help')) link.classList.add('slk-preset-help');
+                if (link.parentElement !== title) title.append(link);
+            } else {
+                previousTitle?.classList.remove('slk-preset-help-title');
+                previousTitle = null;
+                if (link.classList.contains('slk-preset-help')) link.classList.remove('slk-preset-help');
+                if (marker.parentNode && link.previousSibling !== marker) marker.after(link);
+            }
+        }
+        function schedule() { if (!queued) { queued = true; requestAnimationFrame(sync); } }
+        new MutationObserver(schedule).observe(presets, {subtree:true, childList:true, attributes:true, attributeFilter:['style','class','hidden']});
+        window.addEventListener('slk-ui-settings-changed', schedule);
+        sync();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
+    else start();
+})();
