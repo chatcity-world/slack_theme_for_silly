@@ -4270,7 +4270,7 @@ function slkConnectPromptManager() {
     let queued = false;
     function sync() {
         queued = false;
-        const enabled = mq.matches && document.body?.classList.contains('slk-ui');
+        const enabled = document.body?.classList.contains('slk-ui');
         for (const [option, original] of originals) {
             if (!enabled || !option.isConnected || !option.closest('select')?.matches(selector)) {
                 if (original === null) option.removeAttribute('label');
