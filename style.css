@@ -22514,3 +22514,36 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-withi
     width: min(644px, calc(100vw - 192px));
   }
 }
+
+
+/* v1.8.63 — desktop header must never inherit mobile chat fades. */
+@media screen and (min-width: 1001px) {
+  html:has(body.slk-ui.slk-pc) {
+    background: #4F0D4C !important;
+  }
+  html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #slk-header {
+    background: #4F0D4C !important;
+    background-image: none !important;
+    transition: none !important;
+    animation: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    color: #FFFFFF !important;
+  }
+  html body.slk-ui.slk-pc #slk-header::before,
+  html body.slk-ui.slk-pc #slk-header::after {
+    content: none !important;
+    display: none !important;
+  }
+}
+
+/* Native inline hiding must not override the selected desktop panel. */
+@media screen and (min-width: 1001px) {
+  html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c) #top-settings-holder > .drawer.slk-pc-selected > .drawer-content.openDrawer {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}

@@ -3071,7 +3071,7 @@ if (SLK_UI_SETTINGS.enabled) {
                 panelHeader.id = 'slk-pc-panel-heading';
                 panelHeader.innerHTML = `<h2 id="slk-pc-panel-title"></h2><button type="button" id="slk-pc-panel-close" aria-label="패널 닫기" title="패널 닫기"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
                 document.body.append(panelHeader);
-                panelHeader.querySelector('#slk-pc-panel-close').addEventListener('click', () => activate(null));
+                // The sidebar's active tab is the only close control on PC.
             }
             panelTitle = panelHeader.querySelector('#slk-pc-panel-title');
         }
@@ -3095,21 +3095,56 @@ if (SLK_UI_SETTINGS.enabled) {
         if (contextHeader) contextHeader.classList.toggle('slk-pc-is-chat', inChat);
     }
 
-    function activate(selector) {
-        if (!isDesktop()) return;
-        active = selector && selectors.includes(selector) && partsFor(selector)?.content ? selector : null;
+    // Desktop selection is authoritative. Native ST outside-click handlers can
+    // remove openDrawer/openIcon (even after an async animation), but must not
+    // close the side-by-side PC panel. Reconcile only top-level drawer flags;
+    // never cancel chat clicks, nested controls, or modal interactions.
+    function syncDrawerFlags() {
+        if (!isDesktop() || !initialized) return;
         for (const item of selectors) {
             const parts = partsFor(item);
             if (!parts?.content) continue;
             const open = item === active;
-            parts.content.classList.toggle('openDrawer', open);
-            parts.content.classList.toggle('closedDrawer', !open);
-            parts.icon?.classList.toggle('openIcon', open);
-            parts.icon?.classList.toggle('closedIcon', !open);
-            parts.toggle?.setAttribute('aria-expanded', String(open));
-            parts.root.classList.toggle('slk-pc-selected', open);
+            const setFlag = (el, name, value) => {
+                if (el && el.classList.contains(name) !== value) el.classList.toggle(name, value);
+            };
+            setFlag(parts.content, 'openDrawer', open);
+            setFlag(parts.content, 'closedDrawer', !open);
+            if (open) {
+                setFlag(parts.content, 'displayNone', false);
+                if (parts.content.hidden) parts.content.hidden = false;
+                if (parts.content.style.display === 'none') parts.content.style.removeProperty('display');
+            }
+            setFlag(parts.icon, 'openIcon', open);
+            setFlag(parts.icon, 'closedIcon', !open);
+            setFlag(parts.root, 'slk-pc-selected', open);
+            if (parts.toggle && parts.toggle.getAttribute('aria-expanded') !== String(open)) {
+                parts.toggle.setAttribute('aria-expanded', String(open));
+            }
         }
         document.body.classList.toggle('slk-pc-panel-open', Boolean(active));
+    }
+
+    let drawerObserver = null;
+    function watchDrawerFlags() {
+        if (drawerObserver) return;
+        const holder = document.getElementById('top-settings-holder');
+        if (!holder) return;
+        drawerObserver = new MutationObserver(records => {
+            if (!isDesktop() || !initialized) return;
+            const relevant = new Set(selectors.flatMap(item => {
+                const p = partsFor(item);
+                return p ? [p.root, p.content, p.icon, p.toggle].filter(Boolean) : [];
+            }));
+            if (records.some(record => relevant.has(record.target))) syncDrawerFlags();
+        });
+        drawerObserver.observe(holder, {subtree: true, attributes: true, attributeFilter: ['class', 'aria-expanded', 'style', 'hidden']});
+    }
+
+    function activate(selector) {
+        if (!isDesktop()) return;
+        active = selector && selectors.includes(selector) && partsFor(selector)?.content ? selector : null;
+        syncDrawerFlags();
         if (panelTitle) panelTitle.textContent = labelMap.get(active) || '';
         if (panelHeader) panelHeader.setAttribute('aria-hidden', String(!active));
         if (active === DRAWERS.character) {
@@ -3148,6 +3183,8 @@ if (SLK_UI_SETTINGS.enabled) {
     function syncViewport() {
         if (!document.body) return;
         if (!isDesktop()) {
+            drawerObserver?.disconnect();
+            drawerObserver = null;
             if (initialized && active) {
                 // The mobile controller owns the drawer classes after switching
                 // back to a narrow screen. Do not leave a desktop tab open.
@@ -3168,13 +3205,14 @@ if (SLK_UI_SETTINGS.enabled) {
             return;
         }
         makeChrome();
+        watchDrawerFlags();
         const initiallyOpen = !initialized && selectors.find(sel => partsFor(sel)?.content?.classList.contains('openDrawer'));
         initialized = true;
         activate(initiallyOpen || active);
         contextHeader?.setAttribute('aria-hidden', 'false');
     }
 
-    window.__slkDesktopRailNavigation = { toggle, close: () => activate(null), getCurrent: () => active };
+    window.__slkDesktopRailNavigation = { toggle, getCurrent: () => active };
     document.addEventListener('click', captureRailClick, true);
     document.addEventListener('mousedown', captureRailPointer, true);
     document.addEventListener('touchstart', captureRailPointer, true);
@@ -3234,10 +3272,10 @@ if (SLK_UI_SETTINGS.enabled) {
             brandRail = document.createElement('nav');
             brandRail.id = 'slk-pc-rail';
             brandRail.setAttribute('aria-label', 'Slack 워크스페이스');
-            brandRail.innerHTML = `<button type="button" class="slk-pc-ws" title="채팅으로 돌아가기" aria-label="채팅으로 돌아가기"><img alt="Slack" src="${SLK_SLACK_HEADER_IMAGE}"></button>`;
+            brandRail.innerHTML = `<button type="button" class="slk-pc-ws" title="Slack" aria-label="Slack" aria-disabled="true"><img alt="Slack" src="${SLK_SLACK_HEADER_IMAGE}"></button>`;
             document.body.appendChild(brandRail);
             for (const type of ['touchstart', 'mousedown']) brandRail.addEventListener(type, e => e.stopPropagation());
-            brandRail.querySelector('.slk-pc-ws').addEventListener('click', () => nav()?.close());
+            brandRail.querySelector('.slk-pc-ws').addEventListener('click', e => e.stopPropagation());
         }
         if (!sectionMenu) {
             sectionMenu = document.createElement('nav');
