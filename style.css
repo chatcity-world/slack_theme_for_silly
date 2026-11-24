@@ -22184,10 +22184,10 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   }
 }
 
-/* v1.8.47: model edit glyph only — exactly 1 CSS px painted stroke. */
+/* v1.8.48: model edit glyph only — exactly 1.5 CSS px painted stroke. */
 @media screen and (max-width:1000px) {
   html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action > svg.slk-model-edit-glyph-v183 > path {
-    stroke-width:1px!important;
+    stroke-width:1.5px!important;
     vector-effect:non-scaling-stroke;
   }
 }
