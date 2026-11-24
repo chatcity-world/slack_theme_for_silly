@@ -252,9 +252,13 @@ function buildSlackUiExtensionSettings() {
     const enabledInput = container.querySelector('#slk-enable-toggle');
     enabledInput.checked = SLK_UI_SETTINGS.enabled;
     enabledInput.addEventListener('change', () => {
-        SLK_UI_SETTINGS.enabled = enabledInput.checked;
-        try { localStorage.setItem('slk-ui-enabled', String(SLK_UI_SETTINGS.enabled)); } catch { /* localStorage unavailable */ }
-        applySlackUiSettings();
+        const next = enabledInput.checked;
+        // Loading a pristine native SillyTavern tree is safer than trying to
+        // reverse dozens of Slack DOM transformations within the same page.
+        try { localStorage.setItem('slk-ui-enabled', String(next)); }
+        catch { enabledInput.checked = SLK_UI_SETTINGS.enabled; return; }
+        SLK_UI_SETTINGS.enabled = next;
+        window.location.reload(); // exactly once, only on explicit switch action
     });
 
     // Steppers update the actual chat text, not the settings panel itself.
@@ -1530,6 +1534,17 @@ function setupExtensionNeutralColors() {
 }
 
 function init() {
+    // Disabled mode is deliberately a minimal settings-only loader. Never
+    // inject Slack header, footer, AI tabs, icon replacements, or observers.
+    if (!SLK_UI_SETTINGS.enabled) {
+        document.body?.classList.remove('slk-ui', 'slk-footer-only-active', 'slk-managed-navigation');
+        buildSlackUiExtensionSettings();
+        if (!document.getElementById('slk-extension-settings')) {
+            setTimeout(buildSlackUiExtensionSettings, 500);
+            setTimeout(buildSlackUiExtensionSettings, 1500);
+        }
+        return;
+    }
     applySlackUiSettings();
     buildSlackUiExtensionSettings();
     if (!document.getElementById('slk-extension-settings')) {
@@ -1562,6 +1577,7 @@ else init();
 
 // === MOBILE FOOTER-ONLY FIX v1.4.11 ===
 // 모바일에서 원본 드로어 DOM을 옮기거나 삭제하지 않고, 독립 바텀바만 표시합니다.
+if (SLK_UI_SETTINGS.enabled) {
 (function mountSlackMobileFooter() {
     const mq = window.matchMedia('(max-width: 1000px)');
     const setImportant = (el, styles) => {
@@ -2433,7 +2449,7 @@ else init();
 (function slkBootSplashCss() {
     const START = '/* ==== Slack UI 시작 화면 (자동 추가 — 지우지 마세요) ==== */';
     const END = '/* ==== /Slack UI 시작 화면 ==== */';
-    const BOOT_CSS = "@media screen {\n  #preloader { background: #fff !important; color: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }\n  #preloader #load-spinner { display: none !important; }\n  dialog:has(#loader) { background: #fff !important; border:0 !important; box-shadow:none !important; inset:0 !important; width:100vw !important; height:100dvh !important; max-width:none !important; max-height:none !important; position:fixed !important; padding:0 !important; margin:0 !important; border-radius:0 !important; }\n  dialog:has(#loader)::backdrop { background:#fff !important; }\n  dialog:has(#loader) :is(.popup-body,.popup-content) { background:#fff !important; box-shadow:none !important; border:0 !important; width:100% !important; height:100% !important; padding:0 !important; margin:0 !important; }\n  dialog:has(#loader) .popup-controls { display:none !important; }\n  #loader, #loader.splash-screen { display:block !important; background:#fff !important; width:100% !important; height:100% !important; position:relative !important; transform:none !important; }\n  #loader .splash-logo, #loader #load-spinner, #loader .splash-message, #loader::before { display:none !important; visibility:hidden !important; content:none !important; }\n  #loader::after { content:\"\" !important; position:absolute !important; top:46.5% !important; left:50% !important; display:block !important; width:68px !important; height:68px !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }\n  #preloader::after { content:\"\" !important; position:absolute !important; top:46.5% !important; left:50% !important; display:block !important; width:68px !important; height:68px !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; }\n}";
+    const BOOT_CSS = "@media screen {\n  #preloader { background: #fff !important; color: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }\n  #preloader #load-spinner { display: none !important; }\n  dialog:has(#loader) { background: #fff !important; border:0 !important; box-shadow:none !important; inset:0 !important; width:100vw !important; height:100dvh !important; max-width:none !important; max-height:none !important; position:fixed !important; padding:0 !important; margin:0 !important; border-radius:0 !important; }\n  dialog:has(#loader)::backdrop { background:#fff !important; }\n  dialog:has(#loader) :is(.popup-body,.popup-content) { background:#fff !important; box-shadow:none !important; border:0 !important; width:100% !important; height:100% !important; padding:0 !important; margin:0 !important; }\n  dialog:has(#loader) .popup-controls { display:none !important; }\n  #loader, #loader.splash-screen { display:block !important; background:#fff !important; width:100% !important; height:100% !important; position:relative !important; transform:none !important; }\n  #loader .splash-logo, #loader #load-spinner, #loader .splash-message, #loader::before { display:none !important; visibility:hidden !important; content:none !important; }\n  #loader::after { content:\"\" !important; position:fixed !important; top:46.5dvh !important; left:50vw !important; display:block !important; width:68px !important; height:68px !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }\n  #preloader::after { content:\"\" !important; position:fixed !important; top:46.5dvh !important; left:50vw !important; display:block !important; width:68px !important; height:68px !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; }\n}";
     const buildBlock = () => {
         // custom_css is loaded by SillyTavern before extensions: this also matches the chosen
         // logo on the *next initial loading screen*, before slack.js is evaluated.
@@ -3428,6 +3444,24 @@ else init();
                 if (!originalPlacement.has(action)) originalPlacement.set(action, { beforeSelect: action.parentElement === group && group.contains(select) && action.compareDocumentPosition(select) & Node.DOCUMENT_POSITION_FOLLOWING });
                 action.classList.add('slk-model-edit-action');
                 if (action.parentElement !== row) row.appendChild(action);
+                // Native icon masks can be 16px even when the wrapper says 26px.
+                // Draw a single 28px SVG with an explicit 2.5px stroke so the
+                // rendered size matches the nearby API-key control on iPhone.
+                if (!action.querySelector(':scope > .slk-model-edit-glyph-v183')) {
+                    const glyph = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    glyph.setAttribute('class', 'slk-model-edit-glyph-v183');
+                    glyph.setAttribute('viewBox', '0 0 24 24');
+                    glyph.setAttribute('width', '28');
+                    glyph.setAttribute('height', '28');
+                    glyph.setAttribute('fill', 'none');
+                    glyph.setAttribute('stroke', 'currentColor');
+                    glyph.setAttribute('stroke-width', '2.5');
+                    glyph.setAttribute('stroke-linecap', 'round');
+                    glyph.setAttribute('stroke-linejoin', 'round');
+                    glyph.setAttribute('aria-hidden', 'true');
+                    glyph.innerHTML = '<path d="M12 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7"/><path d="M17.5 3.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/>';
+                    action.appendChild(glyph);
+                }
             }
         }
     };
@@ -3448,3 +3482,5 @@ else init();
     window.addEventListener('slk-ui-settings-changed', schedule);
     window.addEventListener('resize', schedule);
 })();
+
+} // end enabled-only Slack UI runtime (v1.8.4)
