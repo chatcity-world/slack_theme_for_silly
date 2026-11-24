@@ -1247,7 +1247,7 @@ function slkSyncStatusBar() {
     });
     const onChat = Boolean(chat); // Chat always uses white iOS status chrome; stale drawers cannot override it.
     document.documentElement.classList.toggle('slk-status-chat', onChat);
-    const desired = onChat ? '#FFFFFF' : (slkOriginalThemeColor || '#3F1543');
+    const desired = mobile && enabled ? '#FFFFFF' : (slkOriginalThemeColor || '#3F1543');
     let meta = document.querySelector('meta[name="theme-color"]');
     if (!meta) {
         meta = document.createElement('meta'); meta.name='theme-color'; document.head.append(meta); slkAddedThemeColor=true;
@@ -1261,7 +1261,7 @@ function slkSyncStatusBar() {
         iosMeta.name = 'apple-mobile-web-app-status-bar-style';
         document.head.append(iosMeta);
     }
-    const iosStyle = onChat ? 'default' : 'black-translucent';
+    const iosStyle = 'default';
     if (iosMeta.content !== iosStyle) iosMeta.content = iosStyle;
 }
 function slkWatchStatusBar() {
@@ -3264,19 +3264,34 @@ if (SLK_UI_SETTINGS.enabled) {
     const moveNative = (node, parent) => {
         if (node && node.parentElement !== parent) parent.appendChild(node);
     };
+    // MutationObserver watches class attributes. Writing an unchanged class
+    // still generates mutation records on some mobile engines and can loop.
+    const setClass = (el, cls, enabled) => {
+        if (!el || el.classList.contains(cls) === enabled) return;
+        el.classList.toggle(cls, enabled);
+    };
 
     const fix = () => {
         scheduled = false;
         if (!document.body.classList.contains('slk-ui')) return;
         const popup = document.getElementById(popupId);
-        const edit = popup?.querySelector('#completion_prompt_manager_popup_edit');
+        // Never rearrange the native editor before SillyTavern opens it.
+        // Premature reparenting of controls can interfere with the native
+        // prompt manager's own initialization and open/close behavior.
+        if (!popup || popup.hidden || popup.classList.contains('displayNone')) return;
+        const visible = popup.classList.contains('openDrawer') ||
+            (getComputedStyle(popup).display !== 'none' &&
+             getComputedStyle(popup).visibility !== 'hidden' &&
+             popup.getClientRects().length > 0);
+        if (!visible) return;
+        const edit = popup.querySelector('#completion_prompt_manager_popup_edit');
         const heading = edit?.querySelector(':scope > h3') || edit?.querySelector('h3');
         const form = edit?.querySelector('.completion_prompt_manager_popup_entry_form');
         const footer = form?.querySelector(':scope > .completion_prompt_manager_popup_entry_form_footer');
         if (!edit || !form || !footer) return;
 
         // Retain the heading content and give it a real inset, not a visual indent.
-        if (heading) heading.classList.add('slk-prompt-editor-title');
+        setClass(heading, 'slk-prompt-editor-title', true);
         if (heading && !heading.querySelector(':scope > .slk-prompt-heading-text')) {
             const label = document.createElement('span');
             label.className = 'slk-prompt-heading-text';
@@ -3320,14 +3335,10 @@ if (SLK_UI_SETTINGS.enabled) {
             moveNative(node, parent);
         }
 
-        // ST controls whether Depth/Order exist for the selected position.
-        // Hide their *whole* column when native ST sets display:none, and
-        // restore it when position switches to '깊이에 따라'.
-        for (const { block, control } of [depth, order]) {
-            if (control) control.classList.toggle('slk-prompt-native-hidden', isNativeHidden(block, control));
-        }
-        posRow.classList.toggle('slk-prompt-has-depth', [depth, order].some(({block, control}) =>
-            control && !isNativeHidden(block, control)));
+        // Set native Depth/Order visibility once per pass below. Previous
+        // versions toggled these classes here AND after checking computed
+        // styles, causing an endless MutationObserver ping-pong for hidden
+        // fields in some SillyTavern configurations.
 
         // Move ONLY the original prompt control, not its containing source block.
         // SillyTavern/theme source wrappers can have fixed height or padding;
@@ -3342,7 +3353,7 @@ if (SLK_UI_SETTINGS.enabled) {
         const promptControl = prompt?.closest(controlSelector) || prompt?.parentElement;
         const oldSourceParent = promptControl?.parentElement;
         if (promptControl && ![name, role, triggers, position, depth.control, order.control].includes(promptControl)) {
-            promptControl.classList.add('slk-prompt-content-block');
+            setClass(promptControl, 'slk-prompt-content-block', true);
             if (promptControl.previousElementSibling !== posRow || promptControl.parentElement !== layout) {
                 posRow.after(promptControl);
             }
@@ -3352,16 +3363,16 @@ if (SLK_UI_SETTINGS.enabled) {
         // can still address them. This deliberately ignores stale hidden text.
         for (let shell = oldSourceParent; shell && shell !== fields && shell !== layout; shell = shell.parentElement) {
             if (shell.querySelector('input,select,textarea,button,a,[contenteditable="true"],[role="button"]')) break;
-            shell.classList.add('slk-prompt-retired-source');
+            setClass(shell, 'slk-prompt-retired-source', true);
         }
         const promptSource = fields.querySelector('#completion_prompt_manager_popup_entry_source_block');
         if (promptSource && !promptSource.contains(prompt)) {
             const hasInteractive = !!promptSource.querySelector('input,textarea,select,button,a,[role="button"],[contenteditable="true"]');
-            promptSource.classList.toggle('slk-prompt-retired-source', !hasInteractive);
+            setClass(promptSource, 'slk-prompt-retired-source', !hasInteractive);
             if (!hasInteractive) {
                 const sourceWrapper = promptSource.closest('.flex-container');
                 if (sourceWrapper && fields.contains(sourceWrapper) && !sourceWrapper.querySelector('input,textarea,select,button,a')) {
-                    sourceWrapper.classList.add('slk-prompt-retired-source');
+                    setClass(sourceWrapper, 'slk-prompt-retired-source', true);
                 }
             }
         }
@@ -3369,18 +3380,21 @@ if (SLK_UI_SETTINGS.enabled) {
         // with only labels/whitespace after we move all the real inputs out.
         for (const row of fields.querySelectorAll(':scope > .flex-container, :scope > .flex-container.gap10px')) {
             if (!row.querySelector('input,select,textarea,button,a,[role="button"],[contenteditable="true"]')) {
-                row.classList.add('slk-prompt-retired-source', 'slk-prompt-empty-native-row');
+                setClass(row, 'slk-prompt-retired-source', true);
+                setClass(row, 'slk-prompt-empty-native-row', true);
             }
         }
-        // Collapsed Depth/Order controls must not reserve grid row height.
-        // Check computed visibility too (the native app can use CSS classes).
-        for (const { block, control } of [depth, order]) {
-            const invisible = !control || isNativeHidden(block, control) ||
-                (block && getComputedStyle(block).display === 'none') ||
-                (control && getComputedStyle(control).visibility === 'hidden');
-            if (control) control.classList.toggle('slk-prompt-native-hidden', invisible);
+        // Read NATIVE hide state, not a computed 'display:none' created by our
+        // own .slk-prompt-native-hidden class. Never toggle off and immediately
+        // toggle on in the same frame (that previously caused endless rerenders).
+        for (const { block: nativeBlock, control } of [depth, order]) {
+            if (!control) continue;
+            const nativeHidden = isNativeHidden(nativeBlock, control) ||
+                (nativeBlock && nativeBlock !== control &&
+                 getComputedStyle(nativeBlock).display === 'none');
+            setClass(control, 'slk-prompt-native-hidden', Boolean(nativeHidden));
         }
-        posRow.classList.toggle('slk-prompt-has-depth', [depth, order].some(({control}) =>
+        setClass(posRow, 'slk-prompt-has-depth', [depth, order].some(({control}) =>
             control && !control.classList.contains('slk-prompt-native-hidden')));
 
         // Guard against an old theme leaving an invisible reserved row inside
@@ -3510,11 +3524,11 @@ if (SLK_UI_SETTINGS.enabled) {
                     const glyph = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                     glyph.setAttribute('class', 'slk-model-edit-glyph-v183');
                     glyph.setAttribute('viewBox', '0 0 24 24');
-                    glyph.setAttribute('width', '20');
-                    glyph.setAttribute('height', '20');
+                    glyph.setAttribute('width', '18');
+                    glyph.setAttribute('height', '18');
                     glyph.setAttribute('fill', 'none');
                     glyph.setAttribute('stroke', 'currentColor');
-                    glyph.setAttribute('stroke-width', '2.15');
+                    glyph.setAttribute('stroke-width', '2');
                     glyph.setAttribute('stroke-linecap', 'round');
                     glyph.setAttribute('stroke-linejoin', 'round');
                     glyph.setAttribute('aria-hidden', 'true');

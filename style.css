@@ -21254,3 +21254,53 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     stroke-width: 2.15px !important;
   }
 }
+
+
+/* ========================================================================
+   v1.8.8: panel top artifact / icon parity / safe-area status fallback
+   ======================================================================== */
+@media screen and (max-width: 1000px) {
+  /* Remove the spurious separator at the top of EVERY managed panel.
+     Prior rules only hid hr within a few inner panels; this also covers the
+     shared drawer container and non-hr decorative top rules. */
+  html body.slk-ui #top-settings-holder > hr,
+  html body.slk-ui #top-settings-holder > .drawer > .drawer-content > hr,
+  html body.slk-ui #top-settings-holder > .drawer > .drawer-content > .scrollableInner > hr:first-child,
+  html body.slk-ui #right-nav-panel > hr,
+  html body.slk-ui #left-nav-panel > hr,
+  html body.slk-ui #top-settings-holder > .drawer > .drawer-content > .panel-top-divider {
+    display: none !important;
+  }
+  /* Safety mask for the narrow top strip containing the unwanted grey rule.
+     Only inside *visible settings panels*, never in chat. Does not change
+     the content layout or its scroll position, and does not catch clicks. */
+  html body.slk-ui #top-settings-holder > .drawer > .drawer-content.openDrawer::after {
+    content: '' !important;
+    display: block !important;
+    position: absolute !important;
+    inset-inline: 0 !important;
+    top: 0 !important;
+    height: 12px !important;
+    width: 100% !important;
+    background: #fff !important;
+    z-index: 5 !important;
+    pointer-events: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  /* Use the same 18px canvas and stroke weight as the key glyph above. */
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action.slk-model-single-glyph > svg.slk-model-edit-glyph-v183,
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action > svg.slk-model-edit-glyph-v183 {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    max-width: 18px !important;
+    max-height: 18px !important;
+    flex: 0 0 18px !important;
+    stroke-width: 2px !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+  }
+  /* The chat gradient is unchanged; the iOS top chrome is white at launch. */
+}

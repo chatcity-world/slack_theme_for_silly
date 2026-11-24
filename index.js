@@ -1,3 +1,18 @@
+// iOS installed PWAs can lock their status bar appearance on initial load.
+// Set light chrome before the rest of Slack UI loads, rather than changing
+// black-translucent to default after a chat is opened.
+(() => {
+    try { if (localStorage.getItem('slk-ui-enabled') === 'false') return; } catch { /* default on */ }
+    const meta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
+        || document.head.appendChild(document.createElement('meta'));
+    meta.setAttribute('name', 'apple-mobile-web-app-status-bar-style');
+    meta.setAttribute('content', 'default');
+    const theme = document.querySelector('meta[name="theme-color"]')
+        || document.head.appendChild(document.createElement('meta'));
+    theme.setAttribute('name', 'theme-color');
+    theme.setAttribute('content', '#FFFFFF');
+})();
+
 // Keep the native in-document loading stage white before the extension JS finishes loading.
 (() => {
     // The extension must not touch the native ST splash when Slack UI is off.
