@@ -20173,3 +20173,1045 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     border-color: #C9B4D0 !important;
   }
 }
+
+
+/* v1.8.5 — Restore ORIGINAL v1.7.1 prompt dialog style, native input behavior retained. */
+/* ============================================================
+   v1.6.8 — 실제 SillyTavern 프롬프트 편집 모달
+   - 이름 전체 너비 / 역할+Triggers 1행 / 위치+깊이+오더 1행
+   - 역할/위치 드롭다운 안쪽 화살표
+   - 콘텐츠에 맞는 높이, 과도한 하단 공백 제거
+   - 인풋/저장 동작은 SillyTavern의 기존 네이티브 요소 사용
+   ============================================================ */
+@media screen {
+  html body.slk-ui #completion_prompt_manager_popup.openDrawer {
+    position: fixed !important;
+    display: flex !important;
+    flex-direction: column !important;
+    top: calc(var(--slk-top-h, 60px) + 8px) !important;
+    bottom: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: min(820px, calc(100vw - 24px)) !important;
+    min-width: 0 !important;
+    max-width: calc(100vw - 24px) !important;
+    height: max-content !important;
+    max-height: calc(100dvh - var(--slk-top-h, 60px) - var(--slk-footer-h, 80px) - 20px) !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    border: 1px solid #E4E4E4 !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 14px 48px rgba(29,28,29,.14) !important;
+    transform: none !important;
+    translate: none !important;
+    z-index: 3055 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 0 1 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    background: #fff !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit > h3 {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 58px !important;
+    height: auto !important;
+    padding: 16px 24px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    font: 800 20px/1.3 var(--slk-font) !important;
+    color: #1D1C1D !important;
+    background: #fff !important;
+    border-bottom: 1px solid #EDEDED !important;
+    text-indent: 0 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit > h3 > .slk-prompt-heading-text {
+    display: inline !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-indent: 0 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit > .completion_prompt_manager_popup_entry {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 0 1 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-form-fields {
+    display: block !important;
+    flex: 0 1 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: calc(100dvh - var(--slk-top-h, 60px) - var(--slk-footer-h, 80px) - 158px) !important;
+    padding: 18px 24px 20px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: thin;
+    overscroll-behavior: contain;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    gap: 14px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit :is(.slk-prompt-name-row, .slk-prompt-role-trigger-row, .slk-prompt-position-row) {
+    display: grid !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    align-items: start !important;
+    gap: 10px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-name-row {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-role-trigger-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  /* The Position field uses exactly the same width as Role, whether Depth/Order show or not. */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row {
+    grid-template-columns: calc((100% - 10px) / 2) repeat(2, minmax(0, 1fr)) !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row:not(.slk-prompt-has-depth) > :first-child {
+    grid-column: 1 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row.slk-prompt-has-depth > :first-child {
+    grid-column: 1 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_control {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    gap: 6px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit :is(
+    .completion_prompt_manager_popup_entry_form_control[hidden],
+    .completion_prompt_manager_popup_entry_form_control.displayNone,
+    .completion_prompt_manager_popup_entry_form_control.slk-prompt-native-hidden,
+    .completion_prompt_manager_popup_entry_form_control[style*="display:none"],
+    .completion_prompt_manager_popup_entry_form_control[style*="display: none"]
+  ) { display: none !important; }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_control label {
+    width: auto !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #1D1C1D !important;
+    font: 700 13px/1.45 var(--slk-font) !important;
+    text-align: left !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_control .text_muted {
+    display: block !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    color: #929292 !important;
+    font: 400 11px/1.45 var(--slk-font) !important;
+    overflow-wrap: anywhere !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_control :is(input.text_pole,select.text_pole) {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 8px 11px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    color: #1D1C1D !important;
+    background-color: #fff !important;
+    border: 1px solid #C6C6C6 !important;
+    border-radius: 9px !important;
+    box-shadow: none !important;
+    filter: none !important;
+    font: 500 14px/1.4 var(--slk-font) !important;
+  }
+  /* Native single-select arrow inside the field (not a separate button). */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_control select:not([multiple]) {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    padding-right: 34px !important;
+    background-color: #fff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23616061' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 11px center !important;
+    background-size: 17px 17px !important;
+    color: #1D1C1D !important;
+    text-align: left !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit #completion_prompt_manager_popup_entry_form_injection_trigger.select2-hidden-accessible {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_control .select2-container {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection--multiple {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 42px !important;
+    height: auto !important;
+    padding: 6px 10px !important;
+    margin: 0 !important;
+    border: 1px solid #C6C6C6 !important;
+    border-radius: 9px !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+    text-align: left !important;
+    box-shadow: none !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__rendered {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    direction: ltr !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-search--inline {
+    display: block !important;
+    flex: 1 1 100% !important;
+    float: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-search__field {
+    display: block !important;
+    float: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    line-height: 28px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #1D1C1D !important;
+    text-align: left !important;
+    text-indent: 0 !important;
+    direction: ltr !important;
+    font: 500 13px/28px var(--slk-font) !important;
+    box-shadow: none !important;
+    outline: none !important;
+    resize: none !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-search__field::placeholder {
+    color: #979797 !important;
+    text-align: left !important;
+    opacity: 1 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__choice {
+    max-width: 100% !important;
+    border-radius: 6px !important;
+    background: #F3EDF5 !important;
+    color: #4A154B !important;
+    font-size: 12px !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-form-fields > .flex-container.gap10px.slk-prompt-empty-native-row {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-form-fields > .completion_prompt_manager_popup_entry_form_control {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    margin-top: 14px !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit #completion_prompt_manager_popup_entry_source_block {
+    flex: 0 0 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit #completion_prompt_manager_popup_entry_form_prompt {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: min(240px, 32dvh) !important;
+    min-height: 150px !important;
+    padding: 12px 14px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    border: 1px solid #C6C6C6 !important;
+    border-radius: 9px !important;
+    background: #fff !important;
+    color: #1D1C1D !important;
+    font: 400 14px/1.55 var(--slk-font) !important;
+    box-shadow: none !important;
+    resize: vertical !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_footer {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: stretch !important;
+    gap: 10px !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    padding: 12px 24px !important;
+    margin: 0 !important;
+    border-top: 1px solid #EDEDED !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_footer > a.menu_button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 1 1 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
+    border: 1px solid #D8D8D8 !important;
+    border-radius: 9px !important;
+    background: #fff !important;
+    color: #1D1C1D !important;
+    box-shadow: none !important;
+    font-size: 0 !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_footer > a.menu_button:is([hidden], [style*="display:none"], [style*="display: none"]) {
+    display: none !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_footer > a.menu_button::before {
+    content: none !important;
+    display: none !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_footer > a.menu_button::after {
+    content: attr(data-slk-action-label);
+    display: block !important;
+    color: inherit !important;
+    font: 700 14px/1 var(--slk-font) !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit #completion_prompt_manager_popup_entry_form_reset {
+    background: #F8F8F8 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit #completion_prompt_manager_popup_entry_form_save {
+    background: #4A154B !important;
+    border-color: #4A154B !important;
+    color: #FFFFFF !important;
+  }
+}
+@media screen and (max-width: 520px) {
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit > h3 {
+    padding: 14px 18px !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-form-fields {
+    padding: 16px 18px 18px !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-layout {
+    gap: 13px !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-role-trigger-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row {
+    grid-template-columns: calc((100% - 10px) / 2) repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row select:not([multiple]) {
+    font-size: 12px !important;
+    padding-left: 9px !important;
+    padding-right: 28px !important;
+    background-position: right 7px center !important;
+    background-size: 14px 14px !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_footer {
+    padding: 11px 16px !important;
+    gap: 8px !important;
+  }
+}
+@media screen and (min-width: 1001px) {
+  html body.slk-ui.slk-pc #completion_prompt_manager_popup.openDrawer {
+    top: 60px !important;
+    width: min(820px, calc(100vw - 48px)) !important;
+    max-width: calc(100vw - 48px) !important;
+    max-height: calc(100dvh - 110px) !important;
+  }
+}
+
+/* v1.6.9 — final prompt editor alignment fixes (native SillyTavern UI only). */
+@media screen {
+  /* The real ST title may be nested beneath another wrapper; the JS locates it
+     and aligns its content to the Name label with --slk-prompt-title-inset. */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit h3.slk-prompt-editor-title {
+    position: relative !important;
+    display: flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 58px !important;
+    padding: 16px 0 !important;
+    margin: 0 !important;
+    text-indent: 0 !important;
+    box-sizing: border-box !important;
+    border-bottom: 1px solid #EDEDED !important;
+    font: 800 20px/1.3 var(--slk-font) !important;
+    color: #1D1C1D !important;
+    background: #FFFFFF !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit h3.slk-prompt-editor-title > .slk-prompt-heading-text {
+    display: block !important;
+    position: absolute !important;
+    left: var(--slk-prompt-title-inset, 24px) !important;
+    top: 50% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translateY(-50%) !important;
+    text-indent: 0 !important;
+    white-space: nowrap !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-layout {
+    gap: 10px !important;
+  }
+  /* Direct layout child, moved without recreating the original textarea.
+     Source block and empty native wrappers no longer push the prompt down. */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-layout > .slk-prompt-content-block {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 6px !important;
+    align-self: stretch !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-layout > .slk-prompt-content-block > .completion_prompt_manager_popup_entry_form_control {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+/* ============================================================
+   v1.7.0 — Prompt editor Select2 / whitespace correction
+   The dropdown is portal-mounted outside the prompt popup by Select2.
+   Match it only while the native prompt editor is open.
+   ============================================================ */
+@media screen {
+  /* A direct form control, not the original tall source wrapper. */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-layout > .slk-prompt-content-block {
+    display: flex !important;
+    flex-direction: column !important;
+    align-self: stretch !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 2px 0 0 !important;
+    padding: 0 !important;
+    gap: 6px !important;
+    position: static !important;
+    translate: none !important;
+    transform: none !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-form-fields .slk-prompt-empty-source {
+    display: none !important;
+    min-height: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  /* Both the position description and content label are in the compact layout,
+     rather than separated by the original source block's reserved space. */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row {
+    margin: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-layout {
+    gap: 9px !important;
+  }
+
+  /* Selected trigger token. Removes SillyTavern's thick black shadow and
+     restores Slack-like pill styling, without altering Select2 state. */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection--multiple .select2-selection__choice {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 26px !important;
+    height: auto !important;
+    max-width: 100% !important;
+    margin: 0 5px 2px 0 !important;
+    padding: 0 8px 0 0 !important;
+    border: 1px solid #E2D8E6 !important;
+    border-radius: 6px !important;
+    background: #F5EFF7 !important;
+    color: #4A154B !important;
+    box-shadow: none !important;
+    filter: none !important;
+    text-shadow: none !important;
+    font: 500 12px/1.4 var(--slk-font) !important;
+    overflow: hidden !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__choice__remove {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 26px !important;
+    min-width: 26px !important;
+    height: 26px !important;
+    margin: 0 7px 0 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-right: 1px solid #E2D8E6 !important;
+    border-radius: 0 !important;
+    background: #EEE5F1 !important;
+    color: #4A154B !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__choice__display {
+    padding: 0 !important;
+    color: #4A154B !important;
+    font: 500 12px/1.4 var(--slk-font) !important;
+    box-shadow: none !important;
+  }
+
+  /* The floating Select2 dropdown is appended to <body>, not to the popup.
+     :has() scopes these rules to the currently open native prompt editor. */
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer) > .select2-container--open {
+    z-index: 3075 !important;
+  }
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer)
+    .select2-container--open .select2-dropdown {
+    overflow: hidden !important;
+    border: 1px solid #D9D9D9 !important;
+    border-radius: 10px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 6px 18px rgba(29,28,29,.12) !important;
+    filter: none !important;
+    color: #1D1C1D !important;
+    font-family: var(--slk-font) !important;
+  }
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer)
+    .select2-container--open .select2-results {
+    margin: 0 !important;
+    padding: 4px !important;
+    background: #FFFFFF !important;
+    color: #1D1C1D !important;
+    box-shadow: none !important;
+  }
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer)
+    .select2-container--open .select2-results__options {
+    max-height: min(252px, 42dvh) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: #FFFFFF !important;
+    scrollbar-width: thin;
+  }
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer)
+    .select2-container--open .select2-results__option {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    min-height: 40px !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 8px 10px !important;
+    box-sizing: border-box !important;
+    border: 0 !important;
+    border-radius: 6px !important;
+    background: #FFFFFF !important;
+    color: #1D1C1D !important;
+    font: 500 14px/1.45 var(--slk-font) !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    cursor: pointer !important;
+  }
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer)
+    .select2-container--open .select2-results__option--highlighted,
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer)
+    .select2-container--open .select2-results__option--highlighted[aria-selected] {
+    background: #F6F1F7 !important;
+    color: #4A154B !important;
+  }
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer)
+    .select2-container--open .select2-results__option[aria-disabled="true"],
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer)
+    .select2-container--open .select2-results__option--disabled {
+    color: #A6A4A6 !important;
+    background: #FFFFFF !important;
+    cursor: default !important;
+  }
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer)
+    .select2-container--open .select2-results__option :is(input[type="checkbox"], input[type="radio"]) {
+    flex: 0 0 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    min-height: 18px !important;
+    max-width: 18px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid #C7C5C7 !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    accent-color: #4A154B !important;
+    vertical-align: middle !important;
+  }
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer)
+    .select2-container--open .select2-search--dropdown {
+    padding: 8px !important;
+    background: #FFFFFF !important;
+    border-bottom: 1px solid #EDEDED !important;
+  }
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer)
+    .select2-container--open .select2-search--dropdown .select2-search__field {
+    width: 100% !important;
+    height: 36px !important;
+    padding: 7px 10px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    border: 1px solid #CECECE !important;
+    border-radius: 7px !important;
+    background: #FFFFFF !important;
+    color: #1D1C1D !important;
+    font: 500 13px/1.3 var(--slk-font) !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ========================================================
+   v1.7.1 — Trigger chip / option readability + actual
+   Position → Prompt gap correction. Full text is preserved.
+   ======================================================== */
+@media screen {
+  /* All legacy source shells are outside our compact layout. Eliminate
+     their invisible fixed-height placeholders, regardless of gap class. */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-retired-source,
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-form-fields > .slk-prompt-empty-native-row {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-layout {
+    gap: 8px !important;
+    align-content: start !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row {
+    align-content: start !important;
+    grid-auto-rows: min-content !important;
+    max-height: var(--slk-prompt-position-content-h, none) !important;
+    overflow: visible !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row > .slk-prompt-native-hidden {
+    display: none !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-layout > .slk-prompt-content-block {
+    display: flex !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+    align-self: stretch !important;
+  }
+
+  /* Real Select2 markup: the × is an absolutely positioned native child by
+     default. Make it a normal flex child so the Korean word never sits under
+     it or gets clipped at either edge. */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection--multiple {
+    display: flex !important;
+    padding: 6px 8px !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 42px !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__rendered {
+    display: flex !important;
+    flex-flow: row wrap !important;
+    gap: 5px !important;
+    align-items: center !important;
+    align-content: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    line-height: normal !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__choice {
+    position: relative !important;
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 27px !important;
+    height: 27px !important;
+    float: none !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 8px 0 0 !important;
+    overflow: visible !important;
+    white-space: nowrap !important;
+    text-overflow: clip !important;
+    font: 500 12px/1.3 var(--slk-font) !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__choice__remove {
+    position: static !important;
+    inset: auto !important;
+    float: none !important;
+    display: inline-flex !important;
+    flex: 0 0 25px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 25px !important;
+    min-width: 25px !important;
+    max-width: 25px !important;
+    height: 25px !important;
+    margin: 0 7px 0 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    transform: none !important;
+    text-indent: 0 !important;
+    line-height: 25px !important;
+    text-shadow: none !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__choice__display {
+    display: inline-block !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: static !important;
+    text-indent: 0 !important;
+    white-space: nowrap !important;
+    text-overflow: clip !important;
+    overflow: visible !important;
+    color: #4A154B !important;
+    font: 600 12px/1.4 var(--slk-font) !important;
+  }
+  /* Don't force the 28px inline search input onto its own line when there
+     are chips. Keep keyboard input accessible on focus / when empty. */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__rendered:has(.select2-selection__choice) > .select2-search--inline:not(:focus-within) {
+    display: block !important;
+    float: none !important;
+    flex: 0 0 1px !important;
+    width: 1px !important;
+    min-width: 1px !important;
+    max-width: 1px !important;
+    height: 1px !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__rendered:has(.select2-selection__choice) > .select2-search--inline:not(:focus-within) .select2-search__field {
+    width: 1px !important;
+    min-width: 0 !important;
+    height: 1px !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  /* In a narrow column, long values are shown in whole, wrapped chips. */
+  @media (max-width: 520px) {
+    html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__choice {
+      max-width: 100% !important;
+      white-space: normal !important;
+      height: auto !important;
+    }
+    html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .select2-selection__choice__display {
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+    }
+  }
+  /* The popup's native dropdown can have inner label/span elements from
+     Select2 templates; reset text positioning separately from the checkbox. */
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer) .select2-container--open .select2-results__option {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 10px !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 10px 12px !important;
+    min-height: 42px !important;
+    height: auto !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-indent: 0 !important;
+    text-align: left !important;
+    box-sizing: border-box !important;
+    line-height: 1.4 !important;
+  }
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer) .select2-container--open .select2-results__option > :is(span,label,div),
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer) .select2-container--open .select2-results__option > label > :is(span,div) {
+    display: inline-block !important;
+    position: static !important;
+    flex: 1 1 auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    text-indent: 0 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer) .select2-container--open .select2-results__option > label {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+  }
+  html body.slk-ui:has(#completion_prompt_manager_popup.openDrawer) .select2-container--open .select2-results__option :is(input[type="checkbox"],input[type="radio"]) {
+    position: static !important;
+    inset: auto !important;
+    float: none !important;
+    transform: none !important;
+    flex: 0 0 18px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+
+/* v1.8.5 FINAL — every chat shares the same white status bar and soft gradient.
+   Panel/class transitions must not put the purple home-header above chat. */
+@media screen and (max-width: 1000px) {
+  html:has(body.slk-ui.slk-in-chat),
+  html:has(body.slk-ui.slk-in-chat) body,
+  html.slk-status-chat,
+  html.slk-status-chat body.slk-ui {
+    background-color: #fff !important;
+  }
+  html:has(body.slk-ui.slk-in-chat) body.slk-ui::before {
+    content: "" !important;
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: env(safe-area-inset-top,0px) !important;
+    background: #fff !important;
+    pointer-events: none !important;
+    z-index: 4000 !important;
+  }
+  html:has(body.slk-ui.slk-in-chat) #slk-status-surface {
+    display: block !important;
+    background: #fff !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: max(1px, env(safe-area-inset-top,0px)) !important;
+    z-index: 4001 !important;
+    pointer-events: none !important;
+  }
+  html body.slk-ui.slk-in-chat #slk-header,
+  html.slk-status-chat body.slk-ui.slk-in-chat #slk-header,
+  html body.slk-ui.slk-in-chat:has(.drawer-content.openDrawer) #slk-header,
+  html body.slk-ui.slk-in-chat.slk-header-compact #slk-header {
+    background-color: transparent !important;
+    background-image: linear-gradient(to bottom,
+      #fff 0%, rgba(255,255,255,.98) 47%,
+      rgba(255,255,255,.78) 79%, rgba(255,255,255,.12) 100%) !important;
+    box-shadow: none !important;
+    color: #1d1c1d !important;
+  }
+  html body.slk-ui.slk-in-chat #slk-header::after,
+  html.slk-status-chat body.slk-ui.slk-in-chat #slk-header::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    top: calc(100% - 1px) !important;
+    height: 52px !important;
+    inset-inline: 0 !important;
+    width: 100% !important;
+    background: linear-gradient(to bottom,rgba(255,255,255,.12),rgba(255,255,255,0)) !important;
+    pointer-events: none !important;
+  }
+  /* The model button has ONE icon. Hide even the native icon's ::before
+     (which survived previous :scope > * rules and appeared as a tiny glyph). */
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action.slk-model-single-glyph {
+    position: relative !important;
+    font-size: 0 !important;
+    text-indent: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action.slk-model-single-glyph::before,
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action.slk-model-single-glyph::after,
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action.slk-model-single-glyph :not(.slk-model-edit-glyph-v183)::before,
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action.slk-model-single-glyph :not(.slk-model-edit-glyph-v183)::after {
+    content: none !important;
+    display: none !important;
+  }
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action.slk-model-single-glyph :is(i,span,svg:not(.slk-model-edit-glyph-v183)) {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  html body.slk-ui #rm_api_block .slk-model-select-row > .slk-model-edit-action.slk-model-single-glyph > svg.slk-model-edit-glyph-v183 {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    max-width: 28px !important;
+    max-height: 28px !important;
+    stroke-width: 2.9px !important;
+    pointer-events: none !important;
+  }
+  /* Mobile prompt editor must be 2-column for Role and Triggers even when
+     earlier CSS tried to collapse its original .gap10px rows to one column. */
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-role-trigger-row {
+    grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .slk-prompt-position-row {
+    grid-template-columns: calc((100% - 10px)/2) repeat(2,minmax(0,1fr)) !important;
+  }
+}
+
+/* v1.8.5 priority fix: earlier :not(#slk-*) selectors must not beat the
+   consistent chat gradient, regardless of chat count or stale drawer state. */
+@media screen and (max-width: 1000px) {
+  html body.slk-ui.slk-in-chat:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #slk-header,
+  html.slk-status-chat body.slk-ui.slk-in-chat:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #slk-header {
+    background: linear-gradient(to bottom,
+      #FFFFFF 0%,
+      rgba(255,255,255,.99) 45%,
+      rgba(255,255,255,.92) 75%,
+      rgba(255,255,255,.80) 100%) !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: #1D1C1D !important;
+  }
+  html body.slk-ui.slk-in-chat:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #slk-header::after {
+    content: '' !important;
+    display: block !important;
+    top: calc(100% - 1px) !important;
+    height: 60px !important;
+    background: linear-gradient(to bottom,rgba(255,255,255,.80),rgba(255,255,255,0)) !important;
+    pointer-events: none !important;
+  }
+}
