@@ -22053,3 +22053,24 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit :is(#completion_prompt_manager_popup_entry_form_role,#completion_prompt_manager_popup_entry_form_injection_position) > option {font-size:inherit!important;}
  }
 }
+
+
+/* v1.8.33: optical centering, text only; no button box or icon changes. */
+@media screen and (max-width:1000px) {
+  @layer slk-button-label-alignment {
+    body.slk-ui slk-button-label,
+    body.slk-ui [data-slk-button-label] {
+      position:relative!important;
+      top:1.5px!important;
+    }
+    body.slk-ui slk-button-label {pointer-events:none;}
+    /* These labels are CSS-generated, not DOM text. Their ::before icons
+       must retain the original vertical position. */
+    body.slk-ui #right-nav-panel #rm_characters_block #rm_button_create::after,
+    body.slk-ui #right-nav-panel #rm_characters_block .rm_tag_filter :is(.filterByFavorites,.filterByGroups,.filterByFolder) .tag_name::after,
+    body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_footer > a.menu_button::after {
+      position:relative!important;
+      top:1.5px!important;
+    }
+  }
+}

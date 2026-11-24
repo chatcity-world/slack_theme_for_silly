@@ -3892,4 +3892,62 @@ function slkConnectPromptManager() {
     window.addEventListener('resize', schedule);
 })();
 
+// v1.8.33 — Optical vertical alignment of mobile action-button labels.
+// Existing icons, controls and native handlers stay in place. Only actual
+// text is shifted, including native buttons with anonymous flex text items.
+(function slkAlignMobileButtonLabels() {
+    const selector = '.menu_button, button, [role="button"], .slk-menu-item, .drawer-opener, #create_dummy_persona, #world_create_button, #af_master_import, #af_master_export, #extensions_details, #third_party_extension_button';
+    const roots = '#top-settings-holder .drawer-content, #PersonaManagement, #right-nav-panel, #AdvancedFormatting, #WorldInfo, #rm_api_block, #rm_extensions_block, #left-nav-panel, #user-settings-block, #Backgrounds, dialog.popup .popup-controls, #chat .mes_text, #slk-settings-menu';
+    const icon = 'i, svg, img, [class*="fa-"], [class*="icon"], [aria-hidden="true"], input, select, textarea, [role="img"]';
+    const pending = new Set();
+    let queued = false;
+    const mobile = matchMedia('(max-width:1000px)');
+    function sync(button) {
+        if (!button.isConnected || !button.closest(roots) || button.closest('#slk-header, #slk-tabbar, #completion_prompt_manager_popup, .select2-container, [contenteditable="true"]')) return;
+        if (button.closest('#chat .mes_text') && !button.matches('.menu_button,.drawer-opener')) return;
+        if (button.matches('input,select,textarea') || button.querySelector('input,select,textarea,button,[role="button"]')) return;
+        const direct = [...button.childNodes];
+        for (const node of direct) {
+            if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()) {
+                const label = document.createElement('slk-button-label');
+                button.insertBefore(label, node);
+                label.appendChild(node);
+            } else if (node.nodeType === Node.ELEMENT_NODE && node.matches('span,b,strong,small,label,div') && !node.matches(icon) && !node.querySelector(icon) && node.textContent.trim()) {
+                if (!node.hasAttribute('data-slk-button-label')) node.setAttribute('data-slk-button-label','');
+            }
+        }
+    }
+    function flush() {
+        queued = false;
+        if (mobile.matches && document.body.classList.contains('slk-ui')) for (const el of pending) sync(el);
+        pending.clear();
+    }
+    function enqueue(root) {
+        if (!root) return;
+        const el = root.nodeType === Node.ELEMENT_NODE ? root : root.parentElement;
+        if (!el) return;
+        const button = el.closest(selector);
+        if (button) pending.add(button);
+        if (root.nodeType === Node.ELEMENT_NODE) root.querySelectorAll(selector).forEach(b => pending.add(b));
+        if (!queued) { queued = true; requestAnimationFrame(flush); }
+    }
+    function start() {
+        enqueue(document.body);
+        new MutationObserver(records => {
+            for (const record of records) {
+                if (record.type === 'characterData') enqueue(record.target);
+                else {
+                    const button = record.target.closest?.(selector);
+                    if (button) enqueue(button);
+                    for (const node of record.addedNodes) enqueue(node);
+                }
+            }
+        }).observe(document.body, {subtree:true,childList:true,characterData:true});
+        mobile.addEventListener?.('change', () => enqueue(document.body));
+        window.addEventListener('slk-ui-settings-changed', () => enqueue(document.body));
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true});
+    else start();
+})();
+
 } // end enabled-only Slack UI runtime (v1.8.4)
