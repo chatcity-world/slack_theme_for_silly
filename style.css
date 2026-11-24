@@ -22089,9 +22089,9 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     -webkit-backdrop-filter:none!important;
   }
   body.slk-ui.slk-composing #form_sheld #send_form.slk-compose-open {
-    background:rgba(255,255,255,.26)!important;
-    backdrop-filter:var(--slk-glass-blur,blur(20px) saturate(180%))!important;
-    -webkit-backdrop-filter:var(--slk-glass-blur,blur(20px) saturate(180%))!important;
+    background:rgba(255,255,255,.14)!important;
+    backdrop-filter:blur(8px) saturate(125%)!important;
+    -webkit-backdrop-filter:blur(8px) saturate(125%)!important;
   }
   /* The native textarea and its placeholder share exactly one text origin. */
   body.slk-ui #form_sheld #send_form.slk-compose-open #send_textarea {
