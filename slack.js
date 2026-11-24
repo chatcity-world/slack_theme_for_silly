@@ -1524,7 +1524,12 @@ function watchHeaderCompact() {
             const relevant = [...scrollTargets].some(target => open ?
                 (target === open || (open.contains(target) && target.matches('.scrollableInner'))) : target.id === 'chat');
             scrollTargets.clear();
-            if (relevant) recomputeHeaderCompact();
+            if (!relevant) return;
+            if (!open) {
+                const compact = (document.getElementById('chat')?.scrollTop || 0) > 10;
+                if (document.body.classList.contains('slk-header-compact') === compact) return;
+            }
+            recomputeHeaderCompact();
         });
     }, {capture:true, passive:true});
     document.addEventListener('click', (e) => {
@@ -2384,8 +2389,11 @@ if (SLK_UI_SETTINGS.enabled) {
     const start = () => {
         scan();
         let t = null;
-        new MutationObserver(() => { if (t) return; t = setTimeout(() => { t = null; scan(); }, 120); })
-            .observe(document.body, { childList: true, subtree: true });
+        new MutationObserver(records => {
+            if (!records.some(r => r.target.closest?.('#WorldInfo') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.id === 'WorldInfo' || n.querySelector('#WorldInfo'))))) return;
+            if (t) return;
+            t = setTimeout(() => { t = null; scan(); }, 120);
+        }).observe(document.body, { childList: true, subtree: true });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
@@ -2420,7 +2428,9 @@ if (SLK_UI_SETTINGS.enabled) {
     const schedule = () => { if (t) return; t = setTimeout(() => { t = null; markNotices(); }, 60); };
     const start = () => {
         markNotices();
-        new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
+        new MutationObserver(records => {
+            if (records.some(r => !r.target.closest?.('#chat'))) schedule();
+        }).observe(document.documentElement, { childList: true, subtree: true });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
@@ -2473,7 +2483,9 @@ if (SLK_UI_SETTINGS.enabled) {
     const scan = () => document.querySelectorAll('#toast-container > div').forEach(arm);
     const start = () => {
         scan();
-        new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true });
+        new MutationObserver(records => {
+            if (records.some(r => r.target.closest?.('#toast-container') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.id === 'toast-container' || n.querySelector('#toast-container'))))) scan();
+        }).observe(document.documentElement, { childList: true, subtree: true });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
@@ -2693,10 +2705,23 @@ if (SLK_UI_SETTINGS.enabled) {
     // ST가 코드로 값을 바꾸는 경우(프리셋 불러오기 등)도 반영
     const start = () => {
         all();
-        setInterval(all, 1500);
+        setInterval(() => { if (!document.hidden) all(); }, 1500);
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) all(); });
+        const pending = new Set();
         let t = null;
-        new MutationObserver(() => { if (!t) t = setTimeout(() => { t = null; all(); }, 200); })
-            .observe(document.body, { childList: true, subtree: true });
+        new MutationObserver(records => {
+            for (const r of records) for (const n of r.addedNodes) {
+                if (n.nodeType !== 1) continue;
+                if (n.matches('input[type="range"]')) pending.add(n);
+                n.querySelectorAll('input[type="range"]').forEach(el => pending.add(el));
+            }
+            if (!pending.size || t) return;
+            t = setTimeout(() => {
+                t = null;
+                for (const el of pending) if (el.isConnected) update(el);
+                pending.clear();
+            }, 200);
+        }).observe(document.body, { childList: true, subtree: true });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
@@ -2792,16 +2817,26 @@ if (SLK_UI_SETTINGS.enabled) {
     // Remember the actual two header track heights while the ⋯ menu is closed.
     // The visible message title/timestamp vary by message, so a hardcoded
     // header height would make some menus jump when expanded.
+    const rowsPending = new Set();
     function rememberClosedHeaderRows(mes) {
-        if (mes.classList.contains('slk-mes-expanded')) return;
+        if (mes.classList.contains('slk-mes-expanded')) return null;
         const computed = getComputedStyle(mes).gridTemplateRows;
         const tracks = [...computed.matchAll(/(?:^|\s)(\d+(?:\.\d+)?)px(?=\s|$)/g)]
             .slice(0, 2).map(match => match[1] + 'px');
-        if (tracks.length !== 2) return;
-        const value = tracks.join(' ');
-        if (mes.style.getPropertyValue('--slk-actions-closed-rows') !== value) {
-            mes.style.setProperty('--slk-actions-closed-rows', value);
+        if (tracks.length !== 2) return null;
+        return tracks.join(' ');
+    }
+    function flushHeaderRows() {
+        // Read every affected grid before writing any custom property, to avoid
+        // synchronous style/layout invalidation between individual messages.
+        const measured = [];
+        for (const mes of rowsPending) {
+            if (!mes.isConnected) continue;
+            const value = rememberClosedHeaderRows(mes);
+            if (value && mes.style.getPropertyValue('--slk-actions-closed-rows') !== value) measured.push([mes,value]);
         }
+        rowsPending.clear();
+        for (const [mes,value] of measured) mes.style.setProperty('--slk-actions-closed-rows', value);
     }
     function sync(mes) {
         const box = mes.querySelector(':scope > .mes_block > .ch_name > .mes_buttons');
@@ -2819,7 +2854,7 @@ if (SLK_UI_SETTINGS.enabled) {
             }
             if (mes.classList.contains('slk-mes-expanded')) mes.classList.remove('slk-mes-expanded');
             if (mes.hasAttribute('data-slk-actions-flow')) mes.removeAttribute('data-slk-actions-flow');
-            rememberClosedHeaderRows(mes);
+            rowsPending.add(mes);
             return;
         }
         states.set(mes, state);
@@ -2882,10 +2917,12 @@ if (SLK_UI_SETTINGS.enabled) {
             timer = null;
             const batch = [...pending]; pending.clear();
             for (const mes of batch) if (chat.contains(mes)) sync(mes);
+            flushHeaderRows();
         };
         const schedule = () => { if (pending.size && timer === null) timer = setTimeout(flush, 35); };
         const all = () => { chat.querySelectorAll('.mes').forEach(queue); schedule(); };
         chat.querySelectorAll('.mes').forEach(sync);
+        flushHeaderRows();
         new MutationObserver(records => {
             for (const r of records) {
                 const el = r.target;
@@ -4135,7 +4172,9 @@ function slkConnectPromptManager() {
     };
     const start = () => {
         const root = document.getElementById('openai_api') || document.getElementById('left-nav-panel') || document.body;
-        new MutationObserver(schedule).observe(root, { childList: true, subtree: true });
+        new MutationObserver(records => {
+            if (records.some(r => !r.target.closest?.('#chat'))) schedule();
+        }).observe(root, { childList: true, subtree: true });
         schedule();
         setTimeout(schedule, 350);
         setTimeout(schedule, 1400);
@@ -4177,7 +4216,7 @@ function slkConnectPromptManager() {
         pending.clear();
     }
     function enqueue(root) {
-        if (!root) return;
+        if (!root || !mobile.matches) return;
         const el = root.nodeType === Node.ELEMENT_NODE ? root : root.parentElement;
         if (!el) return;
         const button = el.closest(selector);
@@ -4188,6 +4227,7 @@ function slkConnectPromptManager() {
     function start() {
         enqueue(document.body);
         new MutationObserver(records => {
+            if (!mobile.matches) return;
             for (const record of records) {
                 if (record.type === 'characterData') enqueue(record.target);
                 else {
