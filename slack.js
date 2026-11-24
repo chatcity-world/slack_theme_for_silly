@@ -3236,6 +3236,39 @@ if (SLK_UI_SETTINGS.enabled) {
     window.addEventListener('slk-ui-settings-changed', build);
 })();
 
+// v1.8.22: isolate ONLY the prompt editor from the generic native drawer
+// lifecycle. SillyTavern opens/closes it by ID and the openDrawer class.
+// Keep that class and all original inputs/listeners. Portal before the first
+// click, and again whenever ST replaces the editor; never wait for another tap.
+function slkPortalPromptEditor(popup = document.getElementById('completion_prompt_manager_popup')) {
+    if (!popup || !document.body) return;
+    const enabled = document.body.classList.contains('slk-ui');
+    const mobile = window.matchMedia('(max-width:1000px)').matches;
+    if (enabled) {
+        if (popup.parentElement !== document.body) {
+            if (!popup.slkHomeMarker?.parentNode) {
+                popup.slkHomeMarker = document.createComment('Slack UI: original prompt dialog position');
+                popup.parentNode.insertBefore(popup.slkHomeMarker, popup);
+            }
+            document.body.appendChild(popup);
+        }
+        if (mobile) {
+            if (popup.classList.contains('drawer-content')) {
+                popup.slkHadNativeDrawerClass = true;
+                popup.classList.remove('drawer-content');
+            }
+            if (!popup.classList.contains('slk-prompt-portal')) popup.classList.add('slk-prompt-portal');
+            if (popup.classList.contains('slk-nav-hidden')) popup.classList.remove('slk-nav-hidden');
+        }
+    } else if (popup.slkHomeMarker?.parentNode) {
+        popup.slkHomeMarker.parentNode.insertBefore(popup, popup.slkHomeMarker);
+    }
+    if (!enabled || !mobile) {
+        if (popup.classList.contains('slk-prompt-portal')) popup.classList.remove('slk-prompt-portal');
+        if (popup.slkHadNativeDrawerClass && !popup.classList.contains('drawer-content')) popup.classList.add('drawer-content');
+    }
+}
+
 // v1.6.3 — Native prompt editing dialog: scrollable fields + persistent,
 // clearly labeled action bar. This only moves existing nodes and retains
 // SillyTavern's original save/reset/close event listeners and input IDs.
@@ -3246,16 +3279,8 @@ if (SLK_UI_SETTINGS.enabled) {
         // relative to the drawer, cutting off half the editor on small screens.
         // Portal only this dialog to <body>; the original element, IDs, event
         // listeners and SillyTavern save/reset/close actions are preserved.
-        const popup = document.getElementById('completion_prompt_manager_popup');
-        if (popup && document.body.classList.contains('slk-ui') && popup.parentElement !== document.body) {
-            if (!popup.slkHomeMarker) {
-                popup.slkHomeMarker = document.createComment('Slack UI: original prompt dialog position');
-                popup.parentNode.insertBefore(popup.slkHomeMarker, popup);
-            }
-            document.body.appendChild(popup);
-        } else if (popup && !document.body.classList.contains('slk-ui') && popup.slkHomeMarker?.parentNode) {
-            popup.slkHomeMarker.parentNode.insertBefore(popup, popup.slkHomeMarker);
-        }
+        if (!document.body.classList.contains('slk-ui')) return;
+        slkPortalPromptEditor();
         const editor = document.getElementById('completion_prompt_manager_popup_edit');
         // Keep the heading text inset independent of SillyTavern and external
         // themes overriding H3 padding. Preserve translated title content.
@@ -3346,24 +3371,11 @@ if (SLK_UI_SETTINGS.enabled) {
         scheduled = false;
         if (!document.body.classList.contains('slk-ui')) return;
         const popup = document.getElementById(popupId);
-        // Never rearrange the native editor before SillyTavern opens it.
-        // Premature reparenting of controls can interfere with the native
-        // prompt manager's own initialization and open/close behavior.
-        if (!popup || popup.hidden || popup.classList.contains('displayNone')) return;
-        // PromptManager may render or replace this drawer after extension startup.
-        // Lift the SAME node out of the panel's clipping/stacking context on open.
-        if (popup.classList.contains('openDrawer') && popup.parentElement !== document.body) {
-            if (!popup.slkHomeMarker?.parentNode) {
-                popup.slkHomeMarker = document.createComment('Slack UI: original prompt dialog position');
-                popup.parentNode.insertBefore(popup.slkHomeMarker, popup);
-            }
-            document.body.appendChild(popup);
-        }
-        const visible = popup.classList.contains('openDrawer') ||
-            (getComputedStyle(popup).display !== 'none' &&
-             getComputedStyle(popup).visibility !== 'hidden' &&
-             popup.getClientRects().length > 0);
-        if (!visible) return;
+        // Portal before testing visibility, even if native animation has not
+        // finished. For mobile the native openDrawer flag is authoritative.
+        if (!popup) return;
+        slkPortalPromptEditor(popup);
+        if (popup.hidden || popup.classList.contains('displayNone') || !popup.classList.contains('openDrawer')) return;
         const edit = popup.querySelector('#completion_prompt_manager_popup_edit');
         const heading = edit?.querySelector(':scope > h3') || edit?.querySelector('h3');
         const form = edit?.querySelector('.completion_prompt_manager_popup_entry_form');
@@ -3518,7 +3530,13 @@ if (SLK_UI_SETTINGS.enabled) {
         if (watchedPopup === popup) return;
         popupObserver?.disconnect();
         watchedPopup = popup;
-        popupObserver = new MutationObserver(schedule);
+        slkPortalPromptEditor(popup);
+        popupObserver = new MutationObserver(records => {
+            // Resolve root stacking immediately in the mutation microtask.
+            // Layout work can still be batched to one animation frame.
+            if (records.some(r => r.target === popup)) slkPortalPromptEditor(popup);
+            schedule();
+        });
         popupObserver.observe(popup, {
             childList: true, subtree: true, attributes: true,
             attributeFilter: ['class', 'style', 'hidden'],
@@ -3539,11 +3557,27 @@ if (SLK_UI_SETTINGS.enabled) {
             if (found) observePopup(found);
         });
         rootObserver.observe(document.body, { childList: true, subtree: true });
+        // init() can enable the body class after this observer is installed.
+        let wasEnabled = document.body.classList.contains('slk-ui');
+        new MutationObserver(() => {
+            const enabled = document.body.classList.contains('slk-ui');
+            if (enabled === wasEnabled) return;
+            wasEnabled = enabled;
+            slkPortalPromptEditor();
+            schedule();
+        }).observe(document.body, {attributes:true,attributeFilter:['class']});
+        // Before ST's own click listener opens the selected prompt, make
+        // certain the current node is already outside the settings drawer.
+        document.addEventListener('click', event => {
+            if (!event.target.closest?.('#completion_prompt_manager, #completion_prompt_manager_list')) return;
+            slkPortalPromptEditor();
+        }, true);
+
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
-    window.addEventListener('slk-ui-settings-changed', schedule);
-    window.addEventListener('resize', schedule);
+    window.addEventListener('slk-ui-settings-changed', () => {slkPortalPromptEditor();schedule();});
+    window.addEventListener('resize', () => {slkPortalPromptEditor();schedule();});
 })();
 
 
