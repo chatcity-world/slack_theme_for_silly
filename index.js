@@ -59,11 +59,27 @@
     const el = document.createElement('style');
     el.id = 'slk-early-splash-style';
     el.textContent = `:root { --slk-loader-icon:url(${JSON.stringify(icon)}); }
-    @media screen and (max-width:1000px) {
-    html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"])), html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"])) > body,
-    html:has(dialog[open] #loader), html:has(dialog[open] #loader) > body { background-color:#fff!important; background-image:none!important; color-scheme:only light!important; }
-    html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"])) #preloader { position:fixed!important; inset:0!important; width:100%!important; height:100%!important; margin:0!important; background:#fff!important; color-scheme:only light!important; }
-    html:has(dialog[open] #loader) dialog[open]:has(#loader) { background-color:#fff!important; color-scheme:only light!important; }
+    @layer slk-splash-chrome {
+ @media screen and (max-width:1000px) {
+    :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)), :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)) > body, html:has(dialog[open] #loader), html:has(dialog[open] #loader) > body { background:#fff!important; color-scheme:only light!important; }
+    :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader { position:fixed!important; inset:0!important; width:100%!important; height:100%!important; margin:0!important; background:#fff!important; color-scheme:only light!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }
+    html:has(dialog[open] #loader) dialog[open]:has(#loader) { background:#fff!important; color-scheme:only light!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }
+    html:has(dialog[open] #loader) dialog[open] #loader #load-spinner, :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner, #slk-splash-chrome-sample {
+      display:block!important; position:fixed!important; inset:0 0 auto 0!important;
+      width:100%!important; min-width:0!important; max-width:none!important;
+      height:max(12px,env(safe-area-inset-top,0px))!important; min-height:12px!important; max-height:none!important;
+      margin:0!important; padding:0!important; border:0!important; border-radius:0!important;
+      background:#fff!important; color:transparent!important; font-size:0!important;
+      opacity:1!important; visibility:visible!important; box-shadow:none!important; text-shadow:none!important;
+      transform:none!important; animation:none!important; transition:none!important; filter:none!important;
+      backdrop-filter:none!important; -webkit-backdrop-filter:none!important;
+      overflow:hidden!important; pointer-events:none!important; z-index:2147483646!important;
+    }
+    html:has(dialog[open] #loader) #loader #load-spinner::before, html:has(dialog[open] #loader) #loader #load-spinner::after,
+    :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner::before, :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner::after,
+    html:has(dialog[open] #loader) #loader #load-spinner > *, :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner > * {display:none!important;content:none!important;}
+ }
+ @media screen and (min-width:1001px) {#slk-splash-chrome-sample {display:none!important;}}
 }
     #preloader, #loader, #loader.splash-screen, dialog:has(#loader), dialog:has(#loader)::backdrop { background:#fff !important; }
     #loader { position:relative !important; }
@@ -71,6 +87,58 @@
     #loader::after { content:"" !important; display:block !important; position:fixed !important; width:68px !important; height:68px !important; left:50vw !important; top:46.5dvh !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; }
     #preloader::after { content:"" !important; display:block !important; position:fixed !important; width:68px !important; height:68px !important; left:50vw !important; top:46.5dvh !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; }`;
     document.head.appendChild(el);
+})();
+
+
+// Startup-only WebKit top-edge sample. No change to normal header geometry.
+(() => {
+    const mq = matchMedia('(max-width:1000px)');
+    let surface, frame = 0;
+    const enabled = () => {
+        try { return mq.matches && localStorage.getItem('slk-ui-enabled') !== 'false'; }
+        catch { return mq.matches; }
+    };
+    const visible = el => {
+        if (!el || !el.isConnected) return false;
+        const cs = getComputedStyle(el);
+        return el.getClientRects().length > 0 && cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity) > 0;
+    };
+    const sync = () => {
+        frame = 0;
+        const modal = [...document.querySelectorAll('dialog[open]')].find(el => el.querySelector('#loader') && visible(el));
+        const preloader = document.getElementById('preloader');
+        const parent = enabled() && (modal || (visible(preloader) ? preloader : null));
+        if (parent) {
+            if (!surface) {
+                surface = document.createElement('div');
+                surface.id = 'slk-splash-chrome-sample';
+                surface.setAttribute('aria-hidden', 'true');
+            }
+            if (surface.parentNode !== parent) parent.appendChild(surface);
+            window.__slkStatusChrome?.set('#FFFFFF');
+        } else if (surface?.isConnected) {
+            surface.remove();
+            // Live header owns color again when the splash is gone.
+            const color = document.documentElement.dataset.slkStatusColor;
+            if (color && document.body?.classList.contains('slk-ui')) window.__slkStatusChrome?.set(color === 'purple' ? '#441848' : '#FFFFFF');
+        }
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(sync); };
+    const attach = () => {
+        if (!document.body) return;
+        const selector = '#preloader, dialog, #loader';
+        const observer = new MutationObserver(records => {
+            if (records.some(r => r.type === 'attributes' ? r.target.matches(selector) : [...r.addedNodes, ...r.removedNodes].some(n => n.nodeType === 1 && (n.matches(selector) || n.querySelector(selector))))) schedule();
+        });
+        observer.observe(document.body, {subtree:true, childList:true, attributes:true, attributeFilter:['style','class','hidden','open']});
+        document.addEventListener('transitionend', e => { if (e.target.matches?.(selector)) schedule(); }, true);
+        document.addEventListener('close', schedule, true);
+        mq.addEventListener?.('change', schedule);
+        window.addEventListener('pageshow', schedule);
+        window.addEventListener('slk-ui-settings-changed', schedule);
+        sync();
+    };
+    if (document.body) attach(); else document.addEventListener('DOMContentLoaded', attach, {once:true});
 })();
 
 // Slack UI for SillyTavern — 로더

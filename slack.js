@@ -1011,12 +1011,12 @@ function setupComposer() {
     preview.setAttribute('aria-hidden', 'true');
     ta.insertAdjacentElement('afterend', preview);
 
-    const updateDisplay = () => {
+    const updateDisplay = (prepareFocus = false) => {
         // 프로그램에서 입력 내용이 바뀌거나 번역/생성 중이어도 확장을 유지하지 않음.
         const focused = document.activeElement === ta;
         // PC: 슬랙 데스크톱처럼 입력창은 항상 펼친 모양(입력칸 + 아래 도구 줄)
         const pc = window.matchMedia('(min-width: 1001px)').matches && SLK_UI_SETTINGS.enabled;
-        const open = pc || (focused && !keyboardDismissed && (keyboardVisible || pendingFocus));
+        const open = pc || ((focused || prepareFocus === true) && !keyboardDismissed && (keyboardVisible || pendingFocus));
         const content = ta.value;
         const firstLine = content.split(/\r\n|\n|\r/, 1)[0];
         preview.textContent = firstLine + (/[\r\n]/.test(content) ? '…' : '');
@@ -1054,15 +1054,65 @@ function setupComposer() {
         updateDisplay();
     };
 
+    // Empty native textarea: the caret is painted using the text box at focus
+    // time. Expand and flush its layout before the initial mobile focus rather
+    // than moving the textarea after WebKit has positioned the insertion point.
+    // Never change the selection or scroll of a nonempty draft.
+    const syncEmptyCaret = () => {
+        if (document.activeElement !== ta || ta.value || !form.classList.contains('slk-compose-open')) return;
+        ta.getBoundingClientRect();
+        ta.setSelectionRange(0, 0);
+    };
     const requestExpand = () => {
         pendingFocus = true;
         keyboardDismissed = false;
         updateDisplay();
-        requestAnimationFrame(syncHeight);
+        syncEmptyCaret();
+        requestAnimationFrame(() => { syncHeight(); syncEmptyCaret(); });
     };
-    // 키보드를 내린 후에도 동일 textarea에 포커스가 남았다면, 다음 직접 터치로 재확장.
-    ta.addEventListener('pointerdown', requestExpand);
+    const isMobileComposer = () => window.matchMedia('(max-width: 1000px)').matches;
+    const prepareComposerFocus = (event) => {
+        if (!isMobileComposer() || ta.value || form.classList.contains('slk-compose-open')) {
+            requestExpand();
+            return;
+        }
+        pendingFocus = true;
+        keyboardDismissed = false;
+        updateDisplay(true);
+        ta.getBoundingClientRect(); // commit expanded padding and position
+        // Synchronous trusted tap/click: no deferred focus or keyboard call.
+        ta.focus({ preventScroll: true });
+        if (document.activeElement === ta) {
+            // The original hit target moved when the composer expanded.
+            // Cancel native hit-testing of that stale coordinate.
+            event.preventDefault();
+            syncEmptyCaret();
+        } else {
+            updateDisplay();
+        }
+        requestAnimationFrame(() => { syncHeight(); syncEmptyCaret(); });
+    };
+    // On touch devices wait for the actual tap (touchend is a user activation
+    // on iOS). Expanding on pointerdown would move the hit target before the
+    // tap completes, and can blur the textarea immediately after focusing.
+    let touchStart = null;
+    ta.addEventListener('touchstart', event => {
+        const t = event.touches[0];
+        touchStart = event.touches.length === 1 && t ? {x:t.clientX,y:t.clientY} : null;
+    }, {passive:true});
+    ta.addEventListener('touchcancel', () => { touchStart = null; }, {passive:true});
+    ta.addEventListener('touchend', event => {
+        const t = event.changedTouches[0], start = touchStart;
+        touchStart = null;
+        if (!start || !t || Math.hypot(t.clientX-start.x,t.clientY-start.y)>12) return;
+        if (isMobileComposer() && !ta.value && !form.classList.contains('slk-compose-open')) prepareComposerFocus(event);
+    }, {passive:false});
+    ta.addEventListener('pointerdown', event => {
+        if (event.button > 0 || event.pointerType === 'touch') return;
+        prepareComposerFocus(event);
+    });
     ta.addEventListener('focus', requestExpand);
+    ta.addEventListener('click', () => { if (!form.classList.contains('slk-compose-open') && document.activeElement === ta) requestExpand(); });
     ta.addEventListener('blur', () => {
         keyboardVisible = false;
         keyboardDismissed = true;
@@ -1070,7 +1120,7 @@ function setupComposer() {
         updateDisplay();
     });
     ta.addEventListener('input', updateDisplay);
-    viewport?.addEventListener('resize', syncHeight);
+    viewport?.addEventListener('resize', () => { syncHeight(); if (window.matchMedia('(max-width: 1000px)').matches) syncEmptyCaret(); });
     viewport?.addEventListener('scroll', syncHeight);
     window.addEventListener('resize', syncHeight);
     window.addEventListener('pageshow', syncHeight);
@@ -2526,7 +2576,7 @@ if (SLK_UI_SETTINGS.enabled) {
         // logo on the *next initial loading screen*, before slack.js is evaluated.
         const imageUrl = slkSelectedSplashLogoUrl();
         const imageCss = ':root { --slk-loader-icon: url(' + JSON.stringify(imageUrl) + ') !important; }';
-        return START + '\n' + imageCss + '\n' + BOOT_CSS + '\n' + "@media screen and (max-width:1000px) {\n    html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"])), html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"])) > body,\n    html:has(dialog[open] #loader), html:has(dialog[open] #loader) > body { background-color:#fff!important; background-image:none!important; color-scheme:only light!important; }\n    html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"])) #preloader { position:fixed!important; inset:0!important; width:100%!important; height:100%!important; margin:0!important; background:#fff!important; color-scheme:only light!important; }\n    html:has(dialog[open] #loader) dialog[open]:has(#loader) { background-color:#fff!important; color-scheme:only light!important; }\n}" + '\n' + END;
+        return START + '\n' + imageCss + '\n' + BOOT_CSS + '\n' + "@layer slk-splash-chrome {\n @media screen and (max-width:1000px) {\n    :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)), :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)) > body, html:has(dialog[open] #loader), html:has(dialog[open] #loader) > body { background:#fff!important; color-scheme:only light!important; }\n    :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader { position:fixed!important; inset:0!important; width:100%!important; height:100%!important; margin:0!important; background:#fff!important; color-scheme:only light!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }\n    html:has(dialog[open] #loader) dialog[open]:has(#loader) { background:#fff!important; color-scheme:only light!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }\n    html:has(dialog[open] #loader) dialog[open] #loader #load-spinner, :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner, #slk-splash-chrome-sample {\n      display:block!important; position:fixed!important; inset:0 0 auto 0!important;\n      width:100%!important; min-width:0!important; max-width:none!important;\n      height:max(12px,env(safe-area-inset-top,0px))!important; min-height:12px!important; max-height:none!important;\n      margin:0!important; padding:0!important; border:0!important; border-radius:0!important;\n      background:#fff!important; color:transparent!important; font-size:0!important;\n      opacity:1!important; visibility:visible!important; box-shadow:none!important; text-shadow:none!important;\n      transform:none!important; animation:none!important; transition:none!important; filter:none!important;\n      backdrop-filter:none!important; -webkit-backdrop-filter:none!important;\n      overflow:hidden!important; pointer-events:none!important; z-index:2147483646!important;\n    }\n    html:has(dialog[open] #loader) #loader #load-spinner::before, html:has(dialog[open] #loader) #loader #load-spinner::after,\n    :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner::before, :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner::after,\n    html:has(dialog[open] #loader) #loader #load-spinner > *, :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner > * {display:none!important;content:none!important;}\n }\n @media screen and (min-width:1001px) {#slk-splash-chrome-sample {display:none!important;}}\n}" + '\n' + END;
     };
     const strip = (s) => {
         const i = s.indexOf(START), j = s.indexOf(END);

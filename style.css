@@ -22074,3 +22074,57 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     }
   }
 }
+
+
+/* v1.8.35 — Mobile composer and connection-profile popup only. */
+@layer slk-composer-profile-spacing {
+ @media screen and (max-width:1000px) {
+  /* The wrapper must not paint an opaque sheet behind the floating glass. */
+  body.slk-ui.slk-composing #form_sheld {
+    background:transparent!important;
+    background-image:none!important;
+    border:0!important;
+    box-shadow:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  body.slk-ui.slk-composing #form_sheld #send_form.slk-compose-open {
+    background:rgba(255,255,255,.26)!important;
+    backdrop-filter:var(--slk-glass-blur,blur(20px) saturate(180%))!important;
+    -webkit-backdrop-filter:var(--slk-glass-blur,blur(20px) saturate(180%))!important;
+  }
+  /* The native textarea and its placeholder share exactly one text origin. */
+  body.slk-ui #form_sheld #send_form.slk-compose-open #send_textarea {
+    background:transparent!important;
+    box-sizing:border-box!important;
+    padding:6px 8px!important;
+    text-indent:0!important;
+    font-size:16px!important;
+    line-height:22px!important;
+    box-shadow:none!important;
+  }
+  body.slk-ui #form_sheld #send_form.slk-compose-open #send_textarea::placeholder {
+    font-family:inherit!important;
+    font-size:inherit!important;
+    font-weight:inherit!important;
+    line-height:inherit!important;
+    letter-spacing:inherit!important;
+    text-indent:0!important;
+    padding:0!important;
+    margin:0!important;
+  }
+  /* Centered profile dialog already clears the device safe area; do not
+     add the system bottom inset again inside the card's action row. */
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]):not(:has(.popup-button-custom)) .popup-content {
+    padding-top:14px!important;
+    padding-bottom:8px!important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]):not(:has(.popup-button-custom)) .popup-content > :first-child:is(h2,h3) {
+    margin-top:0!important;
+  }
+  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]):not(:has(.popup-button-custom)) .popup-controls {
+    margin-top:8px!important;
+    padding:12px 16px 12px!important;
+  }
+ }
+}
