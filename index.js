@@ -84,8 +84,8 @@
     #preloader, #loader, #loader.splash-screen, dialog:has(#loader), dialog:has(#loader)::backdrop { background:#fff !important; }
     #loader { position:relative !important; }
     #loader > .splash-logo, #loader #load-spinner, #loader .splash-message, #loader::before { display:none !important; }
-    #loader::after { content:"" !important; display:block !important; position:fixed !important; width:68px !important; height:68px !important; left:50vw !important; top:46.5dvh !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; }
-    #preloader::after { content:"" !important; display:block !important; position:fixed !important; width:68px !important; height:68px !important; left:50vw !important; top:46.5dvh !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; }`;
+    #loader::after { content:"" !important; display:block !important; position:fixed !important; width:74px !important; height:74px !important; left:50vw !important; top:46.5dvh !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; }
+    #preloader::after { content:"" !important; display:block !important; position:fixed !important; width:74px !important; height:74px !important; left:50vw !important; top:46.5dvh !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; }`;
     document.head.appendChild(el);
 })();
 
