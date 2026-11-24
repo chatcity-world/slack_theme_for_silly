@@ -4298,3 +4298,46 @@ function slkConnectPromptManager() {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true});
     else start();
 })();
+
+
+// v1.8.77 — Place the existing character actions in the title row, not clones.
+// Keep native IDs and direct listeners. Restore their original slots outside list view.
+(function slkCharacterHeaderActions() {
+    const ids = ['rm_button_create','character_import_button','external_import_button','rm_button_group_chats'];
+    let current = null, queued = false;
+    function restore() {
+        if (!current) return;
+        for (const {node, marker} of current.slots) {
+            if (marker.isConnected) marker.replaceWith(node);
+        }
+        current.bar.classList.remove('slk-char-header-sorted');
+        current.group.remove(); current = null;
+    }
+    function sync() {
+        queued = false;
+        const panel = document.getElementById('right-nav-panel');
+        const header = panel?.querySelector('#CharListButtonAndHotSwaps');
+        const bar = panel?.querySelector('#rm_characters_block #rm_button_bar');
+        const enabled = document.body?.classList.contains('slk-ui') && panel?.dataset.slkView === 'list' && header && bar;
+        if (current && (!enabled || current.bar !== bar || current.header !== header || !current.group.isConnected || !current.slots.every(s=>s.marker.isConnected && s.node.isConnected))) restore();
+        if (!enabled || current) return;
+        const nodes = ids.map(id => bar.querySelector('#'+id));
+        if (nodes.some(n=>!n)) return;
+        const group = document.createElement('div'); group.className = 'slk-char-header-actions';
+        const pills = document.createElement('div'); pills.className = 'slk-char-header-pills';
+        const slots = nodes.map(node=>{ const marker = document.createComment('slk-character-action-slot'); node.before(marker); return {node,marker}; });
+        group.append(nodes[0],pills); pills.append(...nodes.slice(1));
+        header.append(group); bar.classList.add('slk-char-header-sorted');
+        current = {header,bar,group,slots};
+    }
+    function schedule() { if (!queued) { queued = true; requestAnimationFrame(sync); } }
+    function start() {
+        sync();
+        new MutationObserver(records=>{
+            if (records.some(r=>r.target === document.body || r.target.closest?.('#right-nav-panel') || [...r.addedNodes].some(n=>n.nodeType===1 && (n.id==='right-nav-panel'||n.querySelector?.('#right-nav-panel'))))) schedule();
+        }).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-slk-view','class']});
+        window.addEventListener('slk-ui-settings-changed',schedule);
+        window.addEventListener('pageshow',schedule);
+    }
+    if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
+})();
