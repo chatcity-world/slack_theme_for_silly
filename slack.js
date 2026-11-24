@@ -2713,16 +2713,38 @@ else init();
         });
     };
 
-    let timer = null;
+    // v1.7.4 — The previous 50 ms debounce allowed SillyTavern's native
+    // reroll/swipe markup to flash for several frames before Slack grouped it.
+    // A microtask normalizes the controls before the browser paints the frame.
+    let queued = false;
     const schedule = () => {
-        if (timer !== null) return;
-        timer = setTimeout(() => { timer = null; sync(); }, 50);
+        if (queued) return;
+        queued = true;
+        queueMicrotask(() => { queued = false; sync(); });
+    };
+    const onChatMutated = records => {
+        // Streaming appends text constantly; do not rescan the entire chat on
+        // ordinary message text changes. Only changes affecting swipe layout.
+        const affectsSwipe = records.some(record => {
+            const target = record.target;
+            if (record.type === 'attributes') {
+                return target.classList?.contains('mes') ||
+                    target.classList?.contains('swipeRightBlock');
+            }
+            if (target.classList?.contains('mes') ||
+                target.classList?.contains('swipeRightBlock')) return true;
+            return [...record.addedNodes].some(node => node.nodeType === 1 && (
+                node.matches?.('.mes,.swipe_left,.swipe_right,.swipes-counter,.swipeRightBlock') ||
+                node.querySelector?.('.mes,.swipe_left,.swipe_right,.swipes-counter,.swipeRightBlock')
+            ));
+        });
+        if (affectsSwipe) schedule();
     };
     const start = () => {
         const chat = document.getElementById('chat');
         if (!chat) { setTimeout(start, 500); return; }
         sync();
-        new MutationObserver(schedule).observe(chat, {
+        new MutationObserver(onChatMutated).observe(chat, {
             childList: true, subtree: true, attributes: true,
             attributeFilter: ['class'],
         });

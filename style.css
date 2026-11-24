@@ -16675,14 +16675,12 @@ body.slk-ui {
         background-color: #FFFFFF !important;
     }
     
-    /* Restore the original floating-chat white fade instead of a hard white slab.
-       Only active chats get this; settings drawers keep their normal header. */
+    /* An opaque chat background prevents the purple native header layer
+       from showing through the formerly transparent white fade. */
     html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c).slk-in-chat:not(.slk-panel-opening):not(:has(#top-settings-holder > .drawer .drawer-icon.openIcon)) #slk-header {
-        background: linear-gradient(to bottom,
-            rgba(255,255,255,.98) 0%,
-            rgba(255,255,255,.85) 55%,
-            rgba(255,255,255,0) 100%) !important;
-        background-color: transparent !important;
+        background: #FFFFFF !important;
+        background-image: none !important;
+        background-color: #FFFFFF !important;
         color: var(--slk-text) !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
@@ -19732,5 +19730,56 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     flex: 0 0 18px !important;
     margin: 0 !important;
     padding: 0 !important;
+  }
+}
+
+/* =====================================================================
+   v1.7.3 — Chat header must never expose purple behind white bubbles.
+   Avoid transient class-only navigation flags; honor the actual open panel.
+   In an open settings drawer the original purple/white panel logic applies.
+   ===================================================================== */
+@media screen and (max-width: 1000px) {
+    html body.slk-ui.slk-in-chat:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(:has(.drawer-content.openDrawer:not(.slk-nav-hidden))) #slk-header,
+    html.slk-chat-status-white body.slk-ui.slk-in-chat:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #slk-header {
+        background: #FFFFFF !important;
+        background-image: none !important;
+        background-color: #FFFFFF !important;
+        color: var(--slk-text) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+}
+:root { --slk-css-version: '1.7.3'; }
+
+/* ======================================================================
+   v1.7.4 — Prevent brief native-width / ungrouped swipe frames on reroll.
+   SillyTavern's #sheld defaults to width: var(--sheldWidth), which may be
+   narrower than the mobile Slack viewport during chat/swipe transitions.
+   ====================================================================== */
+@media screen and (max-width: 1000px) {
+  html body.slk-ui:not(.slk-pc) #sheld {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+    transform: none !important;
+  }
+  html body.slk-ui:not(.slk-pc) #chat {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+  /* ST creates the old separate-left-arrow layout first. Keep it invisible
+     until the existing nodes are grouped, so no wrong 2/2‹ › layout flashes. */
+  html body.slk-ui:not(.slk-pc) #chat .mes > .swipeRightBlock:not(.slk-swipe-inline),
+  html body.slk-ui:not(.slk-pc) #chat .mes:has(> .swipeRightBlock:not(.slk-swipe-inline)) > .swipe_left {
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
 }
