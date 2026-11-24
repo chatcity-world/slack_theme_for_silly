@@ -2043,12 +2043,13 @@ if (SLK_UI_SETTINGS.enabled) {
 
 
 // v1.4.35 — fix only the active-world selector in the Lorebook panel.
-// Keep its title INSIDE its own bordered control (never in a separate column).
+// v1.8.75: Keep the label and dropdown in one row.
 (function slkContainActiveWorldPicker() {
     const query = '(min-width: 0px)';
     let observedPicker = null;
     let pickerObserver = null;
     const overridden = new Map();
+    const renamed = new Map();
     const important = (el, key, value) => {
         if (!el) return;
         if (!overridden.has(el)) overridden.set(el, new Map());
@@ -2067,6 +2068,8 @@ if (SLK_UI_SETTINGS.enabled) {
             }
         }
         overridden.clear();
+        for (const [node, original] of renamed) if (node.nodeValue === '모든 채팅에 적용') node.nodeValue = original;
+        renamed.clear();
     }
 
     function update() {
@@ -2080,16 +2083,24 @@ if (SLK_UI_SETTINGS.enabled) {
         if (!title || !field) return;
 
         important(picker, 'display', 'grid');
-        important(picker, 'grid-template-columns', 'minmax(0, 1fr)');
-        important(picker, 'grid-template-rows', 'auto auto');
+        important(picker, 'grid-template-columns', 'max-content minmax(0, 1fr)');
+        important(picker, 'align-items', 'center');
+        const walker = document.createTreeWalker(title, NodeFilter.SHOW_TEXT);
+        for (let node; (node = walker.nextNode());) {
+            if (/모든\s*채팅에\s*대한\s*활성화된\s*월드\s*인포(?:\(들\))?|active world info(?:s|\(s\))? for all chats/i.test(node.nodeValue.trim())) {
+                renamed.set(node, node.nodeValue);
+                node.nodeValue = '모든 채팅에 적용';
+            }
+        }
+        important(picker, 'grid-template-rows', 'auto');
         important(picker, 'width', '100%');
         important(picker, 'min-width', '0');
         important(picker, 'max-width', '100%');
         important(picker, 'flex', '0 0 auto');
-        for (const [el, row] of [[title, '1'], [field, '2']]) {
+        for (const [el, column] of [[title, '1'], [field, '2']]) {
             important(el, 'display', 'block');
-            important(el, 'grid-column', '1');
-            important(el, 'grid-row', row);
+            important(el, 'grid-column', column);
+            important(el, 'grid-row', '1');
             important(el, 'width', '100%');
             important(el, 'min-width', '0');
             important(el, 'max-width', '100%');
@@ -2105,7 +2116,7 @@ if (SLK_UI_SETTINGS.enabled) {
             pickerObserver?.disconnect();
             observedPicker = picker;
             pickerObserver = new MutationObserver(update);
-            pickerObserver.observe(picker, { childList: true, subtree: true });
+            pickerObserver.observe(picker, { childList: true, subtree: true, characterData: true });
         }
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', update, { once: true });
@@ -2117,7 +2128,7 @@ if (SLK_UI_SETTINGS.enabled) {
 
 // v1.4.37 — 로어북 '모든 채팅에 대한 활성화된 월드 인포': 한 줄 드롭다운(여러 개 선택)
 (function slkWorldDropdown() {
-    const PLACEHOLDER = '선택 안 됨';
+    const PLACEHOLDER = '선택 안 됨(여러개 가능)';
     let wrap, btn, label, menu, sel, sig = '';
 
     const jq = () => window.jQuery || window.$;
@@ -2147,7 +2158,7 @@ if (SLK_UI_SETTINGS.enabled) {
             it.type = 'button';
             const on = o ? o.selected : !anyOn;
             it.className = 'slk-wi-dd-item' + (on ? ' is-on' : '') + (o ? '' : ' is-none');
-            it.textContent = o ? o.text : PLACEHOLDER;
+            it.textContent = o ? o.text : '선택 안 됨';
             it.addEventListener('click', ev => {
                 ev.preventDefault();
                 ev.stopPropagation();
@@ -4187,5 +4198,103 @@ function slkConnectPromptManager() {
         sync();
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
+    else start();
+})();
+
+
+// v1.8.74 — Compact mobile page-size labels without changing native option values.
+(function slkCompactPagerLabels() {
+    const mq = matchMedia('(max-width:1000px)');
+    const selector = '#PersonaManagement #persona_pagination_container .paginationjs-size-changer select, #right-nav-panel #rm_print_characters_pagination .paginationjs-size-changer select';
+    const originals = new Map();
+    let queued = false;
+    function sync() {
+        queued = false;
+        const enabled = mq.matches && document.body?.classList.contains('slk-ui');
+        for (const [option, original] of originals) {
+            if (!enabled || !option.isConnected || !option.closest('select')?.matches(selector)) {
+                if (original === null) option.removeAttribute('label');
+                else option.setAttribute('label', original);
+                originals.delete(option);
+            }
+        }
+        if (!enabled) return;
+        for (const select of document.querySelectorAll(selector)) {
+            for (const option of select.options) {
+                const original = originals.has(option) ? originals.get(option) : option.getAttribute('label');
+                const text = (original ?? option.textContent).trim();
+                const match = text.match(/^(\d+)\s*(?:\/.*|[^\d\s].*)?$/u);
+                if (!match || text === match[1]) continue;
+                if (!originals.has(option)) originals.set(option, original);
+                if (option.getAttribute('label') !== match[1]) option.setAttribute('label', match[1]);
+            }
+        }
+    }
+    function schedule() { if (!queued) { queued = true; requestAnimationFrame(sync); } }
+    function start() {
+        sync();
+        new MutationObserver(records => {
+            if (records.some(r => r.target.closest?.('#persona_pagination_container,#rm_print_characters_pagination') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.matches?.('#persona_pagination_container,#rm_print_characters_pagination') || n.querySelector?.('#persona_pagination_container,#rm_print_characters_pagination'))))) schedule();
+        }).observe(document.body, {subtree:true,childList:true});
+        mq.addEventListener?.('change',schedule);
+        window.addEventListener('slk-ui-settings-changed',schedule);
+        window.addEventListener('pageshow',schedule);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true});
+    else start();
+})();
+
+
+// v1.8.76 — Strip only decorative dashes from the lorebook editor placeholder.
+// Keep option values, selected book names and all native Select2 events unchanged.
+(function slkLorebookEditorPlaceholder() {
+    const selector = '#world_editor_select, #select2-world_editor_select-container';
+    const clean = text => text.replace(/^\s*[-–—]+\s*|\s*[-–—]+\s*$/gu, '').trim();
+    let queued = false;
+    function sync() {
+        queued = false;
+        if (!document.body?.classList.contains('slk-ui')) return;
+        const select = document.getElementById('world_editor_select');
+        if (!select) return;
+        for (const option of select.options) {
+            if (option.value !== '') continue;
+            const text = option.getAttribute('label') ?? option.textContent;
+            const label = clean(text);
+            if (label && label !== text.trim()) option.setAttribute('label', label);
+        }
+        const rendered = document.getElementById('select2-world_editor_select-container');
+        if (!rendered) return;
+        const placeholder = rendered.querySelector('.select2-selection__placeholder') || (select.value === '' ? rendered : null);
+        if (!placeholder) return;
+        const text = placeholder.textContent;
+        const label = clean(text);
+        if (label && label !== text.trim()) {
+            // Preserve all child controls / markup, if present.
+            const walker = document.createTreeWalker(placeholder, NodeFilter.SHOW_TEXT);
+            for (let node; (node = walker.nextNode());) {
+                const value = clean(node.nodeValue);
+                if (value && value !== node.nodeValue.trim()) node.nodeValue = value;
+            }
+        }
+        for (const el of [placeholder, rendered]) {
+            const title = el.getAttribute('title');
+            if (title && clean(title) !== title.trim()) el.setAttribute('title', clean(title));
+        }
+    }
+    function schedule() { if (!queued) { queued = true; requestAnimationFrame(sync); } }
+    function relevant(node) {
+        const el = node.nodeType === 1 ? node : node.parentElement;
+        return el && (el.closest(selector) || (node.nodeType === 1 && el.querySelector(selector)));
+    }
+    function start() {
+        sync();
+        new MutationObserver(records => {
+            if (records.some(r => relevant(r.target) || [...r.addedNodes].some(relevant))) schedule();
+        }).observe(document.body, {subtree:true,childList:true,characterData:true});
+        document.addEventListener('change', e => { if (e.target.id === 'world_editor_select') schedule(); });
+        window.addEventListener('slk-ui-settings-changed', schedule);
+        window.addEventListener('pageshow', schedule);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true});
     else start();
 })();

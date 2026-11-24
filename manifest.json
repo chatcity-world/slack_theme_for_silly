@@ -1,11 +1,11 @@
 {
-  "display_name": "Slack UI",
-  "loading_order": 100,
-  "requires": [],
-  "optional": [],
-  "js": "index.js",
-  "css": "style.css",
-  "author": "CREEE",
-  "version": "1.8.72",
-  "homePage": ""
+    "display_name": "Slack UI",
+    "loading_order": 100,
+    "requires": [],
+    "optional": [],
+    "js": "index.js",
+    "css": "style.css",
+    "author": "CREEE",
+    "version": "1.8.76",
+    "homePage": ""
 }
