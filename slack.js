@@ -30,88 +30,6 @@ const SLK_UI_SETTINGS = (() => {
         headerImageMode: headerImageMode === 'custom' ? 'custom' : 'slack',
     };
 })();
-// v1.7.2 — Keep iOS status area white above the chat screen, purple above settings.
-// The original SillyTavern theme-color meta is static, even while Slack's
-// mobile header switches between its white chat and purple settings modes.
-const slkOriginalStatusMeta = document.querySelector('meta[name="theme-color"]');
-const slkOriginalStatusColor = slkOriginalStatusMeta?.getAttribute('content') ?? null;
-let slkCreatedStatusMeta = null;
-
-function slkSyncMobileStatusBar() {
-    const mobile = window.matchMedia('(max-width: 1000px)').matches;
-    const enabled = SLK_UI_SETTINGS.enabled && document.body?.classList.contains('slk-ui');
-    const active = mobile && enabled;
-    const chat = document.getElementById('chat');
-    let inChat = Boolean(document.body?.classList.contains('slk-in-chat'));
-    if (!inChat && chat && !chat.querySelector('.welcomePanel')) {
-        // Empty new chats also need a white top bar, before their first message.
-        const ctx = typeof stContext === 'function' ? stContext() : null;
-        inChat = Boolean(ctx && (
-            (ctx.groupId !== undefined && ctx.groupId !== null && ctx.groupId !== '') ||
-            (ctx.characterId !== undefined && ctx.characterId !== null && Number(ctx.characterId) >= 0)
-        ));
-    }
-    const openingPanel = Boolean(document.body?.classList.contains('slk-panel-opening'));
-    const openPanel = [...document.querySelectorAll('.drawer-content.openDrawer:not(.slk-nav-hidden)')].some(el => {
-        const cs = getComputedStyle(el);
-        return cs.display !== 'none' && cs.visibility !== 'hidden';
-    });
-    const white = Boolean(active && inChat && !openingPanel && !openPanel);
-    document.documentElement.classList.toggle('slk-chat-status-white', white);
-
-    const desired = !active ? slkOriginalStatusColor : white ? '#FFFFFF' : '#3F1543';
-    let meta = document.querySelector('meta[name="theme-color"]');
-    if (!meta && desired !== null) {
-        meta = document.createElement('meta');
-        meta.name = 'theme-color';
-        document.head.appendChild(meta);
-        slkCreatedStatusMeta = meta;
-    }
-    if (meta && desired === null && meta === slkCreatedStatusMeta) {
-        meta.remove();
-        slkCreatedStatusMeta = null;
-    } else if (meta && desired !== null && meta.getAttribute('content') !== desired) {
-        meta.setAttribute('content', desired);
-    }
-}
-
-function slkWatchMobileStatusBar() {
-    // Some iOS releases sample the root canvas instead of the theme-color meta.
-    // Do not remove chat wallpapers or change the actual Slack header layout.
-    if (!document.getElementById('slk-status-bar-surface-style')) {
-        const style = document.createElement('style');
-        style.id = 'slk-status-bar-surface-style';
-        style.textContent = '@media screen and (max-width: 1000px) {' +
-            'html.slk-chat-status-white { background-color: #FFFFFF !important; }' +
-            'html.slk-chat-status-white body.slk-ui { background-color: #FFFFFF !important; }' +
-            '}';
-        document.head.appendChild(style);
-    }
-    let pending = false;
-    const schedule = () => {
-        if (pending) return;
-        pending = true;
-        requestAnimationFrame(() => {
-            pending = false;
-            slkSyncMobileStatusBar();
-        });
-    };
-    // Ignore unrelated message-node updates. Chat state is on the body; panel
-    // visibility is on the native drawers. Batch transitions into one frame.
-    const observer = new MutationObserver(records => {
-        if (records.some(r => r.target === document.body ||
-            r.target.classList?.contains('drawer-content'))) schedule();
-    });
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true });
-    window.addEventListener('slk-ui-settings-changed', schedule);
-    window.addEventListener('resize', schedule);
-    window.addEventListener('pageshow', schedule);
-    window.addEventListener('focus', schedule);
-    window.addEventListener('load', schedule, { once: true });
-    schedule();
-    setTimeout(schedule, 500);
-}
-
 try { localStorage.removeItem('slk-ui-theme'); } catch { /* old option may not exist */ }
 
 function slkSavePreference(key, value) {
@@ -126,15 +44,42 @@ function slkSelectedLogoUrl() {
         : SLK_SLACK_HEADER_IMAGE;
 }
 
+
+function slkRememberSplashLogo(src) {
+    const cssUrl = `url(${JSON.stringify(src)})`;
+    try {
+        document.documentElement.style.setProperty('--slk-splash-logo-url', cssUrl);
+        document.body?.style?.setProperty('--slk-splash-logo-url', cssUrl);
+    } catch { /* noop */ }
+}
+
+function slkEnsureVisibleSplashLogo(src) {
+    document.querySelectorAll('#loader').forEach(loader => {
+        let logo = loader.querySelector('.splash-logo');
+        const spinner = loader.querySelector('#load-spinner');
+        if (!logo && (loader.classList.contains('splash-screen') || loader.id === 'loader')) {
+            logo = document.createElement('img');
+            logo.className = 'splash-logo';
+            logo.alt = 'Slack';
+            if (spinner) loader.insertBefore(logo, spinner);
+            else loader.prepend(logo);
+        }
+        if (logo && logo.tagName === 'IMG' && logo.getAttribute('src') !== src) logo.setAttribute('src', src);
+    });
+}
+
 function slkApplyHeaderImage() {
     const src = slkSelectedLogoUrl();
+    slkRememberSplashLogo(src);
     const avatar = document.querySelector('#slk-header .slk-ws-avatar');
     const image = avatar?.querySelector('img');
     if (image) {
         if (image.getAttribute('src') !== src) image.src = src;
         avatar.classList.add('has-img');
     }
-    // Also update a currently visible splash (the pre-boot CSS below handles the next launch).
+    // Also update a currently visible splash and create a visible logo when ST
+    // renders a splash container before our preferred logo node exists.
+    slkEnsureVisibleSplashLogo(src);
     document.querySelectorAll('#loader.splash-screen .splash-logo').forEach(logo => {
         if (logo.tagName === 'IMG' && logo.getAttribute('src') !== src) logo.src = src;
     });
@@ -749,6 +694,30 @@ function buildAiTabs() {
         `<button type="button" class="slk-aitab" role="tab" data-tab="${key}">${icon}<span>${label}</span></button>`).join('');
     presets.insertAdjacentElement('afterend', bar);
 
+    // The native configuration column can have horizontal padding. Align the
+    // four equal tabs with the FULL panel width, not with that padded column.
+    const alignTabsToPanel = () => {
+        const panel = document.getElementById('left-nav-panel');
+        if (!panel || !bar.isConnected) return;
+        const panelRect = panel.getBoundingClientRect();
+        const parentRect = bar.parentElement.getBoundingClientRect();
+        if (panelRect.width < 1 || parentRect.width < 1) return;
+        // The parent's bounding rect includes its own padding. The tabs
+        // start at its CONTENT left edge, which can be 16px further in.
+        const parentStyle = getComputedStyle(bar.parentElement);
+        const contentLeft = parentRect.left +
+            (parseFloat(parentStyle.borderLeftWidth) || 0) +
+            (parseFloat(parentStyle.paddingLeft) || 0);
+        const width = `${Math.round(panelRect.width * 100) / 100}px`;
+        const offset = `${Math.round((panelRect.left - contentLeft) * 100) / 100}px`;
+        if (bar.style.getPropertyValue('--slk-ai-tabs-width') !== width) bar.style.setProperty('--slk-ai-tabs-width', width);
+        if (bar.style.getPropertyValue('--slk-ai-tabs-offset') !== offset) bar.style.setProperty('--slk-ai-tabs-offset', offset);
+    };
+    alignTabsToPanel();
+    requestAnimationFrame(alignTabsToPanel);
+    window.addEventListener('resize', alignTabsToPanel);
+    if ('ResizeObserver' in window) new ResizeObserver(alignTabsToPanel).observe(document.getElementById('left-nav-panel'));
+
     bar.addEventListener('click', (e) => {
         const btn = e.target.closest('.slk-aitab');
         if (!btn) return;
@@ -1210,7 +1179,13 @@ function chatInfo() {
 function syncChatHead() {
     const chat = document.getElementById('chat');
     if (!chat) return;
-    const inChat = !chat.querySelector('.welcomePanel') && !!chat.querySelector('.mes');
+    const ctx = stContext();
+    const hasMessages = !!chat.querySelector('.mes');
+    const hasActiveTarget = Boolean(ctx && (
+        (ctx.groupId !== undefined && ctx.groupId !== null && String(ctx.groupId) !== '') ||
+        (ctx.characterId !== undefined && ctx.characterId !== null && Number(ctx.characterId) >= 0)
+    ));
+    const inChat = !chat.querySelector('.welcomePanel') && (hasMessages || hasActiveTarget);
     document.body.classList.toggle('slk-in-chat', inChat);
     if (!inChat) return;
     const head = document.getElementById('slk-chat-head');
@@ -1481,7 +1456,6 @@ function init() {
     watchCharView();
     setupComposer();
     watchChat();
-    slkWatchMobileStatusBar();
     watchHeaderCompact();
     updateHeader();
 
@@ -2372,13 +2346,21 @@ else init();
         const imageUrl = slkSelectedLogoUrl();
         const quotedUrl = JSON.stringify(imageUrl);
         const splashImageCss = `@media screen {
-            #loader.splash-screen .splash-logo { display: none !important; }
-            #loader.splash-screen::after {
-                content: '' !important; display: block !important; order: 0 !important;
-                flex: 0 0 96px !important; width: 96px !important; height: 96px !important;
+            #loader.splash-screen .splash-logo {
+                display: block !important;
+                order: 0 !important;
+                flex: 0 0 96px !important;
+                width: 96px !important;
+                height: 96px !important;
+                min-width: 96px !important;
+                min-height: 96px !important;
                 border-radius: 24px !important;
                 background: url(${quotedUrl}) center / cover no-repeat !important;
                 box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important;
+            }
+            #loader.splash-screen::after {
+                content: none !important;
+                display: none !important;
             }
         }`;
         return START + '\n' + BOOT_CSS + '\n' + splashImageCss + '\n' + END;
@@ -2713,38 +2695,16 @@ else init();
         });
     };
 
-    // v1.7.4 — The previous 50 ms debounce allowed SillyTavern's native
-    // reroll/swipe markup to flash for several frames before Slack grouped it.
-    // A microtask normalizes the controls before the browser paints the frame.
-    let queued = false;
+    let timer = null;
     const schedule = () => {
-        if (queued) return;
-        queued = true;
-        queueMicrotask(() => { queued = false; sync(); });
-    };
-    const onChatMutated = records => {
-        // Streaming appends text constantly; do not rescan the entire chat on
-        // ordinary message text changes. Only changes affecting swipe layout.
-        const affectsSwipe = records.some(record => {
-            const target = record.target;
-            if (record.type === 'attributes') {
-                return target.classList?.contains('mes') ||
-                    target.classList?.contains('swipeRightBlock');
-            }
-            if (target.classList?.contains('mes') ||
-                target.classList?.contains('swipeRightBlock')) return true;
-            return [...record.addedNodes].some(node => node.nodeType === 1 && (
-                node.matches?.('.mes,.swipe_left,.swipe_right,.swipes-counter,.swipeRightBlock') ||
-                node.querySelector?.('.mes,.swipe_left,.swipe_right,.swipes-counter,.swipeRightBlock')
-            ));
-        });
-        if (affectsSwipe) schedule();
+        if (timer !== null) return;
+        timer = setTimeout(() => { timer = null; sync(); }, 50);
     };
     const start = () => {
         const chat = document.getElementById('chat');
         if (!chat) { setTimeout(start, 500); return; }
         sync();
-        new MutationObserver(onChatMutated).observe(chat, {
+        new MutationObserver(schedule).observe(chat, {
             childList: true, subtree: true, attributes: true,
             attributeFilter: ['class'],
         });
@@ -3171,224 +3131,245 @@ else init();
 })();
 
 
-// v1.7.1 — Native SillyTavern prompt editor: compact, responsive rows.
-// Reuses the native inputs and listeners; it does not replace prompt data or save behavior.
-(function slkCompactNativePromptEditor() {
-    const popupId = 'completion_prompt_manager_popup';
+// v1.6.7 — Prompt editor runtime stabilization.
+// SillyTavern, Select2 and third-party themes can change inline layout after
+// the initial render. Work on the real native controls, never clone them, and
+// preserve SillyTavern's own save/reset/cancel listeners.
+(function slkStabilizePromptEditor() {
+    const id = 'completion_prompt_manager_popup';
     const prefix = 'completion_prompt_manager_popup_entry_form_';
-    const controlSelector = '.completion_prompt_manager_popup_entry_form_control';
-    let scheduled = false;
-    let popupObserver = null;
-    let watchedPopup = null;
-
-    const nativeControl = (fields, suffix, labelPattern) => {
-        const input = fields.querySelector('#' + prefix + suffix);
-        if (input) return input.closest(controlSelector) || input;
-        if (!labelPattern) return null;
-        return [...fields.querySelectorAll(controlSelector)].find(node =>
-            labelPattern.test(node.querySelector('label')?.textContent?.trim() || '')
-        ) || null;
-    };
-    const blockControl = (fields, blockId, labelPattern) => {
-        const block = fields.querySelector('#' + blockId);
-        return { block, control: (block?.closest(controlSelector) || block ||
-            [...fields.querySelectorAll(controlSelector)].find(node =>
-                labelPattern.test(node.querySelector('label')?.textContent?.trim() || '')
-            ) || null) };
-    };
-    const isNativeHidden = (block, control) => [block, control].some(el =>
-        el && (el.hidden || el.style.display === 'none' ||
-            el.classList.contains('displayNone') || el.classList.contains('hidden'))
-    );
-    const ensure = (parent, className) => {
-        let node = parent.querySelector(':scope > .' + className);
-        if (!node) {
-            node = document.createElement('div');
-            node.className = className;
-            parent.appendChild(node);
+    const set = (element, property, value) => {
+        if (!element) return;
+        if (element.style.getPropertyValue(property) !== value || element.style.getPropertyPriority(property) !== 'important') {
+            element.style.setProperty(property, value, 'important');
         }
-        return node;
     };
-    const moveNative = (node, parent) => {
-        if (node && node.parentElement !== parent) parent.appendChild(node);
-    };
-
+    const select = (parent, query) => parent?.querySelector(query);
+    let scheduled = false;
     const fix = () => {
         scheduled = false;
         if (!document.body.classList.contains('slk-ui')) return;
-        const popup = document.getElementById(popupId);
-        const edit = popup?.querySelector('#completion_prompt_manager_popup_edit');
-        const heading = edit?.querySelector(':scope > h3') || edit?.querySelector('h3');
-        const form = edit?.querySelector('.completion_prompt_manager_popup_entry_form');
-        const footer = form?.querySelector(':scope > .completion_prompt_manager_popup_entry_form_footer');
-        if (!edit || !form || !footer) return;
+        const popup = document.getElementById(id);
+        const edit = select(popup, '#completion_prompt_manager_popup_edit');
+        if (!edit) return;
 
-        // Retain the heading content and give it a real inset, not a visual indent.
-        if (heading) heading.classList.add('slk-prompt-editor-title');
-        if (heading && !heading.querySelector(':scope > .slk-prompt-heading-text')) {
-            const label = document.createElement('span');
-            label.className = 'slk-prompt-heading-text';
-            while (heading.firstChild) label.appendChild(heading.firstChild);
-            heading.appendChild(label);
-        }
-        let fields = form.querySelector(':scope > .slk-prompt-form-fields');
+        // Headline: pad the H3 itself, not a conditional child injected by JS.
+        const heading = select(edit, ':scope > h3');
+        set(heading, 'box-sizing', 'border-box');
+        set(heading, 'padding-left', '24px');
+        set(heading, 'padding-right', '24px');
+        set(heading, 'text-indent', '0px');
+        const headingText = select(heading, '.slk-prompt-heading-text');
+        set(headingText, 'margin-left', '0px');
+        set(headingText, 'margin-right', '0px');
+
+        const form = select(edit, '.completion_prompt_manager_popup_entry_form');
+        const footer = select(form, ':scope > .completion_prompt_manager_popup_entry_form_footer');
+        if (!form || !footer) return;
+        let fields = select(form, ':scope > .slk-prompt-form-fields');
         if (!fields) {
             fields = document.createElement('div');
             fields.className = 'slk-prompt-form-fields';
             while (form.firstChild && form.firstChild !== footer) fields.appendChild(form.firstChild);
             form.insertBefore(fields, footer);
         }
-        for (const [suffix, label] of [['close', '취소'], ['reset', '초기화'], ['save', '저장']]) {
-            const button = footer.querySelector('#' + prefix + suffix);
-            if (button && button.dataset.slkActionLabel !== label) {
-                button.dataset.slkActionLabel = label;
-                button.setAttribute('aria-label', label);
+        // Explicit flow layout: never allow the prompt field to stretch vertically.
+        set(fields, 'display', 'block');
+        set(fields, 'flex', '1 1 auto');
+        set(fields, 'min-height', '0px');
+        set(fields, 'height', 'auto');
+        set(fields, 'overflow-y', 'auto');
+        set(fields, 'overflow-x', 'hidden');
+
+        const rows = Array.from(fields.children).filter(e => e.classList.contains('flex-container') && e.classList.contains('gap10px'));
+        for (const row of rows) {
+            set(row, 'display', 'grid');
+            set(row, 'grid-template-columns', window.matchMedia('(max-width: 520px)').matches ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))');
+            set(row, 'align-content', 'start');
+            set(row, 'align-items', 'start');
+            set(row, 'flex', '0 0 auto');
+            set(row, 'height', 'auto');
+            set(row, 'min-height', '0px');
+            set(row, 'margin-top', '0px');
+            set(row, 'margin-bottom', '16px');
+            set(row, 'gap', '16px');
+            for (const ctrl of row.children) {
+                if (!ctrl.classList.contains('completion_prompt_manager_popup_entry_form_control')) continue;
+                if (ctrl.matches('#completion_prompt_manager_depth_block, #completion_prompt_manager_order_block') &&
+                    (ctrl.getAttribute('style')?.includes('display: none') || ctrl.getAttribute('style')?.includes('display:none'))) {
+                    // Native toggles manage whether these fields are shown.
+                    continue;
+                }
+                set(ctrl, 'flex', '0 0 auto');
+                set(ctrl, 'min-height', '0px');
+                set(ctrl, 'height', 'auto');
             }
         }
+        if (rows[0]) {
+            const triggerControl = select(rows[0], ':scope > .completion_prompt_manager_popup_entry_form_control:has(#completion_prompt_manager_popup_entry_form_injection_trigger)');
+            set(triggerControl, 'grid-column', '1 / -1');
+        }
+        if (rows[1]) {
+            const positionControl = select(rows[1], ':scope > .completion_prompt_manager_popup_entry_form_control:has(#completion_prompt_manager_popup_entry_form_injection_position)');
+            set(positionControl, 'grid-column', '1 / -1');
+        }
+        const prompt = select(fields, '#' + prefix + 'prompt');
+        const promptControl = prompt?.closest('.completion_prompt_manager_popup_entry_form_control');
+        if (promptControl) {
+            set(promptControl, 'display', 'flex');
+            set(promptControl, 'flex-direction', 'column');
+            set(promptControl, 'flex', '0 0 auto');
+            set(promptControl, 'height', 'auto');
+            set(promptControl, 'min-height', '0px');
+            set(promptControl, 'margin-top', '0px');
+            set(promptControl, 'padding-top', '0px');
+            set(promptControl, 'justify-content', 'flex-start');
+            set(promptControl, 'gap', '8px');
+            // Ensure the prompt field is directly after the position/depth row.
+            const after = rows[1];
+            if (after && promptControl.previousElementSibling !== after) after.insertAdjacentElement('afterend', promptControl);
+        }
+        set(prompt, 'display', 'block');
+        set(prompt, 'flex', '0 0 auto');
+        set(prompt, 'height', 'clamp(240px, 38vh, 420px)');
+        set(prompt, 'min-height', '220px');
 
-        const name = nativeControl(fields, 'name', /^(이름|Name)$/i);
-        const role = nativeControl(fields, 'role', /^(역할|Role)$/i);
-        const triggers = nativeControl(fields, 'injection_trigger', /^Triggers?$/i);
-        const position = nativeControl(fields, 'injection_position', /^(위치|Position)$/i);
-        const depth = blockControl(fields, 'completion_prompt_manager_depth_block', /^(깊이|Depth)$/i);
-        const order = blockControl(fields, 'completion_prompt_manager_order_block', /^(오더|순서|Order)$/i);
-        if (!name && !role && !triggers && !position) return;
-
-        let layout = fields.querySelector(':scope > .slk-prompt-layout');
-        if (!layout) {
-            layout = document.createElement('div');
-            layout.className = 'slk-prompt-layout';
-            fields.insertBefore(layout, fields.firstChild);
-        }
-        const nameRow = ensure(layout, 'slk-prompt-name-row');
-        const roleRow = ensure(layout, 'slk-prompt-role-trigger-row');
-        const posRow = ensure(layout, 'slk-prompt-position-row');
-        for (const [node, parent] of [[name, nameRow], [role, roleRow], [triggers, roleRow],
-            [position, posRow], [depth.control, posRow], [order.control, posRow]]) {
-            moveNative(node, parent);
-        }
-
-        // ST controls whether Depth/Order exist for the selected position.
-        // Hide their *whole* column when native ST sets display:none, and
-        // restore it when position switches to '깊이에 따라'.
-        for (const { block, control } of [depth, order]) {
-            if (control) control.classList.toggle('slk-prompt-native-hidden', isNativeHidden(block, control));
-        }
-        posRow.classList.toggle('slk-prompt-has-depth', [depth, order].some(({block, control}) =>
-            control && !isNativeHidden(block, control)));
-
-        // Move ONLY the original prompt control, not its containing source block.
-        // SillyTavern/theme source wrappers can have fixed height or padding;
-        // moving the wrapper into this flex layout caused a ~150px blank gap.
-        // Moving the real control preserves the native input, ID and listeners.
-        // SillyTavern also nests this textarea in source wrappers which may
-        // reserve 150px even after the visible control moves. Find the actual
-        // textarea, keep its original listeners, and always place its control
-        // DIRECTLY after Position, not inside any source/sizing wrapper.
-        const prompt = fields.querySelector('#' + prefix + 'prompt') ||
-            fields.querySelector('textarea[id*="prompt"]') || fields.querySelector('textarea');
-        const promptControl = prompt?.closest(controlSelector) || prompt?.parentElement;
-        const oldSourceParent = promptControl?.parentElement;
-        if (promptControl && ![name, role, triggers, position, depth.control, order.control].includes(promptControl)) {
-            promptControl.classList.add('slk-prompt-content-block');
-            if (promptControl.previousElementSibling !== posRow || promptControl.parentElement !== layout) {
-                posRow.after(promptControl);
-            }
-        }
-        // Retire only the ORPHANED source wrappers that no longer contain
-        // any form interaction. They are not deleted, so other native scripts
-        // can still address them. This deliberately ignores stale hidden text.
-        for (let shell = oldSourceParent; shell && shell !== fields && shell !== layout; shell = shell.parentElement) {
-            if (shell.querySelector('input,select,textarea,button,a,[contenteditable="true"],[role="button"]')) break;
-            shell.classList.add('slk-prompt-retired-source');
-        }
-        const promptSource = fields.querySelector('#completion_prompt_manager_popup_entry_source_block');
-        if (promptSource && !promptSource.contains(prompt)) {
-            const hasInteractive = !!promptSource.querySelector('input,textarea,select,button,a,[role="button"],[contenteditable="true"]');
-            promptSource.classList.toggle('slk-prompt-retired-source', !hasInteractive);
-            if (!hasInteractive) {
-                const sourceWrapper = promptSource.closest('.flex-container');
-                if (sourceWrapper && fields.contains(sourceWrapper) && !sourceWrapper.querySelector('input,textarea,select,button,a')) {
-                    sourceWrapper.classList.add('slk-prompt-retired-source');
+        // Real Select2 multiple selection, including its dynamically inserted
+        // search textarea. In particular remove ST/theme right alignment.
+        const trigger = select(edit, '#' + prefix + 'injection_trigger');
+        const triggerControl = trigger?.closest('.completion_prompt_manager_popup_entry_form_control');
+        const select2 = select(triggerControl, '.select2-container');
+        if (select2) {
+            set(trigger, 'display', 'none');
+            set(select2, 'display', 'block');
+            set(select2, 'width', '100%');
+            set(select2, 'min-width', '0px');
+            set(select2, 'text-align', 'left');
+            for (const e of select2.querySelectorAll('.selection, .select2-selection, .select2-selection__rendered, .select2-search, .select2-search--inline')) {
+                set(e, 'float', 'none');
+                set(e, 'text-align', 'left');
+                set(e, 'direction', 'ltr');
+                set(e, 'justify-content', 'flex-start');
+                set(e, 'align-items', 'center');
+                set(e, 'min-width', '0px');
+                if (e.classList.contains('select2-selection__rendered')) {
+                    set(e, 'display', 'flex');
+                    set(e, 'flex-wrap', 'wrap');
+                    set(e, 'width', '100%');
+                }
+                if (e.classList.contains('select2-search') || e.classList.contains('select2-search--inline')) {
+                    set(e, 'display', 'block');
+                    set(e, 'width', '100%');
+                    set(e, 'flex', '1 1 100%');
                 }
             }
-        }
-        // Older markup occasionally keeps a fixed-height .flex-container row
-        // with only labels/whitespace after we move all the real inputs out.
-        for (const row of fields.querySelectorAll(':scope > .flex-container, :scope > .flex-container.gap10px')) {
-            if (!row.querySelector('input,select,textarea,button,a,[role="button"],[contenteditable="true"]')) {
-                row.classList.add('slk-prompt-retired-source', 'slk-prompt-empty-native-row');
+            for (const e of select2.querySelectorAll('.select2-search__field')) {
+                set(e, 'width', '100%');
+                set(e, 'min-width', '0px');
+                set(e, 'max-width', '100%');
+                set(e, 'display', 'block');
+                set(e, 'text-align', 'left');
+                set(e, 'text-indent', '0px');
+                set(e, 'direction', 'ltr');
+                set(e, 'margin-left', '0px');
+                set(e, 'margin-right', '0px');
+                set(e, 'padding-left', '0px');
             }
         }
-        // Collapsed Depth/Order controls must not reserve grid row height.
-        // Check computed visibility too (the native app can use CSS classes).
-        for (const { block, control } of [depth, order]) {
-            const invisible = !control || isNativeHidden(block, control) ||
-                (block && getComputedStyle(block).display === 'none') ||
-                (control && getComputedStyle(control).visibility === 'hidden');
-            if (control) control.classList.toggle('slk-prompt-native-hidden', invisible);
-        }
-        posRow.classList.toggle('slk-prompt-has-depth', [depth, order].some(({control}) =>
-            control && !control.classList.contains('slk-prompt-native-hidden')));
-
-        // Guard against an old theme leaving an invisible reserved row inside
-        // Position. If row height exceeds all visible children, cap it to the
-        // actual content height. This is a layout correction, not data mutation.
-        const visiblePositionControls = [...posRow.children].filter(el =>
-            !el.classList.contains('slk-prompt-native-hidden') && getComputedStyle(el).display !== 'none');
-        if (visiblePositionControls.length) {
-            const origin = posRow.getBoundingClientRect().top;
-            const last = Math.max(...visiblePositionControls.map(el => el.getBoundingClientRect().bottom));
-            const targetHeight = Math.max(0, Math.ceil(last - origin));
-            const currentCap = posRow.style.getPropertyValue('--slk-prompt-position-content-h');
-            if (targetHeight > 0 && (currentCap || posRow.getBoundingClientRect().height - targetHeight > 24)) {
-                // Once capped, keep the cap until the contents change; otherwise
-                // repeated MutationObserver runs would alternate gap/no-gap.
-                const v = `${targetHeight}px`;
-                if (currentCap !== v) posRow.style.setProperty('--slk-prompt-position-content-h', v);
-            }
-        }
-
-        // Make the title line up with the actual Name label even when the host
-        // theme offsets the native h3. Avoid redundant style writes: the dialog
-        // is watched by a MutationObserver.
-        if (heading && name) {
-            const inset = Math.max(16, Math.round(name.getBoundingClientRect().left - heading.getBoundingClientRect().left));
-            const value = inset + 'px';
-            if (heading.style.getPropertyValue('--slk-prompt-title-inset') !== value) {
-                heading.style.setProperty('--slk-prompt-title-inset', value);
-            }
-        }
-
-        // Do not reveal Select2's hidden backing <select> or tamper with its
-        // values. Use the existing Select2 widget and its normal events.
     };
     const schedule = () => {
         if (scheduled) return;
         scheduled = true;
         requestAnimationFrame(fix);
     };
-    const observePopup = (popup) => {
-        if (watchedPopup === popup) return;
-        popupObserver?.disconnect();
-        watchedPopup = popup;
-        popupObserver = new MutationObserver(schedule);
-        popupObserver.observe(popup, {
-            childList: true, subtree: true, attributes: true,
-            attributeFilter: ['class', 'style', 'hidden'],
+    const observe = () => {
+        const popup = document.getElementById(id);
+        if (!popup) return;
+        // Reapply when ST opens the popup / replaces Select2's input.
+        new MutationObserver(schedule).observe(popup, {
+            attributes: true, attributeFilter: ['class'], childList: true, subtree: true,
         });
-        popup.addEventListener('change', schedule, true);
         popup.addEventListener('click', schedule, true);
         schedule();
     };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observe, { once: true });
+    else observe();
+    window.addEventListener('slk-ui-settings-changed', schedule);
+    window.addEventListener('resize', schedule);
+})();
+
+
+// v1.7.6 — Keep existing Google / Vertex AI model edit controls, but put
+// the pencil at the far right of the model title row at a compact size.
+(function slkFixModelTitleRow_v176() {
+    const targetSelects = ['model_vertexai_select', 'model_google_select'];
+    const actionSelector = 'button, .menu_button, .menu_button_icon, [role="button"]';
+    const originalPlacement = new WeakMap();
+    let queued = false;
+    const sync = () => {
+        queued = false;
+        const mobile = document.body?.classList.contains('slk-ui') &&
+            window.matchMedia('(max-width: 1000px)').matches;
+        if (!mobile) {
+            // The desktop editor must retain its original DOM/layout.
+            for (const id of targetSelects) {
+                const group = document.getElementById(id)?.parentElement;
+                const row = group?.querySelector(':scope > .slk-model-title-row');
+                if (!row) continue;
+                const heading = row.querySelector(':scope > h4');
+                const action = row.querySelector(':scope > .slk-model-edit-action');
+                if (heading) group.insertBefore(heading, row);
+                if (action) {
+                    action.classList.remove('slk-model-edit-action');
+                    const placement = originalPlacement.get(action);
+                    if (placement?.inHeading && heading) heading.appendChild(action);
+                    else group.insertBefore(action, row);
+                }
+                row.remove();
+            }
+            return;
+        }
+        for (const id of targetSelects) {
+            const select = document.getElementById(id);
+            const group = select?.parentElement;
+            if (!group) continue;
+            const titleRow = group.querySelector(':scope > .slk-model-title-row');
+            const heading = titleRow?.querySelector(':scope > h4') || group.querySelector(':scope > h4');
+            if (!heading) continue;
+            let row = titleRow;
+            if (!row) {
+                row = document.createElement('div');
+                row.className = 'slk-model-title-row';
+                group.insertBefore(row, heading);
+                row.appendChild(heading);
+            }
+            // SillyTavern and add-ons may inject the edit action either into
+            // the original H4 or immediately after it. Move that same node,
+            // never clone it, so its original click handler keeps working.
+            const inlineAction = [...heading.children].find(el => el.matches(actionSelector));
+            const siblings = [...group.children];
+            const selectIndex = siblings.indexOf(select);
+            const siblingAction = siblings.find((el, i) => i >= 0 && (selectIndex < 0 || i < selectIndex) &&
+                el !== row && el.matches?.(actionSelector));
+            const action = row.querySelector(':scope > .slk-model-edit-action') || inlineAction || siblingAction;
+            if (action) {
+                if (!originalPlacement.has(action)) originalPlacement.set(action, { inHeading: action.parentElement === heading });
+                action.classList.add('slk-model-edit-action');
+                if (action.parentElement !== row) row.appendChild(action);
+            }
+        }
+    };
+    const schedule = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(sync);
+    };
     const start = () => {
-        const popup = document.getElementById(popupId);
-        if (popup) { observePopup(popup); return; }
-        const rootObserver = new MutationObserver(() => {
-            const found = document.getElementById(popupId);
-            if (found) { rootObserver.disconnect(); observePopup(found); }
-        });
-        rootObserver.observe(document.body, { childList: true, subtree: true });
+        const root = document.getElementById('openai_api') || document.getElementById('left-nav-panel') || document.body;
+        new MutationObserver(schedule).observe(root, { childList: true, subtree: true });
+        schedule();
+        setTimeout(schedule, 350);
+        setTimeout(schedule, 1400);
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
