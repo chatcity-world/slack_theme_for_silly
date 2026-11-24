@@ -1140,9 +1140,43 @@ function hideMenuEl(el) {
 }
 
 function setupMenuSwitch() {
+    const desktop = matchMedia('(min-width: 1001px)');
+    const pc = () => desktop.matches && SLK_UI_SETTINGS.enabled && document.body.classList.contains('slk-ui');
+    const visible = menu => menu && getComputedStyle(menu).display !== 'none';
+    // ST owns both menu flags and Popper instances. Never hide a PC menu by
+    // writing display/opacity independently of its native click handler.
     document.addEventListener('click', (e) => {
-        if (e.target.closest('#extensionsMenuButton')) hideMenuEl(document.getElementById('options'));
-        else if (e.target.closest('#options_button')) hideMenuEl(document.getElementById('extensionsMenu'));
+        const button = e.target.closest?.('#options_button, #extensionsMenuButton');
+        if (!button) return;
+        const otherId = button.id === 'options_button' ? 'extensionsMenu' : 'options';
+        if (!pc()) {
+            hideMenuEl(document.getElementById(otherId));
+            return;
+        }
+        const jq = window.jQuery || window.$;
+        const menu = document.getElementById(button.id === 'options_button' ? 'options' : 'extensionsMenu');
+        const other = document.getElementById(otherId);
+        const otherButton = document.getElementById(button.id === 'options_button' ? 'extensionsMenuButton' : 'options_button');
+        if (!menu || typeof jq !== 'function' || typeof jq.fn?.stop !== 'function') return;
+        // Finish queued animations before reading actual visibility. Run the
+        // original direct jQuery handler without the same click also reaching
+        // ST's hover-based outside-click handler. Menu items and outside
+        // clicks themselves still use their untouched native handlers.
+        const settle = el => { if (el) jq(el).stop(true, true); };
+        settle(menu); settle(other);
+        const wantOpen = !visible(menu);
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const reconcile = (el, trigger, want) => {
+            if (!el || !trigger) return;
+            if (el.style.opacity === '0') el.style.removeProperty('opacity');
+            for (let i = 0; i < 2 && Boolean(visible(el)) !== want; i++) {
+                jq(trigger).triggerHandler('click');
+                settle(el);
+            }
+        };
+        reconcile(other, otherButton, false);
+        reconcile(menu, button, wantOpen);
     }, true);
 }
 

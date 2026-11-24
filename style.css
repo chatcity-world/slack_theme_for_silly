@@ -22566,14 +22566,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-withi
     --slk-ds-border: #DAD8DA;
   }
   html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #slk-pc-panel-heading:not([aria-hidden="true"]) {
-    display:flex !important;
-     height:var(--pc-head) !important;
-     padding:0 var(--slk-ds-inset) !important;
-     border-radius:0 !important;
-     background:#FFF !important;
-     border-bottom:1px solid #E8E8E8 !important;
-     border-right:1px solid #E8E8E8 !important;
-     box-sizing:border-box !important;
+    display:none !important;
   }
   html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #slk-pc-panel-heading[aria-hidden="true"] {
     display:none !important;
@@ -22592,7 +22585,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-withi
     display:none !important;
   }
   html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer.slk-pc-selected > .drawer-content.openDrawer {
-    top:calc(var(--pc-top) + var(--pc-head)) !important;
+    top:var(--pc-top) !important;
      bottom:var(--pc-gap) !important;
      box-sizing:border-box !important;
      padding-top:12px !important;
@@ -23510,4 +23503,60 @@ html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):no
   html body.slk-ui.slk-pc #top-settings-holder > .drawer.slk-pc-selected > .drawer-content.openDrawer::after {
     pointer-events:none!important;
   }
+}
+
+
+/* v1.8.84 — PC composer controls and native avatar preview. */
+@media screen and (min-width:1001px) {
+  html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #form_sheld #send_form :is(#leftSendForm,#rightSendForm) > :not(script,style,template) {
+    box-sizing:border-box!important;
+    flex:0 0 36px!important;
+    width:36px!important; min-width:36px!important; max-width:36px!important;
+    height:36px!important; min-height:36px!important; max-height:36px!important;
+    aspect-ratio:1!important;
+    padding:0!important; margin:0!important;
+    border-radius:50%!important;
+    align-items:center!important; justify-content:center!important;
+    text-align:center!important; line-height:20px!important;
+    font-size:20px!important;
+  }
+  html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #form_sheld #send_form :is(#leftSendForm,#rightSendForm) > * :is(i,.fa,.fa-solid,.fa-regular,.fa-brands,[class*="fa-"]) {
+    width:20px!important; height:20px!important;
+    font-size:20px!important; line-height:20px!important;
+    flex:none!important; text-align:center!important;
+    margin:0!important; padding:0!important;
+  }
+  html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #form_sheld #send_form :is(#leftSendForm,#rightSendForm) > *::before,
+  html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #form_sheld #send_form :is(#leftSendForm,#rightSendForm) > * :is(i,.fa,.fa-solid,.fa-regular,.fa-brands,[class*="fa-"])::before {
+    width:20px!important; height:20px!important; line-height:20px!important;
+    background-size:contain!important;
+  }
+  html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #form_sheld #send_form :is(#leftSendForm,#rightSendForm) > * :is(img,svg) {
+    width:20px!important; height:20px!important;
+    min-width:20px!important; max-width:20px!important;
+    min-height:20px!important; max-height:20px!important;
+    object-fit:contain!important; flex:none!important;
+  }
+  html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #form_sheld #send_form :is(#options_button,#extensionsMenuButton) {
+    display:flex; cursor:pointer; pointer-events:auto!important;
+  }
+  html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #form_sheld #send_form :is(#options_button,#extensionsMenuButton):is(:hover,:active) {
+    background:#F0F0F0!important; border-radius:50%!important;
+  }
+  /* Keep native display:none, fade transitions and Popper positioning. */
+  html body.slk-ui.slk-pc :is(#options,#extensionsMenu) {
+    z-index:29999!important; pointer-events:auto!important;
+  }
+  /* Native ST draggable z-index is 29, below the desktop chat (40) and rail. */
+  html body.slk-ui.slk-pc > .zoomed_avatar[forChar] {
+    z-index:3100!important;
+    width:min(360px,56dvh,calc(100vw - 32px));
+    left:calc(var(--pc-main-left,116px) + 16px);
+    bottom:16px;
+    pointer-events:auto!important;
+  }
+  html body.slk-ui.slk-pc > .zoomed_avatar[forChar] img.zoomed_avatar_img {
+    max-height:calc(90dvh - 16px); object-fit:contain!important;
+  }
+  html body.slk-ui.slk-pc #chat .mes .avatar {cursor:pointer; pointer-events:auto!important;}
 }
