@@ -21719,10 +21719,9 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
    unlayered header rules. No changes to popup controls, footer or desktop. */
 @layer slk-mobile-header-state {
  @media screen and (max-width:1000px) {
-  /* v1.8.19: increase the shared mobile header height by 20px.
-     Centered controls move down 10px and gain 10px bottom clearance.
-     Panel/chat content insets use --slk-top-h automatically. */
-  body.slk-ui {--slk-header-h:80px!important;}
+  /* v1.8.20: move all mobile header controls up by 6px and shrink the shared header height by the same amount.
+     Applies equally to scrolled/unscrolled states, chat, and every other tab. */
+  body.slk-ui {--slk-header-h:74px!important;}
   body.slk-ui #top-settings-holder > #ai-config-button > #left-nav-panel.openDrawer:not(.slk-nav-hidden) {
     position:fixed!important; inset:0!important; width:100%!important;
     max-width:none!important; height:100dvh!important; max-height:100dvh!important;
@@ -21748,8 +21747,8 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   }
   body.slk-ui[data-slk-header-view] #slk-header::before,
   body.slk-ui[data-slk-header-view] #slk-header::after {content:none!important;display:none!important;}
-  /* v1.8.18: one identical 6px downward offset for every header state. */
-  body.slk-ui[data-slk-header-view] #slk-header > * {position:relative!important;top:6px!important;z-index:1!important;}
+  /* v1.8.20: lift all header controls 6px so they sit higher inside the same visual system. */
+  body.slk-ui[data-slk-header-view] #slk-header > * {position:relative!important;top:0!important;z-index:1!important;}
   body.slk-ui[data-slk-header-view] #slk-header button {pointer-events:auto!important;}
   /* Expanded panel/home: the original purple header and round controls. */
   body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact) #slk-header {
