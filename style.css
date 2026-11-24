@@ -703,7 +703,7 @@ body.slk-ui {
     }
 
     body.slk-ui .welcomeRecent .recentChat .chatName .characterName {
-        font-weight: 900;
+        font-weight: 600;
         color: var(--slk-text);
     }
 
@@ -5214,7 +5214,7 @@ body.slk-ui {
 
     body.slk-ui #PersonaManagement #user_avatar_block .ch_name {
         font-size: 15px !important;
-        font-weight: 900 !important;
+        font-weight: 600 !important;
         color: var(--slk-text) !important;
     }
 
@@ -23439,4 +23439,34 @@ html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):no
 }
 @container (max-width:300px) {
  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q):not(#slk-r):not(#slk-s) #top-settings-holder > .drawer > .drawer-content#rm_api_block > .wide100p:has(> .flex-container > #connection_profiles) > .flex-container:has(> #connection_profiles) > .menu_button {--slk-profile-button:27px!important;}
+}
+
+
+/* v1.8.80 — Persona toolbar vertical alignment and list name weights. */
+@media screen and (max-width:1000px) {
+  @layer slk-button-label-alignment {
+    body.slk-ui :is(#PersonaManagement #create_dummy_persona, #PersonaManagement > .flex-container > .flex-container:first-child > .flex-container:last-child > .menu_button) :is(slk-button-label,[data-slk-button-label]) {
+      top:0!important; transform:none!important;
+    }
+  }
+}
+@media screen {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l) :is(#PersonaManagement #create_dummy_persona, #PersonaManagement > .flex-container > .flex-container:first-child > .flex-container:last-child > .menu_button) {
+    align-items:center!important; justify-content:center!important;
+    line-height:20px!important; padding-block:0!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l) :is(#PersonaManagement #create_dummy_persona, #PersonaManagement > .flex-container > .flex-container:first-child > .flex-container:last-child > .menu_button) > :is(slk-button-label,[data-slk-button-label],div,span,b,strong,small,label):not([class*="fa-"]):not([class*="icon"]):not([aria-hidden="true"]) {
+    align-self:center!important; display:inline-flex!important; align-items:center!important;
+    line-height:20px!important; margin-block:0!important; padding-block:0!important;
+    top:0!important; bottom:auto!important; transform:none!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l) :is(#PersonaManagement #create_dummy_persona, #PersonaManagement > .flex-container > .flex-container:first-child > .flex-container:last-child > .menu_button) > :is(i,svg) {
+    align-self:center!important; margin-block:0!important; top:0!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l) #PersonaManagement #user_avatar_block .ch_name,
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l) #PersonaManagement #user_avatar_block .ch_name :is(b,strong),
+  body.slk-ui .welcomeRecent .recentChat .chatName .characterName,
+  body.slk-ui .welcomeRecent .recentChat .chatName .characterName :is(b,strong) {
+    font-weight:600!important;
+  }
 }
