@@ -22089,15 +22089,13 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     -webkit-backdrop-filter:none!important;
   }
   body.slk-ui.slk-composing #form_sheld #send_form.slk-compose-open {
-    /* v1.8.37: a clear, softly illuminated glass surface. Keep the existing
-       1px layout border transparent; draw only a hairline optical edge. */
-    background:linear-gradient(160deg,rgba(255,255,255,.32) 0%,rgba(255,255,255,.18) 48%,rgba(255,255,255,.26) 100%)!important;
-    background-color:transparent!important;
+    /* v1.8.38: neutral brightness, 14% white glass, no reflective edge. */
+    background:rgba(255,255,255,.14)!important;
     background-clip:padding-box!important;
     border-color:transparent!important;
-    box-shadow:0 4px 14px rgba(0,0,0,.055),inset 0 0 0 .5px rgba(255,255,255,.68),inset 0 1px 1px rgba(255,255,255,.32)!important;
-    backdrop-filter:blur(5px) saturate(135%) brightness(1.13)!important;
-    -webkit-backdrop-filter:blur(5px) saturate(135%) brightness(1.13)!important;
+    box-shadow:0 4px 14px rgba(0,0,0,.055)!important;
+    backdrop-filter:blur(5px) saturate(135%) brightness(1)!important;
+    -webkit-backdrop-filter:blur(5px) saturate(135%) brightness(1)!important;
   }
   /* The native textarea and its placeholder share exactly one text origin. */
   body.slk-ui #form_sheld #send_form.slk-compose-open #send_textarea {
