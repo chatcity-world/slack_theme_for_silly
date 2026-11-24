@@ -3286,6 +3286,32 @@ function slkPortalPromptEditor(popup = document.getElementById('completion_promp
 // slideDown/slideUp (which conflict with forced display rules on mobile).
 // This is a runtime extension-only adapter; native form values, edit/save/reset
 // handlers and the desktop implementation remain intact.
+// Compute the editor's rectangle against the visual viewport, not its
+// previous drawer coordinates. Correct any residual containing-block offset.
+function slkPlacePromptEditor(popup) {
+    if (!popup?.classList.contains('slk-prompt-portal') || !matchMedia('(max-width:1000px)').matches ||
+        !popup.matches('.openDrawer,.slk-prompt-visible')) return;
+    const vv = window.visualViewport;
+    const css = getComputedStyle(document.body);
+    const safeTop = Math.max(0, parseFloat(css.getPropertyValue('--slk-safe-top')) || 0);
+    const safeBottom = Math.max(0, parseFloat(css.getPropertyValue('--slk-safe-bottom')) || 0);
+    const vw = vv?.width || window.innerWidth;
+    const vh = vv?.height || window.innerHeight;
+    const width = Math.min(820, vw - 32);
+    const height = Math.max(80, Math.min(680, vh - safeTop - safeBottom - 24));
+    const left = (vv?.offsetLeft || 0) + (vw - width) / 2;
+    const top = (vv?.offsetTop || 0) + safeTop + Math.max(12, (vh - safeTop - safeBottom - height) / 2);
+    const put = (key, n) => {
+        const val = `${n}px`;
+        if (popup.style.getPropertyValue(key) !== val) popup.style.setProperty(key, val);
+    };
+    put('--slk-editor-width', width); put('--slk-editor-height', height);
+    put('--slk-editor-top', top); put('--slk-editor-left', left);
+    const rect = popup.getBoundingClientRect();
+    if (Math.abs(rect.top - top) > 1) put('--slk-editor-top', top + top - rect.top);
+    if (Math.abs(rect.left - left) > 1) put('--slk-editor-left', left + left - rect.left);
+}
+
 function slkInstallPromptManagerAdapter(PromptManager) {
     const proto = PromptManager?.prototype;
     if (!proto || proto.slkMobilePromptAdapter || typeof proto.showPopup !== 'function' || typeof proto.hidePopup !== 'function') return;
@@ -3317,6 +3343,12 @@ function slkInstallPromptManagerAdapter(PromptManager) {
         // normal drawer. Only this editor is pinned; close/save still work.
         if (!popup.classList.contains('pinnedOpen')) {popup.classList.add('pinnedOpen');popup.slkAddedPromptPin = true;}
         popup.style.setProperty('display','flex','important');
+        slkPlacePromptEditor(popup);
+        requestAnimationFrame(() => {
+            if (!popup.classList.contains('slk-prompt-visible')) return;
+            slkPlacePromptEditor(popup);
+            popup.querySelector('.slk-prompt-form-fields')?.scrollTo(0,0);
+        });
     };
     proto.hidePopup = function() {
         if (!active(this)) return originalHide.apply(this, arguments);
@@ -3566,7 +3598,7 @@ function slkConnectPromptManager() {
         // actual content height. This is a layout correction, not data mutation.
         const visiblePositionControls = [...posRow.children].filter(el =>
             !el.classList.contains('slk-prompt-native-hidden') && getComputedStyle(el).display !== 'none');
-        if (visiblePositionControls.length) {
+        if (matchMedia('(min-width:1001px)').matches && visiblePositionControls.length) {
             const origin = posRow.getBoundingClientRect().top;
             const last = Math.max(...visiblePositionControls.map(el => el.getBoundingClientRect().bottom));
             const targetHeight = Math.max(0, Math.ceil(last - origin));
@@ -3621,6 +3653,10 @@ function slkConnectPromptManager() {
         const popup = document.getElementById(popupId);
         if (popup) observePopup(popup);
         slkConnectPromptManager();
+        const place = () => slkPlacePromptEditor(document.getElementById(popupId));
+        window.addEventListener('resize', place, {passive:true});
+        window.visualViewport?.addEventListener('resize', place, {passive:true});
+        window.visualViewport?.addEventListener('scroll', place, {passive:true});
         const panel = document.getElementById('left-nav-panel');
         if (panel) for (const type of ['touchstart','mousedown']) panel.addEventListener(type, event => {
             if (!document.body.classList.contains('slk-ui') || !matchMedia('(max-width:1000px)').matches) return;
