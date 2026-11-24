@@ -3300,15 +3300,26 @@ function slkPlacePromptEditor(popup) {
     const width = Math.min(820, vw - 32);
     const viewportTop = vv?.offsetTop || 0;
     const viewportBottom = viewportTop + vh;
-    // Reserve the actual floating bottom bar and 16px of clearance.
+    // The keyboard can shrink either the visual viewport alone (iOS), or both
+    // viewports. Retain the unoccluded height from before focus in either case.
+    const focused = popup.contains(document.activeElement) &&
+        document.activeElement.matches('input:not([type="checkbox"]):not([type="radio"]),textarea,[contenteditable="true"]');
+    const normalHeight = Math.max(popup.slkEditorNormalHeight || 0, vh);
+    popup.slkEditorNormalHeight = normalHeight;
+    const layoutHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0);
+    const keyboard = Math.max(normalHeight, layoutHeight) - vh > 80 &&
+        (focused || popup.slkEditorKeyboard === true);
+    popup.slkEditorKeyboard = keyboard;
+    // Never subtract the floating app footer from the already reduced keyboard
+    // viewport. The editor is above it, and all editor content is scrollable.
     const footer = document.getElementById('slk-mobile-footer');
     const footerRect = footer?.getBoundingClientRect();
-    const footerVisible = footerRect && footerRect.height > 0 &&
+    const footerVisible = !keyboard && footerRect && footerRect.height > 0 &&
         getComputedStyle(footer).visibility !== 'hidden' &&
         footerRect.top < viewportBottom && footerRect.bottom > viewportTop;
-    const upper = viewportTop + safeTop + 12;
-    const lower = Math.min(viewportBottom - safeBottom - 12,
-        footerVisible ? footerRect.top - 16 : viewportBottom - safeBottom - 12);
+    const upper = viewportTop + (keyboard ? 10 : safeTop + 12);
+    const lower = Math.min(viewportBottom - (keyboard ? 12 : safeBottom + 12),
+        footerVisible ? footerRect.top - 16 : viewportBottom);
     const available = Math.max(1, lower - upper);
     const height = Math.min(600, available);
     const left = (vv?.offsetLeft || 0) + (vw - width) / 2;
@@ -3322,6 +3333,22 @@ function slkPlacePromptEditor(popup) {
     const rect = popup.getBoundingClientRect();
     if (Math.abs(rect.top - top) > 1) put('--slk-editor-top', top + top - rect.top);
     if (Math.abs(rect.left - left) > 1) put('--slk-editor-left', left + left - rect.left);
+}
+
+// Reveal the focused field once after the keyboard changes the viewport. Do
+// not call scrollIntoView (which can pan the background and the whole iOS page),
+// and do not keep forcing the scroll position while the user scrolls manually.
+function slkRevealPromptField(popup) {
+    if (!popup?.matches('.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)')) return;
+    const field = document.activeElement;
+    if (!popup.contains(field) || !field.matches('input:not([type="checkbox"]):not([type="radio"]),textarea,[contenteditable="true"]')) return;
+    const r = popup.getBoundingClientRect();
+    const f = field.getBoundingClientRect();
+    const top = r.top + 12, bottom = r.bottom - 12;
+    if (f.top < top || f.bottom > bottom) {
+        const desired = f.height > bottom - top ? top : Math.max(top, (top + bottom - f.height) / 2);
+        popup.scrollTop += f.top - desired;
+    }
 }
 
 function slkInstallPromptManagerAdapter(PromptManager) {
@@ -3359,6 +3386,7 @@ function slkInstallPromptManagerAdapter(PromptManager) {
         requestAnimationFrame(() => {
             if (!popup.classList.contains('slk-prompt-visible')) return;
             slkPlacePromptEditor(popup);
+            popup.scrollTop = 0;
             popup.querySelector('.slk-prompt-form-fields')?.scrollTo(0,0);
         });
     };
@@ -3371,6 +3399,8 @@ function slkInstallPromptManagerAdapter(PromptManager) {
         if (popup.slkAddedPromptPin) {popup.classList.remove('pinnedOpen');popup.slkAddedPromptPin = false;}
         delete popup.dataset.slkPromptArea;
         popup.slkPromptManager = null;
+        popup.slkEditorNormalHeight = 0;
+        popup.slkEditorKeyboard = false;
         popup.style.setProperty('display','none','important');
     };
     Object.defineProperty(proto,'slkMobilePromptAdapter',{value:true,configurable:true});
@@ -3677,9 +3707,25 @@ function slkConnectPromptManager() {
         if (popup) observePopup(popup);
         slkConnectPromptManager();
         const place = () => slkPlacePromptEditor(document.getElementById(popupId));
-        window.addEventListener('resize', place, {passive:true});
-        window.visualViewport?.addEventListener('resize', place, {passive:true});
+        let revealFrame = 0;
+        const reveal = () => {
+            cancelAnimationFrame(revealFrame);
+            revealFrame = requestAnimationFrame(() => {
+                const current = document.getElementById(popupId);
+                slkPlacePromptEditor(current);
+                slkRevealPromptField(current);
+            });
+        };
+        const resize = () => {
+            place();
+            if (document.getElementById(popupId)?.slkEditorKeyboard) reveal();
+        };
+        window.addEventListener('resize', resize, {passive:true});
+        window.visualViewport?.addEventListener('resize', resize, {passive:true});
         window.visualViewport?.addEventListener('scroll', place, {passive:true});
+        document.addEventListener('focusin', e => {
+            if (e.target.closest?.('#' + popupId)) reveal();
+        });
         const panel = document.getElementById('left-nav-panel');
         if (panel) for (const type of ['touchstart','mousedown']) panel.addEventListener(type, event => {
             if (!document.body.classList.contains('slk-ui') || !matchMedia('(max-width:1000px)').matches) return;

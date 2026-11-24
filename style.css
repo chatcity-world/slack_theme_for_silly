@@ -21980,3 +21980,56 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   }
  }
 }
+
+/* v1.8.28 — One scroll surface for the mobile prompt editor, including its
+   title and action row. A smaller viewport must never compress the form. */
+@layer slk-prompt-editor-overlay {
+ @media screen and (max-width:1000px) {
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] {
+    display:block!important; overflow-y:auto!important; overflow-x:hidden!important;
+    overscroll-behavior-y:contain!important; scroll-behavior:auto!important;
+    scroll-padding:12px!important; -webkit-overflow-scrolling:touch;
+  }
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] > #completion_prompt_manager_popup_edit,
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] > #completion_prompt_manager_popup_edit > .completion_prompt_manager_popup_entry,
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] > #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form,
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:is(.openDrawer,.slk-prompt-visible)[data-slk-prompt-area="edit"] > #completion_prompt_manager_popup_edit .slk-prompt-form-fields {
+    flex:0 0 auto!important; height:auto!important; min-height:0!important;
+    max-height:none!important; overflow:visible!important;
+  }
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit > h3,
+  html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_footer {
+    position:relative!important; inset:auto!important; flex:0 0 auto!important;
+  }
+  /* The Order info glyph must not increase the label's line box. All three
+     field tops and bottoms align even with the native Font Awesome icon. */
+  html body.slk-ui #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit .slk-prompt-position-row > .completion_prompt_manager_popup_entry_form_control > label {
+    display:flex!important; align-items:center!important; gap:4px!important;
+    height:20px!important; min-height:20px!important; max-height:20px!important;
+    line-height:20px!important; padding:0!important; margin:0!important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit .slk-prompt-position-row > .completion_prompt_manager_popup_entry_form_control > label i {
+    display:inline-flex!important; align-items:center!important; justify-content:center!important;
+    flex:0 0 auto!important; height:16px!important; min-height:0!important; max-height:16px!important;
+    font-size:16px!important; line-height:16px!important; margin:0!important; padding:0!important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit .slk-prompt-position-row > .completion_prompt_manager_popup_entry_form_control > :is(input.text_pole,select.text_pole) {
+    height:42px!important; min-height:42px!important; max-height:42px!important; margin:0!important;
+    box-sizing:border-box!important;
+  }
+  /* Prevent iOS focus zoom, which otherwise pans the visual viewport. */
+  @supports (-webkit-touch-callout:none) {
+   html body.slk-ui #completion_prompt_manager_popup.slk-prompt-portal #completion_prompt_manager_popup_edit :is(input.text_pole:not([type="checkbox"]),textarea.text_pole) {font-size:16px!important;}
+  }
+ }
+}
+
+/* v1.8.29: Match the Position selected text to the Role selected text. */
+@layer slk-prompt-editor-overlay {
+ @media screen and (max-width:1000px) {
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit :is(#completion_prompt_manager_popup_entry_form_role,#completion_prompt_manager_popup_entry_form_injection_position) {
+    font-size:14px!important; -webkit-text-size-adjust:100%!important; text-size-adjust:100%!important;
+  }
+  html body.slk-ui #completion_prompt_manager_popup #completion_prompt_manager_popup_edit :is(#completion_prompt_manager_popup_entry_form_role,#completion_prompt_manager_popup_entry_form_injection_position) > option {font-size:inherit!important;}
+ }
+}
