@@ -3490,7 +3490,9 @@ function slkPlacePromptEditor(popup) {
     const safeBottom = Math.max(0, parseFloat(css.getPropertyValue('--slk-safe-bottom')) || 0);
     const vw = vv?.width || window.innerWidth;
     const vh = vv?.height || window.innerHeight;
-    const width = Math.min(820, vw - 32);
+    const popupWidth = parseFloat(css.getPropertyValue('--slk-pop-width')) || 480;
+    const popupEdge = parseFloat(css.getPropertyValue('--slk-pop-edge')) || 16;
+    const width = Math.max(1, Math.min(popupWidth, vw - 2 * popupEdge));
     // Convert page-space visual viewport bounds into the SAME coordinate
     // space as getBoundingClientRect. iOS may pan the layout on textarea
     // focus: offsetTop alone is not a client coordinate on all WebKit builds.

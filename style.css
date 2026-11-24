@@ -21886,7 +21886,7 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
       left:var(--slk-editor-left,16px)!important;
       right:auto!important; bottom:auto!important;
       width:var(--slk-editor-width,calc(100vw - 32px))!important;
-      min-width:0!important; max-width:820px!important;
+      min-width:0!important; max-width:var(--slk-pop-width,480px)!important;
       height:var(--slk-editor-height,min(680px,calc(100dvh - var(--slk-safe-top,0px) - var(--slk-safe-bottom,0px) - 24px)))!important;
       min-height:0!important; max-height:none!important;
       margin:0!important; padding:0!important; align-self:flex-start!important;
@@ -23896,4 +23896,51 @@ html body.slk-ui.slk-pc dialog.popup:has(input[name="exclude"]) .popup-content l
   html body.slk-ui.slk-pc dialog.popup:has(input[name="exclude"]) .popup-input {height:34px!important;min-height:34px!important;font-size:13px!important;border-radius:8px!important;box-sizing:border-box!important;}
   html body.slk-ui.slk-pc dialog.popup:has(input[name="exclude"]) .popup-controls {padding:12px 20px!important;margin-top:8px!important;}
   html body.slk-ui.slk-pc dialog.popup:has(input[name="exclude"]) .popup-controls > :is(.popup-button-cancel,.popup-button-ok,.popup-button-custom) {height:34px!important;min-height:34px!important;font-size:13px!important;border-radius:8px!important;}
+}
+
+
+/* v1.8.87 — One responsive popup width; preserve existing content and scroll lifecycle. */
+@media screen {
+  html body.slk-ui {
+    --slk-pop-width:480px;
+    --slk-pop-edge:16px;
+  }
+  /* Includes normal, wide, profile, extensions, and text-editing dialogs.
+     Explicit fullscreen, image crop and startup overlays are not form modals. */
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g) :is(dialog.popup,.popup:has(> .popup-body),.slk-modal):not(:has(#loader,.cropper-container)):not(.fullscreen,.popup-fullscreen,.zoomed_avatar),
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g) #select_chat_popup {
+    box-sizing:border-box!important;
+    width:min(var(--slk-pop-width),calc(100vw - 2 * var(--slk-pop-edge)))!important;
+    min-width:0!important;
+    max-width:min(var(--slk-pop-width),calc(100vw - 2 * var(--slk-pop-edge)))!important;
+    border-radius:var(--slk-pop-radius,16px)!important;
+  }
+}
+@media screen and (min-width:1001px) {
+  html body.slk-ui.slk-pc #completion_prompt_manager_popup.openDrawer {
+    width:min(var(--slk-pop-width),calc(100vw - 2 * var(--slk-pop-edge)))!important;
+    min-width:0!important;
+    max-width:min(var(--slk-pop-width),calc(100vw - 2 * var(--slk-pop-edge)))!important;
+    border-radius:var(--slk-pop-radius,16px)!important;
+  }
+  /* ST remembers draggable coordinates; ignore those only for desktop avatar previews.
+     Preserve native close button, image sizing and z-index. */
+  html body.slk-ui.slk-pc > .zoomed_avatar[forChar] {
+    position:fixed!important;
+    inset:50% auto auto 50%!important;
+    margin:0!important;
+    transform:translate(-50%,-50%)!important;
+    translate:none!important;
+    max-width:calc(100vw - 32px)!important;
+    max-height:calc(100dvh - 32px)!important;
+  }
+  html body.slk-ui.slk-pc > .zoomed_avatar[forChar] .zoomed_avatar_container {
+    min-height:0!important;
+    max-height:calc(100dvh - 32px)!important;
+  }
+  html body.slk-ui.slk-pc > .zoomed_avatar[forChar] img.zoomed_avatar_img {
+    max-width:100%!important;
+    max-height:calc(100dvh - 64px)!important;
+    object-fit:contain!important;
+  }
 }
