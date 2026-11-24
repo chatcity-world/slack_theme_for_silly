@@ -1264,15 +1264,18 @@ function syncChatHead() {
     const head = document.getElementById('slk-chat-head');
     if (!head) return;
     const { name, avatar, count } = chatInfo();
-    head.querySelector('.slk-ch-name').textContent = name;
+    const nameEl = head.querySelector('.slk-ch-name');
+    if (nameEl.textContent !== name) nameEl.textContent = name;
     const img = head.querySelector('.slk-ch-av');
     if (avatar) {
         if (img.getAttribute('src') !== avatar) img.setAttribute('src', avatar);
-        img.hidden = false;
+        if (img.hidden) img.hidden = false;
     } else {
-        img.hidden = true;
+        if (!img.hidden) img.hidden = true;
     }
-    head.querySelector('.slk-ch-n').textContent = Number(count).toLocaleString();
+    const countEl = head.querySelector('.slk-ch-n');
+    const countText = Number(count).toLocaleString();
+    if (countEl.textContent !== countText) countEl.textContent = countText;
 }
 
 
@@ -1445,9 +1448,8 @@ function watchChat() {
         });
     };
     new MutationObserver(run).observe(chat, { childList: true });
-    const routeRun = () => requestAnimationFrame(syncSlackSurfaces);
-    window.addEventListener('hashchange', routeRun, { passive: true });
-    document.addEventListener('click', () => requestAnimationFrame(syncSlackSurfaces), { passive: true, capture: true });
+    window.addEventListener('hashchange', run, { passive: true });
+    document.addEventListener('click', run, { passive: true, capture: true });
     setTimeout(syncSlackSurfaces, 0);
     const ctx = stContext();
     const types = ctx?.eventTypes || ctx?.event_types;
@@ -1502,6 +1504,8 @@ function recomputeHeaderCompact() {
 }
 
 function watchHeaderCompact() {
+    let scrollFrame = 0;
+    const scrollTargets = new Set();
     // 실리태번 기본 드로어를 직접 눌렀을 때도, 클릭 핸들러보다 먼저 준비합니다.
     document.addEventListener('click', (e) => {
         const toggle = e.target.closest('#top-settings-holder > .drawer > .drawer-toggle');
@@ -1511,11 +1515,18 @@ function watchHeaderCompact() {
         const t = e.target;
         if (!(t instanceof Element) || t.matches('textarea, select, input')) return;
         if (!t.closest(SCROLL_ROOTS)) return;
-        // 패널이 열려 있으면 그 패널 안의 스크롤만, 아니면 채팅 영역 스크롤만 반영
-        const open = openDrawerEl();
-        if (open ? !(t === open || (open.contains(t) && t.matches('.scrollableInner'))) : t.id !== 'chat') return;
-        recomputeHeaderCompact();
-    }, true);
+        // Coalesce scroll work, preserving the original active-surface filter.
+        scrollTargets.add(t);
+        if (scrollFrame) return;
+        scrollFrame = requestAnimationFrame(() => {
+            scrollFrame = 0;
+            const open = openDrawerEl();
+            const relevant = [...scrollTargets].some(target => open ?
+                (target === open || (open.contains(target) && target.matches('.scrollableInner'))) : target.id === 'chat');
+            scrollTargets.clear();
+            if (relevant) recomputeHeaderCompact();
+        });
+    }, {capture:true, passive:true});
     document.addEventListener('click', (e) => {
         if (e.target.closest('.drawer-toggle, #slk-settings-menu, #slk-ws, #slk-chat-title')) setTimeout(recomputeHeaderCompact, 80);
     }, true);
@@ -2551,7 +2562,9 @@ if (SLK_UI_SETTINGS.enabled) {
     };
     const schedule = () => { if (!t) t = setTimeout(run, 150); };
     const start = () => {
-        new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
+        new MutationObserver(records => {
+            if (records.some(r => !r.target.closest?.('#chat'))) schedule();
+        }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
         document.addEventListener('click', schedule, true);
         schedule();
     };
@@ -2578,23 +2591,41 @@ if (SLK_UI_SETTINGS.enabled) {
         if (!isNaN(d)) return fmt(d.getFullYear(), d.getMonth() + 1, d.getDate());
         return null;
     };
-    const run = () => {
-        document.querySelectorAll('#chat .mes .timestamp').forEach(el => {
-            const raw = (el.textContent || '').trim();
-            if (el.dataset.slkRaw === raw) return;
-            el.dataset.slkRaw = raw;
-            const short = parse(raw);
-            if (short) el.dataset.slkDate = short;
-            else delete el.dataset.slkDate;
-        });
+    const update = el => {
+        const raw = (el.textContent || '').trim();
+        if (el.dataset.slkRaw === raw) return;
+        el.dataset.slkRaw = raw;
+        const short = parse(raw);
+        if (short) el.dataset.slkDate = short;
+        else delete el.dataset.slkDate;
     };
-    let t = null;
-    const schedule = () => { if (!t) t = setTimeout(() => { t = null; run(); }, 80); };
     const start = () => {
         const chat = document.getElementById('chat');
         if (!chat) { setTimeout(start, 500); return; }
-        run();
-        new MutationObserver(schedule).observe(chat, { childList: true, subtree: true, characterData: true });
+        const pending = new Set();
+        let t = null;
+        const collect = node => {
+            const el = node.nodeType === 1 ? node : node.parentElement;
+            if (!el) return;
+            const stamp = el.closest('.timestamp');
+            if (stamp) pending.add(stamp);
+            else if (node.nodeType === 1) el.querySelectorAll('.timestamp').forEach(x => pending.add(x));
+        };
+        chat.querySelectorAll('.mes .timestamp').forEach(update);
+        new MutationObserver(records => {
+            for (const r of records) {
+                const el = r.target.nodeType === 1 ? r.target : r.target.parentElement;
+                const stamp = el?.closest('.timestamp');
+                if (stamp) pending.add(stamp);
+                for (const node of r.addedNodes) collect(node);
+            }
+            if (!pending.size || t) return;
+            t = setTimeout(() => {
+                t = null;
+                for (const el of pending) if (chat.contains(el) && el.closest('.mes')) update(el);
+                pending.clear();
+            }, 80);
+        }).observe(chat, { childList:true, subtree:true, characterData:true });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
@@ -2653,7 +2684,8 @@ if (SLK_UI_SETTINGS.enabled) {
     const update = (el) => {
         const min = parseFloat(el.min || '0'), max = parseFloat(el.max || '100'), v = parseFloat(el.value || '0');
         const pct = max > min ? Math.min(100, Math.max(0, ((v - min) / (max - min)) * 100)) : 0;
-        el.style.setProperty('--slk-fill', pct + '%');
+        const fill = pct + '%';
+        if (el.style.getPropertyValue('--slk-fill') !== fill) el.style.setProperty('--slk-fill', fill);
     };
     const all = () => document.querySelectorAll('input[type="range"]').forEach(update);
     document.addEventListener('input', (e) => { if (e.target?.type === 'range') update(e.target); }, true);
@@ -2839,28 +2871,55 @@ if (SLK_UI_SETTINGS.enabled) {
         extra.style.removeProperty('--slk-actions-shift');
     }
 
-    function run() { document.querySelectorAll('#chat .mes').forEach(sync); }
-    let scheduled = false;
-    function schedule() {
-        if (scheduled) return;
-        scheduled = true;
-        setTimeout(() => { scheduled = false; run(); }, 35);
-    }
     function start() {
         const chat = document.getElementById('chat');
         if (!chat) { setTimeout(start, 500); return; }
-        run();
-        new MutationObserver(schedule).observe(chat, { subtree: true, childList: true, attributes: true,
-            attributeFilter: ['style', 'class', 'hidden'] });
+        const pending = new Set();
+        let timer = null;
+        const actionScope = '.ch_name, .mesAvatarWrapper, .mes_buttons, .extraMesButtons';
+        const queue = mes => { if (mes && chat.contains(mes)) pending.add(mes); };
+        const flush = () => {
+            timer = null;
+            const batch = [...pending]; pending.clear();
+            for (const mes of batch) if (chat.contains(mes)) sync(mes);
+        };
+        const schedule = () => { if (pending.size && timer === null) timer = setTimeout(flush, 35); };
+        const all = () => { chat.querySelectorAll('.mes').forEach(queue); schedule(); };
+        chat.querySelectorAll('.mes').forEach(sync);
+        new MutationObserver(records => {
+            for (const r of records) {
+                const el = r.target;
+                if (!(el instanceof Element)) continue;
+                if (r.type === 'attributes' && r.oldValue === el.getAttribute(r.attributeName)) continue;
+                const mes = el.closest('.mes');
+                if (mes) {
+                    // Streaming message text and status-box content do not change the action menu.
+                    if (el === mes || el.closest(actionScope) || (r.type === 'childList' && el.matches('.mes_block'))) queue(mes);
+                } else if (r.type === 'childList') {
+                    for (const node of r.addedNodes) {
+                        if (!(node instanceof Element)) continue;
+                        if (node.matches('.mes')) queue(node);
+                        else node.querySelectorAll('.mes').forEach(queue);
+                    }
+                }
+            }
+            schedule();
+        }).observe(chat, { subtree:true, childList:true, attributes:true, attributeOldValue:true,
+            attributeFilter:['style','class','hidden'] });
         document.addEventListener('click', e => {
-            const hint = e.target.closest?.('#chat .extraMesButtonsHint');
-            if (!hint) return;
-            const mes = hint.closest('.mes');
-            const extra = mes?.querySelector('.mes_buttons > .extraMesButtons');
-            setTimeout(run, 0);
-            setTimeout(run, 90);
+            const mes = e.target.closest?.('#chat .extraMesButtonsHint')?.closest('.mes');
+            if (!mes) return;
+            setTimeout(() => { queue(mes); schedule(); }, 0);
+            setTimeout(() => { queue(mes); schedule(); }, 90);
         }, true);
-        window.addEventListener('slk-ui-settings-changed', schedule);
+        window.addEventListener('slk-ui-settings-changed', all);
+        // Native expand-all preference changes the state without mutating messages.
+        let expanded = document.body.classList.contains('expandMessageActions');
+        new MutationObserver(() => {
+            const next = document.body.classList.contains('expandMessageActions');
+            if (next !== expanded) { expanded = next; all(); }
+        }).observe(document.body, {attributes:true,attributeFilter:['class']});
+        window.addEventListener('resize', all, {passive:true});
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
