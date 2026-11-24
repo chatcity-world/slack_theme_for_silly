@@ -18107,14 +18107,14 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
         --pc-main-left: var(--pc-sidebar-edge);
         --slk-top-h: 0px;
         --slk-footer-h: 0px;
-        background: #3F0E40 !important;
+        background: #4F0D4C !important;
         background-image: none !important;
         overflow: hidden !important;
     }
     html body.slk-ui.slk-pc.slk-pc-panel-open {
         --pc-main-left: calc(var(--pc-sidebar-edge) + var(--pc-panel));
     }
-    html:has(body.slk-ui.slk-pc) { background: #3F0E40 !important; }
+    html:has(body.slk-ui.slk-pc) { background: #4F0D4C !important; }
     html body.slk-ui.slk-pc :is(#bg1, #bg_custom) { display: none !important; }
     html:has(body.slk-ui.slk-pc) #slk-mobile-footer,
     html body.slk-ui.slk-pc #slk-settings-menu,
@@ -18131,7 +18131,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
         min-height: 0 !important;
         padding: 0 !important;
         margin: 0 !important;
-        background: #350D36 !important;
+        background: #4F0D4C !important;
         background-image: none !important;
         border: 0 !important;
         box-shadow: none !important;
@@ -18149,6 +18149,8 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
         display: flex;
         align-items: center;
         gap: 8px;
+        justify-content: center;
+        box-sizing: border-box;
         width: min(720px, calc(100vw - 420px));
         height: 28px;
         margin: 0;
@@ -18158,10 +18160,10 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
         background: rgba(255, 255, 255, .16);
         color: rgba(255, 255, 255, .85);
         font: 400 13px/1 var(--slk-font, sans-serif);
-        cursor: pointer;
+        cursor: default;
+        pointer-events: none;
         box-shadow: none;
     }
-    html body.slk-ui.slk-pc #slk-pc-search:hover { background: rgba(255, 255, 255, .24); }
     html body.slk-ui.slk-pc #slk-pc-search[hidden] { display: none; }
 
     /* ---------- 왼쪽 레일 ---------- */
@@ -18178,14 +18180,14 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
         gap: 4px;
         padding: 8px 0 14px;
         box-sizing: border-box;
-        background: #3F0E40;
+        background: #4F0D4C;
         overflow-y: auto;
         scrollbar-width: none;
     }
     html body.slk-ui.slk-pc #slk-pc-rail[hidden] { display: none; }
     html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-ws {
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 30px;
         margin: 0 0 10px;
         padding: 0;
         border: 0;
@@ -18465,7 +18467,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     }
     html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c) #slk-header {
         height: var(--pc-top) !important;
-        background: #350D36 !important;
+        background: #4F0D4C !important;
         border-radius: 0 !important;
         -webkit-backdrop-filter: none !important;
         backdrop-filter: none !important;
@@ -18502,15 +18504,15 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
   html body.slk-ui.slk-pc #slk-pc-rail {
     width: var(--pc-rail) !important;
     padding: 13px 0 !important;
-    background: #3F0E40 !important;
+    background: #4F0D4C !important;
     align-items: center !important;
     overflow: hidden !important;
   }
   html body.slk-ui.slk-pc #slk-pc-rail .slk-pc-ws {
-    width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
-    border-radius: 13px !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    border-radius: 9px !important;
     background: #FFFFFF !important;
     box-shadow: 0 0 0 1px rgba(255,255,255,.22) !important;
   }
@@ -18527,7 +18529,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     padding: 10px 6px 12px !important;
     margin: 0 !important;
     color: #FFFFFF !important;
-    background: linear-gradient(180deg, #633868 0%, #59325D 100%) !important;
+    background: #622860 !important;
     border-right: 1px solid rgba(255,255,255,.15) !important;
     box-shadow: none !important;
     overflow: hidden !important;
@@ -18645,7 +18647,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
      matching the two-surface hierarchy of the supplied Slack reference. */
   html body.slk-ui.slk-pc #slk-pc-sidebar {
     width: var(--pc-sidebar) !important;
-    background: linear-gradient(180deg, #562E5B 0%, #512A56 100%) !important;
+    background: #622860 !important;
     border-radius: 12px 0 0 12px !important;
     border-right: 0 !important;
     padding: 10px 4px 12px !important;
@@ -22268,4 +22270,21 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort > select.sl
 }
 html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-within {
   outline:2px solid #1264A3 !important; outline-offset:2px !important;
+}
+
+/* v1.8.55 — desktop selected navigation glyphs stay white, not mobile purple.
+   Keep fill/stroke geometry and negative-space details intact. */
+@media screen and (min-width:1001px) {
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item.active .slk-pc-item-icon[data-slk-glyph-state="solid"],
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item.active .slk-pc-item-icon[data-slk-glyph-state="solid"] > svg {
+    color: #FFFFFF !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item.active .slk-pc-item-icon[data-slk-glyph-state="solid"] > svg[fill="currentColor"] {
+    fill: #FFFFFF !important;
+    stroke: none !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item.active .slk-pc-item-icon[data-slk-glyph-state="solid"] > svg[fill="none"] {
+    fill: none !important;
+    stroke: #FFFFFF !important;
+  }
 }

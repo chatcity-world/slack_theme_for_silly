@@ -434,6 +434,27 @@ const ICONS = {
     backgrounds: svg('<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5a2 2 0 0 0-2.8 0L6 20.5"/>'),
 };
 
+// Active-only navigation glyphs. Negative-space details remain transparent on
+// both the purple mobile selection pill and the desktop sidebar.
+const slkSolidNavSvg = (body) => `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="none" aria-hidden="true">${body}</svg>`;
+const SLK_ACTIVE_NAV_ICONS = {
+    prompt: slkSolidNavSvg('<path fill-rule="evenodd" d="M6 3h12a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm1.1 5.5L5.9 10l2.5 2-2.5 2 1.2 1.5 4.3-3.5-4.3-3.5ZM12 14v2h5v-2h-5Z"/>'),
+    connection: slkSolidNavSvg('<path d="M8 2a1 1 0 0 1 2 0v5h4V2a1 1 0 0 1 2 0v5h2a1 1 0 0 1 1 1v4a6 6 0 0 1-6 6v4a1 1 0 0 1-2 0v-4a6 6 0 0 1-6-6V8a1 1 0 0 1 1-1h2Z"/>'),
+    formatting: ICONS.formatting.replace('<path', '<g stroke-width="2.7"><path').replace('</svg>', '</g></svg>'),
+    lorebook: slkSolidNavSvg('<path d="M2 3h6a4.8 4.8 0 0 1 3.25 1.3v16A4.9 4.9 0 0 0 8 19H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1ZM22 3h-6a4.8 4.8 0 0 0-3.25 1.3v16A4.9 4.9 0 0 1 16 19h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1Z"/>'),
+    extensions: slkSolidNavSvg('<path d="M10 3.5a2 2 0 1 1 4 0V5h3a2 2 0 0 1 2 2v3h-1.5a2 2 0 1 0 0 4H19v3a2 2 0 0 1-2 2h-3v-1.5a2 2 0 1 0-4 0V19H7a2 2 0 0 1-2-2v-3h1.5a2 2 0 1 0 0-4H5V7a2 2 0 0 1 2-2h3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>'),
+    persona: slkSolidNavSvg('<path fill-rule="evenodd" d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21Zm0 4.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM5.9 17.8a8.5 8.5 0 0 0 12.2 0 6.8 6.8 0 0 0-12.2 0Z"/>'),
+    character: slkSolidNavSvg('<circle cx="9" cy="8" r="4"/><path d="M1.5 20v-1a5.5 5.5 0 0 1 5.5-5.5h4A5.5 5.5 0 0 1 16.5 19v1a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1ZM15.3 4.1a4 4 0 1 1 0 7.8 6 6 0 0 0 0-7.8ZM17 13.7a5.5 5.5 0 0 1 5.5 5.3v1a1 1 0 0 1-1 1h-3.1a3 3 0 0 0 .1-1v-1a7.5 7.5 0 0 0-1.5-5.3Z"/>'),
+};
+function slkSyncNavGlyph(button, active, host = button) {
+    const key = TABS.find(([selector]) => selector === button.dataset.drawer)?.[1];
+    if (!key || !SLK_ACTIVE_NAV_ICONS[key] || !host) return;
+    const state = active ? 'solid' : 'line';
+    if ((host.dataset.slkGlyphState || 'line') === state) return;
+    host.innerHTML = active ? SLK_ACTIVE_NAV_ICONS[key] : ICONS[key];
+    host.dataset.slkGlyphState = state;
+}
+
 // 바텀 탭 = 원래 드로어 ID → 아이콘
 const TABS = [
     ['#ai-config-button', 'prompt', '프롬프트'],
@@ -1827,6 +1848,7 @@ if (SLK_UI_SETTINGS.enabled) {
                 ? btn.dataset.drawer === desiredSelector
                 : isFooterDrawerOpen(document.querySelector(btn.dataset.drawer));
             btn.setAttribute('aria-pressed', String(active));
+            slkSyncNavGlyph(btn, active);
             btn.style.setProperty('background', active ? '#EFEAF0' : 'transparent', 'important');
             btn.style.setProperty('color', active ? '#4A154B' : '#616061', 'important');
         }
@@ -3186,10 +3208,10 @@ if (SLK_UI_SETTINGS.enabled) {
         { selector: DRAWERS.userSettings, icon: ICONS.userSettings, label: '설정' },
         { selector: DRAWERS.backgrounds, icon: ICONS.backgrounds, label: '배경' },
     ];
-    const SEARCH_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
     let brandRail = null;
     let sectionMenu = null;
-    let search = null;
+    let versionDisplay = null;
+    let versionRequest = null;
     const nav = () => window.__slkDesktopRailNavigation;
     const itemMarkup = ({ selector, icon, label }) =>
         `<button type="button" class="slk-pc-item" data-drawer="${selector}" title="${label}" aria-label="${label}" aria-pressed="false">` +
@@ -3200,6 +3222,7 @@ if (SLK_UI_SETTINGS.enabled) {
             const on = button.dataset.drawer === active;
             button.classList.toggle('active', on);
             button.setAttribute('aria-pressed', String(on));
+            slkSyncNavGlyph(button, on, button.querySelector('.slk-pc-item-icon'));
         });
     }
 
@@ -3234,30 +3257,26 @@ if (SLK_UI_SETTINGS.enabled) {
                 nav()?.toggle(button.dataset.drawer);
             });
         }
-        if (!search) {
-            search = document.createElement('button');
-            search.type = 'button';
-            search.id = 'slk-pc-search';
-            search.innerHTML = `${SEARCH_SVG}<span>캐릭터 검색</span>`;
-            document.body.appendChild(search);
-            for (const type of ['touchstart', 'mousedown']) search.addEventListener(type, e => e.stopPropagation());
-            search.addEventListener('click', () => {
-                if (nav()?.getCurrent() !== DRAWERS.character) nav()?.toggle(DRAWERS.character);
-                setTimeout(() => {
-                    const back = document.getElementById('rm_button_characters');
-                    if (back && getComputedStyle(document.getElementById('rm_characters_block') || back).display === 'none') back.click();
-                    const bar = document.getElementById('character_search_bar');
-                    const toggle = document.getElementById('rm_button_search');
-                    if (bar && getComputedStyle(bar).display === 'none' && toggle) toggle.click();
-                    setTimeout(() => document.getElementById('character_search_bar')?.focus(), 60);
-                }, 60);
-            });
+        if (!versionDisplay) {
+            // A static label in the existing top-bar slot, not a search control.
+            versionDisplay = document.createElement('div');
+            versionDisplay.id = 'slk-pc-search';
+            versionDisplay.setAttribute('aria-live', 'polite');
+            versionDisplay.textContent = 'SillyTavern';
+            document.body.appendChild(versionDisplay);
         }
         const on = desktop.matches && SLK_UI_SETTINGS.enabled;
         document.body.classList.toggle('slk-pc', on);
         brandRail.hidden = !on;
         sectionMenu.hidden = !on;
-        search.hidden = !on;
+        versionDisplay.hidden = !on;
+        if (on && !versionRequest) {
+            versionRequest = fetchVersion().then(v => {
+                const parts = [v?.pkgVersion, v?.gitBranch].filter(Boolean);
+                versionDisplay.textContent = parts.length ? parts.join(' ') : 'SillyTavern · 버전 확인 불가';
+                if (!v?.pkgVersion) versionRequest = null;
+            });
+        }
         mark(nav()?.getCurrent?.() ?? null);
     }
 
