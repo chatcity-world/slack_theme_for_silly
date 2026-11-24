@@ -3211,6 +3211,7 @@ if (SLK_UI_SETTINGS.enabled) {
     let brandRail = null;
     let sectionMenu = null;
     let versionDisplay = null;
+    let headerChrome = null;
     let trafficLights = null;
     let versionRequest = null;
     const nav = () => window.__slkDesktopRailNavigation;
@@ -3264,7 +3265,26 @@ if (SLK_UI_SETTINGS.enabled) {
             versionDisplay.id = 'slk-pc-search';
             versionDisplay.setAttribute('aria-live', 'polite');
             versionDisplay.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="slk-pc-version-label">SillyTavern</span>';
-            document.body.appendChild(versionDisplay);
+            // Desktop-only decorative controls; no navigation or bot actions.
+            headerChrome = document.createElement('div');
+            headerChrome.id = 'slk-pc-header-chrome';
+            const history = document.createElement('div');
+            history.className = 'slk-pc-history';
+            history.setAttribute('aria-hidden', 'true');
+            history.innerHTML = `
+                <span class="slk-pc-history-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M19 12H5m7-7-7 7 7 7"/></svg></span>
+                <span class="slk-pc-history-icon is-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 12h14m-7-7 7 7-7 7"/></svg></span>
+                <span class="slk-pc-history-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="9.5"/><path d="M12 6v6h5"/></svg></span>`;
+            const bot = document.createElement('span');
+            bot.className = 'slk-pc-bot';
+            bot.setAttribute('aria-hidden', 'true');
+            const botImage = document.createElement('img');
+            botImage.alt = '';
+            botImage.src = new URL('./slack-bot.webp', import.meta.url).href;
+            botImage.draggable = false;
+            bot.appendChild(botImage);
+            headerChrome.append(history, versionDisplay, bot);
+            document.body.appendChild(headerChrome);
         }
         if (!trafficLights) {
             trafficLights = document.createElement('div');
@@ -3281,6 +3301,7 @@ if (SLK_UI_SETTINGS.enabled) {
         brandRail.hidden = !on;
         sectionMenu.hidden = !on;
         versionDisplay.hidden = !on;
+        headerChrome.hidden = !on;
         trafficLights.hidden = !on;
         if (on && !versionRequest) {
             versionRequest = fetchVersion().then(v => {

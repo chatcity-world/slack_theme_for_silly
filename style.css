@@ -22443,3 +22443,74 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-withi
     background: rgba(255,255,255,.22) !important;
   }
 }
+
+
+/* v1.8.62 — decorative desktop header navigation and Slackbot. */
+#slk-pc-header-chrome { display: none !important; }
+@media screen and (min-width: 1001px) {
+  html body.slk-ui.slk-pc #slk-pc-header-chrome:not([hidden]) {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 61;
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    width: min(844px, calc(100vw - 192px));
+    height: var(--pc-top);
+    box-sizing: border-box;
+    pointer-events: none;
+    user-select: none;
+    color: #fff;
+  }
+  html body.slk-ui.slk-pc #slk-pc-header-chrome #slk-pc-search {
+    position: static !important;
+    transform: none !important;
+    flex: 1 1 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 720px !important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-header-chrome .slk-pc-history {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 4px;
+  }
+  html body.slk-ui.slk-pc #slk-pc-header-chrome .slk-pc-history-icon {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 28px;
+    color: #fff;
+  }
+  html body.slk-ui.slk-pc #slk-pc-header-chrome .slk-pc-history-icon.is-muted { opacity: .45; }
+  html body.slk-ui.slk-pc #slk-pc-header-chrome .slk-pc-history-icon > svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+  }
+  html body.slk-ui.slk-pc #slk-pc-header-chrome .slk-pc-bot {
+    display: grid;
+    place-items: center;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 10px;
+  }
+  html body.slk-ui.slk-pc #slk-pc-header-chrome .slk-pc-bot > img {
+    display: block !important;
+    width: 22px !important;
+    height: 22px !important;
+    object-fit: cover;
+    border-radius: 8px !important;
+  }
+}
+@media screen and (min-width: 1001px) and (max-width: 1199px) {
+  html body.slk-ui.slk-pc #slk-pc-header-chrome:not([hidden]) {
+    width: min(644px, calc(100vw - 192px));
+  }
+}
