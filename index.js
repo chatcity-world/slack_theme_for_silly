@@ -1,16 +1,48 @@
-// iOS installed PWAs can lock their status bar appearance on initial load.
-// Set light chrome before the rest of Slack UI loads, rather than changing
-// black-translucent to default after a chat is opened.
+// Status bar bootstrap: entirely inside the extension, no server-file patch.
 (() => {
-    try { if (localStorage.getItem('slk-ui-enabled') === 'false') return; } catch { /* default on */ }
-    const meta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
-        || document.head.appendChild(document.createElement('meta'));
-    meta.setAttribute('name', 'apple-mobile-web-app-status-bar-style');
-    meta.setAttribute('content', 'default');
-    const theme = document.querySelector('meta[name="theme-color"]')
-        || document.head.appendChild(document.createElement('meta'));
-    theme.setAttribute('name', 'theme-color');
-    theme.setAttribute('content', '#FFFFFF');
+    const key = '__slkStatusChrome';
+    if (window[key]) return;
+    const mq = matchMedia('(max-width: 1000px)');
+    const apple = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const allowed = () => {
+        try { return localStorage.getItem('slk-ui-enabled') !== 'false' && mq.matches; }
+        catch { return mq.matches; }
+    };
+    const original = new Map();
+    const removed = new Map();
+    let created = null;
+    function set(color) {
+        if (!allowed()) return;
+        // Modern WebKit samples the page; avoid forcing a legacy status mode.
+        if (apple) for (const meta of document.querySelectorAll('meta[name="apple-mobile-web-app-status-bar-style"]')) {
+            removed.set(meta, meta.nextSibling);
+            meta.remove();
+        }
+        let metas = [...document.querySelectorAll('meta[name="theme-color"]')];
+        if (!metas.length) {
+            created = document.createElement('meta'); created.name = 'theme-color';
+            document.head.append(created); metas = [created];
+        }
+        for (const meta of metas) {
+            if (meta !== created && !original.has(meta)) original.set(meta, meta.getAttribute('content'));
+            if (meta.content !== color) meta.content = color;
+        }
+    }
+    function restore() {
+        for (const [meta, value] of original) {
+            if (value === null) meta.removeAttribute('content');
+            else if (meta.content !== value) meta.content = value;
+        }
+        original.clear();
+        created?.remove(); created = null;
+        for (const [meta, next] of removed) document.head.insertBefore(meta, next?.parentNode === document.head ? next : null);
+        removed.clear();
+    }
+    window[key] = {set, restore};
+    if (allowed()) set('#FFFFFF');
+    // Also undo the early metadata change if the mobile viewport is left.
+    mq.addEventListener?.('change', () => { if (!allowed()) restore(); });
 })();
 
 // Keep the native in-document loading stage white before the extension JS finishes loading.

@@ -1227,61 +1227,51 @@ function dedupeWelcomePanel() {
 }
 
 
-// v1.8.0: chat system status strip (time / battery) follows the chat view.
-const slkOriginalThemeColor = document.querySelector('meta[name="theme-color"]')?.content ?? null;
-let slkAddedThemeColor = false;
+// v1.8.17: actual fixed status-area colour sample, independent of header design.
+// The visible view and compact class are the same state used by the header.
+let slkStatusActive = false;
 function slkSyncStatusBar() {
     const mobile = matchMedia('(max-width: 1000px)').matches;
-    const enabled = SLK_UI_SETTINGS.enabled && document.body.classList.contains('slk-ui');
-    const chat = mobile && enabled && document.body.classList.contains('slk-in-chat');
-    // Managed navigation leaves some hidden drawers with .openIcon.  Do not
-    // mistake a stale hidden icon for a visible panel: that kept the iOS
-    // status area aubergine after returning to chat.
-    const drawerOpen = [...document.querySelectorAll('#top-settings-holder > .drawer')].some(drawer => {
-        const content = drawer.querySelector('.drawer-content.openDrawer');
-        if (!content || content.classList.contains('slk-nav-hidden')) return false;
-        if (document.body.classList.contains('slk-managed-navigation') &&
-            document.body.classList.contains('slk-no-panel')) return false;
-        const style = getComputedStyle(content);
-        return style.display !== 'none' && style.visibility !== 'hidden';
-    });
-    const onChat = Boolean(chat && document.body.dataset.slkHeaderView === 'chat'); // Use actual visible pane, not a chat left mounted behind a drawer.
-    document.documentElement.classList.toggle('slk-status-chat', onChat);
-    const lightSurface = onChat || document.body.classList.contains('slk-header-compact');
-    const desired = mobile && enabled ? (lightSurface ? '#FFFFFF' : '#3F1543') : (slkOriginalThemeColor || '#3F1543');
-    let meta = document.querySelector('meta[name="theme-color"]');
-    if (!meta) {
-        meta = document.createElement('meta'); meta.name='theme-color'; document.head.append(meta); slkAddedThemeColor=true;
+    const body = document.body;
+    const enabled = SLK_UI_SETTINGS.enabled && body?.classList.contains('slk-ui');
+    const surface = document.getElementById('slk-status-surface');
+    const root = document.documentElement;
+    if (!mobile || !enabled) {
+        if (!slkStatusActive) return;
+        slkStatusActive = false;
+        root.removeAttribute('data-slk-status-color');
+        surface?.removeAttribute('data-slk-status-color');
+        window.__slkStatusChrome?.restore();
+        return;
     }
-    if (meta.content !== desired) meta.content=desired;
-    // iOS standalone mode also reads this meta value. Browsers can defer
-    // changes until the next navigation, but keeping it in sync is harmless.
-    let iosMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
-    if (!iosMeta) {
-        iosMeta = document.createElement('meta');
-        iosMeta.name = 'apple-mobile-web-app-status-bar-style';
-        document.head.append(iosMeta);
-    }
-    const iosStyle = 'default';
-    if (iosMeta.content !== iosStyle) iosMeta.content = iosStyle;
+    slkStatusActive = true;
+    const light = body.dataset.slkHeaderView === 'chat' || body.classList.contains('slk-header-compact');
+    const state = light ? 'light' : 'purple';
+    const desired = light ? '#FFFFFF' : '#3F1543';
+    if (root.dataset.slkStatusColor !== state) root.dataset.slkStatusColor = state;
+    if (surface && surface.dataset.slkStatusColor !== state) surface.dataset.slkStatusColor = state;
+    // Both the early loader and live view use the same metadata owner.
+    window.__slkStatusChrome?.set(desired);
 }
 function slkWatchStatusBar() {
-    // A real DOM surface (not a pseudo-element) can help iOS sample the right
-    // page colour behind the system status bar in installed web apps.
     if (!document.getElementById('slk-status-surface')) {
-        const surface=document.createElement('div');
-        surface.id='slk-status-surface';
-        surface.setAttribute('aria-hidden','true');
+        const surface = document.createElement('div');
+        surface.id = 'slk-status-surface';
+        surface.setAttribute('aria-hidden', 'true');
         document.body.appendChild(surface);
     }
-    let queued=false;
-    const schedule=()=>{ if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;slkSyncHeaderView();slkSyncStatusBar();}); };
-    const obs=new MutationObserver(records=>{
-        if(records.some(r=>r.target===document.body || r.target.classList?.contains('drawer-icon'))) schedule();
-    });
-    obs.observe(document.body,{attributes:true,attributeFilter:['class']});
+    let queued = false;
+    const schedule = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => { queued = false; slkSyncHeaderView(); slkSyncStatusBar(); });
+    };
+    const obs = new MutationObserver(schedule);
+    obs.observe(document.body, {attributes:true, attributeFilter:['class','data-slk-header-view']});
     const topSettings = document.getElementById('top-settings-holder');
-    if (topSettings) obs.observe(topSettings,{attributes:true,attributeFilter:['class'],subtree:true});
+    if (topSettings) new MutationObserver(records => {
+        if (records.some(r => r.target.classList?.contains('drawer-icon') || r.target.classList?.contains('drawer-content'))) schedule();
+    }).observe(topSettings, {attributes:true,attributeFilter:['class'],subtree:true});
     window.addEventListener('resize',schedule);
     window.addEventListener('pageshow',schedule);
     window.addEventListener('focus',schedule);

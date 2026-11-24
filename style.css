@@ -21824,6 +21824,22 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   html:has(body.slk-ui[data-slk-header-view="chat"]),html:has(body.slk-ui[data-slk-header-view].slk-header-compact) {background-color:#fff!important;}
   html:has(body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact)) {background-color:#3f1543!important;}
   body.slk-ui[data-slk-header-view]::before {content:none!important;display:none!important;}
-  body.slk-ui[data-slk-header-view] #slk-status-surface {display:none!important;}
+  /* v1.8.17: only the status-area colour sample. Never resize or restyle header buttons. */
+  html[data-slk-status-color] body.slk-ui #slk-status-surface[data-slk-status-color] {
+    display:block!important;position:fixed!important;inset:0 0 auto 0!important;
+    width:100%!important;height:max(12px,env(safe-area-inset-top,0px))!important;
+    min-height:12px!important;max-height:none!important;margin:0!important;padding:0!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important;
+    background-image:none!important;opacity:1!important;visibility:visible!important;
+    pointer-events:none!important;z-index:4001!important;transform:none!important;
+    filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+    transition:none!important;
+  }
+  html[data-slk-status-color="light"] body.slk-ui #slk-status-surface {background-color:#fff!important;}
+  html[data-slk-status-color="purple"] body.slk-ui #slk-status-surface {background-color:#3f1543!important;}
+  html[data-slk-status-color="light"] {background-color:#fff!important;}
+  html[data-slk-status-color="purple"] {background-color:#3f1543!important;}
+  body.slk-ui #slk-status-surface:not([data-slk-status-color]) {display:none!important;}
  }
+ @media screen and (min-width:1001px) {#slk-status-surface {display:none!important;}}
 }
