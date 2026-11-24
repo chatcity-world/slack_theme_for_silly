@@ -23104,3 +23104,59 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
 @media screen and (min-width:1001px) {
 html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #slk-pc-panel-title {font-size:var(--slk-tab-title-size)!important;font-weight:700!important;line-height:var(--slk-tab-title-line)!important;letter-spacing:-.015em!important;}
 }
+
+
+/* v1.8.69 — Persona native header (including nested title wrapper) and shared help icons. */
+@media screen {
+ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) { --slk-help-ink:#8A8A8A; --slk-help-size:16px; }
+ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container { margin-top:0!important; padding-top:0!important; }
+ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container > .flex-container:first-child { margin-top:0!important; padding-top:0!important; }
+ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container > .flex-container:first-child > :is(.flex1,.flex-container,div):has(> :is(h2,h3,h4)):not(:has(> .user_stats_button)) {
+   min-height:var(--slk-tab-title-row)!important; margin-top:0!important; padding-top:0!important; align-items:center!important; box-sizing:border-box!important;
+ }
+ :is(html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container > .flex-container:first-child :is(h2,h3,h4):not(.menu_button),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > :is(h2,h3):first-child,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container > :is(h2,h3):first-child) {
+   font-family:var(--slk-font)!important; font-size:var(--slk-tab-title-size)!important; font-weight:700!important;
+   line-height:var(--slk-tab-title-line)!important; letter-spacing:-.015em!important; color:#1D1C1D!important;
+   min-height:var(--slk-tab-title-row)!important; height:auto!important; display:flex!important; align-items:center!important;
+   justify-content:flex-start!important; gap:4px!important; text-align:left!important; margin:0!important; padding:0!important;
+   box-sizing:border-box!important; position:relative!important; top:auto!important; transform:none!important;
+ }
+ :is(html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container > .flex-container:first-child :is(h2,h3,h4):not(.menu_button),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > :is(h2,h3):first-child,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container > :is(h2,h3):first-child) :is(span,b,strong,label):not(.fa,.fas,.far,.fa-solid,.fa-regular,.note-link-span,.notes-link,.menu_button,.right_menu_button,[class^="fa-"],[class*=" fa-"],[aria-hidden="true"]):not(.notes-link *) {
+   font-family:var(--slk-font)!important; font-size:var(--slk-tab-title-size)!important; font-weight:700!important;
+   line-height:var(--slk-tab-title-line)!important; letter-spacing:inherit!important; color:inherit!important;
+   margin:0!important; padding:0!important; align-items:center!important;
+ }
+ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(.fa-circle-question,.fa-question-circle,.note-link-span):not(.hidden,.displayNone,[hidden]):not(.notes-link:has(.note-link-span) :is(.fa-circle-question,.fa-question-circle)) {
+   --slk-ico:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229.5%22%2F%3E%3Cpath%20d%3D%22M9.1%209a3%203%200%200%201%205.8%201c0%202-3%203-3%203M12%2017h.01%22%2F%3E%3C%2Fsvg%3E");
+   color:var(--slk-help-ink)!important; -webkit-text-fill-color:transparent!important; opacity:1!important;
+   display:inline-flex!important; align-items:center!important; justify-content:center!important; align-self:center!important;
+   vertical-align:middle!important; flex:0 0 var(--slk-help-size)!important; width:var(--slk-help-size)!important; min-width:var(--slk-help-size)!important; max-width:var(--slk-help-size)!important;
+   height:var(--slk-help-size)!important; min-height:var(--slk-help-size)!important; max-height:var(--slk-help-size)!important;
+   font-size:0!important; line-height:0!important; padding:0!important; margin:0!important;
+   border:0!important; background:transparent!important; box-shadow:none!important; position:relative!important; inset:auto!important; transform:none!important; box-sizing:border-box!important;
+ }
+ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(.fa-circle-question,.fa-question-circle,.note-link-span):not(.hidden,.displayNone,[hidden]):not(.notes-link:has(.note-link-span) :is(.fa-circle-question,.fa-question-circle))::before {
+   content:""!important; display:block!important; background-color:var(--slk-help-ink)!important;
+   mask:var(--slk-ico) center/contain no-repeat!important; -webkit-mask:var(--slk-ico) center/contain no-repeat!important;
+   width:var(--slk-help-size)!important; height:var(--slk-help-size)!important; flex:0 0 var(--slk-help-size)!important;
+   margin:0!important; padding:0!important; position:static!important; transform:none!important; opacity:1!important;
+ }
+ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(.fa-circle-question,.fa-question-circle,.note-link-span):not(.hidden,.displayNone,[hidden]):not(.notes-link:has(.note-link-span) :is(.fa-circle-question,.fa-question-circle))::after { content:none!important; }
+ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(a.notes-link,a:has(> :is(.fa-circle-question,.fa-question-circle,.note-link-span)),.notes-link:has(> :is(.fa-circle-question,.fa-question-circle,.note-link-span))):not(.hidden,.displayNone,[hidden]) {
+   display:inline-flex!important; align-items:center!important; justify-content:center!important; align-self:center!important;
+   vertical-align:middle!important; width:auto!important; min-width:0!important; height:auto!important; min-height:0!important;
+   line-height:1!important; margin-block:0!important; padding-block:0!important; gap:0!important;
+   position:relative!important; inset:auto!important; transform:none!important;
+ }
+ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) .notes-link:has(.note-link-span) :is(.fa-circle-question,.fa-question-circle) {display:none!important;}
+}
+@media screen and (min-width:1001px) {
+ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement.openDrawer {padding-top:var(--slk-tab-title-top)!important; padding-inline:var(--slk-tab-title-inset)!important;}
+}
+@media screen and (max-width:1000px) {
+ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement.openDrawer {padding-top:calc(var(--slk-top-h) + var(--slk-tab-title-top))!important; padding-inline:var(--slk-tab-title-inset)!important;}
+}
