@@ -23006,3 +23006,101 @@ html body.slk-ui dialog.popup:has(.extensions_info) .slk-native-sort:focus-withi
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #completion_prompt_manager_popup #completion_prompt_manager_popup_edit .completion_prompt_manager_popup_entry_form_footer > a.menu_button::after {font:600 var(--slk-pop-label)/1.35 var(--slk-font)!important;}
  }
 }
+
+
+/* v1.8.68 — Actual seven tab title rows, not section titles. Shared PC/mobile geometry. */
+@media screen {
+html body.slk-ui { --slk-tab-title-size:17px; --slk-tab-title-line:24px; --slk-tab-title-row:40px; --slk-tab-title-inset:16px; --slk-tab-title-top:12px; --slk-tab-title-icon:28px; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#left-nav-panel #respective-presets-block .standoutHeader > :is(h2,h3,h4,strong,b,span):not(.menu_button):not(.right_menu_button):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not([aria-hidden="true"]),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_api_block > .wide100p:has(#connection_profiles) > .flex-container:first-child > :is(h2,h3,h4,strong,b),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#AdvancedFormatting > .flex-container:first-child > :is(h2,h3,h4),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#WorldInfo > .flex-container.alignitemscenter.gap10px > :is(h2,h3,h4),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_extensions_block .extensions_block > .flex-container:first-child > :is(h2,h3,h4),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container > .flex-container:first-child > :is(h2,h3,h4),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#AdvancedFormatting > :is(h2,h3):first-child,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#WorldInfo > :is(h2,h3):first-child,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#right-nav-panel[data-slk-view="list"] #CharListButtonAndHotSwaps > .flexFlowColumn::before,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#WorldInfo:not(:has(> .flex-container.alignitemscenter.gap10px > h3,> h3)) #world_popup > .flex-container:first-of-type::before {
+  font-family:var(--slk-font)!important; font-size:var(--slk-tab-title-size)!important; font-weight:700!important; line-height:var(--slk-tab-title-line)!important; letter-spacing:-.015em!important; color:#1D1C1D!important; text-align:left!important; text-shadow:none!important; margin:0!important; padding:0!important; border:0!important; min-width:0!important; box-shadow:none!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#left-nav-panel #respective-presets-block .standoutHeader > :is(h2,h3,h4,strong,b,span):not(.menu_button):not(.right_menu_button):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not([aria-hidden="true"]) > :is(h2,h3,h4,strong,b,span):not(.menu_button):not(.right_menu_button):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not([aria-hidden="true"]),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_api_block > .wide100p:has(#connection_profiles) > .flex-container:first-child > :is(h2,h3,h4,strong,b) > :is(h2,h3,h4,strong,b,span):not(.menu_button):not(.right_menu_button):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not([aria-hidden="true"]),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#AdvancedFormatting > .flex-container:first-child > :is(h2,h3,h4) > :is(h2,h3,h4,strong,b,span):not(.menu_button):not(.right_menu_button):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not([aria-hidden="true"]),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#WorldInfo > .flex-container.alignitemscenter.gap10px > :is(h2,h3,h4) > :is(h2,h3,h4,strong,b,span):not(.menu_button):not(.right_menu_button):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not([aria-hidden="true"]),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_extensions_block .extensions_block > .flex-container:first-child > :is(h2,h3,h4) > :is(h2,h3,h4,strong,b,span):not(.menu_button):not(.right_menu_button):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not([aria-hidden="true"]),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container > .flex-container:first-child > :is(h2,h3,h4) > :is(h2,h3,h4,strong,b,span):not(.menu_button):not(.right_menu_button):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not([aria-hidden="true"]),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#AdvancedFormatting > :is(h2,h3):first-child > :is(h2,h3,h4,strong,b,span):not(.menu_button):not(.right_menu_button):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not([aria-hidden="true"]),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#WorldInfo > :is(h2,h3):first-child > :is(h2,h3,h4,strong,b,span):not(.menu_button):not(.right_menu_button):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not([aria-hidden="true"]) {
+  font-family:var(--slk-font)!important; font-size:inherit!important; font-weight:inherit!important; line-height:inherit!important; letter-spacing:inherit!important; margin:0!important; padding:0!important; color:inherit!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#left-nav-panel #respective-presets-block .standoutHeader > :is(h2,h3,h4,strong,b,span):not(.menu_button):not(.right_menu_button):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not([aria-hidden="true"]),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_api_block > .wide100p:has(#connection_profiles) > .flex-container:first-child > :is(h2,h3,h4,strong,b),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#AdvancedFormatting > .flex-container:first-child > :is(h2,h3,h4),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#WorldInfo > .flex-container.alignitemscenter.gap10px > :is(h2,h3,h4),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_extensions_block .extensions_block > .flex-container:first-child > :is(h2,h3,h4),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container > .flex-container:first-child > :is(h2,h3,h4),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#AdvancedFormatting > :is(h2,h3):first-child,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#WorldInfo > :is(h2,h3):first-child {
+  min-height:var(--slk-tab-title-row)!important; display:flex!important; align-items:center!important; justify-content:flex-start!important; gap:4px!important; width:auto!important; max-width:100%!important; box-sizing:border-box!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#left-nav-panel #respective-presets-block .standoutHeader,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_api_block > .wide100p:has(#connection_profiles) > .flex-container:first-child,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#WorldInfo > .flex-container.alignitemscenter.gap10px {
+  display:flex!important; flex-direction:row!important; align-items:center!important; justify-content:space-between!important; gap:6px!important; min-height:var(--slk-tab-title-row)!important; margin:0 0 8px!important; padding:0!important; border:0!important; box-sizing:border-box!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#AdvancedFormatting > .flex-container:first-child,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container > .flex-container:first-child {
+  display:flex!important; flex-direction:column!important; align-items:stretch!important; justify-content:flex-start!important; gap:8px!important; margin:0 0 8px!important; padding:0!important; border:0!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_extensions_block .extensions_block > .flex-container:first-child {
+  grid-template-rows:minmax(var(--slk-tab-title-row),auto) auto!important; row-gap:8px!important; margin:0!important; padding:0!important; align-items:center!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#left-nav-panel #respective-presets-block .standoutHeader .flex-container {
+  padding:2px!important; gap:0!important; flex:0 0 auto!important; align-items:center!important; margin:0!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#left-nav-panel #respective-presets-block .standoutHeader .menu_button,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_api_block .flex-container:has(> #connection_profiles) > .menu_button {
+  width:var(--slk-tab-title-icon)!important; min-width:var(--slk-tab-title-icon)!important; max-width:var(--slk-tab-title-icon)!important; height:var(--slk-tab-title-icon)!important; min-height:var(--slk-tab-title-icon)!important; max-height:var(--slk-tab-title-icon)!important; flex:0 0 var(--slk-tab-title-icon)!important; margin:0!important; padding:0!important; display:inline-flex!important; align-items:center!important; justify-content:center!important; border-radius:8px!important; box-sizing:border-box!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_api_block > .wide100p:has(#connection_profiles) > .flex-container:first-child {
+  margin-bottom:0!important; justify-content:flex-start!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_api_block .flex-container:has(> #connection_profiles) {
+  margin-top:0!important; margin-bottom:0!important; padding:0!important; row-gap:8px!important; align-items:center!important; justify-content:flex-end!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_api_block #connection_profiles {
+  margin-top:0!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#AdvancedFormatting :is(#af_master_import,#af_master_export),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_extensions_block :is(#extensions_details,#third_party_extension_button),
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container > .flex-container:first-child > .flex-container:last-child > .menu_button,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#WorldInfo #world_popup #world_create_button {
+  height:var(--slk-ds-control,40px)!important; min-height:var(--slk-ds-control,40px)!important; max-height:none!important; font-size:13px!important; font-weight:600!important; border-radius:8px!important; margin:0!important; align-items:center!important; justify-content:center!important; box-sizing:border-box!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#right-nav-panel[data-slk-view="list"] #CharListButtonAndHotSwaps {
+  min-height:calc(var(--slk-tab-title-top) + var(--slk-tab-title-row))!important; height:auto!important; padding:var(--slk-tab-title-top) var(--slk-tab-title-inset) 0!important; margin:0!important; align-items:center!important; box-sizing:border-box!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#right-nav-panel[data-slk-view="list"] #CharListButtonAndHotSwaps > .flexFlowColumn {
+  min-height:var(--slk-tab-title-row)!important; justify-content:center!important; align-items:center!important; margin:0!important; padding:0!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#left-nav-panel #respective-presets-block,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_api_block > .wide100p:has(#connection_profiles) {
+  padding-top:var(--slk-tab-title-top)!important; padding-inline:var(--slk-tab-title-inset)!important; margin-top:0!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#rm_extensions_block .extensions_block,
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#PersonaManagement > .flex-container {
+  padding-top:0!important; margin-top:0!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#WorldInfo:not(:has(> .flex-container.alignitemscenter.gap10px > h3,> h3)) #world_popup > .flex-container:first-of-type {
+  grid-template-rows:var(--slk-tab-title-row) 42px!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#left-nav-panel #respective-presets-block .standoutHeader {
+  flex-wrap:wrap!important; justify-content:space-between!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > .drawer-content#left-nav-panel #respective-presets-block .standoutHeader > :is(h2,h3,h4,strong,b,span):not(.menu_button):not(.right_menu_button):not(.fa):not(.fas):not([class^="fa-"]):not([class*=" fa-"]):not([aria-hidden="true"]) {
+  flex:0 1 auto!important; white-space:nowrap!important; overflow:visible!important; text-overflow:clip!important;
+}
+}
+@media screen and (min-width:1001px) {
+html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #slk-pc-panel-title {font-size:var(--slk-tab-title-size)!important;font-weight:700!important;line-height:var(--slk-tab-title-line)!important;letter-spacing:-.015em!important;}
+}
