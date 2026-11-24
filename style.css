@@ -19509,3 +19509,130 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     white-space: nowrap !important;
   }
 }
+
+
+/* ====================================================================
+   Slack UI v1.7.7 — splash / model-select row / white chat header /
+   semibold character list.
+   ==================================================================== */
+@media screen and (max-width: 1000px) {
+  /* 1. Put the Google / Vertex AI edit action beside the select field. */
+  html body.slk-ui #openai_api .slk-model-select-row,
+  html body.slk-ui #vertexai_form .slk-model-select-row,
+  html body.slk-ui #google_form .slk-model-select-row {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 0 !important;
+    margin: 0 0 16px !important;
+  }
+  html body.slk-ui #openai_api .slk-model-select-row > select,
+  html body.slk-ui #openai_api .slk-model-select-row > .text_pole,
+  html body.slk-ui #vertexai_form .slk-model-select-row > select,
+  html body.slk-ui #vertexai_form .slk-model-select-row > .text_pole,
+  html body.slk-ui #google_form .slk-model-select-row > select,
+  html body.slk-ui #google_form .slk-model-select-row > .text_pole {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: auto !important;
+    margin: 0 !important;
+  }
+  html body.slk-ui .slk-model-select-row > .slk-model-edit-action {
+    flex: 0 0 42px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid #BBBBBB !important;
+    border-radius: 8px !important;
+    background: var(--slk-surface) !important;
+    box-shadow: none !important;
+    font-size: 0 !important;
+  }
+  html body.slk-ui .slk-model-select-row > .slk-model-edit-action :is(svg, i, .fa, .fa-solid) {
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+    flex: 0 0 18px !important;
+  }
+  html body.slk-ui .slk-model-title-row { display: block !important; margin: 0 !important; }
+  html body.slk-ui .slk-model-title-row > .slk-model-edit-action { display: none !important; }
+
+  /* 2. White splash only: white background + flat Slack glyph around 60px. */
+  html body.slk-ui #loader,
+  html body.slk-ui #loader.splash-screen,
+  html body.slk-ui #preloader {
+    background: #FFFFFF !important;
+  }
+  html body.slk-ui #loader::before,
+  html body.slk-ui #loader::after,
+  html body.slk-ui #loader #load-spinner,
+  html body.slk-ui #loader .splash-message {
+    display: none !important;
+    content: none !important;
+  }
+  html body.slk-ui #loader .splash-logo {
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
+    max-width: 60px !important;
+    max-height: 60px !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    background: transparent !important;
+  }
+
+  /* 3. Keep chat / in-chat-opened panel headers white with glass controls. */
+  html body.slk-ui.slk-in-chat #slk-header,
+  html body.slk-ui.slk-panel-opening #slk-header,
+  html body.slk-ui.slk-in-chat:has(#top-settings-holder > .drawer .drawer-icon.openIcon) #slk-header,
+  html body.slk-ui.slk-in-chat.slk-header-compact:has(#top-settings-holder > .drawer .drawer-icon.openIcon) #slk-header {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.74) 58%, rgba(255, 255, 255, 0) 100%) !important;
+    color: var(--slk-text) !important;
+  }
+  html body.slk-ui.slk-in-chat:has(.drawer-content.openDrawer) #slk-header,
+  html body.slk-ui.slk-in-chat:has(#top-settings-holder > .drawer .drawer-icon.openIcon) #slk-header,
+  html body.slk-ui.slk-panel-opening #slk-header {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.74) 58%, rgba(255, 255, 255, 0) 100%) !important;
+  }
+  html body.slk-ui #slk-chat-back,
+  html body.slk-ui #slk-chat-title,
+  html body.slk-ui.slk-in-chat:has(#top-settings-holder > .drawer .drawer-icon.openIcon) #slk-header #slk-panel-back,
+  html body.slk-ui.slk-panel-opening #slk-header #slk-panel-back,
+  html body.slk-ui.slk-in-chat:has(#top-settings-holder > .drawer .drawer-icon.openIcon) #slk-header #slk-ws,
+  html body.slk-ui.slk-in-chat:has(#top-settings-holder > .drawer .drawer-icon.openIcon) #slk-header .slk-header-actions,
+  html body.slk-ui.slk-panel-opening #slk-header > #slk-ws,
+  html body.slk-ui.slk-panel-opening #slk-header > .slk-header-actions {
+    border: 1px solid var(--slk-glass-border) !important;
+    background: var(--slk-glass-bg) !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.9) !important;
+    backdrop-filter: var(--slk-glass-blur) !important;
+    -webkit-backdrop-filter: var(--slk-glass-blur) !important;
+    color: var(--slk-text) !important;
+  }
+
+  /* 4. Character list names: true semibold, stronger than regular. */
+  html body.slk-ui #right-nav-panel #rm_characters_block .character_name_block,
+  html body.slk-ui #right-nav-panel #rm_characters_block .character_name_block > :first-child,
+  html body.slk-ui #right-nav-panel #rm_characters_block .character_select .ch_name,
+  html body.slk-ui #right-nav-panel #rm_characters_block .group_select .ch_name,
+  html body.slk-ui #right-nav-panel #rm_characters_block .bogus_folder_select .ch_name {
+    font-weight: 600 !important;
+  }
+}

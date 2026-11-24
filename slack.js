@@ -3,6 +3,7 @@
 // Settings are kept independently of SillyTavern's extension loader state.
 const SLK_DEFAULT_HEADER_IMAGE = 'img/logo.png';
 const SLK_SLACK_HEADER_IMAGE = new URL('./slack-logo.webp', import.meta.url).href;
+const SLK_SPLASH_IMAGE = new URL('./slack-splash-logo.png', import.meta.url).href;
 const SLK_UI_SETTINGS = (() => {
     const read = (key, fallback) => {
         try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
@@ -38,10 +39,13 @@ function slkSavePreference(key, value) {
 }
 
 function slkSelectedLogoUrl() {
-    // Both the startup splash and the header share the same image selection.
     return SLK_UI_SETTINGS.headerImageMode === 'custom'
         ? SLK_DEFAULT_HEADER_IMAGE
         : SLK_SLACK_HEADER_IMAGE;
+}
+
+function slkSelectedSplashLogoUrl() {
+    return SLK_SPLASH_IMAGE;
 }
 
 
@@ -70,7 +74,7 @@ function slkEnsureVisibleSplashLogo(src) {
 
 function slkApplyHeaderImage() {
     const src = slkSelectedLogoUrl();
-    slkRememberSplashLogo(src);
+    slkRememberSplashLogo(slkSelectedSplashLogoUrl());
     const avatar = document.querySelector('#slk-header .slk-ws-avatar');
     const image = avatar?.querySelector('img');
     if (image) {
@@ -79,9 +83,10 @@ function slkApplyHeaderImage() {
     }
     // Also update a currently visible splash and create a visible logo when ST
     // renders a splash container before our preferred logo node exists.
-    slkEnsureVisibleSplashLogo(src);
+    slkEnsureVisibleSplashLogo(slkSelectedSplashLogoUrl());
     document.querySelectorAll('#loader.splash-screen .splash-logo').forEach(logo => {
-        if (logo.tagName === 'IMG' && logo.getAttribute('src') !== src) logo.src = src;
+        const splashSrc = slkSelectedSplashLogoUrl();
+        if (logo.tagName === 'IMG' && logo.getAttribute('src') !== splashSrc) logo.src = splashSrc;
     });
 }
 
@@ -2339,24 +2344,24 @@ else init();
 (function slkBootSplashCss() {
     const START = '/* ==== Slack UI 시작 화면 (자동 추가 — 지우지 마세요) ==== */';
     const END = '/* ==== /Slack UI 시작 화면 ==== */';
-    const BOOT_CSS = "@media screen { #preloader { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: #4A154B !important; box-shadow: none !important; outline: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo))::backdrop { background: #4A154B !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content) { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; overflow: hidden !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) .popup-controls { display: none !important; } #loader { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 28px !important; width: 100% !important; height: 100% !important; background: transparent !important; color: #FFFFFF !important; } #loader::before { content: 'Slack'; order: 1; margin: -10px 0 0; color: #FFFFFF; font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -0.02em; } #loader .splash-logo { order: 0; width: 96px !important; height: 96px !important; object-fit: cover !important; border-radius: 24px !important; filter: none !important; box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important; } #loader #load-spinner, #preloader #load-spinner { order: 2; position: static !important; width: 28px !important; height: 28px !important; margin-top: 18px; font-size: 0 !important; color: transparent !important; border: 3px solid rgba(255, 255, 255, .25) !important; border-top-color: #FFFFFF !important; border-radius: 50% !important; box-sizing: border-box !important; animation: slk-boot-spin .8s linear infinite !important; } #loader #load-spinner::before { content: none !important; display: none !important; } #loader .splash-message { order: 3; margin: -12px 0 0 !important; color: rgba(255, 255, 255, .82) !important; font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important; font-size: 15px !important; font-weight: 600 !important; text-shadow: none !important; } } @keyframes slk-boot-spin { to { transform: rotate(360deg); } } @media screen { dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) * { border-color: transparent !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content, #loader, .splash-screen) { background: transparent !important; border: 0 !important; box-shadow: none !important; outline: none !important; } }";
+    const BOOT_CSS = "@media screen { #preloader { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: #FFFFFF !important; box-shadow: none !important; outline: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo))::backdrop { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content) { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; overflow: hidden !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) .popup-controls { display: none !important; } #loader { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 0 !important; width: 100% !important; height: 100% !important; background: transparent !important; color: transparent !important; } #loader::before, #loader::after { content: none !important; display: none !important; } #loader > :not(.splash-logo) { display: none !important; } #loader .splash-logo { order: 0; display: block !important; width: 60px !important; height: 60px !important; min-width: 60px !important; min-height: 60px !important; object-fit: contain !important; object-position: center !important; border-radius: 0 !important; filter: none !important; box-shadow: none !important; background: transparent !important; } #loader #load-spinner, #preloader #load-spinner, #loader .splash-message { display: none !important; } } @media screen { dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) * { border-color: transparent !important; } dialog:is(:has(#loader), :has(.splash-screen), :has(.splash-logo)) :is(.popup-body, .popup-content, #loader, .splash-screen) { background: transparent !important; border: 0 !important; box-shadow: none !important; outline: none !important; } }";
     const buildBlock = () => {
         // custom_css is loaded by SillyTavern before extensions: this also matches the chosen
         // logo on the *next initial loading screen*, before slack.js is evaluated.
-        const imageUrl = slkSelectedLogoUrl();
+        const imageUrl = slkSelectedSplashLogoUrl();
         const quotedUrl = JSON.stringify(imageUrl);
         const splashImageCss = `@media screen {
             #loader.splash-screen .splash-logo {
                 display: block !important;
                 order: 0 !important;
-                flex: 0 0 96px !important;
-                width: 96px !important;
-                height: 96px !important;
-                min-width: 96px !important;
-                min-height: 96px !important;
-                border-radius: 24px !important;
-                background: url(${quotedUrl}) center / cover no-repeat !important;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, .28) !important;
+                flex: 0 0 60px !important;
+                width: 60px !important;
+                height: 60px !important;
+                min-width: 60px !important;
+                min-height: 60px !important;
+                border-radius: 0 !important;
+                background: url(${quotedUrl}) center / contain no-repeat !important;
+                box-shadow: none !important;
             }
             #loader.splash-screen::after {
                 content: none !important;
@@ -3299,61 +3304,53 @@ else init();
 })();
 
 
-// v1.7.6 — Keep existing Google / Vertex AI model edit controls, but put
-// the pencil at the far right of the model title row at a compact size.
-(function slkFixModelTitleRow_v176() {
+// v1.7.7 — Keep the original Google / Vertex AI edit controls, but place
+// the pencil next to the model select field at the same compact square size
+// used by the saved-key management button.
+(function slkFixModelSelectRow_v177() {
     const targetSelects = ['model_vertexai_select', 'model_google_select'];
     const actionSelector = 'button, .menu_button, .menu_button_icon, [role="button"]';
     const originalPlacement = new WeakMap();
     let queued = false;
+    const restoreDesktop = (group, select) => {
+        const row = group?.querySelector(':scope > .slk-model-select-row');
+        if (!row) return;
+        const action = row.querySelector(':scope > .slk-model-edit-action');
+        if (action) {
+            action.classList.remove('slk-model-edit-action');
+            const placement = originalPlacement.get(action);
+            if (placement?.beforeSelect && select?.parentElement === group) group.insertBefore(action, select);
+            else group.appendChild(action);
+        }
+        if (select && select.parentElement !== group) group.appendChild(select);
+        row.remove();
+    };
     const sync = () => {
         queued = false;
-        const mobile = document.body?.classList.contains('slk-ui') &&
-            window.matchMedia('(max-width: 1000px)').matches;
-        if (!mobile) {
-            // The desktop editor must retain its original DOM/layout.
-            for (const id of targetSelects) {
-                const group = document.getElementById(id)?.parentElement;
-                const row = group?.querySelector(':scope > .slk-model-title-row');
-                if (!row) continue;
-                const heading = row.querySelector(':scope > h4');
-                const action = row.querySelector(':scope > .slk-model-edit-action');
-                if (heading) group.insertBefore(heading, row);
-                if (action) {
-                    action.classList.remove('slk-model-edit-action');
-                    const placement = originalPlacement.get(action);
-                    if (placement?.inHeading && heading) heading.appendChild(action);
-                    else group.insertBefore(action, row);
-                }
-                row.remove();
-            }
-            return;
-        }
+        const mobile = document.body?.classList.contains('slk-ui') && window.matchMedia('(max-width: 1000px)').matches;
         for (const id of targetSelects) {
             const select = document.getElementById(id);
             const group = select?.parentElement;
             if (!group) continue;
-            const titleRow = group.querySelector(':scope > .slk-model-title-row');
-            const heading = titleRow?.querySelector(':scope > h4') || group.querySelector(':scope > h4');
-            if (!heading) continue;
-            let row = titleRow;
+            if (!mobile) {
+                restoreDesktop(group, select);
+                continue;
+            }
+            const heading = group.querySelector(':scope > h4');
+            let row = group.querySelector(':scope > .slk-model-select-row');
             if (!row) {
                 row = document.createElement('div');
-                row.className = 'slk-model-title-row';
-                group.insertBefore(row, heading);
-                row.appendChild(heading);
+                row.className = 'slk-model-select-row';
+                group.insertBefore(row, select);
             }
-            // SillyTavern and add-ons may inject the edit action either into
-            // the original H4 or immediately after it. Move that same node,
-            // never clone it, so its original click handler keeps working.
-            const inlineAction = [...heading.children].find(el => el.matches(actionSelector));
+            if (select.parentElement !== row) row.appendChild(select);
             const siblings = [...group.children];
-            const selectIndex = siblings.indexOf(select);
-            const siblingAction = siblings.find((el, i) => i >= 0 && (selectIndex < 0 || i < selectIndex) &&
-                el !== row && el.matches?.(actionSelector));
-            const action = row.querySelector(':scope > .slk-model-edit-action') || inlineAction || siblingAction;
+            const selectIndex = siblings.indexOf(row);
+            const siblingAction = siblings.find((el, i) => i >= 0 && (selectIndex < 0 || i <= selectIndex + 1) && el !== row && el.matches?.(actionSelector));
+            const inlineAction = heading ? [...heading.children].find(el => el.matches(actionSelector)) : null;
+            const action = row.querySelector(':scope > .slk-model-edit-action') || siblingAction || inlineAction;
             if (action) {
-                if (!originalPlacement.has(action)) originalPlacement.set(action, { inHeading: action.parentElement === heading });
+                if (!originalPlacement.has(action)) originalPlacement.set(action, { beforeSelect: action.parentElement === group && group.contains(select) && action.compareDocumentPosition(select) & Node.DOCUMENT_POSITION_FOLLOWING });
                 action.classList.add('slk-model-edit-action');
                 if (action.parentElement !== row) row.appendChild(action);
             }
