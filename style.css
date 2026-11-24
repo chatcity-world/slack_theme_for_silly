@@ -21783,9 +21783,10 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
   }
   body.slk-ui[data-slk-header-view="chat"] #slk-header::after,
   body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-header::after {
-    content:""!important;display:block!important;position:absolute!important;inset:0 0 -30px 0!important;
+    /* v1.8.31: shorten the fade by 12px without moving the header controls. */
+    content:""!important;display:block!important;position:absolute!important;inset:0 0 -18px 0!important;
     width:100%!important;height:auto!important; margin:0!important;border:0!important;box-shadow:none!important;
-    background:linear-gradient(to bottom,#fff 0%,#fff var(--slk-safe-top),rgba(255,255,255,.96) calc(var(--slk-safe-top) + 8px),rgba(255,255,255,.78) calc(var(--slk-safe-top) + 40px),rgba(255,255,255,0) 100%)!important;
+    background:linear-gradient(to bottom,#fff 0%,#fff var(--slk-safe-top),rgba(255,255,255,.96) calc(var(--slk-safe-top) + 1px),rgba(255,255,255,.78) calc(var(--slk-safe-top) + 28px),rgba(255,255,255,0) 100%)!important;
     opacity:1!important;z-index:0!important;pointer-events:none!important;filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
   }
   body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-header :is(#slk-ws,#slk-panel-back,.slk-header-actions) {
@@ -21848,7 +21849,13 @@ html body.slk-ui dialog.popup:has(.extensions_info) .extensions_toolbar > button
     filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
     transition:none!important;
   }
-  html[data-slk-status-color="light"] body.slk-ui #slk-status-surface {background-color:#fff!important;}
+  /* A standalone viewport may already exclude the native status bar. Do not
+     cover its first 12 CSS pixels with a second opaque white strip. Keep the
+     actual safe area intact when WebKit reports one. Match the specificity of
+     the shared status-surface sizing rule above. */
+  html[data-slk-status-color="light"] body.slk-ui #slk-status-surface[data-slk-status-color="light"] {
+    background-color:#fff!important;height:var(--slk-safe-top)!important;min-height:0!important;
+  }
   html[data-slk-status-color="purple"] body.slk-ui #slk-status-surface {background-color:#441848!important;}
   html[data-slk-status-color="light"] {background-color:#fff!important;}
   html[data-slk-status-color="purple"] {background-color:#441848!important;}
