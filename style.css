@@ -14458,11 +14458,11 @@ body.slk-ui {
     
 
     /* ⋯ 펼침 또는 편집 중: 이름·날짜 등 숨김 (자리는 유지해 메시지가 안 흔들림) */
-    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"]), :has(.mes_edit_buttons[style*="flex"]), :has(#curEditTextarea)) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost) {
+    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"])), :has(.mes_edit_buttons[style*="flex"]), :has(#curEditTextarea)) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost) {
         visibility: hidden !important;
     }
     /* ⋯ 펼침: 버튼 묶음이 이름 자리까지 오른쪽 정렬로 */
-    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])) .mes_buttons {
+    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))) .mes_buttons {
         grid-row: 1 / 3 !important;
         justify-self: end !important;
         flex-wrap: nowrap !important;
@@ -14490,7 +14490,7 @@ body.slk-ui {
    ===================================================================== */
 @media screen {
     /* 1) ⋯ 펼친 아이콘이 많으면 줄바꿈 (오른쪽 정렬 유지, 밖으로 안 밀려남) */
-    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])) .mes_buttons {
+    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))) .mes_buttons {
         width: auto !important;
         min-width: 0 !important;
         max-width: 100% !important;
@@ -14788,7 +14788,7 @@ body.slk-ui {
    ===================================================================== */
 @media screen {
     /* 1) ⋯ 펼친 아이콘: 한 줄 우선, 자리 모자랄 때만 줄바꿈 (아이콘 폭 30px로 촘촘히) */
-    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])) .mes_buttons {
+    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))) .mes_buttons {
         grid-column: 2 / -1 !important;
         justify-self: stretch !important;
         width: 100% !important;
@@ -14798,7 +14798,7 @@ body.slk-ui {
         justify-content: flex-end !important;
         gap: 0 !important;
     }
-    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])) .mes_buttons :is(.mes_button, .slk-adopted-btn, .extraMesButtons > *) {
+    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))) .mes_buttons :is(.mes_button, .slk-adopted-btn, .extraMesButtons > *) {
         width: 30px !important;
         min-width: 30px !important;
         max-width: 30px !important;
@@ -23627,17 +23627,17 @@ html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-
   html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) {
     grid-template-columns: 50px auto auto auto auto auto minmax(0, 1fr) minmax(64px, auto) !important;
   }
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) {
     grid-template-rows: auto auto !important;
   }
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost):not([hidden]):not(.displayNone) {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost):not([hidden]):not(.displayNone) {
     visibility: visible !important;
   }
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .name_text {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .name_text {
     grid-column: 2 / 7 !important;
     min-width: 0 !important;
   }
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons {
     grid-column: 7 / -1 !important;
     grid-row: 1 / 3 !important;
     display: flex !important;
@@ -23661,10 +23661,10 @@ html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-
   }
   /* The native handler changes display before the observer adopts the actions.
      Hide the collapsed controls immediately, not 35ms later. */
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons > :not(.extraMesButtons) {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons > :not(.extraMesButtons) {
     display: none !important;
   }
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons > .extraMesButtons {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons > .extraMesButtons {
     display: flex !important;
     flex: 1 1 0 !important;
     flex-flow: row nowrap !important;

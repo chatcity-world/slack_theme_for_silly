@@ -1584,8 +1584,9 @@ function chatInfo() {
         if (!avatar) avatar = charMes?.querySelector('.avatar img')?.getAttribute('src') || '';
     }
     if (count === null) {
-        const ids = [...document.querySelectorAll('#chat .mes[mesid]')].map((m) => Number(m.getAttribute('mesid')));
-        count = ids.length ? Math.max(...ids) + 1 : 0;
+        let maxId = -1;
+        for (const mes of document.querySelectorAll('#chat .mes[mesid]')) maxId = Math.max(maxId, Number(mes.getAttribute('mesid')));
+        count = maxId + 1;
     }
     return { name, avatar, count };
 }
@@ -2288,10 +2289,15 @@ if (SLK_UI_SETTINGS.enabled) {
             const active = navigationUsed
                 ? btn.dataset.drawer === desiredSelector
                 : isFooterDrawerOpen(document.querySelector(btn.dataset.drawer));
-            btn.setAttribute('aria-pressed', String(active));
+            if (btn.getAttribute('aria-pressed') !== String(active)) btn.setAttribute('aria-pressed', String(active));
             slkSyncNavGlyph(btn, active);
-            btn.style.setProperty('background', active ? '#EFEAF0' : 'transparent', 'important');
-            btn.style.setProperty('color', active ? '#4A154B' : '#616061', 'important');
+            const bg = active ? '#EFEAF0' : 'transparent';
+            const fg = active ? '#4A154B' : '#616061';
+            // CSSOM serializes hex colors to rgb(); compare canonical values.
+            const bgCss = active ? 'rgb(239, 234, 240)' : 'transparent';
+            const fgCss = active ? 'rgb(74, 21, 75)' : 'rgb(97, 96, 97)';
+            if (![bg, bgCss].includes(btn.style.getPropertyValue('background')) || btn.style.getPropertyPriority('background') !== 'important') btn.style.setProperty('background', bg, 'important');
+            if (![fg, fgCss].includes(btn.style.getPropertyValue('color')) || btn.style.getPropertyPriority('color') !== 'important') btn.style.setProperty('color', fg, 'important');
         }
     }
 
@@ -3065,8 +3071,9 @@ if (SLK_UI_SETTINGS.enabled) {
     else start();
 })();
 
-// v1.8.155 — Only observe message chrome, not the message body/token stream.
-// All three consumers share one observer per message. Disconnect on removal.
+// v1.8.158 — Pool message-chrome observers in small groups. Each observer
+// still watches exactly the native chrome roots, never the message body.
+// Small groups bound the cost of rebinding when a message is deleted.
 const slkMessageChromeSubscribers = [];
 let slkMessageChromeRoot = null;
 function slkObserveMessageChrome(chat, callback) {
@@ -3074,9 +3081,13 @@ function slkObserveMessageChrome(chat, callback) {
     if (slkMessageChromeRoot === chat) return;
     slkMessageChromeRoot = chat;
     const entries = new Map();
+    const groups = new Set();
+    const dirty = new Set();
     const chrome = '.ch_name,.mesAvatarWrapper,.swipeRightBlock,.swipe_left,.timestamp';
-    let batch = [], scheduled = false;
+    const groupSize = 32;
+    let batch = [], scheduled = false, cleanupQueued = false;
     const emit = records => {
+        if (!records.length) return;
         for (const record of records) batch.push(record);
         if (scheduled) return;
         scheduled = true;
@@ -3088,32 +3099,80 @@ function slkObserveMessageChrome(chat, callback) {
             }
         });
     };
+    function roots(mes) {
+        const block = mes.querySelector(':scope > .mes_block');
+        const nodes = new Map([[mes, true]]);
+        if (block) nodes.set(block, true);
+        for (const el of mes.children) if (el.matches(chrome)) nodes.set(el, false);
+        if (block) for (const el of block.children) if (el.matches(chrome)) nodes.set(el, false);
+        return nodes;
+    }
+    function observe(group, node, shell) {
+        group.observer.observe(node, {childList:true, subtree:!shell, attributes:true,
+            attributeOldValue:true, attributeFilter:['class','style','hidden'], characterData:!shell});
+    }
+    function markDirty(group) {
+        dirty.add(group);
+        if (cleanupQueued) return;
+        cleanupQueued = true;
+        queueMicrotask(() => {
+            cleanupQueued = false;
+            for (const g of dirty) {
+                // Preserve undelivered records before disconnecting. Only a group
+                // which lost a root is rebound; unrelated history is untouched.
+                const pending = g.observer.takeRecords();
+                if (pending.length) process(g, pending);
+                g.observer.disconnect();
+                for (const mes of g.messages) {
+                    const entry = entries.get(mes);
+                    if (entry) for (const [node, shell] of entry.nodes) observe(g, node, shell);
+                }
+                if (!g.messages.size) groups.delete(g);
+            }
+            dirty.clear();
+        });
+    }
+    function refresh(mes, entry) {
+        const next = roots(mes);
+        for (const [node, shell] of entry.nodes) {
+            if (!next.has(node) || next.get(node) !== shell) { markDirty(entry.group); break; }
+        }
+        for (const [node, shell] of next) {
+            if (!entry.nodes.has(node) || entry.nodes.get(node) !== shell) observe(entry.group, node, shell);
+        }
+        entry.nodes = next;
+    }
+    function process(group, records) {
+        const shells = new Set();
+        const relevant = [];
+        for (const r of records) {
+            const el = r.target.nodeType === 1 ? r.target : r.target.parentElement;
+            const mes = el?.closest?.('.mes');
+            if (!mes || !chat.contains(mes) || !group.messages.has(mes)) continue;
+            // Neither action nor swipe consumers use characterData. Dates do.
+            if (r.type === 'characterData' && !el.closest('.timestamp')) continue;
+            if (r.type === 'attributes' && r.oldValue === el.getAttribute(r.attributeName)) continue;
+            if (r.type === 'childList' && (el === mes || el.matches('.mes_block'))) shells.add(mes);
+            relevant.push(r);
+        }
+        for (const mes of shells) {
+            const entry = entries.get(mes);
+            if (entry) refresh(mes, entry);
+        }
+        emit(relevant);
+    }
     function attach(mes) {
         if (entries.has(mes)) return;
-        let observed = new Set();
-        const observer = new MutationObserver(records => {
-            if (!chat.contains(mes)) return;
-            if (records.some(r => r.type === 'childList' &&
-                (r.target === mes || r.target.matches?.('.mes_block')))) bind();
-            emit(records);
-        });
-        function bind() {
-            const block = mes.querySelector(':scope > .mes_block');
-            const nodes = new Set([mes]);
-            if (block) nodes.add(block);
-            for (const el of mes.children) if (el.matches(chrome)) nodes.add(el);
-            if (block) for (const el of block.children) if (el.matches(chrome)) nodes.add(el);
-            if (nodes.size === observed.size && [...nodes].every(n => observed.has(n))) return;
-            observer.disconnect();
-            observed = nodes;
-            for (const node of nodes) {
-                const shell = node === mes || node === block;
-                observer.observe(node, {childList:true, subtree:!shell, attributes:true,
-                    attributeOldValue:true, attributeFilter:['class','style','hidden'], characterData:!shell});
-            }
+        let group = [...groups].find(g => g.messages.size < groupSize);
+        if (!group) {
+            group = {messages:new Set(), observer:null};
+            group.observer = new MutationObserver(records => process(group, records));
+            groups.add(group);
         }
-        entries.set(mes, observer);
-        bind();
+        const entry = {group, nodes:roots(mes)};
+        entries.set(mes, entry);
+        group.messages.add(mes);
+        for (const [node, shell] of entry.nodes) observe(group, node, shell);
     }
     function discover(node) {
         if (node.nodeType !== 1) return;
@@ -3127,8 +3186,12 @@ function slkObserveMessageChrome(chat, callback) {
             for (const n of r.addedNodes) discover(n);
             if (r.removedNodes.length) removed = true;
         }
-        if (removed) for (const [mes, observer] of entries) {
-            if (!chat.contains(mes)) { observer.disconnect(); entries.delete(mes); }
+        if (removed) for (const [mes, entry] of entries) {
+            if (!chat.contains(mes)) {
+                entry.group.messages.delete(mes);
+                entries.delete(mes);
+                markDirty(entry.group);
+            }
         }
         emit(records);
     }).observe(chat, {childList:true});
@@ -4062,6 +4125,7 @@ function slkObserveChatContent(callback) {
     // Chat/channel heading stays synced even when the character changes.
     let refreshRequested = false;
     const triggerRefresh = () => {
+        if (!isDesktop()) return;
         if (!refreshRequested) {
             refreshRequested = true;
             requestAnimationFrame(() => { refreshRequested = false; syncContext(); });
