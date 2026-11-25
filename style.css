@@ -24881,3 +24881,25 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #rm
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #rm_extensions_block #slk-extension-settings #slk-extension-settings-content#slk-extension-settings-content .slk-logo-preference > .slk-header-image-options {grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:var(--slk-pref-inner-gap)!important;}
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #rm_extensions_block #slk-extension-settings #slk-extension-settings-content#slk-extension-settings-content .slk-logo-preference .slk-header-image-options > label {width:100%!important;min-width:0!important;max-width:none!important;}
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #rm_extensions_block #slk-extension-settings #slk-extension-settings-content#slk-extension-settings-content .slk-logo-preference .slk-header-image-options span {height:var(--slk-pref-control-height)!important;min-height:var(--slk-pref-control-height)!important;max-height:var(--slk-pref-control-height)!important;}
+
+/* v1.8.131 — PC AI tabs: full-width quarters, edge-to-edge underline. */
+@media screen and (min-width: 1001px) {
+    html body.slk-ui.slk-pc #left-nav-panel #slk-aitabs {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 0 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        padding-inline: 0 !important;
+        margin-inline: 0 !important;
+        box-sizing: border-box !important;
+    }
+    html body.slk-ui.slk-pc #left-nav-panel #slk-aitabs > .slk-aitab {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        margin-inline: 0 !important;
+        box-sizing: border-box !important;
+    }
+}
