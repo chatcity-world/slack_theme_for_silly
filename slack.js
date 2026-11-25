@@ -144,6 +144,166 @@ function applySlackUiSettings() {
     window.dispatchEvent(new Event('slk-ui-settings-changed'));
 }
 
+// v1.8.119 — One theme font preference; external CSS is parsed, never injected.
+const SLK_FONT_KEY = 'slk-ui-theme-font-v1';
+const SLK_FONT_DEFAULT = { mode: 'default', method: 'url', url: '', family: '', css: '' };
+function slkReadThemeFont() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(SLK_FONT_KEY) || '{}');
+        return { ...SLK_FONT_DEFAULT, mode: saved.mode === 'custom' ? 'custom' : 'default',
+            method: ['url','css','local'].includes(saved.method) ? saved.method : 'url',
+            ...Object.fromEntries(['url','family','css'].map(k => [k, typeof saved[k] === 'string' ? saved[k] : ''])) };
+    } catch { return { ...SLK_FONT_DEFAULT }; }
+}
+let slkThemeFont = slkReadThemeFont();
+let slkFontFaces = [], slkFontGeneration = 0, slkFontStatus = '';
+const slkFontFallback = "'Spoqa Han Sans Neo', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif";
+function slkFontFamily(value) {
+    const family = String(value || '').trim().replace(/^(['"])(.*)\1$/, '$2').trim();
+    if (!family || family.length > 160 || /[\u0000-\u001f\u007f\\]/.test(family)) throw new Error('올바른 폰트 이름을 입력해 주세요.');
+    return family;
+}
+function slkFontUrl(value, base) {
+    let url;
+    try { url = new URL(value, base); } catch { throw new Error('올바른 웹폰트 URL을 입력해 주세요.'); }
+    if (!['https:','http:'].includes(url.protocol) || url.username || url.password) throw new Error('HTTP 또는 HTTPS 웹폰트 주소만 사용할 수 있습니다.');
+    return url.href;
+}
+function slkClearThemeFont() {
+    for (const face of slkFontFaces) document.fonts.delete(face);
+    slkFontFaces = [];
+    document.body?.style.removeProperty('--slk-font');
+    document.body?.style.removeProperty('--slk-custom-font');
+    document.body?.classList.remove('slk-custom-font-active');
+}
+function slkFontRules(css, base, family) {
+    if (!css.trim() || css.length > 512000) throw new Error('웹폰트 CSS 코드를 확인해 주세요.');
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(css);
+    const rules = [...sheet.cssRules].filter(r => r.type === CSSRule.FONT_FACE_RULE);
+    if (!rules.length) throw new Error('@font-face 규칙이 없습니다.');
+    const selected = slkFontFamily(family || rules[0].style.getPropertyValue('font-family'));
+    const matching = rules.filter(r => {
+        try { return slkFontFamily(r.style.getPropertyValue('font-family')).toLowerCase() === selected.toLowerCase(); } catch { return false; }
+    });
+    if (!matching.length) throw new Error('CSS에서 해당 폰트 이름을 찾을 수 없습니다.');
+    if (matching.length > 2000) throw new Error('폰트 정의가 너무 많습니다.');
+    return matching.map(r => {
+        const s = r.style;
+        let src = s.getPropertyValue('src');
+        // CSSOM normalizes URL tokens. Resolve relative paths against the CSS URL.
+        src = src.replace(/url\(\s*(?:"([^"\\]*)"|'([^'\\]*)'|([^\s)"'\\]+))\s*\)/gi,
+            (_, a,b,c) => `url(${JSON.stringify(slkFontUrl(a ?? b ?? c, base))})`);
+        if (!src || /url\(\s*(?!"https?:\/\/)/i.test(src)) throw new Error('지원하지 않는 폰트 파일 주소입니다.');
+        const descriptors = { display: 'swap' };
+        for (const [cssName, jsName] of [['font-style','style'],['font-weight','weight'],['font-stretch','stretch'],['unicode-range','unicodeRange'],['font-feature-settings','featureSettings'],['font-variation-settings','variationSettings'],['ascent-override','ascentOverride'],['descent-override','descentOverride'],['line-gap-override','lineGapOverride']]) {
+            const value = s.getPropertyValue(cssName); if (value) descriptors[jsName] = value;
+        }
+        return { src, descriptors };
+    });
+}
+async function slkLoadThemeFont(pref, save = false) {
+    const generation = ++slkFontGeneration;
+    const current = () => generation === slkFontGeneration;
+    let candidate = [];
+    let timer;
+    const timed = promise => Promise.race([promise, new Promise((_,reject) => { timer = setTimeout(() => reject(new Error('폰트 로딩 시간이 초과되었습니다.')), 12000); })]).finally(() => clearTimeout(timer));
+    try {
+        if (pref.mode !== 'custom') {
+            if (save && !slkSavePreference(SLK_FONT_KEY, JSON.stringify(pref))) throw new Error('폰트 설정을 저장하지 못했습니다.');
+            slkClearThemeFont(); slkThemeFont = pref; slkFontStatus = ''; return true;
+        }
+        let family;
+        if (pref.method === 'local') {
+            family = slkFontFamily(pref.family);
+            // Browser resolves installed family names; missing glyphs fall back normally.
+        } else {
+            const alias = `slk-user-font-${generation}`;
+            let definitions;
+            if (pref.method === 'url') {
+                const url = slkFontUrl(pref.url);
+                if (/\.(woff2?|ttf|otf)$/i.test(new URL(url).pathname)) {
+                    if (pref.family.trim()) slkFontFamily(pref.family);
+                    definitions = [{ src: `url(${JSON.stringify(url)})`, descriptors: { display: 'swap' } }];
+                } else {
+                    const controller = new AbortController();
+                    let response, css;
+                    try {
+                        ({response, css} = await timed((async () => {
+                            const res = await fetch(url, { credentials: 'omit', signal: controller.signal, referrerPolicy: 'no-referrer' });
+                            if (!res.ok) throw new Error('웹폰트 CSS를 불러오지 못했습니다.');
+                            return {response: res, css: await res.text()};
+                        })()));
+                    } finally { controller.abort(); }
+                    definitions = slkFontRules(css, response.url || url, pref.family);
+                }
+            } else {
+                definitions = slkFontRules(pref.css, undefined, '');
+            }
+            if (!current()) return false;
+            candidate = definitions.map(d => new FontFace(alias, d.src, d.descriptors));
+            for (const face of candidate) document.fonts.add(face);
+            // Only load the glyph subsets used in this check, not every weight/subset.
+            const loaded = await timed(document.fonts.load(`400 16px "${alias}"`, 'Aa가나다'));
+            if (!loaded.length) await timed(candidate[0].load());
+            if (!current()) return false;
+            family = alias;
+        }
+        if (save && !slkSavePreference(SLK_FONT_KEY, JSON.stringify(pref))) throw new Error('폰트 설정을 저장하지 못했습니다.');
+        slkClearThemeFont();
+        slkFontFaces = candidate; candidate = [];
+        slkThemeFont = pref;
+        if (SLK_UI_SETTINGS.enabled) {
+            const stack = `${JSON.stringify(family)}, ${slkFontFallback}`;
+            document.body.style.setProperty('--slk-font', stack, 'important');
+            document.body.style.setProperty('--slk-custom-font', stack);
+            document.body.classList.add('slk-custom-font-active');
+        }
+        slkFontStatus = pref.method === 'local' ? '적용했습니다. 설치되지 않은 기기에서는 기본 폰트로 표시됩니다.' : '폰트를 적용했습니다.';
+        return true;
+    } catch (error) {
+        if (current()) slkFontStatus = `폰트를 적용하지 못했습니다. ${error?.message || '입력값을 확인해 주세요.'}`;
+        return false;
+    } finally {
+        for (const face of candidate) document.fonts.delete(face);
+    }
+}
+function slkBuildFontSettings(container) {
+    const root = container.querySelector('#slk-theme-font-settings');
+    const find = selector => root.querySelector(selector);
+    const mode = () => find('input[name="slk-theme-font-mode"]:checked')?.value || 'default';
+    const method = find('#slk-theme-font-method');
+    const url = find('#slk-theme-font-url'), family = find('#slk-theme-font-family'), css = find('#slk-theme-font-css');
+    const apply = find('#slk-theme-font-apply'), status = find('#slk-theme-font-status');
+    function draw() {
+        find('.slk-font-custom-fields').hidden = mode() !== 'custom';
+        for (const el of root.querySelectorAll('[data-slk-font-field]')) el.hidden = !el.dataset.slkFontField.split(' ').includes(method.value);
+        find('#slk-theme-font-family-label').textContent = method.value === 'url' ? '폰트 이름 (선택)' : '폰트 이름';
+        status.textContent = slkFontStatus;
+        status.hidden = !slkFontStatus;
+    }
+    function restoreFields() {
+        root.querySelectorAll('input[name="slk-theme-font-mode"]').forEach(el => { el.checked = el.value === slkThemeFont.mode; });
+        method.value = slkThemeFont.method; url.value = slkThemeFont.url; family.value = slkThemeFont.family; css.value = slkThemeFont.css; draw();
+    }
+    async function restoreDefault() {
+        await slkLoadThemeFont({ ...SLK_FONT_DEFAULT }, true); restoreFields();
+    }
+    root.querySelectorAll('input[name="slk-theme-font-mode"]').forEach(el => el.addEventListener('change', () => {
+        if (mode() === 'default') void restoreDefault(); else draw();
+    }));
+    method.addEventListener('change', draw);
+    apply.addEventListener('click', async () => {
+        if (!SLK_UI_SETTINGS.enabled) { slkFontStatus = 'Slack UI를 활성화한 후 적용해 주세요.'; draw(); return; }
+        const pref = { mode: 'custom', method: method.value, url: url.value.trim(), family: family.value.trim(), css: css.value.trim() };
+        apply.disabled = true; slkFontStatus = '폰트를 불러오는 중…'; draw();
+        try { await slkLoadThemeFont(pref, true); } finally { apply.disabled = false; draw(); }
+    });
+    restoreFields();
+    // A stored selection may still be loading when this drawer is created.
+    root.addEventListener('slk-font-status', draw);
+}
+
 // Use the same collapsible markup as SillyTavern's built-in extension settings.
 // This is a settings entry, not a new bottom tab.
 function buildSlackUiExtensionSettings() {
@@ -168,6 +328,13 @@ function buildSlackUiExtensionSettings() {
                         <span class="slk-setting-switch-track" aria-hidden="true"></span>
                     </label>
                 </div>
+                <section class="slk-preference-section" aria-label="시작화면 / 헤더 이미지 설정">
+                    <div class="slk-preference-heading">시작화면 / 헤더 이미지</div>
+                    <div class="slk-header-image-options" style="margin-top: 8px !important;" role="radiogroup" aria-label="시작화면 / 헤더 이미지 종류">
+                        <label><input type="radio" name="slk-header-image-mode" value="slack"><span>Slack</span></label>
+                        <label><input type="radio" name="slk-header-image-mode" value="custom"><span>등록한 이미지</span></label>
+                    </div>
+                </section>
                 <section class="slk-preference-section" aria-label="채팅 글자 설정">
                     <div class="slk-settings-row">
                         <label for="slk-font-value">메세지 폰트 크기</label>
@@ -203,13 +370,13 @@ function buildSlackUiExtensionSettings() {
                         </div>
                     </div>
                 </section>
-                <section class="slk-preference-section" aria-label="대사 배경색 설정">
-                    <div class="slk-preference-heading">대사 배경색</div>
+                <section class="slk-preference-section" aria-label="대사 배경 설정">
+                    <div class="slk-preference-heading">대사 배경</div>
                     <div class="slk-color-row">
-                        <input type="color" id="slk-dialogue-color-picker" value="#efefef" aria-label="대사 배경색 선택">
+                        <input type="color" id="slk-dialogue-color-picker" value="#efefef" aria-label="대사 배경 선택">
                         <label class="slk-visually-hidden" for="slk-dialogue-hex">HEX 색상</label>
-                        <input type="text" id="slk-dialogue-hex" maxlength="7" placeholder="#EFEFEF" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="대사 배경색 HEX">
-                        <button type="button" id="slk-dialogue-reset" class="slk-preference-button" aria-label="대사 배경색 초기화">초기화</button>
+                        <input type="text" id="slk-dialogue-hex" maxlength="7" placeholder="#EFEFEF" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="대사 배경 HEX">
+                        <button type="button" id="slk-dialogue-reset" class="slk-preference-button" aria-label="대사 배경 초기화">초기화</button>
                     </div>
                 </section>
                 <section class="slk-preference-section" aria-label="채팅 글자색 설정">
@@ -246,12 +413,22 @@ function buildSlackUiExtensionSettings() {
                         </div>
                     </div>
                 </section>
-                <section class="slk-preference-section" aria-label="시작화면 / 헤더 이미지 설정">
-                    <div class="slk-preference-heading">시작화면 / 헤더 이미지</div>
-                    <div class="slk-header-image-options" style="margin-top: 8px !important;" role="radiogroup" aria-label="시작화면 / 헤더 이미지 종류">
-                        <label><input type="radio" name="slk-header-image-mode" value="slack"><span>Slack</span></label>
-                        <label><input type="radio" name="slk-header-image-mode" value="custom"><span>등록한 이미지</span></label>
+                <section id="slk-theme-font-settings" class="slk-preference-section" aria-label="테마 폰트 설정">
+                    <div class="slk-preference-heading">테마 폰트</div>
+                    <div class="slk-header-image-options slk-font-mode" role="radiogroup" aria-label="테마 폰트">
+                        <label><input type="radio" name="slk-theme-font-mode" value="default"><span>스포카 한 산스</span></label>
+                        <label><input type="radio" name="slk-theme-font-mode" value="custom"><span>사용자 지정</span></label>
                     </div>
+                    <div class="slk-font-custom-fields" hidden>
+                        <div class="slk-font-field"><label for="slk-theme-font-method">입력 방식</label>
+                            <select id="slk-theme-font-method"><option value="url">웹폰트 URL</option><option value="css">웹폰트 CSS 코드</option><option value="local">기기에 설치된 폰트</option></select>
+                        </div>
+                        <div class="slk-font-field" data-slk-font-field="url"><label for="slk-theme-font-url">웹폰트 URL</label><input id="slk-theme-font-url" type="url" placeholder="https://..." spellcheck="false" autocomplete="off"></div>
+                        <div class="slk-font-field" data-slk-font-field="url local"><label id="slk-theme-font-family-label" for="slk-theme-font-family">폰트 이름</label><input id="slk-theme-font-family" type="text" placeholder="Font Family" maxlength="160" spellcheck="false" autocomplete="off"></div>
+                        <div class="slk-font-field" data-slk-font-field="css" hidden><label for="slk-theme-font-css">웹폰트 CSS 코드</label><textarea id="slk-theme-font-css" rows="4" placeholder="@font-face ..." spellcheck="false" maxlength="512000"></textarea></div>
+                        <div class="slk-font-actions"><button type="button" id="slk-theme-font-apply" class="slk-preference-button">적용</button></div>
+                    </div>
+                    <div id="slk-theme-font-status" role="status" aria-live="polite" hidden></div>
                 </section>
             </div>
         </div>`;
@@ -431,6 +608,7 @@ function buildSlackUiExtensionSettings() {
         applySlackUiSettings(); // refresh header, visible splash, and saved next-launch splash CSS
     }));
     syncAvatarFields();
+    slkBuildFontSettings(container);
 }
 
 const SLK = {
@@ -1825,6 +2003,7 @@ function init() {
         return;
     }
     applySlackUiSettings();
+    if (slkThemeFont.mode === 'custom') void slkLoadThemeFont(slkThemeFont).then(() => document.getElementById('slk-theme-font-settings')?.dispatchEvent(new Event('slk-font-status')));
     buildSlackUiExtensionSettings();
     if (!document.getElementById('slk-extension-settings')) {
         setTimeout(buildSlackUiExtensionSettings, 500);
