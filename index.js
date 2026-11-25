@@ -137,7 +137,12 @@
         if (!document.body) return;
         const selector = '#preloader, dialog, #loader';
         const observer = new MutationObserver(records => {
-            if (records.some(r => r.type === 'attributes' ? r.target.matches(selector) : [...r.addedNodes, ...r.removedNodes].some(n => n.nodeType === 1 && (n.matches(selector) || n.querySelector(selector))))) schedule();
+            if (!mq.matches && !surface?.isConnected) return;
+            if (records.some(r => {
+                if (r.target.closest?.('#chat .mes')) return false;
+                if (r.type === 'attributes') return r.target.matches(selector);
+                return [...r.addedNodes, ...r.removedNodes].some(n => n.nodeType === 1 && !n.matches('.mes') && (n.matches(selector) || n.querySelector(selector)));
+            })) schedule();
         });
         observer.observe(document.body, {subtree:true, childList:true, attributes:true, attributeFilter:['style','class','hidden','open']});
         document.addEventListener('transitionend', e => { if (e.target.matches?.(selector)) schedule(); }, true);

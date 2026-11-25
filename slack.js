@@ -1491,9 +1491,11 @@ function chatInfo() {
         }
     }
     // 화면에서 보충 (그룹 프사, 컨텍스트가 없을 때)
-    const charMes = document.querySelector('#chat .mes[is_user="false"]:not([is_system="true"])');
-    if (!name) name = charMes?.getAttribute('ch_name') || '';
-    if (!avatar) avatar = charMes?.querySelector('.avatar img')?.getAttribute('src') || '';
+    if (!name || !avatar) {
+        const charMes = document.querySelector('#chat .mes[is_user="false"]:not([is_system="true"])');
+        if (!name) name = charMes?.getAttribute('ch_name') || '';
+        if (!avatar) avatar = charMes?.querySelector('.avatar img')?.getAttribute('src') || '';
+    }
     if (count === null) {
         const ids = [...document.querySelectorAll('#chat .mes[mesid]')].map((m) => Number(m.getAttribute('mesid')));
         count = ids.length ? Math.max(...ids) + 1 : 0;
@@ -2749,10 +2751,20 @@ if (SLK_UI_SETTINGS.enabled) {
         }
     };
     // (1) 고정 위치의 작은 진행 알림 찾기 (toast-container 바깥)
-    const markNotices = () => {
+    const markNotices = (roots = [document]) => {
         if (!document.body || !document.body.classList.contains('slk-ui')) return;
-        document.querySelectorAll('.slk-notice, #toast-container > div').forEach(markTextActions);
-        document.querySelectorAll(SPIN).forEach(sp => {
+        const spinners = new Set(), notices = new Set();
+        const noticeSelector = '.slk-notice, #toast-container > div';
+        for (const root of roots) {
+            if (root !== document && (!root.isConnected || root.closest?.('#chat .mes'))) continue;
+            const parentNotice = root.closest?.(noticeSelector);
+            if (parentNotice) notices.add(parentNotice);
+            if (root.matches?.(SPIN)) spinners.add(root);
+            root.querySelectorAll?.(noticeSelector).forEach(el => notices.add(el));
+            root.querySelectorAll?.(SPIN).forEach(el => spinners.add(el));
+        }
+        notices.forEach(markTextActions);
+        spinners.forEach(sp => {
             if (sp.closest('#toast-container, .slk-notice, #send_form, #chat .mes, dialog, #slk-header, #slk-mobile-footer')) return;
             let el = sp.parentElement, hops = 0;
             while (el && el !== document.body && hops < 6) {
@@ -2770,12 +2782,24 @@ if (SLK_UI_SETTINGS.enabled) {
         });
     };
     let t = null;
-    const schedule = () => { if (t) return; t = setTimeout(() => { t = null; markNotices(); }, 60); };
+    const pending = new Set();
+    const schedule = () => {
+        if (t || !pending.size) return;
+        t = setTimeout(() => { t = null; const roots = [...pending]; pending.clear(); markNotices(roots); }, 60);
+    };
     const start = () => {
         markNotices();
         new MutationObserver(records => {
-            if (records.some(r => !r.target.closest?.('#chat'))) schedule();
+            for (const r of records) {
+                if (r.target.closest?.('#chat .mes')) continue;
+                const notice = r.target.closest?.('.slk-notice,#toast-container > div');
+                if (notice) pending.add(notice);
+                // Scan newly inserted DOM, and preserve text updates inside existing notices.
+                for (const n of r.addedNodes) if (n.nodeType === 1 && !n.matches('.mes')) pending.add(n);
+            }
+            schedule();
         }).observe(document.documentElement, { childList: true, subtree: true });
+        window.addEventListener('slk-ui-settings-changed', () => { pending.add(document); schedule(); });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
@@ -2890,11 +2914,11 @@ if (SLK_UI_SETTINGS.enabled) {
         root.querySelectorAll('.inline-drawer-content *:not([data-slk-seg])').forEach(box => {
             if (box.closest('#slk-extension-settings, .regex_settings')) return; // Slack UI 자체 설정은 건드리지 않음
             const kids = [...box.children];
-            // 모든 칸에 글자가 있어야 하고, 토글(체크박스) 줄은 제외
-            if (kids.some(k => !(k.textContent || '').trim())) return;
-            if (box.querySelector('input[type="checkbox"]')) return;
+            // Reject impossible candidates before inspecting descendants/text.
             if (kids.length < 2 || kids.length > 5) return;
             if (!kids.every(k => k.matches(OPT))) return;
+            if (kids.some(k => !(k.textContent || '').trim())) return;
+            if (box.querySelector('input[type="checkbox"]')) return;
             if (kids.some(k => /tab/i.test(String(k.className) + ' ' + (k.getAttribute('role') || '')))) return;
             if (kids.some(k => (k.textContent || '').trim().length > 24)) return;
             const hasRadio = kids.some(k => k.querySelector('input[type="radio"]'));
@@ -2914,6 +2938,8 @@ if (SLK_UI_SETTINGS.enabled) {
         t = null;
         if (!document.body?.classList.contains('slk-ui')) return;
         const root = document.querySelector(ROOT);
+        const drawer = root?.closest('.drawer-content');
+        if (drawer?.matches('.slk-nav-hidden,.closedDrawer')) return;
         if (!shown(root)) return;
         markSwitches(root);
         markSegments(root);
@@ -2921,11 +2947,19 @@ if (SLK_UI_SETTINGS.enabled) {
     const schedule = () => { if (!t) t = setTimeout(run, 150); };
     const start = () => {
         new MutationObserver(records => {
-            records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
-            if (!records.length) return;
-            if (records.some(r => !r.target.closest?.('#chat'))) schedule();
+            const root = document.querySelector(ROOT);
+            if (records.some(r => {
+                const el = r.target;
+                if (el.closest?.('#chat')) return false;
+                if (root && (root.contains(el) || (r.type === 'attributes' && el.contains?.(root)))) return true;
+                return r.type === 'childList' && [...r.addedNodes, ...r.removedNodes].some(n =>
+                    n.nodeType === 1 && (n.matches(ROOT) || n.querySelector(ROOT)));
+            })) schedule();
         }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
-        document.addEventListener('click', schedule, true);
+        document.addEventListener('click', e => {
+            if (e.target.closest?.(`${ROOT}, #extensions-settings-button > .drawer-toggle`)) schedule();
+        }, true);
+        window.addEventListener('slk-ui-settings-changed', schedule);
         setInterval(() => {
             for (const sw of trackedSwitches.keys()) if (!sw.isConnected) trackedSwitches.delete(sw);
             if (document.hidden || !trackedSwitches.size) return;
@@ -3064,10 +3098,18 @@ if (SLK_UI_SETTINGS.enabled) {
         last.set(el, {key, fill});
         if (el.style.getPropertyValue('--slk-fill') !== fill) el.style.setProperty('--slk-fill', fill);
     };
-    const all = () => {
+    const all = (includeClosed = false) => {
+        const visibility = new Map();
         for (const el of known) {
-            if (!el.isConnected) known.delete(el);
-            else update(el);
+            if (!el.isConnected) { known.delete(el); continue; }
+            if (!includeClosed) {
+                const drawer = el.closest('.drawer-content');
+                if (drawer) {
+                    if (!visibility.has(drawer)) visibility.set(drawer, !drawer.matches('.slk-nav-hidden,.closedDrawer'));
+                    if (!visibility.get(drawer)) continue;
+                }
+            }
+            update(el);
         }
     };
     document.addEventListener('input', (e) => { if (e.target?.type === 'range') update(e.target); }, true);
@@ -3075,7 +3117,16 @@ if (SLK_UI_SETTINGS.enabled) {
     // ST가 코드로 값을 바꾸는 경우(프리셋 불러오기 등)도 반영
     const start = () => {
         document.querySelectorAll('input[type="range"]').forEach(el => known.add(el));
-        all();
+        all(true);
+        // Synchronize on opening a drawer, not while its hidden sliders are idle.
+        const holder = document.getElementById('top-settings-holder');
+        if (holder) {
+            let frame = 0;
+            new MutationObserver(records => {
+                if (frame || !records.some(r => r.target.matches?.('.drawer-content'))) return;
+                frame = requestAnimationFrame(() => { frame = 0; all(); });
+            }).observe(holder, {subtree:true,attributes:true,attributeFilter:['class']});
+        }
         setInterval(() => { if (!document.hidden) all(); }, 1500);
         document.addEventListener('visibilitychange', () => { if (!document.hidden) all(); });
         const pending = new Set();
