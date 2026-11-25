@@ -24471,3 +24471,83 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
     margin-block:4px 0!important; padding-block:0!important;
   }
 }
+
+/* v1.8.109 — extension update notification: align with header and button row. */
+@media screen {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #top-settings-holder > .drawer > #rm_extensions_block .extensions_block > .flex-container:first-child > .checkbox_label {
+    grid-column:1 / -1!important; grid-row:1!important;
+    justify-self:end!important; align-self:center!important;
+    display:flex!important; flex-flow:row nowrap!important; align-items:center!important;
+    justify-content:flex-end!important; gap:8px!important;
+    width:max-content!important; max-width:calc(100% - 52px)!important; min-width:0!important;
+    margin:0!important; padding:0!important; box-sizing:border-box!important;
+    white-space:normal!important; text-align:right!important; line-height:20px!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #top-settings-holder > .drawer > #rm_extensions_block .extensions_block > .flex-container:first-child > .checkbox_label > input[type="checkbox"] {
+    flex:0 0 20px!important; align-self:center!important; width:20px!important; height:20px!important;
+    min-width:20px!important; min-height:20px!important; margin:0!important; padding:0!important; transform:none!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f) #top-settings-holder > .drawer > #rm_extensions_block .extensions_block > .flex-container:first-child > .checkbox_label > :is(span,small) {
+    display:block!important; flex:0 1 auto!important; align-self:center!important; min-width:0!important;
+    width:auto!important; margin:0!important; padding:0!important; line-height:20px!important; transform:none!important;
+    white-space:normal!important; overflow-wrap:anywhere!important;
+  }
+}
+
+
+/* v1.8.110 — Settings and Backgrounds: same header tokens as the other tabs. */
+@media screen {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #user-settings-block [name="userSettingsRowOne"] {
+    display:grid!important; grid-template-columns:max-content minmax(0,1fr)!important;
+    grid-template-rows:var(--slk-tab-title-row) auto!important;
+    column-gap:8px!important; align-items:center!important;
+    margin:0!important; padding:0!important; width:100%!important; max-width:100%!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #user-settings-block [name="userSettingsRowOne"] > .flex-container:first-child {grid-column:1!important;grid-row:1!important;min-width:max-content!important;flex-wrap:nowrap!important;margin:0!important;padding:0!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #user-settings-block [name="userSettingsRowOne"] > .flex-container:first-child > .flex-container {min-width:max-content!important;gap:0!important;flex-wrap:nowrap!important;margin:0!important;padding:0!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #user-settings-block [name="userSettingsRowOne"] h3 {
+    display:flex!important;align-items:center!important;justify-content:flex-start!important;
+    font-family:var(--slk-font)!important;font-size:var(--slk-tab-title-size)!important;
+    font-weight:700!important;line-height:var(--slk-tab-title-line)!important;
+    letter-spacing:-.015em!important;color:#1D1C1D!important;text-shadow:none!important;
+    min-height:var(--slk-tab-title-row)!important;height:var(--slk-tab-title-row)!important;
+    width:max-content!important;min-width:max-content!important;max-width:none!important;
+    margin:0!important;padding:0!important;border:0!important;gap:4px!important;white-space:nowrap!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #user-settings-block [name="userSettingsRowOne"] h3 > span {font-family:inherit!important;font-size:inherit!important;font-weight:inherit!important;line-height:inherit!important;letter-spacing:inherit!important;white-space:nowrap!important;flex:0 0 auto!important;margin:0!important;padding:0!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #user-settings-block [name="userSettingsRowOne"] h3 .notes-link {display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 16px!important;width:16px!important;min-width:16px!important;height:16px!important;margin:0!important;padding:0!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #user-settings-block [name="userSettingsRowOne"] #version_display {grid-column:2!important;grid-row:1!important;align-self:center!important;justify-self:end!important;min-width:0!important;max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere!important;text-align:right!important;margin:0!important;line-height:1.3!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #user-settings-block [name="userSettingsRowOne"] #UI-language-block {grid-column:1/-1!important;grid-row:2!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed {padding-top:var(--slk-tab-title-top)!important;padding-inline:var(--slk-tab-title-inset)!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 {
+    --slk-bg-action-w:32px; --slk-bg-action-h:28px; --slk-bg-pill-pad:4px;
+    position:relative!important;isolation:isolate;display:grid!important;
+    grid-template-columns:minmax(max-content,1fr) minmax(0,112px) var(--slk-bg-pill-pad) repeat(3,var(--slk-bg-action-w)) var(--slk-bg-pill-pad)!important;
+    grid-template-rows:var(--slk-tab-title-row)!important;gap:0!important;align-items:center!important;
+    width:100%!important;min-height:var(--slk-tab-title-row)!important;margin:0!important;padding:0!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 h3 {grid-column:1!important;grid-row:1!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;height:var(--slk-tab-title-row)!important;min-height:var(--slk-tab-title-row)!important;font-size:0!important;line-height:0!important;margin:0!important;padding:0!important;border:0!important;white-space:nowrap!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 h3 > span {display:none!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 h3::before {content:'배경'!important;display:block!important;font-family:var(--slk-font)!important;font-size:var(--slk-tab-title-size)!important;font-weight:700!important;line-height:var(--slk-tab-title-line)!important;letter-spacing:-.015em!important;color:#1D1C1D!important;text-shadow:none!important;margin:0!important;padding:0!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 .expander {display:none!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 #background_fitting {grid-column:2!important;grid-row:1!important;width:calc(100% - 8px)!important;min-width:0!important;max-width:104px!important;margin:0 8px 0 0!important;align-self:center!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1::before {content:''!important;display:block!important;grid-column:3/8;grid-row:1;align-self:center;height:calc(var(--slk-bg-action-h) + 4px);background:#F1F1F1!important;border-radius:999px!important;pointer-events:none;z-index:-1;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 > :is(#auto_background,#bg_add_folder_button,#add_background_button_top) {
+    grid-row:1!important;position:relative!important;z-index:1;align-self:center!important;
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    width:var(--slk-bg-action-w)!important;min-width:var(--slk-bg-action-w)!important;max-width:var(--slk-bg-action-w)!important;
+    height:var(--slk-bg-action-h)!important;min-height:var(--slk-bg-action-h)!important;max-height:var(--slk-bg-action-h)!important;
+    margin:0!important;padding:0!important;border:0!important;border-radius:999px!important;
+    background:transparent!important;color:var(--slk-muted)!important;box-shadow:none!important;filter:none!important;line-height:1!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 > #auto_background {grid-column:4!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 > #bg_add_folder_button {grid-column:5!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 > #add_background_button_top {grid-column:6!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 > :is(#auto_background,#bg_add_folder_button,#add_background_button_top):is(:hover,:active) {background:#FFFFFF!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 > #auto_background:is(.toggleEnabled,.active) {color:var(--slk-aubergine)!important;background:#EFE6EF!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 > :is(#auto_background,#bg_add_folder_button,#add_background_button_top) > :is(span,slk-button-label,[data-slk-button-label]) {display:none!important;}
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 > :is(#auto_background,#bg_add_folder_button,#add_background_button_top) i {align-self:center!important;margin:0!important;padding:0!important;transform:none!important;}
+}
+@media screen and (max-width:340px) {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 {--slk-bg-action-w:30px;--slk-bg-pill-pad:2px;}
+}
