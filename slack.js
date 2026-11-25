@@ -66,9 +66,46 @@ function slkRememberSplashLogo(src) {
     } catch { /* noop */ }
 }
 
+// Browser tab icon follows the same preference as the header and splash.
+// Only standard favicons are changed: do not touch installed PWA/home-screen icons.
+const slkOriginalFavicons = new Map();
+function slkApplyFavicon() {
+    if (!document.head) return;
+    if (!SLK_UI_SETTINGS.enabled) {
+        document.getElementById('slk-browser-favicon')?.remove();
+        for (const [link, attributes] of slkOriginalFavicons) {
+            for (const [name, value] of Object.entries(attributes)) {
+                if (value === null) link.removeAttribute(name);
+                else link.setAttribute(name, value);
+            }
+        }
+        slkOriginalFavicons.clear();
+        return;
+    }
+    const src = new URL(slkSelectedSplashLogoUrl(), document.baseURI).href;
+    let links = [...document.head.querySelectorAll('link[rel~="icon" i]')];
+    if (!links.length) {
+        const link = document.createElement('link');
+        link.id = 'slk-browser-favicon';
+        link.rel = 'icon';
+        document.head.append(link);
+        links = [link];
+    }
+    for (const link of links) {
+        if (link.id !== 'slk-browser-favicon' && !slkOriginalFavicons.has(link)) {
+            slkOriginalFavicons.set(link, Object.fromEntries(['href', 'type', 'sizes'].map(name => [name, link.getAttribute(name)])));
+        }
+        if (link.href !== src) link.href = src;
+        if (link.type !== 'image/png') link.type = 'image/png';
+        // Native ICO size declarations may not match the selected PNG.
+        if (link.hasAttribute('sizes')) link.removeAttribute('sizes');
+    }
+}
+
 function slkApplyHeaderImage() {
     const src = slkSelectedLogoUrl();
     slkRememberSplashLogo(slkSelectedSplashLogoUrl());
+    slkApplyFavicon();
     const avatar = document.querySelector('#slk-header .slk-ws-avatar');
     const image = avatar?.querySelector('img');
     if (image) {

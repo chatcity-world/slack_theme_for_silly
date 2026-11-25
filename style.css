@@ -24451,3 +24451,23 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
     align-self:center!important;
   }
 }
+
+
+/* v1.8.107 — Advanced prompt spacing matches the quick/utility prompt rows. */
+@media screen {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .inline-drawer:has(> .inline-drawer-toggle :is(#character_names_display,#continue_postfix_display)) {
+    padding-block:4px!important; margin-block:0!important; min-height:0!important; gap:0!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .inline-drawer-toggle:has(:is(#character_names_display,#continue_postfix_display)) {
+    height:40px!important; min-height:40px!important; box-sizing:border-box!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings > [data-slk-tab="advanced"] .range-block:has(> label.checkbox_label > input[type="checkbox"]) {
+    padding-block:4px!important; margin-block:0!important; gap:0!important; min-height:0!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings > [data-slk-tab="advanced"] .range-block > label.checkbox_label:has(> input[type="checkbox"]) {
+    margin-block:0!important; min-height:24px!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings > [data-slk-tab="advanced"] .range-block:has(> label.checkbox_label > input[type="checkbox"]) > .toggle-description {
+    margin-block:4px 0!important; padding-block:0!important;
+  }
+}
