@@ -659,7 +659,7 @@ body.slk-ui {
 
     /* 고정된 채팅 = 아바타 모서리에 핀 배지 */
     body.slk-ui .welcomeRecent .recentChat .recentChatPinned {
-        top: 4px !important;
+        top: 14px !important;
         left: 40px !important;
         width: 18px;
         height: 18px;
@@ -676,6 +676,11 @@ body.slk-ui {
     body.slk-ui .welcomeRecent .recentChat .recentChatPinned i {
         width: 10px !important;
         height: 10px !important;
+        color: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+        margin: 0 !important;
+        align-self: center;
+        justify-self: center;
     }
 
     /* 정보 영역 = 3줄 그리드
