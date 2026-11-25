@@ -169,9 +169,8 @@ function buildSlackUiExtensionSettings() {
                     </label>
                 </div>
                 <section class="slk-preference-section" aria-label="채팅 글자 설정">
-                    <div class="slk-preference-heading">채팅 텍스트</div>
                     <div class="slk-settings-row">
-                        <label for="slk-font-value">폰트 크기</label>
+                        <label for="slk-font-value">메세지 폰트 크기</label>
                         <div class="slk-preference-controls">
                             <div class="slk-stepper" data-pref="fontSize" data-min="11" data-max="26" data-step="1">
                                 <button type="button" data-direction="-1" aria-label="폰트 크기 줄이기">−</button>
@@ -182,7 +181,7 @@ function buildSlackUiExtensionSettings() {
                         </div>
                     </div>
                     <div class="slk-settings-row">
-                        <label for="slk-line-height-value">줄간격</label>
+                        <label for="slk-line-height-value">메세지 줄간격</label>
                         <div class="slk-preference-controls">
                             <div class="slk-stepper" data-pref="lineHeight" data-min="1.2" data-max="2.4" data-step="0.1">
                                 <button type="button" data-direction="-1" aria-label="줄간격 줄이기">−</button>
@@ -193,7 +192,7 @@ function buildSlackUiExtensionSettings() {
                         </div>
                     </div>
                     <div class="slk-settings-row">
-                        <label for="slk-letter-spacing-value">자간</label>
+                        <label for="slk-letter-spacing-value">메세지 자간</label>
                         <div class="slk-preference-controls">
                             <div class="slk-stepper" data-pref="letterSpacing" data-min="-1.5" data-max="3" data-step="0.1">
                                 <button type="button" data-direction="-1" aria-label="자간 좁히기">−</button>
@@ -214,9 +213,8 @@ function buildSlackUiExtensionSettings() {
                     </div>
                 </section>
                 <section class="slk-preference-section" aria-label="채팅 글자색 설정">
-                    <div class="slk-preference-heading">폰트 컬러</div>
                     <div class="slk-ink-setting" data-ink="narration" data-pref="narrationInk" data-storage="slk-ui-ink-narration">
-                        <label for="slk-ink-narration-hex">나레이션</label>
+                        <label for="slk-ink-narration-hex">나레이션 컬러</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-narration-picker" aria-label="나레이션 글자색 선택">
                             <input type="text" id="slk-ink-narration-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="나레이션 글자색 HEX">
@@ -224,7 +222,7 @@ function buildSlackUiExtensionSettings() {
                         </div>
                     </div>
                     <div class="slk-ink-setting" data-ink="dialogue" data-pref="dialogueInk" data-storage="slk-ui-ink-dialogue">
-                        <label for="slk-ink-dialogue-hex">대사</label>
+                        <label for="slk-ink-dialogue-hex">대사 컬러</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-dialogue-picker" aria-label="대사 글자색 선택">
                             <input type="text" id="slk-ink-dialogue-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="대사 글자색 HEX">
@@ -232,7 +230,7 @@ function buildSlackUiExtensionSettings() {
                         </div>
                     </div>
                     <div class="slk-ink-setting" data-ink="ascii" data-pref="asciiInk" data-storage="slk-ui-ink-ascii">
-                        <label for="slk-ink-ascii-hex">아스키아트 (*텍스트*)</label>
+                        <label for="slk-ink-ascii-hex">아스키아트(*텍스트*) 컬러</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-ascii-picker" aria-label="아스키아트 글자색 선택">
                             <input type="text" id="slk-ink-ascii-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="아스키아트 글자색 HEX">
@@ -240,7 +238,7 @@ function buildSlackUiExtensionSettings() {
                         </div>
                     </div>
                     <div class="slk-ink-setting" data-ink="code" data-pref="codeInk" data-storage="slk-ui-ink-code">
-                        <label for="slk-ink-code-hex">코드박스</label>
+                        <label for="slk-ink-code-hex">코드박스 텍스트 컬러</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-code-picker" aria-label="코드박스 글자색 선택">
                             <input type="text" id="slk-ink-code-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="코드박스 글자색 HEX">
@@ -250,7 +248,7 @@ function buildSlackUiExtensionSettings() {
                 </section>
                 <section class="slk-preference-section" aria-label="시작화면 / 헤더 이미지 설정">
                     <div class="slk-preference-heading">시작화면 / 헤더 이미지</div>
-                    <div class="slk-header-image-options" role="radiogroup" aria-label="시작화면 / 헤더 이미지 종류">
+                    <div class="slk-header-image-options" style="margin-top: 8px !important;" role="radiogroup" aria-label="시작화면 / 헤더 이미지 종류">
                         <label><input type="radio" name="slk-header-image-mode" value="slack"><span>Slack</span></label>
                         <label><input type="radio" name="slk-header-image-mode" value="custom"><span>등록한 이미지</span></label>
                     </div>
