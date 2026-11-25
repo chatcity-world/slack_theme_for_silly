@@ -25252,3 +25252,45 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
 @media screen and (max-width:1000px) {
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q):not(#slk-r):not(#slk-s):not(#slk-t):not(#slk-u):not(#slk-v) #right-nav-panel[data-slk-view="group"] > .scrollableInner {padding-bottom:calc(var(--slk-footer-h,80px) + 20px)!important;}
 }
+
+
+/* 1.8.144 — character creation/detail use one panel scroll surface.
+   The back row, token row, identity and form all scroll together. */
+@media screen {
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q):not(#slk-r):not(#slk-s):not(#slk-t):not(#slk-u):not(#slk-v) #right-nav-panel[data-slk-view="edit"].openDrawer:not(.slk-nav-hidden) {
+    overflow-y:auto!important;overflow-x:hidden!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q):not(#slk-r):not(#slk-s):not(#slk-t):not(#slk-u):not(#slk-v) #right-nav-panel[data-slk-view="edit"] > .scrollableInner {
+    flex:0 0 auto!important;height:auto!important;min-height:0!important;
+    max-height:none!important;overflow:visible!important;padding-bottom:24px!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q):not(#slk-r):not(#slk-s):not(#slk-t):not(#slk-u):not(#slk-v) #right-nav-panel[data-slk-view="edit"] :is(#CharListButtonAndHotSwaps,#rm_PinAndTabs,#right-nav-panel-tabs) {
+    position:static!important;inset:auto!important;flex-shrink:0!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q):not(#slk-r):not(#slk-s):not(#slk-t):not(#slk-u):not(#slk-v) #right-nav-panel[data-slk-view="edit"] :is(#rm_ch_create_block,#form_create) {
+    position:static!important;inset:auto!important;height:auto!important;
+    max-height:none!important;min-height:0!important;overflow:visible!important;
+    flex-shrink:0!important;
+}
+}
+@media screen and (max-width:1000px) {
+/* 1.8.145 — same full-viewport scroll surface as the character list.
+   Reserve the footer clearance only at the end of the outer scroll flow.
+   The floating glass nav is unchanged; never paint a separate footer backing. */
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q):not(#slk-r):not(#slk-s):not(#slk-t):not(#slk-u):not(#slk-v) #right-nav-panel[data-slk-view="edit"].openDrawer:not(.slk-nav-hidden) {
+    display:block!important;
+    top:0!important;bottom:0!important;
+    height:100dvh!important;max-height:100dvh!important;
+    padding-bottom:calc(var(--slk-footer-h,80px) + 20px)!important;
+    overflow-y:auto!important;overflow-x:hidden!important;
+    scroll-padding-bottom:calc(var(--slk-footer-h,80px) + 20px)!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q):not(#slk-r):not(#slk-s):not(#slk-t):not(#slk-u):not(#slk-v) #right-nav-panel[data-slk-view="edit"] > .scrollableInner {
+    padding-bottom:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+}
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q):not(#slk-r):not(#slk-s):not(#slk-t):not(#slk-u):not(#slk-v) #right-nav-panel[data-slk-view="edit"].openDrawer:not(.slk-nav-hidden)::after {
+    content:none!important;display:none!important;
+}
+}
