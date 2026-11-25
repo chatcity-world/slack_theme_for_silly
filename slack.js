@@ -92,6 +92,8 @@ function slkObserveOutsideChat(callback, root, options) {
     slkBindOutsideChat();
 }
 
+let slkPersistSplashPreference;
+
 function slkSavePreference(key, value) {
     try { localStorage.setItem(key, String(value)); return true; }
     catch { window.toastr?.error('설정 저장 공간이 부족합니다. 이미지 용량을 확인해 주세요.'); return false; }
@@ -521,14 +523,24 @@ function buildSlackUiExtensionSettings() {
 
     const enabledInput = container.querySelector('#slk-enable-toggle');
     enabledInput.checked = SLK_UI_SETTINGS.enabled;
-    enabledInput.addEventListener('change', () => {
+    enabledInput.addEventListener('change', async () => {
         const next = enabledInput.checked;
-        // Loading a pristine native SillyTavern tree is safer than trying to
-        // reverse dozens of Slack DOM transformations within the same page.
-        try { localStorage.setItem('slk-ui-enabled', String(next)); }
-        catch { enabledInput.checked = SLK_UI_SETTINGS.enabled; return; }
-        SLK_UI_SETTINGS.enabled = next;
-        window.location.reload(); // exactly once, only on explicit switch action
+        const previous = SLK_UI_SETTINGS.enabled;
+        enabledInput.disabled = true;
+        try {
+            // Save the server-side splash CSS before reloading. The normal
+            // debounced save can be cancelled by immediate navigation.
+            if (typeof slkPersistSplashPreference !== 'function') throw new Error('Splash settings not ready');
+            await slkPersistSplashPreference(next);
+            localStorage.setItem('slk-ui-enabled', String(next));
+            SLK_UI_SETTINGS.enabled = next;
+            window.location.reload();
+        } catch (error) {
+            enabledInput.checked = previous;
+            enabledInput.disabled = false;
+            console.error('[Slack UI] theme switch', error);
+            window.toastr?.error('시작 화면 설정을 저장하지 못했습니다. 연결 상태를 확인하고 다시 시도해 주세요.');
+        }
     });
 
     // Steppers update the actual chat text, not the settings panel itself.
@@ -3275,11 +3287,29 @@ function slkObserveMessageChrome(chat, callback) {
         return START + '\n' + imageCss + '\n' + BOOT_CSS + '\n' + "@layer slk-splash-chrome {\n @media screen and (max-width:1000px) {\n    :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)), :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)) > body, html:has(dialog[open] #loader), html:has(dialog[open] #loader) > body { background:#fff!important; color-scheme:only light!important; }\n    :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader { position:fixed!important; inset:0!important; width:100%!important; height:100%!important; margin:0!important; background-color:#fff!important; color-scheme:only light!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }\n    html:has(dialog[open] #loader) dialog[open]:has(#loader) { background:#fff!important; color-scheme:only light!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }\n    html:has(dialog[open] #loader) dialog[open] #loader #load-spinner, :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner, #slk-splash-chrome-sample {\n      display:block!important; position:fixed!important; inset:0 0 auto 0!important;\n      width:100%!important; min-width:0!important; max-width:none!important;\n      height:max(12px,env(safe-area-inset-top,0px))!important; min-height:12px!important; max-height:none!important;\n      margin:0!important; padding:0!important; border:0!important; border-radius:0!important;\n      background:#fff!important; color:transparent!important; font-size:0!important;\n      opacity:1!important; visibility:visible!important; box-shadow:none!important; text-shadow:none!important;\n      transform:none!important; animation:none!important; transition:none!important; filter:none!important;\n      backdrop-filter:none!important; -webkit-backdrop-filter:none!important;\n      overflow:hidden!important; pointer-events:none!important; z-index:2147483646!important;\n    }\n    html:has(dialog[open] #loader) #loader #load-spinner::before, html:has(dialog[open] #loader) #loader #load-spinner::after,\n    :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner::before, :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner::after,\n    html:has(dialog[open] #loader) #loader #load-spinner > *, :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*=\"display: none\"],[style*=\"display:none\"],[style*=\"visibility: hidden\"],[style*=\"visibility:hidden\"],[style*=\"opacity: 0;\"],[style*=\"opacity:0;\"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner > * {display:none!important;content:none!important;}\n }\n @media screen and (min-width:1001px) {#slk-splash-chrome-sample {display:none!important;}}\n  html body #preloader {\n    background-image: var(--slk-first-splash-icon, var(--slk-loader-icon)) !important;\n    background-repeat: no-repeat !important;\n    background-size: 74px 74px !important;\n    background-position: center calc(46.5dvh - 37px) !important;\n    background-attachment: fixed !important;\n  }\n  html body #preloader::after { content: none !important; display: none !important; }\n}" + '\n' + END;
     };
     const strip = (s) => {
-        const i = s.indexOf(START), j = s.indexOf(END);
-        if (i === -1 || j === -1) return s;
-        return (s.slice(0, i).replace(/\n+$/, '') + '\n' + s.slice(j + END.length).replace(/^\n+/, '')).trim();
+        // Remove only our marked blocks, never unrelated user CSS.
+        let i = s.indexOf(START);
+        while (i !== -1) {
+            const j = s.indexOf(END, i + START.length);
+            if (j === -1) break;
+            const from = i >= 2 && s.slice(i - 2, i) === '\n\n' ? i - 2 : i;
+            s = s.slice(0, from) + s.slice(j + END.length);
+            i = s.indexOf(START, from);
+        }
+        return s;
+    };
+    let switching = false;
+    const setCss = (pu, value, updateLive = false) => {
+        pu.custom_css = value;
+        const ta = document.getElementById('customCSS');
+        if (ta) ta.value = value;
+        if (updateLive) {
+            const style = document.getElementById('custom-style');
+            if (style) style.textContent = pu.custom_css_enabled === false ? '' : value;
+        }
     };
     const sync = () => {
+        if (switching) return true;
         const ctx = window.SillyTavern?.getContext?.();
         const pu = ctx?.powerUserSettings;
         if (!pu || typeof pu.custom_css !== 'string') return false;
@@ -3287,16 +3317,49 @@ function slkObserveMessageChrome(chat, callback) {
         const base = strip(current);
         const next = SLK_UI_SETTINGS.enabled ? (base ? base + '\n\n' : '') + buildBlock() : base;
         if (next === current) return true;
-        pu.custom_css = next;
-        const ta = document.getElementById('customCSS');
-        if (ta) ta.value = next;
+        setCss(pu, next, !SLK_UI_SETTINGS.enabled);
         ctx.saveSettingsDebounced?.();
         return true;
+    };
+    slkPersistSplashPreference = async (enabled) => {
+        const ctx = window.SillyTavern?.getContext?.();
+        const pu = ctx?.powerUserSettings;
+        if (!pu || typeof pu.custom_css !== 'string') throw new Error('Settings unavailable');
+        switching = true;
+        const previous = pu.custom_css;
+        const base = strip(previous);
+        const next = enabled ? (base ? base + '\n\n' : '') + buildBlock() : base;
+        let timer, listener;
+        const event = (ctx.eventTypes || ctx.event_types)?.SETTINGS_UPDATED;
+        const source = ctx.eventSource;
+        try {
+            // Import ST's already-loaded core module, not a second copy with a query string.
+            const core = await import(new URL('script.js', document.baseURI).href);
+            if (typeof core.saveSettings !== 'function') throw new Error('Immediate settings save unavailable');
+            if (!event || !source?.on || !source?.removeListener) throw new Error('Settings save confirmation unavailable');
+            setCss(pu, next);
+            const confirmed = new Promise((resolve, reject) => {
+                listener = () => resolve();
+                source.on(event, listener);
+                timer = setTimeout(() => reject(new Error('Settings save not confirmed')), 10000);
+            });
+            // SETTINGS_UPDATED is emitted by ST only after a successful server save.
+            await Promise.all([core.saveSettings(), confirmed]);
+        } catch (error) {
+            setCss(pu, previous);
+            ctx.saveSettingsDebounced?.();
+            throw error;
+        } finally {
+            clearTimeout(timer);
+            if (listener) source.removeListener(event, listener);
+            switching = false;
+        }
     };
     const start = () => {
         let tries = 0;
         const tick = () => { if (!sync() && ++tries < 30) setTimeout(tick, 1000); };
-        setTimeout(tick, 1500);
+        if (!SLK_UI_SETTINGS.enabled) tick();
+        else setTimeout(tick, 1500);
         // 테마를 바꾸면 사용자 지정 CSS가 통째로 바뀌므로 그때도 다시 넣음
         document.addEventListener('change', (e) => {
             if (e.target && (e.target.id === 'themes' || e.target.id === 'customCSS')) setTimeout(sync, 800);

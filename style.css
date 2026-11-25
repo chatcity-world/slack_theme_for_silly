@@ -24879,3 +24879,81 @@ html body.slk-ui .slk-fallback-popup :is(input:not([type]),input:is([type="text"
 html body.slk-ui .slk-fallback-popup :is(input:not([type]),input:is([type="text"],[type="search"],[type="email"],[type="password"],[type="url"],[type="number"],[type="tel"]),select:not([multiple]):not([size])):not(:where([hidden],[aria-hidden="true"],.hidden,.displayNone,.sr-only,.visually-hidden,.select2-hidden-accessible,.slk-sw-orig,.slk-switch-input,[data-slk-sw],.switch *,.toggle-switch *,.toggle *,.slk-sw-host *,.extension_toggle *,.custom-checkbox *,.custom-radio *,.form-switch *,.switch-input,.toggle-input,.custom-control-input,.switch-toggle,.select2-container *,.slk-no-theme *,[data-slk-no-theme] *,.regex_editor *,.regex-debugger-container *,.extensions_info *)) {min-height:var(--slk-pop-control,34px);padding-inline:10px;}
 html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden],[aria-hidden="true"],.hidden,.displayNone,.sr-only,.visually-hidden,.select2-hidden-accessible,.slk-sw-orig,.slk-switch-input,[data-slk-sw],.switch *,.toggle-switch *,.toggle *,.slk-sw-host *,.extension_toggle *,.custom-checkbox *,.custom-radio *,.form-switch *,.switch-input,.toggle-input,.custom-control-input,.switch-toggle,.select2-container *,.slk-no-theme *,[data-slk-no-theme] *,.regex_editor *,.regex-debugger-container *,.extensions_info *)):not(:where(.popup-controls *, .fa,.fas,.far,[class*="fa-"],.slk-modal-close,.popup-button-close,[role="switch"],[role="checkbox"],[role="radio"],.close,.icon-button)):not(:has(> :is(i,svg):only-child)) {box-sizing:border-box;font-family:var(--slk-font,sans-serif);font-size:var(--slk-pop-label,13px);font-weight:600;min-height:var(--slk-pop-control,34px);border:1px solid var(--slk-pop-border,#DAD8DA);border-radius:var(--slk-pop-field-radius,8px);background-color:#FFF;color:var(--slk-text,#1D1C1D);padding:6px 10px;box-shadow:none;}
 }
+
+
+/* v1.8.159 — World Info menu stacking; local to the open menu. */
+@media screen {
+  html body.slk-ui #WorldInfo #wiTopBlock:has(#slk-wi-dd.is-open),
+  html body.slk-ui #WorldInfo #WIMultiSelector:has(#slk-wi-dd.is-open),
+  html body.slk-ui #WorldInfo #WIMultiSelector > .range-block-range:has(#slk-wi-dd.is-open) {
+    position:relative!important;
+    z-index:100!important;
+    overflow:visible!important;
+  }
+  html body.slk-ui #WorldInfo #slk-wi-dd.is-open {z-index:101!important;}
+  html body.slk-ui #WorldInfo #slk-wi-dd.is-open .slk-wi-dd-menu {z-index:102!important;background:#fff!important;}
+}
+/* Mobile requested form typography: only lorebook, persona, character forms. */
+@media screen and (max-width:1000px) {
+  html body.slk-ui:not(.slk-pc) :is(#WorldInfo,#PersonaManagement,#right-nav-panel[data-slk-view="edit"]) {
+    --slk-ds-field:14px;
+    --slk-ds-choice:14px;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p) #WorldInfo #wiTopBlock > #WIMultiSelector > .range-block-range #slk-wi-dd :is(.slk-wi-dd-btn,.slk-wi-dd-label,.slk-wi-dd-item) {font-size:14px!important;}
+  html body.slk-ui:not(.slk-pc):not(#slk-a#slk-b#slk-c#slk-d#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#WorldInfo,#PersonaManagement,#right-nav-panel[data-slk-view="edit"]) :is(input:not([type]),input:is([type="text"],[type="search"],[type="email"],[type="password"],[type="url"],[type="number"],[type="tel"]),textarea,select):not(.select2-hidden-accessible,.slk-native-sort-select),
+  html body.slk-ui:not(.slk-pc):not(#slk-a#slk-b#slk-c#slk-d#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#WorldInfo,#PersonaManagement,#right-nav-panel[data-slk-view="edit"]) :is(input,textarea)::placeholder,
+  html body.slk-ui:not(.slk-pc):not(#slk-a#slk-b#slk-c#slk-d#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#WorldInfo,#PersonaManagement,#right-nav-panel[data-slk-view="edit"]) select option,
+  html body.slk-ui:not(.slk-pc):not(#slk-a#slk-b#slk-c#slk-d#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#WorldInfo,#PersonaManagement,#right-nav-panel[data-slk-view="edit"]) :is(.select2-selection__rendered,.select2-selection__placeholder,.select2-selection__choice,.select2-search__field,.select2-results__option,.slk-dd-btn,.slk-dd-label,.slk-dd-item) {font-size:14px!important;}
+  html body.slk-ui:not(.slk-pc):not(#slk-a#slk-b#slk-c#slk-d#slk-e):has(#top-settings-holder > .drawer > .drawer-content:is(#WorldInfo,#PersonaManagement,#right-nav-panel[data-slk-view="edit"]):not(.slk-nav-hidden) .select2-container--open) > .select2-container--open :is(.select2-results__option,.select2-results__option > span,.select2-results__option > label,.select2-search__field) {font-size:14px!important;}
+}
+
+/* v1.8.160 — Mobile persona connection buttons: shared vertical center. */
+@media screen and (max-width:1000px) {
+  /* Important declarations inside this existing layer outrank unlayered rules. */
+  @layer slk-button-label-alignment {
+    body.slk-ui #PersonaManagement #persona_connections_buttons > .menu_button > :is(slk-button-label,[data-slk-button-label]) {
+      position:static!important;
+      top:auto!important;
+      bottom:auto!important;
+      transform:none!important;
+    }
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h) #PersonaManagement #persona_connections_buttons > .menu_button {
+    display:flex!important;
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:center!important;
+    box-sizing:border-box!important;
+    padding-block:0!important;
+    line-height:20px!important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h) #PersonaManagement #persona_connections_buttons > .menu_button > :is(slk-button-label,[data-slk-button-label],div,span,b,strong,small,label):not(:is(i,svg,[class*="fa-"],[class*="icon"],[aria-hidden="true"])) {
+    display:inline-flex!important;
+    align-items:center!important;
+    align-self:center!important;
+    flex:0 0 auto!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    line-height:20px!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h) #PersonaManagement #persona_connections_buttons > .menu_button > :is(i,svg) {
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    align-self:center!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  html body.slk-ui:not(.slk-pc):not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h) #PersonaManagement #persona_connections_buttons > .menu_button > i::before {
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    margin:0!important;
+  }
+}
