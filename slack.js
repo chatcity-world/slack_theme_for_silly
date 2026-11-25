@@ -335,7 +335,7 @@ function buildSlackUiExtensionSettings() {
                         <label><input type="radio" name="slk-header-image-mode" value="custom"><span>등록한 이미지</span></label>
                     </div>
                 </section>
-                <section class="slk-preference-section" aria-label="채팅 글자 설정">
+                <section class="slk-preference-section slk-metric-preferences" aria-label="채팅 글자 설정">
                     <div class="slk-settings-row">
                         <label for="slk-font-value">메세지 폰트 크기</label>
                         <div class="slk-preference-controls">
@@ -370,16 +370,7 @@ function buildSlackUiExtensionSettings() {
                         </div>
                     </div>
                 </section>
-                <section class="slk-preference-section slk-dialogue-preference" aria-label="대사 배경 설정">
-                    <div class="slk-preference-heading">대사 배경</div>
-                    <div class="slk-color-row">
-                        <input type="color" id="slk-dialogue-color-picker" value="#efefef" aria-label="대사 배경 선택">
-                        <label class="slk-visually-hidden" for="slk-dialogue-hex">HEX 색상</label>
-                        <input type="text" id="slk-dialogue-hex" maxlength="7" placeholder="#EFEFEF" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="대사 배경 HEX">
-                        <button type="button" id="slk-dialogue-reset" class="slk-preference-button" aria-label="대사 배경 초기화">초기화</button>
-                    </div>
-                </section>
-                <section class="slk-preference-section" aria-label="채팅 글자색 설정">
+                <section class="slk-preference-section slk-color-preferences" aria-label="채팅 글자색 설정">
                     <div class="slk-ink-setting" data-ink="narration" data-pref="narrationInk" data-storage="slk-ui-ink-narration">
                         <label for="slk-ink-narration-hex">나레이션 컬러</label>
                         <div class="slk-color-row">
@@ -396,20 +387,29 @@ function buildSlackUiExtensionSettings() {
                             <button type="button" class="slk-preference-button slk-ink-reset" aria-label="대사 글자색 초기화">초기화</button>
                         </div>
                     </div>
-                    <div class="slk-ink-setting" data-ink="ascii" data-pref="asciiInk" data-storage="slk-ui-ink-ascii">
-                        <label for="slk-ink-ascii-hex">아스키아트(*텍스트*) 컬러</label>
+                    <div class="slk-dialogue-preference" aria-label="대사 배경 컬러 설정">
+                        <div class="slk-preference-heading">대사 배경 컬러</div>
                         <div class="slk-color-row">
-                            <input type="color" id="slk-ink-ascii-picker" aria-label="아스키아트 글자색 선택">
-                            <input type="text" id="slk-ink-ascii-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="아스키아트 글자색 HEX">
-                            <button type="button" class="slk-preference-button slk-ink-reset" aria-label="아스키아트 글자색 초기화">초기화</button>
+                            <input type="color" id="slk-dialogue-color-picker" value="#efefef" aria-label="대사 배경 컬러 선택">
+                            <label class="slk-visually-hidden" for="slk-dialogue-hex">HEX 색상</label>
+                            <input type="text" id="slk-dialogue-hex" maxlength="7" placeholder="#EFEFEF" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="대사 배경 컬러 HEX">
+                            <button type="button" id="slk-dialogue-reset" class="slk-preference-button" aria-label="대사 배경 컬러 초기화">초기화</button>
+                        </div>
+                    </div>
+                    <div class="slk-ink-setting" data-ink="ascii" data-pref="asciiInk" data-storage="slk-ui-ink-ascii">
+                        <label for="slk-ink-ascii-hex">*텍스트 * 컬러</label>
+                        <div class="slk-color-row">
+                            <input type="color" id="slk-ink-ascii-picker" aria-label="강조 텍스트 글자색 선택">
+                            <input type="text" id="slk-ink-ascii-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="강조 텍스트 글자색 HEX">
+                            <button type="button" class="slk-preference-button slk-ink-reset" aria-label="강조 텍스트 글자색 초기화">초기화</button>
                         </div>
                     </div>
                     <div class="slk-ink-setting" data-ink="code" data-pref="codeInk" data-storage="slk-ui-ink-code">
-                        <label for="slk-ink-code-hex">코드박스 텍스트 컬러</label>
+                        <label for="slk-ink-code-hex">코드블럭 컬러</label>
                         <div class="slk-color-row">
-                            <input type="color" id="slk-ink-code-picker" aria-label="코드박스 글자색 선택">
-                            <input type="text" id="slk-ink-code-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="코드박스 글자색 HEX">
-                            <button type="button" class="slk-preference-button slk-ink-reset" aria-label="코드박스 글자색 초기화">초기화</button>
+                            <input type="color" id="slk-ink-code-picker" aria-label="코드블럭 글자색 선택">
+                            <input type="text" id="slk-ink-code-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="코드블럭 글자색 HEX">
+                            <button type="button" class="slk-preference-button slk-ink-reset" aria-label="코드블럭 글자색 초기화">초기화</button>
                         </div>
                     </div>
                 </section>
