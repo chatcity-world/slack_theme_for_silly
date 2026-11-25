@@ -24903,3 +24903,8 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #rm
         box-sizing: border-box !important;
     }
 }
+
+/* v1.8.132 — shared breathing room below the four prompt tabs (PC/mobile). */
+html body.slk-ui #left-nav-panel #slk-aitabs {
+    margin-bottom: 8px !important;
+}
