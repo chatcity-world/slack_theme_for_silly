@@ -5627,3 +5627,247 @@ function slkConnectPromptManager() {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
     else start();
 })();
+
+// v1.8.171 — 채팅 파일 진단 기록.
+// 채팅이 다른 파일로 바뀌는(날아가는) 순간을 잡기 위해, 채팅/캐릭터 저장 요청과
+// ST 채팅 이벤트, Slack UI 버튼 클릭을 최근 400개까지 기기 안(localStorage)에만 기록합니다.
+// 서버로 보내지 않으며, 확장 설정의 '채팅 진단 기록 복사' 버튼으로만 꺼낼 수 있습니다.
+(function slkChatDiagnostics() {
+    const KEY = 'slk-chat-log';
+    const MAX = 400;
+    let log = [];
+    try { log = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(log)) log = []; } catch { log = []; }
+    let saveTimer = null;
+    const persist = () => {
+        saveTimer = null;
+        try { localStorage.setItem(KEY, JSON.stringify(log.slice(-MAX))); } catch { log = log.slice(-100); }
+    };
+    const stamp = () => {
+        const d = new Date();
+        const p = n => String(n).padStart(2, '0');
+        return `${p(d.getMonth() + 1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}.${String(d.getMilliseconds()).padStart(3, '0')}`;
+    };
+    const state = () => {
+        try {
+            const ctx = window.SillyTavern?.getContext?.();
+            if (!ctx) return {};
+            const chid = ctx.characterId;
+            return {
+                chatId: ctx.chatId ?? (typeof ctx.getCurrentChatId === 'function' ? ctx.getCurrentChatId() : undefined),
+                char: chid !== undefined && chid !== null ? (ctx.characters?.[chid]?.name ?? chid) : undefined,
+                charChat: chid !== undefined && chid !== null ? ctx.characters?.[chid]?.chat : undefined,
+                group: ctx.groupId || undefined,
+                len: Array.isArray(ctx.chat) ? ctx.chat.length : undefined,
+                dom: document.querySelectorAll('#chat .mes').length,
+            };
+        } catch { return {}; }
+    };
+    const add = (type, extra = {}) => {
+        log.push({ t: stamp(), type, ...extra, ...state() });
+        if (log.length > MAX + 50) log = log.slice(-MAX);
+        if (!saveTimer) saveTimer = setTimeout(persist, 400);
+    };
+    window.slkChatLog = () => log.slice(-MAX);
+    add('boot', { ver: SLK_UI_SETTINGS.enabled ? 'on' : 'off', ua: navigator.userAgent.slice(0, 80) });
+
+    // 1) 서버로 가는 채팅/캐릭터 저장 요청
+    const describeBody = (url, body) => {
+        const out = {};
+        try {
+            if (typeof body === 'string' && body.length < 8_000_000) {
+                const json = JSON.parse(body);
+                if (json && typeof json === 'object') {
+                    for (const k of ['file_name', 'ch_name', 'avatar_url', 'chatfile', 'old_file_name', 'new_file_name', 'force', 'is_group', 'id']) {
+                        if (json[k] !== undefined) out[k] = typeof json[k] === 'string' ? json[k].slice(0, 120) : json[k];
+                    }
+                    if (Array.isArray(json.chat)) out.saveLen = json.chat.length;
+                }
+            } else if (body instanceof FormData) {
+                for (const k of ['ch_name', 'chat', 'avatar_url', 'create_date']) {
+                    const v = body.get(k);
+                    if (v !== null && typeof v === 'string') out[k] = v.slice(0, 120);
+                }
+            }
+        } catch { /* body we cannot read */ }
+        return out;
+    };
+    const watched = url => /\/api\/(chats|characters|groups)\//.test(url) && !/\/api\/characters\/(all|get)\b/.test(url);
+    // 채팅 보호: SillyTavern 은 채팅을 불러오다 실패하면(네트워크 끊김·중간에 나가기 등)
+    // 인사말 하나만 든 채팅을 원래 파일 이름으로 저장해, 원래 내용을 덮어씁니다.
+    // 보내려는 채팅이 인사말뿐인데 서버의 같은 파일에는 메시지가 더 있으면, 그 저장만 막고
+    // 원래 채팅을 다시 불러옵니다. (새 채팅·다른 파일 저장에는 관여하지 않습니다)
+    async function guardChatSave(original, self, args, init) {
+        let json = null;
+        try { if (typeof init?.body === 'string' && init.body.length < 200000) json = JSON.parse(init.body); } catch { json = null; }
+        const outgoing = Array.isArray(json?.chat) ? json.chat.length - 1 : -1; // 첫 줄은 헤더
+        if (!json || json.force || outgoing < 0 || outgoing > 1 || !json.file_name || !json.avatar_url) {
+            return original.apply(self, args);
+        }
+        let existing = -1;
+        try {
+            const res = await original.call(window, '/api/chats/get', {
+                method: 'POST',
+                headers: init.headers,
+                cache: 'no-cache',
+                body: JSON.stringify({ ch_name: json.ch_name, file_name: json.file_name, avatar_url: json.avatar_url }),
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data)) existing = Math.max(0, data.length - 1);
+            }
+        } catch { existing = -1; }
+        if (existing <= 1) return original.apply(self, args);
+        add('blocked-save', { file: String(json.file_name).slice(0, 120), outgoing, existing });
+        window.toastr?.warning(`'${json.file_name}' 채팅(메시지 ${existing}개)이 인사말만 남은 상태로 덮어써지려 해서 막았어요. 원래 채팅을 다시 불러올게요.`, '채팅 보호', { timeOut: 8000 });
+        const reloadKey = `${json.avatar_url}/${json.file_name}`;
+        if (guardChatSave.lastReload?.key === reloadKey && Date.now() - guardChatSave.lastReload.at < 10000) {
+            return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        }
+        guardChatSave.lastReload = { key: reloadKey, at: Date.now() };
+        setTimeout(async () => {
+            try {
+                const ctx = window.SillyTavern?.getContext?.();
+                const current = ctx?.getCurrentChatId?.() ?? ctx?.chatId;
+                if (current === json.file_name && typeof ctx?.reloadCurrentChat === 'function') await ctx.reloadCurrentChat();
+            } catch (error) { console.error('[Slack UI] chat reload after blocked save', error); }
+        }, 300);
+        return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    if (typeof window.fetch === 'function' && !window.fetch.__slkDiag) {
+        const original = window.fetch;
+        const wrapped = function (input, init) {
+            let url = '';
+            try { url = typeof input === 'string' ? input : (input?.url || String(input)); } catch { /* noop */ }
+            if (!watched(url)) return original.apply(this, arguments);
+            const path = url.replace(/^https?:\/\/[^/]+/, '').split('?')[0];
+            add('req', { path, ...describeBody(url, init?.body) });
+            if (path === '/api/chats/save') {
+                return guardChatSave(original, this, arguments, init).then(res => {
+                    add('res', { path, status: res.status });
+                    return res;
+                }, err => { add('res-error', { path, error: String(err).slice(0, 120) }); throw err; });
+            }
+            return original.apply(this, arguments).then(res => {
+                add('res', { path, status: res.status });
+                return res;
+            }, err => { add('res-error', { path, error: String(err).slice(0, 120) }); throw err; });
+        };
+        wrapped.__slkDiag = true;
+        window.fetch = wrapped;
+    }
+    const hookAjax = () => {
+        const jq = window.jQuery;
+        if (!jq?.ajax || jq.ajax.__slkDiag) return !!jq?.ajax;
+        const original = jq.ajax;
+        const wrapped = function (url, options) {
+            const opts = typeof url === 'object' ? url : (options || {});
+            const target = typeof url === 'string' ? url : (opts.url || '');
+            if (watched(target)) {
+                add('ajax', { path: target.split('?')[0], ...describeBody(target, opts.data) });
+            }
+            return original.apply(this, arguments);
+        };
+        wrapped.__slkDiag = true;
+        jq.ajax = wrapped;
+        return true;
+    };
+
+    // 2) ST 채팅 이벤트
+    const hookEvents = () => {
+        const ctx = window.SillyTavern?.getContext?.();
+        const types = ctx?.eventTypes || ctx?.event_types;
+        if (!ctx?.eventSource || !types) return false;
+        for (const key of ['CHAT_CHANGED', 'CHAT_LOADED', 'CHAT_CREATED', 'GROUP_CHAT_CREATED', 'CHAT_DELETED', 'GROUP_CHAT_DELETED', 'CHARACTER_EDITED', 'CHARACTER_PAGE_LOADED', 'GENERATION_STARTED', 'GENERATION_ENDED']) {
+            if (types[key]) ctx.eventSource.on(types[key], (arg) => add('ev:' + key, { arg: typeof arg === 'string' || typeof arg === 'number' ? String(arg).slice(0, 120) : undefined }));
+        }
+        return true;
+    };
+    let tries = 0;
+    const timer = setInterval(() => {
+        const a = hookAjax();
+        const e = hookEvents.done || (hookEvents.done = hookEvents());
+        if ((a && e) || ++tries > 60) clearInterval(timer);
+    }, 500);
+
+    // 3) 클릭 (어떤 버튼을 눌렀는지만)
+    const CLICK_SCOPE = '#slk-header, #slk-mobile-footer, #slk-pc-rail, #slk-pc-context-header, #slk-settings-menu, .recentChat, .character_select, .group_select, .select_chat_block, #options a, #options [id^="option_"], #extensionsMenu, .mes_edit, .mes_buttons, .swipe_left, .swipe_right, #rm_button_characters, #rm_button_selected_ch, .welcomePanel button, .welcomePanel .menu_button';
+    document.addEventListener('click', (e) => {
+        const el = e.target.closest?.(CLICK_SCOPE);
+        if (!el) return;
+        const target = e.target.closest('button, a, [id], [class]') || el;
+        const label = (target.id ? '#' + target.id : '') + (typeof target.className === 'string' ? '.' + target.className.trim().split(/\s+/).slice(0, 3).join('.') : '');
+        add('click', { el: label.slice(0, 100), text: (target.textContent || '').trim().slice(0, 40) });
+    }, true);
+    document.addEventListener('visibilitychange', () => add(document.hidden ? 'hidden' : 'visible'));
+    window.addEventListener('pagehide', () => { add('pagehide'); persist(); });
+
+    // 4) 설정에 복사/지우기 버튼
+    const mountButtons = () => {
+        const content = document.getElementById('slk-extension-settings-content');
+        if (!content) return false;
+        if (content.querySelector('#slk-chat-log-copy')) return true;
+        const row = document.createElement('div');
+        row.className = 'slk-settings-row slk-chat-log-row';
+        row.innerHTML = '<label>채팅 진단 기록</label><div class="slk-preference-controls">' +
+            '<button type="button" id="slk-chat-log-copy" class="slk-preference-button">복사</button>' +
+            '<button type="button" id="slk-chat-log-clear" class="slk-preference-button">지우기</button></div>';
+        content.appendChild(row);
+        row.querySelector('#slk-chat-log-copy').addEventListener('click', async () => {
+            persist();
+            const text = JSON.stringify(log.slice(-MAX));
+            try {
+                await navigator.clipboard.writeText(text);
+                window.toastr?.success(`기록 ${Math.min(log.length, MAX)}개를 복사했어요. 그대로 붙여넣어 보내 주세요.`);
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = text; ta.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;opacity:0';
+                document.body.appendChild(ta); ta.focus(); ta.select();
+                let ok = false; try { ok = document.execCommand('copy'); } catch { /* noop */ }
+                ta.remove();
+                if (ok) window.toastr?.success('기록을 복사했어요.');
+                else window.toastr?.error('복사를 못 했어요. 브라우저 콘솔에서 slkChatLog() 를 실행해 주세요.');
+            }
+        });
+        row.querySelector('#slk-chat-log-clear').addEventListener('click', () => {
+            log = []; persist(); add('cleared');
+            window.toastr?.info('기록을 지웠어요.');
+        });
+        return true;
+    };
+    let mountTries = 0;
+    const mountTimer = setInterval(() => { if (mountButtons() || ++mountTries > 120) clearInterval(mountTimer); }, 1000);
+})();
+
+// v1.8.172 — ⋯ 메뉴의 '분기'와 '체크포인트'는 새 채팅 파일을 만들고 그쪽으로 넘어갑니다.
+// 실수로 눌리면 원래 채팅이 사라진 것처럼 보이므로, 누를 때 한 번 확인합니다.
+(function slkConfirmChatForks() {
+    const SELECTOR = '#chat .mes_create_branch, #chat .mes_create_bookmark';
+    let allowNext = null;
+    const ask = async (isBranch) => {
+        const text = isBranch
+            ? '이 메시지까지만 담은 새 분기 채팅을 만들고 그 채팅으로 이동할까요?\n(원래 채팅은 채팅 파일 관리에 그대로 남아요)'
+            : '이 메시지까지만 담은 체크포인트 채팅을 만들까요?\n(원래 채팅은 채팅 파일 관리에 그대로 남아요)';
+        try {
+            const ctx = window.SillyTavern?.getContext?.();
+            if (typeof ctx?.callGenericPopup === 'function' && ctx.POPUP_TYPE) {
+                const result = await ctx.callGenericPopup(text.replace(/\n/g, '<br>'), ctx.POPUP_TYPE.CONFIRM, '', { okButton: '만들기', cancelButton: '취소' });
+                return !!result;
+            }
+        } catch { /* fall back to the browser dialog */ }
+        return window.confirm(text);
+    };
+    document.addEventListener('click', async (e) => {
+        if (!document.body.classList.contains('slk-ui')) return;
+        const button = e.target.closest?.(SELECTOR);
+        if (!button) return;
+        if (allowNext === button) { allowNext = null; return; }
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if (await ask(button.matches('.mes_create_branch'))) {
+            allowNext = button;
+            if (window.jQuery) window.jQuery(button).trigger('click');
+            else button.click();
+            allowNext = null;
+        }
+    }, true);
+})();
