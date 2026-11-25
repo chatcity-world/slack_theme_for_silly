@@ -2693,7 +2693,34 @@ if (SLK_UI_SETTINGS.enabled) {
         if (wrap && wrap.classList.contains('is-open')) renderMenu();
     };
 
-    const close = () => wrap && wrap.classList.remove('is-open');
+    // v1.8.161: escape the drawer's stacking contexts without reparenting
+    // the list or changing the native select / multi-select logic.
+    const close = () => {
+        if (!wrap?.classList.contains('is-open')) return;
+        if (menu.hasAttribute('popover')) {
+            try { menu.hidePopover(); } catch { /* already closed */ }
+            menu.removeAttribute('popover');
+        }
+        wrap.classList.remove('is-open');
+    };
+    const openMenu = () => {
+        wrap.classList.add('is-open');
+        renderMenu();
+        if (typeof menu.showPopover !== 'function') return;
+        const rect = btn.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const below = Math.max(0, vh - rect.bottom - 12);
+        const above = Math.max(0, rect.top - 12);
+        const flip = below < 244 && above > below;
+        menu.style.setProperty('--slk-wi-menu-left', `${rect.left}px`);
+        menu.style.setProperty('--slk-wi-menu-width', `${rect.width}px`);
+        menu.style.setProperty('--slk-wi-menu-top', flip ? 'auto' : `${rect.bottom + 4}px`);
+        menu.style.setProperty('--slk-wi-menu-bottom', flip ? `${vh - rect.top + 4}px` : 'auto');
+        menu.style.setProperty('--slk-wi-menu-height', `${Math.min(244, flip ? above : below)}px`);
+        menu.setAttribute('popover', 'manual');
+        try { menu.showPopover(); }
+        catch { menu.removeAttribute('popover'); } // CSS stacking fallback
+    };
 
     const build = () => {
         sel = document.getElementById('world_info');
@@ -2717,20 +2744,28 @@ if (SLK_UI_SETTINGS.enabled) {
         btn.addEventListener('click', ev => {
             ev.preventDefault();
             ev.stopPropagation();
-            const open = !wrap.classList.contains('is-open');
-            wrap.classList.toggle('is-open', open);
-            if (open) renderMenu();
+            if (wrap.classList.contains('is-open')) close();
+            else openMenu();
         });
         document.addEventListener('click', ev => { if (wrap && !wrap.contains(ev.target)) close(); }, true);
+        // The list itself remains scrollable; close only when its anchor moves.
+        document.addEventListener('scroll', ev => {
+            if (wrap.classList.contains('is-open') && !menu.contains(ev.target)) close();
+        }, {capture:true, passive:true});
+        window.addEventListener('resize', close, {passive:true});
+        window.addEventListener('slk-ui-settings-changed', close);
+        document.addEventListener('keydown', ev => { if (ev.key === 'Escape') close(); });
+
         sel.addEventListener('change', () => sync(true));
         const $ = jq();
         if ($) $(sel).on('change.slkdd', () => sync(true));
         new MutationObserver(() => sync(true)).observe(sel, { childList: true, subtree: true, attributes: true });
         setInterval(() => {
-            if (document.hidden || !wrap.isConnected) return;
+            if (document.hidden || !wrap.isConnected) { close(); return; }
             const drawer = wrap.closest('.drawer-content');
-            if (drawer && (drawer.classList.contains('slk-nav-hidden') || drawer.classList.contains('closedDrawer'))) return;
+            if (drawer && (drawer.classList.contains('slk-nav-hidden') || drawer.classList.contains('closedDrawer'))) { close(); return; }
             if (wrap.offsetParent) sync(false);
+            else close();
         }, 700);
         sync(true);
         return true;

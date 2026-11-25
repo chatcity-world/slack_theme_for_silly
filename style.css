@@ -24957,3 +24957,37 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
     margin:0!important;
   }
 }
+
+/* v1.8.161 — only the global World Info dropdown: native top layer. */
+@media screen {
+  html body.slk-ui #WorldInfo #slk-wi-dd.is-open .slk-wi-dd-menu:popover-open {
+    position:fixed!important;
+    inset:var(--slk-wi-menu-top) auto var(--slk-wi-menu-bottom) var(--slk-wi-menu-left)!important;
+    margin:0!important;
+    width:var(--slk-wi-menu-width)!important;
+    min-width:0!important;
+    max-width:var(--slk-wi-menu-width)!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:var(--slk-wi-menu-height,244px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain;
+    background:#fff!important;
+    color:var(--slk-text,#1D1C1D);
+    box-sizing:border-box!important;
+  }
+  html body.slk-ui #WorldInfo #slk-wi-dd .slk-wi-dd-menu::backdrop {background:transparent;pointer-events:none;}
+  /* Older browsers: explicitly contain the lower editor's stacking order. */
+  html body.slk-ui #WorldInfo #wi-holder:has(#slk-wi-dd.is-open) > #world_popup {
+    position:relative!important;
+    z-index:0!important;
+    isolation:isolate!important;
+  }
+  html body.slk-ui #WorldInfo #wi-holder > #wiTopBlock:has(#slk-wi-dd.is-open) {
+    position:relative!important;
+    z-index:1!important;
+    isolation:isolate!important;
+    overflow:visible!important;
+  }
+}
