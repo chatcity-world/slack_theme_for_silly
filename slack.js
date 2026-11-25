@@ -527,20 +527,25 @@ function buildSlackUiExtensionSettings() {
         const next = enabledInput.checked;
         const previous = SLK_UI_SETTINGS.enabled;
         enabledInput.disabled = true;
+        // The theme switch is a local preference, not a server CSS transaction.
         try {
-            // Save the server-side splash CSS before reloading. The normal
-            // debounced save can be cancelled by immediate navigation.
-            if (typeof slkPersistSplashPreference !== 'function') throw new Error('Splash settings not ready');
-            await slkPersistSplashPreference(next);
             localStorage.setItem('slk-ui-enabled', String(next));
-            SLK_UI_SETTINGS.enabled = next;
-            window.location.reload();
         } catch (error) {
             enabledInput.checked = previous;
             enabledInput.disabled = false;
-            console.error('[Slack UI] theme switch', error);
-            window.toastr?.error('시작 화면 설정을 저장하지 못했습니다. 연결 상태를 확인하고 다시 시도해 주세요.');
+            console.error('[Slack UI] local theme preference', error);
+            window.toastr?.error('브라우저에 테마 설정을 저장하지 못했습니다.');
+            return;
         }
+        SLK_UI_SETTINGS.enabled = next;
+        try {
+            const confirmed = await slkPersistSplashPreference?.(next);
+            if (!confirmed) console.warn('[Slack UI] Splash save not confirmed; will reconcile on next boot');
+        } catch (error) {
+            // Never roll back the UI preference due to an optional splash failure.
+            console.warn('[Slack UI] Splash synchronization deferred', error);
+        }
+        window.location.reload();
     });
 
     // Steppers update the actual chat text, not the settings panel itself.
@@ -3359,34 +3364,33 @@ function slkObserveMessageChrome(chat, callback) {
     slkPersistSplashPreference = async (enabled) => {
         const ctx = window.SillyTavern?.getContext?.();
         const pu = ctx?.powerUserSettings;
-        if (!pu || typeof pu.custom_css !== 'string') throw new Error('Settings unavailable');
-        switching = true;
-        const previous = pu.custom_css;
-        const base = strip(previous);
+        if (!pu || typeof pu.custom_css !== 'string') return false;
+        const base = strip(pu.custom_css);
         const next = enabled ? (base ? base + '\n\n' : '') + buildBlock() : base;
-        let timer, listener;
+        if (next === pu.custom_css) return true;
+        switching = true;
         const event = (ctx.eventTypes || ctx.event_types)?.SETTINGS_UPDATED;
         const source = ctx.eventSource;
+        let timer, listener;
         try {
-            // Import ST's already-loaded core module, not a second copy with a query string.
-            const core = await import(new URL('script.js', document.baseURI).href);
-            if (typeof core.saveSettings !== 'function') throw new Error('Immediate settings save unavailable');
-            if (!event || !source?.on || !source?.removeListener) throw new Error('Settings save confirmation unavailable');
-            setCss(pu, next);
-            const confirmed = new Promise((resolve, reject) => {
-                listener = () => resolve();
-                source.on(event, listener);
-                timer = setTimeout(() => reject(new Error('Settings save not confirmed')), 10000);
+            setCss(pu, next, true);
+            if (typeof ctx.saveSettingsDebounced !== 'function') return false;
+            // Use the host's supported save path rather than importing script.js
+            // again (which can resolve to a different module in some installations).
+            const confirmed = new Promise(resolve => {
+                timer = setTimeout(() => resolve(false), 4500);
+                if (event && typeof source?.on === 'function' && typeof source?.removeListener === 'function') {
+                    listener = () => resolve(true);
+                    source.on(event, listener);
+                }
             });
-            // SETTINGS_UPDATED is emitted by ST only after a successful server save.
-            await Promise.all([core.saveSettings(), confirmed]);
-        } catch (error) {
-            setCss(pu, previous);
-            ctx.saveSettingsDebounced?.();
-            throw error;
+            ctx.saveSettingsDebounced();
+            return await confirmed;
         } finally {
             clearTimeout(timer);
-            if (listener) source.removeListener(event, listener);
+            if (listener) {
+                try { source.removeListener(event, listener); } catch { /* optional confirmation */ }
+            }
             switching = false;
         }
     };
