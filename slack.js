@@ -328,9 +328,9 @@ function buildSlackUiExtensionSettings() {
                         <span class="slk-setting-switch-track" aria-hidden="true"></span>
                     </label>
                 </div>
-                <section class="slk-preference-section" aria-label="시작화면 / 헤더 이미지 설정">
-                    <div class="slk-preference-heading">시작화면 / 헤더 이미지</div>
-                    <div class="slk-header-image-options" style="margin-top: 8px !important;" role="radiogroup" aria-label="시작화면 / 헤더 이미지 종류">
+                <section class="slk-preference-section slk-logo-preference" aria-label="로고 이미지 설정">
+                    <div class="slk-preference-heading">로고 이미지</div>
+                    <div class="slk-header-image-options" role="radiogroup" aria-label="로고 이미지 종류">
                         <label><input type="radio" name="slk-header-image-mode" value="slack"><span>Slack</span></label>
                         <label><input type="radio" name="slk-header-image-mode" value="custom"><span>등록한 이미지</span></label>
                     </div>
@@ -370,7 +370,7 @@ function buildSlackUiExtensionSettings() {
                         </div>
                     </div>
                 </section>
-                <section class="slk-preference-section" aria-label="대사 배경 설정">
+                <section class="slk-preference-section slk-dialogue-preference" aria-label="대사 배경 설정">
                     <div class="slk-preference-heading">대사 배경</div>
                     <div class="slk-color-row">
                         <input type="color" id="slk-dialogue-color-picker" value="#efefef" aria-label="대사 배경 선택">
