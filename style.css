@@ -659,8 +659,8 @@ body.slk-ui {
 
     /* 고정된 채팅 = 아바타 모서리에 핀 배지 */
     body.slk-ui .welcomeRecent .recentChat .recentChatPinned {
-        top: 14px !important;
-        left: 40px !important;
+        top: 4px !important;
+        left: 7px !important;
         width: 18px;
         height: 18px;
         border-radius: 50%;
