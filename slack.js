@@ -5009,3 +5009,43 @@ function slkConnectPromptManager() {
     }
     if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
 })();
+
+// v1.8.151 — classify popup roots only on relevant outside-chat changes.
+// Reuse the existing shared observer; never inspect historical chat messages.
+(function slkFallbackPopupComponents() {
+    const rootSelector = 'dialog, .popup, .slk-modal, [role="dialog"][aria-modal="true"]';
+    const protectedContent = '#loader,#tag_view_list,.extensions_info,.regex_editor,.regex-debugger-container,input[name="exclude"],input[name="regex_import_target"],#extension_branch_name';
+    const protectedRoot = '#chat,.mes_text,#select_chat_popup,#completion_prompt_manager_popup,.slk-no-theme,[data-slk-no-theme]';
+    const marker = 'slk-fallback-popup';
+    function classify(root) {
+        if (!root.isConnected) return;
+        const eligible = root.matches(rootSelector) && !root.closest(protectedRoot) && !root.querySelector(protectedContent);
+        if (root.classList.contains(marker) !== eligible) root.classList.toggle(marker, eligible);
+    }
+    function start() {
+        document.querySelectorAll(rootSelector).forEach(classify);
+        slkObserveOutsideChat(records => {
+            const roots = new Set();
+            for (const record of records) {
+                const target = record.target;
+                if (!(target instanceof Element)) continue;
+                if (record.type === 'attributes') {
+                    if (target.matches(rootSelector) || target.classList.contains(marker)) roots.add(target);
+                    else if (target.matches(protectedContent)) { const root = target.closest(rootSelector); if (root) roots.add(root); }
+                    continue;
+                }
+                const root = target.closest(rootSelector);
+                if (root) roots.add(root);
+                for (const node of record.addedNodes) {
+                    if (!(node instanceof Element) || node.matches('#chat,.mes,.mes_text') || node.closest('#chat,.mes_text')) continue;
+                    if (node.matches(rootSelector)) roots.add(node);
+                    // Search only a new subtree, never the whole document.
+                    node.querySelectorAll(rootSelector).forEach(p => roots.add(p));
+                }
+            }
+            roots.forEach(classify);
+        }, document.documentElement, {subtree:true, childList:true, attributes:true, attributeFilter:['class']});
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
+    else start();
+})();
