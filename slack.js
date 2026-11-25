@@ -1276,6 +1276,26 @@ function syncCharView() {
         }
     }
     if (panel.dataset.slkView !== view) panel.dataset.slkView = view;
+    // Group creation: move the original action out of the collapsible settings.
+    // Its native click listener, disabled property and visibility are preserved.
+    const submit = panel.querySelector('#rm_group_submit');
+    const groupActions = panel.querySelector('#GroupFavDelOkBack');
+    const header = panel.querySelector('#CharListButtonAndHotSwaps');
+    if (submit && groupActions && header) {
+        if (view === 'group' && document.body.classList.contains('slk-ui')) {
+            if (submit.parentElement !== header) {
+                const marker = document.createComment('slk-group-submit');
+                submit.before(marker);
+                submit.slkGroupMarker = marker;
+                header.append(submit);
+            }
+        } else if (submit.slkGroupMarker) {
+            const marker = submit.slkGroupMarker;
+            if (marker.isConnected) marker.replaceWith(submit);
+            else groupActions.append(submit);
+            delete submit.slkGroupMarker;
+        }
+    }
 }
 
 function watchCharView() {
@@ -1285,7 +1305,9 @@ function watchCharView() {
     const obs = new MutationObserver(syncCharView);
     panel.querySelectorAll('.right_menu').forEach(el => obs.observe(el, { attributes: true, attributeFilter: ['style', 'class'] }));
     obs.observe(panel, { attributes: true, attributeFilter: ['class'] });
+    window.addEventListener('slk-ui-settings-changed', syncCharView);
 }
+
 
 // ===================================================
 // 입력창: 슬랙처럼 누르면 펼쳐지고(입력칸 위 / 도구 줄 아래), 비우고 나가면 접힘
@@ -4851,7 +4873,7 @@ function slkConnectPromptManager() {
 // v1.8.74 — Compact mobile page-size labels without changing native option values.
 (function slkCompactPagerLabels() {
     const mq = matchMedia('(max-width:1000px)');
-    const selector = '#PersonaManagement #persona_pagination_container .paginationjs-size-changer select, #right-nav-panel #rm_print_characters_pagination .paginationjs-size-changer select, #WorldInfo #world_info_pagination .paginationjs-size-changer select';
+    const selector = '#PersonaManagement #persona_pagination_container .paginationjs-size-changer select, #right-nav-panel #rm_print_characters_pagination .paginationjs-size-changer select, #WorldInfo #world_info_pagination .paginationjs-size-changer select, #right-nav-panel #rm_group_members_pagination .paginationjs-size-changer select, #right-nav-panel #rm_group_add_members_pagination .paginationjs-size-changer select';
     const originals = new Map();
     let queued = false;
     function sync() {
@@ -4880,7 +4902,7 @@ function slkConnectPromptManager() {
     function start() {
         sync();
         slkObserveOutsideChat(records => {
-            if (records.some(r => r.target.closest?.('#persona_pagination_container,#rm_print_characters_pagination,#world_info_pagination') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.matches?.('#persona_pagination_container,#rm_print_characters_pagination,#world_info_pagination') || n.querySelector?.('#persona_pagination_container,#rm_print_characters_pagination,#world_info_pagination'))))) schedule();
+            if (records.some(r => r.target.closest?.('#persona_pagination_container,#rm_print_characters_pagination,#world_info_pagination,#rm_group_members_pagination,#rm_group_add_members_pagination') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.matches?.('#persona_pagination_container,#rm_print_characters_pagination,#world_info_pagination,#rm_group_members_pagination,#rm_group_add_members_pagination') || n.querySelector?.('#persona_pagination_container,#rm_print_characters_pagination,#world_info_pagination,#rm_group_members_pagination,#rm_group_add_members_pagination'))))) schedule();
         }, document.body, {subtree:true,childList:true});
         mq.addEventListener?.('change',schedule);
         window.addEventListener('slk-ui-settings-changed',schedule);
