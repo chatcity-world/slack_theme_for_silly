@@ -203,7 +203,6 @@ function buildSlackUiExtensionSettings() {
                             <button type="button" id="slk-letter-spacing-reset" class="slk-preference-button slk-pref-reset" aria-label="자간 초기화">초기화</button>
                         </div>
                     </div>
-                    <div class="slk-preference-hint">자간 0.0px는 기존 디자인의 자간을 유지합니다.</div>
                 </section>
                 <section class="slk-preference-section" aria-label="대사 배경색 설정">
                     <div class="slk-preference-heading">대사 배경색</div>
@@ -213,11 +212,9 @@ function buildSlackUiExtensionSettings() {
                         <input type="text" id="slk-dialogue-hex" maxlength="7" placeholder="#EFEFEF" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="대사 배경색 HEX">
                         <button type="button" id="slk-dialogue-reset" class="slk-preference-button" aria-label="대사 배경색 초기화">초기화</button>
                     </div>
-                    <div class="slk-preference-hint">기본값은 현재 테마의 대사 배경색입니다.</div>
                 </section>
                 <section class="slk-preference-section" aria-label="채팅 글자색 설정">
                     <div class="slk-preference-heading">폰트 컬러</div>
-                    <div class="slk-preference-hint">지정하지 않으면 테마의 기존 색상을 유지합니다.</div>
                     <div class="slk-ink-setting" data-ink="narration" data-pref="narrationInk" data-storage="slk-ui-ink-narration">
                         <label for="slk-ink-narration-hex">나레이션</label>
                         <div class="slk-color-row">
@@ -271,6 +268,8 @@ function buildSlackUiExtensionSettings() {
         content.style.display = open ? 'block' : 'none';
         icon.classList.toggle('down', !open);
         icon.classList.toggle('up', open);
+        icon.classList.toggle('fa-circle-chevron-down', !open);
+        icon.classList.toggle('fa-circle-chevron-up', open);
     };
     // The event is owned here to avoid depending on whether SillyTavern binds
     // its native inline drawer handler before or after third-party extensions.
