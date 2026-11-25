@@ -33,6 +33,38 @@ const SLK_UI_SETTINGS = (() => {
 })();
 try { localStorage.removeItem('slk-ui-theme'); } catch { /* old option may not exist */ }
 
+// v1.8.129 — Route unrelated UI mutations once, instead of waking each
+// settings/popup observer for every appended chat token or historical message.
+// Native/third-party observers and dedicated message observers are untouched.
+const slkUiMutationSubscriptions = [];
+let slkUiMutationObserver = null;
+function slkObserveOutsideChat(callback, root, options) {
+    if (!root) return;
+    slkUiMutationSubscriptions.push({callback, root, options});
+    if (slkUiMutationObserver) return;
+    slkUiMutationObserver = new MutationObserver(records => {
+        const outside = records.filter(record => {
+            const el = record.target.nodeType === 1 ? record.target : record.target.parentElement;
+            return !el?.closest('#chat');
+        });
+        if (!outside.length) return;
+        for (const {callback, root, options} of slkUiMutationSubscriptions) {
+            const batch = outside.filter(record => {
+                if (root !== document.documentElement && record.target !== root && !root.contains(record.target)) return false;
+                if (record.type === 'childList') return !!options.childList;
+                if (record.type === 'characterData') return !!options.characterData;
+                return !!options.attributes && (!options.attributeFilter || options.attributeFilter.includes(record.attributeName));
+            });
+            if (batch.length) {
+                try { callback(batch); } catch (error) { console.error('[Slack UI] settings observer', error); }
+            }
+        }
+    });
+    // Union of the subscribed options, without attributeOldValue allocation.
+    slkUiMutationObserver.observe(document.documentElement, {subtree:true, childList:true, characterData:true,
+        attributes:true, attributeFilter:['class','style','data-slk-view']});
+}
+
 function slkSavePreference(key, value) {
     try { localStorage.setItem(key, String(value)); return true; }
     catch { window.toastr?.error('설정 저장 공간이 부족합니다. 이미지 용량을 확인해 주세요.'); return false; }
@@ -375,7 +407,7 @@ function buildSlackUiExtensionSettings() {
                         <label for="slk-ink-narration-hex">나레이션 컬러</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-narration-picker" aria-label="나레이션 글자색 선택">
-                            <input type="text" id="slk-ink-narration-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="나레이션 글자색 HEX">
+                            <input type="text" id="slk-ink-narration-hex" maxlength="7" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="나레이션 글자색 HEX">
                             <button type="button" class="slk-preference-button slk-ink-reset" aria-label="나레이션 글자색 초기화">초기화</button>
                         </div>
                     </div>
@@ -383,7 +415,7 @@ function buildSlackUiExtensionSettings() {
                         <label for="slk-ink-dialogue-hex">대사 컬러</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-dialogue-picker" aria-label="대사 글자색 선택">
-                            <input type="text" id="slk-ink-dialogue-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="대사 글자색 HEX">
+                            <input type="text" id="slk-ink-dialogue-hex" maxlength="7" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="대사 글자색 HEX">
                             <button type="button" class="slk-preference-button slk-ink-reset" aria-label="대사 글자색 초기화">초기화</button>
                         </div>
                     </div>
@@ -392,7 +424,7 @@ function buildSlackUiExtensionSettings() {
                         <div class="slk-color-row">
                             <input type="color" id="slk-dialogue-color-picker" value="#efefef" aria-label="대사 배경 컬러 선택">
                             <label class="slk-visually-hidden" for="slk-dialogue-hex">HEX 색상</label>
-                            <input type="text" id="slk-dialogue-hex" maxlength="7" placeholder="#EFEFEF" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="대사 배경 컬러 HEX">
+                            <input type="text" id="slk-dialogue-hex" maxlength="7" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="대사 배경 컬러 HEX">
                             <button type="button" id="slk-dialogue-reset" class="slk-preference-button" aria-label="대사 배경 컬러 초기화">초기화</button>
                         </div>
                     </div>
@@ -400,7 +432,7 @@ function buildSlackUiExtensionSettings() {
                         <label for="slk-ink-ascii-hex">*텍스트 * 컬러</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-ascii-picker" aria-label="강조 텍스트 글자색 선택">
-                            <input type="text" id="slk-ink-ascii-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="강조 텍스트 글자색 HEX">
+                            <input type="text" id="slk-ink-ascii-hex" maxlength="7" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="강조 텍스트 글자색 HEX">
                             <button type="button" class="slk-preference-button slk-ink-reset" aria-label="강조 텍스트 글자색 초기화">초기화</button>
                         </div>
                     </div>
@@ -408,7 +440,7 @@ function buildSlackUiExtensionSettings() {
                         <label for="slk-ink-code-hex">코드블럭 컬러</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-code-picker" aria-label="코드블럭 글자색 선택">
-                            <input type="text" id="slk-ink-code-hex" maxlength="7" placeholder="기본 색상" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="코드블럭 글자색 HEX">
+                            <input type="text" id="slk-ink-code-hex" maxlength="7" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="코드블럭 글자색 HEX">
                             <button type="button" class="slk-preference-button slk-ink-reset" aria-label="코드블럭 글자색 초기화">초기화</button>
                         </div>
                     </div>
@@ -517,7 +549,7 @@ function buildSlackUiExtensionSettings() {
     };
     const syncColorFields = () => {
         colorPicker.value = SLK_UI_SETTINGS.dialogueColor || '#efefef';
-        colorHex.value = SLK_UI_SETTINGS.dialogueColor || '';
+        colorHex.value = (SLK_UI_SETTINGS.dialogueColor || '#EFEFEF').toUpperCase();
         colorHex.classList.remove('slk-input-invalid');
         colorHex.removeAttribute('aria-invalid');
     };
@@ -538,7 +570,10 @@ function buildSlackUiExtensionSettings() {
         const raw = colorHex.value.trim();
         if (!raw) { setDialogueColor(''); return; }
         const normalized = normalizeHex(raw);
-        if (normalized) { setDialogueColor(normalized); return; }
+        if (normalized) {
+            if (normalized === (SLK_UI_SETTINGS.dialogueColor || '#EFEFEF')) { syncColorFields(); return; }
+            setDialogueColor(normalized); return;
+        }
         // Leave invalid text intact so it can be corrected on the next focus.
         colorHex.classList.add('slk-input-invalid');
         colorHex.setAttribute('aria-invalid', 'true');
@@ -557,7 +592,7 @@ function buildSlackUiExtensionSettings() {
         const picker = row.querySelector('input[type="color"]');
         const hex = row.querySelector('input[type="text"]');
         picker.value = SLK_UI_SETTINGS[pref] || inkDefaults[row.dataset.ink];
-        hex.value = SLK_UI_SETTINGS[pref] || '';
+        hex.value = (SLK_UI_SETTINGS[pref] || inkDefaults[row.dataset.ink]).toUpperCase();
         hex.classList.remove('slk-input-invalid');
         hex.removeAttribute('aria-invalid');
     };
@@ -582,7 +617,10 @@ function buildSlackUiExtensionSettings() {
             const raw = hex.value.trim();
             if (!raw) { setInk(row.dataset.ink === 'ascii' ? '#999999' : ''); return; }
             const normalized = normalizeHex(raw);
-            if (normalized) { setInk(normalized); return; }
+            if (normalized) {
+                if (normalized === (SLK_UI_SETTINGS[pref] || inkDefaults[row.dataset.ink])) { drawInkFields(row); return; }
+                setInk(normalized); return;
+            }
             // Do not discard the invalid text or modify the last valid color.
             hex.classList.add('slk-input-invalid');
             hex.setAttribute('aria-invalid', 'true');
@@ -1622,7 +1660,7 @@ function slkWatchStatusBar() {
         loaderObserver.observe(el, {attributes:true,attributeFilter:['class','style','hidden','open']});
     };
     document.querySelectorAll(loaderSelector).forEach(watchLoader);
-    new MutationObserver(records => {
+    slkObserveOutsideChat(records => {
         let changed = false;
         for (const r of records) for (const n of [...r.addedNodes, ...r.removedNodes]) {
             if (r.target.closest?.('#chat')) continue;
@@ -1633,7 +1671,7 @@ function slkWatchStatusBar() {
             matches.filter(el => el.isConnected).forEach(watchLoader);
         }
         if (changed) schedule();
-    }).observe(document.body, {childList:true,subtree:true});
+    }, document.body, {childList:true,subtree:true});
     document.addEventListener('close', e => { if (e.target.querySelector?.('#loader')) schedule(); }, true);
     window.addEventListener('resize',schedule);
     window.addEventListener('pageshow',schedule);
@@ -1917,6 +1955,7 @@ function setupExtensionNeutralColors() {
     const neutralize = () => {
         queued = false;
         if (!mq.matches || !SLK_UI_SETTINGS.enabled) return;
+        if (panel.matches('.closedDrawer,.slk-nav-hidden,[hidden]') || !panel.getClientRects().length) return;
         const els = [panel, ...panel.querySelectorAll('*')];
         for (const el of els) {
             if (el.matches('input[type="color"], option, canvas, .color-picker, .color-picker *')) continue;
@@ -2723,13 +2762,11 @@ if (SLK_UI_SETTINGS.enabled) {
     const start = () => {
         scan();
         let t = null;
-        new MutationObserver(records => {
-            records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
-            if (!records.length) return;
+        slkObserveOutsideChat(records => {
             if (!records.some(r => r.target.closest?.('#WorldInfo') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.id === 'WorldInfo' || n.querySelector('#WorldInfo'))))) return;
             if (t) return;
             t = setTimeout(() => { t = null; scan(); }, 120);
-        }).observe(document.body, { childList: true, subtree: true });
+        }, document.body, { childList: true, subtree: true });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
@@ -2852,9 +2889,9 @@ if (SLK_UI_SETTINGS.enabled) {
     const scan = () => document.querySelectorAll('#toast-container > div').forEach(arm);
     const start = () => {
         scan();
-        new MutationObserver(records => {
+        slkObserveOutsideChat(records => {
             if (records.some(r => !r.target.closest?.('#chat') && (r.target.closest?.('#toast-container') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.id === 'toast-container' || n.querySelector('#toast-container')))))) scan();
-        }).observe(document.documentElement, { childList: true, subtree: true });
+        }, document.documentElement, { childList: true, subtree: true });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
@@ -2946,7 +2983,7 @@ if (SLK_UI_SETTINGS.enabled) {
     };
     const schedule = () => { if (!t) t = setTimeout(run, 150); };
     const start = () => {
-        new MutationObserver(records => {
+        slkObserveOutsideChat(records => {
             const root = document.querySelector(ROOT);
             if (records.some(r => {
                 const el = r.target;
@@ -2955,7 +2992,7 @@ if (SLK_UI_SETTINGS.enabled) {
                 return r.type === 'childList' && [...r.addedNodes, ...r.removedNodes].some(n =>
                     n.nodeType === 1 && (n.matches(ROOT) || n.querySelector(ROOT)));
             })) schedule();
-        }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
+        }, document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
         document.addEventListener('click', e => {
             if (e.target.closest?.(`${ROOT}, #extensions-settings-button > .drawer-toggle`)) schedule();
         }, true);
@@ -3322,6 +3359,8 @@ if (SLK_UI_SETTINGS.enabled) {
         const pending = new Set();
         let timer = null;
         const actionScope = '.ch_name, .mesAvatarWrapper, .mes_buttons, .extraMesButtons';
+        const internalClasses = new Set(['slk-mes-expanded','slk-adopted-btn','slk-foreign-action','slk-action-pencil-duplicate','slk-action-noicon']);
+        const nativeClasses = value => (value || '').split(/\s+/).filter(c => c && !internalClasses.has(c)).sort().join(' ');
         const queue = mes => { if (mes && chat.contains(mes)) pending.add(mes); };
         const flush = () => {
             timer = null;
@@ -3335,11 +3374,16 @@ if (SLK_UI_SETTINGS.enabled) {
             for (const r of records) {
                 const el = r.target;
                 if (!(el instanceof Element)) continue;
-                if (r.type === 'attributes' && r.oldValue === el.getAttribute(r.attributeName)) continue;
                 const mes = el.closest('.mes');
                 if (mes) {
                     // Streaming message text and status-box content do not change the action menu.
-                    if (el === mes || el.closest(actionScope) || (r.type === 'childList' && el.matches('.mes_block'))) queue(mes);
+                    if (!(el === mes || el.closest(actionScope) || (r.type === 'childList' && el.matches('.mes_block')))) continue;
+                    if (r.type === 'attributes') {
+                        const current = el.getAttribute(r.attributeName);
+                        if (r.oldValue === current) continue;
+                        if (r.attributeName === 'class' && nativeClasses(r.oldValue) === nativeClasses(current)) continue;
+                    }
+                    queue(mes);
                 } else if (r.type === 'childList') {
                     for (const node of r.addedNodes) {
                         if (!(node instanceof Element)) continue;
@@ -4493,13 +4537,12 @@ function slkConnectPromptManager() {
         }).observe(panel,{attributes:true,attributeFilter:['class']});
         // Retain discovery for late renders/replacements, without observing
         // unrelated attribute changes or re-running layout for other panels.
-        const rootObserver = new MutationObserver(records => {
+        slkObserveOutsideChat(records => {
             if (!records.some(record => !record.target.closest?.('#chat') && [...record.addedNodes, ...record.removedNodes].some(node =>
                 node.nodeType === 1 && (node.id === popupId || node.querySelector?.('#' + popupId))))) return;
             const found = document.getElementById(popupId);
             if (found) observePopup(found);
-        });
-        rootObserver.observe(document.body, { childList: true, subtree: true });
+        }, document.body, { childList: true, subtree: true });
         // init() can enable the body class after this observer is installed.
         let wasEnabled = document.body.classList.contains('slk-ui');
         new MutationObserver(() => {
@@ -4655,8 +4698,16 @@ function slkConnectPromptManager() {
         if (!el) return;
         const button = el.closest(selector);
         if (button) pending.add(button);
-        if (root.nodeType === Node.ELEMENT_NODE) root.querySelectorAll(selector).forEach(b => pending.add(b));
-        if (!queued) { queued = true; requestAnimationFrame(flush); }
+        if (root.nodeType === Node.ELEMENT_NODE) {
+            if (el.closest('#chat')) {
+                // Message header buttons are not eligible. In message content,
+                // preserve the supported custom controls, without enumerating
+                // unrelated buttons and inline role/title markup.
+                if (el.closest('.mes_text')) el.querySelectorAll('.menu_button,.drawer-opener').forEach(b => pending.add(b));
+                else el.querySelectorAll('.mes_text :is(.menu_button,.drawer-opener)').forEach(b => pending.add(b));
+            } else el.querySelectorAll(selector).forEach(b => pending.add(b));
+        }
+        if (pending.size && !queued) { queued = true; requestAnimationFrame(flush); }
     }
     function start() {
         enqueue(document.body);
@@ -4743,11 +4794,9 @@ function slkConnectPromptManager() {
     }
     function start() {
         scan();
-        new MutationObserver(records => {
-            records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
-            if (!records.length) return;
+        slkObserveOutsideChat(records => {
             if (records.some(r => r.target.closest?.('.extensions_toolbar') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.matches?.('dialog.popup,.extensions_info,.extensions_toolbar') || n.querySelector?.('.extensions_toolbar'))))) schedule();
-        }).observe(document.documentElement, {childList:true, subtree:true});
+        }, document.documentElement, {childList:true, subtree:true});
         // Optional native account setting and translated labels; no dependency
         // on the import succeeding for the ordinary English toolbar.
         import(new URL('scripts/util/AccountStorage.js', document.baseURI).href).then(m => { storage = m.accountStorage; schedule(); }).catch(() => {});
@@ -4830,11 +4879,9 @@ function slkConnectPromptManager() {
     function schedule() { if (!queued) { queued = true; requestAnimationFrame(sync); } }
     function start() {
         sync();
-        new MutationObserver(records => {
-            records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
-            if (!records.length) return;
+        slkObserveOutsideChat(records => {
             if (records.some(r => r.target.closest?.('#persona_pagination_container,#rm_print_characters_pagination,#world_info_pagination') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.matches?.('#persona_pagination_container,#rm_print_characters_pagination,#world_info_pagination') || n.querySelector?.('#persona_pagination_container,#rm_print_characters_pagination,#world_info_pagination'))))) schedule();
-        }).observe(document.body, {subtree:true,childList:true});
+        }, document.body, {subtree:true,childList:true});
         mq.addEventListener?.('change',schedule);
         window.addEventListener('slk-ui-settings-changed',schedule);
         window.addEventListener('pageshow',schedule);
@@ -4887,11 +4934,9 @@ function slkConnectPromptManager() {
     }
     function start() {
         sync();
-        new MutationObserver(records => {
-            records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
-            if (!records.length) return;
+        slkObserveOutsideChat(records => {
             if (records.some(r => relevant(r.target) || [...r.addedNodes].some(relevant))) schedule();
-        }).observe(document.body, {subtree:true,childList:true,characterData:true});
+        }, document.body, {subtree:true,childList:true,characterData:true});
         document.addEventListener('change', e => { if (e.target.id === 'world_editor_select') schedule(); });
         window.addEventListener('slk-ui-settings-changed', schedule);
         window.addEventListener('pageshow', schedule);
@@ -4934,11 +4979,9 @@ function slkConnectPromptManager() {
     function schedule() { if (!queued) { queued = true; requestAnimationFrame(sync); } }
     function start() {
         sync();
-        new MutationObserver(records=>{
-            records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
-            if (!records.length) return;
+        slkObserveOutsideChat(records=>{
             if (records.some(r=>r.target === document.body || r.target.closest?.('#right-nav-panel') || [...r.addedNodes].some(n=>n.nodeType===1 && (n.id==='right-nav-panel'||n.querySelector?.('#right-nav-panel'))))) schedule();
-        }).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-slk-view','class']});
+        }, document.body, {subtree:true,childList:true,attributes:true,attributeFilter:['data-slk-view','class']});
         window.addEventListener('slk-ui-settings-changed',schedule);
         window.addEventListener('pageshow',schedule);
     }
