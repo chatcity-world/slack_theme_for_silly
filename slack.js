@@ -429,7 +429,7 @@ function buildSlackUiExtensionSettings() {
                         </div>
                     </div>
                     <div class="slk-ink-setting" data-ink="ascii" data-pref="asciiInk" data-storage="slk-ui-ink-ascii">
-                        <label for="slk-ink-ascii-hex">*텍스트 * 컬러</label>
+                        <label for="slk-ink-ascii-hex">*텍스트* 컬러</label>
                         <div class="slk-color-row">
                             <input type="color" id="slk-ink-ascii-picker" aria-label="강조 텍스트 글자색 선택">
                             <input type="text" id="slk-ink-ascii-hex" maxlength="7" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" inputmode="text" aria-label="강조 텍스트 글자색 HEX">
