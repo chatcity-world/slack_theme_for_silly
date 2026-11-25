@@ -702,6 +702,43 @@ function setAiTab(key) {
     try { localStorage.setItem('slk-ai-tab', key); } catch { /* 저장 실패는 무시 */ }
 }
 
+// v1.8.102: the native info icons carry title tooltips, not click actions.
+// Add local, accessible disclosure without intercepting any other drawer.
+function slkBindAdvancedPromptHelp() {
+    const root = document.getElementById('openai_settings');
+    if (!root) return;
+    for (const id of ['character_names_display', 'continue_postfix_display']) {
+        const row = root.querySelector(`#${id}`)?.closest('.inline-drawer-toggle');
+        const icon = row?.querySelector('.fa-circle-info[title]');
+        if (!icon || icon.dataset.slkInfoBound) continue;
+        icon.dataset.slkInfoBound = 'true';
+        icon.setAttribute('role', 'button');
+        icon.tabIndex = 0;
+        icon.setAttribute('aria-label', icon.title);
+        icon.setAttribute('aria-expanded', 'false');
+        const note = document.createElement('div');
+        note.className = 'slk-ai-info-note';
+        note.id = `slk-info-${id}`;
+        note.hidden = true;
+        icon.setAttribute('aria-controls', note.id);
+        row.after(note);
+        const toggle = event => {
+            if (!document.body.classList.contains('slk-ui')) return;
+            event.preventDefault();
+            event.stopPropagation();
+            note.textContent = icon.title;
+            icon.setAttribute('aria-label', icon.title);
+            note.hidden = !note.hidden;
+            icon.setAttribute('aria-expanded', String(!note.hidden));
+        };
+        icon.addEventListener('click', toggle);
+        icon.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') toggle(event);
+            else if (event.key === 'Escape' && !note.hidden) toggle(event);
+        });
+    }
+}
+
 function buildAiTabs() {
     const presets = document.getElementById('respective-presets-block');
     if (!presets || document.getElementById('slk-aitabs')) return;
@@ -746,6 +783,7 @@ function buildAiTabs() {
     });
 
     tagAiBlocks();
+    slkBindAdvancedPromptHelp();
     let saved = 'basic';
     try { saved = localStorage.getItem('slk-ai-tab') || 'basic'; } catch { /* 기본값 사용 */ }
     setAiTab(AI_TABS.some(([k]) => k === saved) ? saved : 'basic');

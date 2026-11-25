@@ -24075,11 +24075,13 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings .menu_button > :is(i,span).fa-ellipsis:not(.regex-toggle-on,.regex-toggle-off) { display:grid!important; place-items:center!important; width:var(--rx-icon)!important; height:var(--rx-icon)!important; min-width:var(--rx-icon)!important; flex:0 0 var(--rx-icon)!important; margin:0!important; padding:0!important; font-size:0!important; background:transparent!important; color:inherit!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings .menu_button.fa-ellipsis::before, html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p) #rm_extensions_block .regex_settings .menu_button > :is(i,span).fa-ellipsis:not(.regex-toggle-on,.regex-toggle-off)::before { content:""!important; display:block!important; position:static!important; width:var(--rx-icon)!important; height:var(--rx-icon)!important; flex:0 0 var(--rx-icon)!important; background:currentColor!important; -webkit-mask:var(--rx-glyph) center/contain no-repeat!important; mask:var(--rx-glyph) center/contain no-repeat!important; margin:0!important; padding:0!important; transform:none!important; border:0!important; }
 
-/* v1.8.89 — Desktop message actions: preserve the author and metadata.
-   Mobile still replaces the author area with the expanded action strip. */
+/* v1.8.100 — Desktop message actions: stable header in both the native
+   inline-display transition and the later unified-action state. */
 @media screen and (min-width: 1001px) {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) {
+    grid-template-columns: 50px auto auto auto auto auto minmax(0, 1fr) minmax(64px, auto) !important;
+  }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) {
-    grid-template-columns: 50px auto auto auto auto auto minmax(90px, 1fr) 0px !important;
     grid-template-rows: auto auto !important;
   }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost):not([hidden]):not(.displayNone) {
@@ -24093,6 +24095,7 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
     grid-column: 7 / -1 !important;
     grid-row: 1 / 3 !important;
     display: flex !important;
+    flex-wrap: nowrap !important;
     justify-content: flex-end !important;
     align-items: center !important;
     justify-self: stretch !important;
@@ -24100,28 +24103,39 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
     box-sizing: border-box !important;
     width: auto !important;
     min-width: 0 !important;
-    max-width: 100% !important;
-    height: auto !important;
+    max-width: none !important;
+    height: 30px !important;
     min-height: 30px !important;
-    max-height: none !important;
-    margin: 0 !important;
+    max-height: 30px !important;
+    margin: 0 -8px 0 0 !important;
     padding: 0 0 0 8px !important;
     overflow: visible !important;
+    contain: size !important;
+    transition: none !important;
+  }
+  /* The native handler changes display before the observer adopts the actions.
+     Hide the collapsed controls immediately, not 35ms later. */
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons > :not(.extraMesButtons) {
+    display: none !important;
   }
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons > .extraMesButtons {
     display: flex !important;
-    flex: 1 1 auto !important;
-    flex-flow: row wrap !important;
-    justify-content: flex-end !important;
+    flex: 1 1 0 !important;
+    flex-flow: row nowrap !important;
+    justify-content: safe flex-end !important;
     align-content: center !important;
     align-items: center !important;
     min-width: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
-    height: auto !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
     transform: none !important;
     margin: 0 !important;
-    overflow: visible !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    transition: none !important;
   }
 }
 
@@ -24295,4 +24309,74 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
   html body.slk-ui.slk-pc #slk-pc-channel-heading .slk-pc-ch-av {width:100%;height:100%;object-fit:cover;border-radius:50%;background:#E8E8E8;}
   html body.slk-ui.slk-pc #slk-pc-channel-title {min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   html body.slk-ui.slk-pc #slk-pc-channel-heading .slk-pc-ch-count {display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;margin-left:4px;color:#616061;font:600 12px/1.2 var(--slk-font,sans-serif);letter-spacing:normal;}
+}
+
+
+/* v1.8.102 — Chat Completion prompt/advanced only; keep native settings and actions. */
+@media screen {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #range_block_openai > .inline-drawer { padding-block:4px!important; margin-block:0!important; min-height:0!important; gap:0!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #range_block_openai > .inline-drawer > .inline-drawer-toggle { height:40px!important; min-height:40px!important; padding-block:0!important; margin-block:0!important; align-items:center!important; box-sizing:border-box!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #range_block_openai > .inline-drawer > .inline-drawer-toggle > b { margin:0!important; line-height:20px!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .inline-drawer-toggle:has(:is(#character_names_display,#continue_postfix_display)) { display:flex!important; flex-flow:row nowrap!important; align-items:center!important; justify-content:space-between!important; gap:6px!important; min-height:40px!important; height:auto!important; padding:0!important; margin:0!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .inline-drawer-toggle:has(:is(#character_names_display,#continue_postfix_display)) > .flex-container { display:flex!important; flex:1 1 auto!important; min-width:0!important; flex-flow:row nowrap!important; align-items:center!important; justify-content:flex-start!important; gap:4px!important; margin:0!important; padding:0!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .inline-drawer-toggle:has(:is(#character_names_display,#continue_postfix_display)) > .flex-container > b { flex:0 0 auto!important; white-space:nowrap!important; line-height:20px!important; margin:0!important; padding:0!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .inline-drawer-toggle:has(:is(#character_names_display,#continue_postfix_display)) > .flex-container > small { display:block!important; flex:0 1 auto!important; min-width:0!important; width:auto!important; max-width:none!important; white-space:nowrap!important; overflow:hidden!important; text-overflow:ellipsis!important; margin:0!important; padding:0!important; line-height:20px!important; font-weight:400!important; font-size:12px!important; color:var(--slk-muted)!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .inline-drawer-toggle:has(:is(#character_names_display,#continue_postfix_display)) > .flex-container > .fa-circle-info { display:inline-flex!important; flex:0 0 18px!important; width:18px!important; height:20px!important; align-items:center!important; justify-content:center!important; margin:0!important; padding:0!important; cursor:pointer!important; color:#8A8A8A!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .inline-drawer-toggle:has(:is(#character_names_display,#continue_postfix_display)) > .inline-drawer-icon { display:inline-flex!important; flex:0 0 20px!important; width:20px!important; height:20px!important; align-items:center!important; justify-content:center!important; margin:0!important; padding:0!important; align-self:center!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .slk-ai-info-note { box-sizing:border-box; width:100%; margin:4px 0 8px!important; padding:8px 10px!important; border-radius:8px; background:#F5F5F5; color:var(--slk-muted); font-size:12px; line-height:1.5; text-align:left; overflow-wrap:anywhere; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .slk-ai-info-note[hidden] { display:none!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .range-block > label.checkbox_label:has(> input[type="checkbox"]) { display:flex!important; flex-flow:row nowrap!important; align-items:center!important; justify-content:flex-start!important; gap:10px!important; min-height:24px!important; padding-block:0!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .range-block > label.checkbox_label:has(> input[type="checkbox"]) > input[type="checkbox"] { flex:0 0 auto!important; align-self:center!important; margin:0!important; transform:none!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .range-block > label.checkbox_label:has(> input[type="checkbox"]) > span { align-self:center!important; min-width:0!important; line-height:20px!important; margin:0!important; padding:0!important; transform:none!important; position:static!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .openai_logit_bias_preset_form { display:flex!important; flex-flow:row nowrap!important; align-items:center!important; gap:6px!important; width:100%!important; margin:8px 0 0!important; padding:0!important; box-sizing:border-box!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .openai_logit_bias_preset_form > #openai_logit_bias_preset { flex:1 1 0!important; width:0!important; min-width:0!important; margin:0!important; height:var(--slk-ds-control,34px)!important; min-height:var(--slk-ds-control,34px)!important; box-sizing:border-box!important; text-overflow:ellipsis!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .openai_logit_bias_preset_form > .menu_button { display:inline-flex!important; align-items:center!important; justify-content:center!important; flex:0 0 var(--slk-ds-control,34px)!important; width:var(--slk-ds-control,34px)!important; min-width:0!important; height:var(--slk-ds-control,34px)!important; min-height:0!important; box-sizing:border-box!important; padding:0!important; margin:0!important; transform:none!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .openai_logit_bias_preset_form > #openai_logit_bias_import_file { display:none!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .openai_logit_bias_preset_form > #openai_logit_bias_delete_preset { color:#E01E5A!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .range-block:has(> #logit_bias_openai) > .inline-drawer { margin:8px 0 0!important; padding:0!important; width:100%!important; box-sizing:border-box!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .range-block:has(> #logit_bias_openai) > .inline-drawer > .inline-drawer-toggle { padding:0!important; margin:0!important; min-height:40px!important; align-items:center!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .range-block:has(> #logit_bias_openai) > .inline-drawer > .inline-drawer-toggle > b { padding:0!important; margin:0!important; line-height:20px!important; }
+}
+@media screen and (max-width:360px) {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .openai_logit_bias_preset_form { gap:4px!important; }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > #ai-config-button > #left-nav-panel #openai_settings .openai_logit_bias_preset_form > .menu_button { flex-basis:34px!important; width:34px!important; }
+}
+
+/* 1.8.103 — Persona lock status: avatar badge, PC and mobile.
+   Native lock classes remain the source of truth; no extra observer or JS. */
+@media screen {
+    html body.slk-ui #PersonaManagement #user_avatar_block > .avatar-container > .avatar {
+        position: relative !important;
+        overflow: visible !important;
+    }
+    html body.slk-ui #PersonaManagement #user_avatar_block > .avatar-container > .character_select_container > .avatar_container_states {
+        /* Keep native status labels available to assistive technology without taking up a row. */
+        position: absolute !important;
+        width: 1px !important;
+        min-width: 0 !important;
+        height: 1px !important;
+        min-height: 0 !important;
+        margin: -1px !important;
+        padding: 0 !important;
+        border: 0 !important;
+        overflow: hidden !important;
+        clip-path: inset(50%) !important;
+        pointer-events: none !important;
+    }
+    html body.slk-ui #PersonaManagement #user_avatar_block > .avatar-container:is(.locked_to_chat,.locked_to_character) > .avatar::after {
+        content: "" !important;
+        display: block !important;
+        position: absolute !important;
+        right: -2px !important;
+        bottom: -2px !important;
+        width: 18px !important;
+        height: 18px !important;
+        box-sizing: border-box !important;
+        border: 2px solid #fff !important;
+        border-radius: 50% !important;
+        background: #4A154B url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='10' width='14' height='11' rx='2'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E") center / 11px 11px no-repeat !important;
+        box-shadow: none !important;
+        z-index: 2;
+        pointer-events: none !important;
+    }
 }
