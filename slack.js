@@ -38,6 +38,31 @@ try { localStorage.removeItem('slk-ui-theme'); } catch { /* old option may not e
 // Native/third-party observers and dedicated message observers are untouched.
 const slkUiMutationSubscriptions = [];
 let slkUiMutationObserver = null;
+// v1.8.152: subscribe to outside-chat branches rather than the entire DOM.
+let slkObservedChat = null;
+let slkUiBoundaries = new Set();
+function slkBindOutsideChat() {
+    const doc = document.documentElement;
+    const chat = document.getElementById('chat');
+    slkObservedChat = chat;
+    slkUiBoundaries = new Set();
+    const opts = {childList:true, characterData:true, attributes:true,
+        attributeFilter:['class','style','data-slk-view']};
+    slkUiMutationObserver.disconnect();
+    if (!chat || !doc.contains(chat)) {
+        slkUiMutationObserver.observe(doc, {...opts, subtree:true});
+        return;
+    }
+    for (let branch = chat; branch !== doc; branch = branch.parentElement) {
+        const parent = branch.parentElement;
+        if (!parent) break;
+        slkUiBoundaries.add(parent);
+        slkUiMutationObserver.observe(parent, {...opts, subtree:false});
+        for (const sibling of parent.children) {
+            if (sibling !== branch) slkUiMutationObserver.observe(sibling, {...opts, subtree:true});
+        }
+    }
+}
 function slkObserveOutsideChat(callback, root, options) {
     if (!root) return;
     slkUiMutationSubscriptions.push({callback, root, options});
@@ -47,6 +72,9 @@ function slkObserveOutsideChat(callback, root, options) {
             const el = record.target.nodeType === 1 ? record.target : record.target.parentElement;
             return !el?.closest('#chat');
         });
+        // New sibling branches are discovered from their insertion records.
+        if (records.some(r => r.type === 'childList' && slkUiBoundaries.has(r.target)) ||
+            document.getElementById('chat') !== slkObservedChat) slkBindOutsideChat();
         if (!outside.length) return;
         for (const {callback, root, options} of slkUiMutationSubscriptions) {
             const batch = outside.filter(record => {
@@ -60,9 +88,7 @@ function slkObserveOutsideChat(callback, root, options) {
             }
         }
     });
-    // Union of the subscribed options, without attributeOldValue allocation.
-    slkUiMutationObserver.observe(document.documentElement, {subtree:true, childList:true, characterData:true,
-        attributes:true, attributeFilter:['class','style','data-slk-view']});
+    slkBindOutsideChat();
 }
 
 function slkSavePreference(key, value) {
@@ -3552,7 +3578,6 @@ if (SLK_UI_SETTINGS.enabled) {
             for (const mes of changed) if (chat.contains(mes)) syncMessage(mes, enabled);
         }).observe(chat, {childList: true, subtree: true, attributes: true, attributeFilter: ['class']});
         window.addEventListener('slk-ui-settings-changed', sync);
-        window.addEventListener('resize', sync);
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
@@ -4718,10 +4743,11 @@ function slkConnectPromptManager() {
         if (!root || !mobile.matches) return;
         const el = root.nodeType === Node.ELEMENT_NODE ? root : root.parentElement;
         if (!el) return;
-        const button = el.closest(selector);
-        if (button) pending.add(button);
+        const inChat = el.closest('#chat');
+        const button = el.closest(inChat ? '.menu_button,.drawer-opener' : selector);
+        if (button && (!inChat || button.closest('.mes_text'))) pending.add(button);
         if (root.nodeType === Node.ELEMENT_NODE) {
-            if (el.closest('#chat')) {
+            if (inChat) {
                 // Message header buttons are not eligible. In message content,
                 // preserve the supported custom controls, without enumerating
                 // unrelated buttons and inline role/title markup.
@@ -4738,9 +4764,13 @@ function slkConnectPromptManager() {
             for (const record of records) {
                 if (record.type === 'characterData') enqueue(record.target);
                 else {
-                    const button = record.target.closest?.(selector);
+                    const target = record.target;
+                    const inChat = target.closest?.('#chat');
+                    const button = target.closest?.(inChat ? '.menu_button,.drawer-opener' : selector);
                     if (button) enqueue(button);
-                    for (const node of record.addedNodes) enqueue(node);
+                    for (const node of record.addedNodes) {
+                        if (node.nodeType === Node.ELEMENT_NODE || button) enqueue(node);
+                    }
                 }
             }
         }).observe(document.body, {subtree:true,childList:true,characterData:true});
