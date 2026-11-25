@@ -2142,6 +2142,33 @@ if (SLK_UI_SETTINGS.enabled) {
     const isMobileSlack = () => document.body?.classList.contains('slk-ui') &&
         matchMedia('(min-width: 0px)').matches;
 
+    // v1.8.114 — Localize only the native chat-file confirmation prompt.
+    // Keep the existing confirm/cancel controls and their event handlers intact.
+    function syncChatDeleteMessage(dialog, enabled) {
+        const content = dialog.querySelector('.popup-content');
+        if (!content) return;
+        const existing = content.querySelector('.slk-chat-delete-message');
+        if (existing) {
+            if (!enabled) existing.replaceWith(document.createTextNode(existing.dataset.slkOriginalText));
+            return;
+        }
+        if (!enabled) return;
+        const english = 'Delete the Chat File?';
+        const korean = '채팅 파일을 삭제할까요?';
+        if (![english, korean].includes(content.textContent.trim())) return;
+        const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+        while (walker.nextNode()) {
+            const node = walker.currentNode;
+            if (![english, korean].includes(node.data.trim())) continue;
+            const message = document.createElement('span');
+            message.className = 'slk-chat-delete-message';
+            message.dataset.slkOriginalText = node.data;
+            message.textContent = korean;
+            node.replaceWith(message);
+            break;
+        }
+    }
+
     function sync() {
         if (syncing || !document.body) return;
         syncing = true;
@@ -2161,7 +2188,9 @@ if (SLK_UI_SETTINGS.enabled) {
                 }
             }
 
-            const openModals = enabled ? [...document.querySelectorAll('dialog.popup[open]')] : [];
+            const dialogs = [...document.querySelectorAll('dialog.popup[open]')];
+            for (const dialog of dialogs) syncChatDeleteMessage(dialog, enabled);
+            const openModals = enabled ? dialogs : [];
             const target = openModals.at(-1) || document.documentElement;
             let toast = document.getElementById('toast-container');
             // If closing a modal detached the container along with it,
@@ -2196,7 +2225,7 @@ if (SLK_UI_SETTINGS.enabled) {
         const observer = new MutationObserver(changes => {
             if (changes.some(change =>
                 (change.type === 'attributes' && change.attributeName === 'open') ||
-                (change.type === 'childList' && !change.target.closest?.('#chat') && (relevant(change.addedNodes) || relevant(change.removedNodes))))) {
+                (change.type === 'childList' && !change.target.closest?.('#chat') && (change.target.closest?.('dialog.popup[open] .popup-content') || relevant(change.addedNodes) || relevant(change.removedNodes))))) {
                 schedule();
             }
         });
@@ -4546,7 +4575,7 @@ function slkConnectPromptManager() {
 // v1.8.74 — Compact mobile page-size labels without changing native option values.
 (function slkCompactPagerLabels() {
     const mq = matchMedia('(max-width:1000px)');
-    const selector = '#PersonaManagement #persona_pagination_container .paginationjs-size-changer select, #right-nav-panel #rm_print_characters_pagination .paginationjs-size-changer select';
+    const selector = '#PersonaManagement #persona_pagination_container .paginationjs-size-changer select, #right-nav-panel #rm_print_characters_pagination .paginationjs-size-changer select, #WorldInfo #world_info_pagination .paginationjs-size-changer select';
     const originals = new Map();
     let queued = false;
     function sync() {
@@ -4577,7 +4606,7 @@ function slkConnectPromptManager() {
         new MutationObserver(records => {
             records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
             if (!records.length) return;
-            if (records.some(r => r.target.closest?.('#persona_pagination_container,#rm_print_characters_pagination') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.matches?.('#persona_pagination_container,#rm_print_characters_pagination') || n.querySelector?.('#persona_pagination_container,#rm_print_characters_pagination'))))) schedule();
+            if (records.some(r => r.target.closest?.('#persona_pagination_container,#rm_print_characters_pagination,#world_info_pagination') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.matches?.('#persona_pagination_container,#rm_print_characters_pagination,#world_info_pagination') || n.querySelector?.('#persona_pagination_container,#rm_print_characters_pagination,#world_info_pagination'))))) schedule();
         }).observe(document.body, {subtree:true,childList:true});
         mq.addEventListener?.('change',schedule);
         window.addEventListener('slk-ui-settings-changed',schedule);

@@ -24665,3 +24665,82 @@ html body.slk-ui :is(input[type="button"],input[type="submit"],input[type="reset
 html body.slk-ui :is(button,.menu_button,[role="button"],[role="tab"],input[type="button"],input[type="submit"],input[type="reset"]):not(.bg_example,.bg_folder_tile):focus-visible {
     filter: brightness(.86);
 }
+
+
+/* 1.8.114 — Chat-file confirmation and header count optical alignment. */
+@media screen {
+    html body.slk-ui dialog.popup .popup-content .slk-chat-delete-message {
+        font-size:14px!important;
+        line-height:1.5!important;
+    }
+    html body.slk-ui #slk-chat-title .slk-ch-count,
+    html body.slk-ui.slk-pc #slk-pc-channel-heading .slk-pc-ch-count {
+        align-items:center!important;
+        line-height:13px!important;
+    }
+    html body.slk-ui #slk-chat-title .slk-ch-count > svg,
+    html body.slk-ui.slk-pc #slk-pc-channel-heading .slk-pc-ch-count > svg {
+        display:block!important;
+        width:13px!important;
+        height:13px!important;
+        flex:0 0 13px!important;
+        margin:0!important;
+    }
+    html body.slk-ui #slk-chat-title .slk-ch-count > .slk-ch-n,
+    html body.slk-ui.slk-pc #slk-pc-channel-heading .slk-pc-ch-count > .slk-pc-ch-n {
+        display:block!important;
+        line-height:13px!important;
+        margin:0!important;
+        padding:0!important;
+        transform:translateY(1px)!important;
+    }
+}
+
+
+/* v1.8.115 — Lorebook: native controls, one-line pager, one mobile scroll surface. */
+@media screen {
+  html body.slk-ui #WorldInfo #world_popup_entries_list > #WIEntryHeaderTitlesPC {display:none!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination {flex:0 0 100%!important;width:100%!important;min-width:0!important;margin:0!important;padding:0!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs {
+    display:grid!important;grid-template-columns:minmax(20px,1fr) minmax(20px,1fr) minmax(max-content,2.5fr) minmax(20px,1fr) minmax(20px,1fr) 52px!important;
+    grid-template-rows:28px!important;align-items:center!important;gap:1px!important;
+    width:100%!important;min-width:0!important;height:36px!important;min-height:36px!important;max-height:36px!important;
+    padding:3px!important;margin:0!important;border:1px solid #EAEAEA!important;border-radius:8px!important;background:#F7F7F8!important;box-shadow:none!important;box-sizing:border-box!important;
+  }
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages, html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages > ul {display:contents!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-nav {grid-column:3!important;grid-row:1!important;display:block!important;min-width:0!important;width:100%!important;text-align:center!important;white-space:nowrap!important;line-height:1.2!important;font-size:12px!important;font-weight:600!important;letter-spacing:-.2px!important;color:#777579!important;margin:0!important;padding:0!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-size-changer {grid-column:6!important;grid-row:1!important;display:flex!important;align-items:center!important;width:52px!important;min-width:52px!important;max-width:52px!important;margin:0!important;padding:0!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination#world_info_pagination#world_info_pagination#world_info_pagination#world_info_pagination#world_info_pagination#world_info_pagination#world_info_pagination .paginationjs-size-changer select {appearance:none!important;-webkit-appearance:none!important;width:100%!important;min-width:0!important;max-width:100%!important;height:28px!important;min-height:28px!important;max-height:28px!important;margin:0!important;padding:0 12px 0 3px!important;border:1px solid #DAD8DA!important;border-radius:6px!important;box-shadow:none!important;font-size:11px!important;font-weight:500!important;line-height:normal!important;letter-spacing:-.3px!important;color:#424045!important;text-overflow:clip!important;background-color:#fff!important;background-position:right 2px center!important;background-size:9px 9px!important;background-repeat:no-repeat!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination#world_info_pagination#world_info_pagination#world_info_pagination#world_info_pagination#world_info_pagination#world_info_pagination#world_info_pagination .paginationjs-size-changer select {background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23616061%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E")!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li.paginationjs-first {grid-column:1!important;grid-row:1!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li.paginationjs-prev {grid-column:2!important;grid-row:1!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li.paginationjs-next {grid-column:4!important;grid-row:1!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li.paginationjs-last {grid-column:5!important;grid-row:1!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li:is(.paginationjs-first,.paginationjs-prev,.paginationjs-next,.paginationjs-last), html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li:is(.paginationjs-first,.paginationjs-prev,.paginationjs-next,.paginationjs-last) > a {display:block!important;position:relative!important;float:none!important;box-sizing:border-box!important;width:100%!important;min-width:20px!important;max-width:none!important;height:28px!important;min-height:28px!important;max-height:28px!important;margin:0!important;padding:0!important;border:0!important;border-radius:7px!important;background:transparent!important;box-shadow:none!important;opacity:1!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li:is(.paginationjs-first,.paginationjs-prev,.paginationjs-next,.paginationjs-last) > a {font-size:0!important;line-height:0!important;color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li:is(.paginationjs-first,.paginationjs-prev,.paginationjs-next,.paginationjs-last) > a > :is(i,svg) {display:none!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li:is(.paginationjs-first,.paginationjs-prev,.paginationjs-next,.paginationjs-last) > a::before {content:''!important;display:block!important;position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;width:16px!important;height:16px!important;margin:0!important;padding:0!important;opacity:1!important;background:#4A474B!important;-webkit-mask-repeat:no-repeat!important;mask-repeat:no-repeat!important;-webkit-mask-position:center!important;mask-position:center!important;-webkit-mask-size:contain!important;mask-size:contain!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li:is(.paginationjs-first,.paginationjs-prev,.paginationjs-next,.paginationjs-last).disabled > a::before {background:#B8B5B9!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li:is(.paginationjs-first,.paginationjs-prev,.paginationjs-next,.paginationjs-last):not(.disabled):hover > a {background:#EAE9EB!important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li.paginationjs-first > a::before {-webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11%204%204%2012%2011%2020%20M20%204%2013%2012%2020%2020%22%2F%3E%3C%2Fsvg%3E") !important;
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11%204%204%2012%2011%2020%20M20%204%2013%2012%2020%2020%22%2F%3E%3C%2Fsvg%3E") !important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li.paginationjs-prev > a::before {-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m14.5 5.5-6.5 6.5 6.5 6.5'/%3E%3C/svg%3E") !important;
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m14.5 5.5-6.5 6.5 6.5 6.5'/%3E%3C/svg%3E") !important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li.paginationjs-next > a::before {-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9.5 5.5 6.5 6.5-6.5 6.5'/%3E%3C/svg%3E") !important;
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9.5 5.5 6.5 6.5-6.5 6.5'/%3E%3C/svg%3E") !important;}
+  html body.slk-ui #WorldInfo #world_info_pagination .paginationjs-pages li.paginationjs-last > a::before {-webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m4%204%207%208-7%208%20M13%204%2020%2012l-7%208%22%2F%3E%3C%2Fsvg%3E") !important;
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m4%204%207%208-7%208%20M13%204%2020%2012l-7%208%22%2F%3E%3C%2Fsvg%3E") !important;}
+}
+@media screen and (max-width:1000px) {
+  /* Only the drawer scrolls; do not alter global app header/bottom tabs or entry textarea scrolling. */
+  html body.slk-ui:not(.slk-pc) #WorldInfo {overflow-y:auto!important;overflow-x:hidden!important;}
+  html body.slk-ui:not(.slk-pc) #WorldInfo > .flex-container.alignitemscenter.gap10px,
+  html body.slk-ui:not(.slk-pc) #WorldInfo > #wi-holder,
+  html body.slk-ui:not(.slk-pc) #WorldInfo #wi-holder > #wiTopBlock,
+  html body.slk-ui:not(.slk-pc) #WorldInfo #wi-holder > #world_popup,
+  html body.slk-ui:not(.slk-pc) #WorldInfo #world_popup > .flex-container,
+  html body.slk-ui:not(.slk-pc) #WorldInfo #world_popup > #world_popup_entries_list {
+    position:relative!important;top:auto!important;bottom:auto!important;flex:0 0 auto!important;height:auto!important;max-height:none!important;min-height:0!important;overflow:visible!important;
+  }
+  html body.slk-ui:not(.slk-pc) #WorldInfo #world_popup > #world_popup_entries_list > .world_entry {flex-shrink:0!important;}
+}
