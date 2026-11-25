@@ -47,7 +47,7 @@ function slkBindOutsideChat() {
     slkObservedChat = chat;
     slkUiBoundaries = new Set();
     const opts = {childList:true, characterData:true, attributes:true,
-        attributeFilter:['class','style','data-slk-view']};
+        attributeFilter:['class','style','data-slk-view','hidden','open']};
     slkUiMutationObserver.disconnect();
     if (!chat || !doc.contains(chat)) {
         slkUiMutationObserver.observe(doc, {...opts, subtree:true});
@@ -73,12 +73,13 @@ function slkObserveOutsideChat(callback, root, options) {
             return !el?.closest('#chat');
         });
         // New sibling branches are discovered from their insertion records.
-        if (records.some(r => r.type === 'childList' && slkUiBoundaries.has(r.target)) ||
+        if (records.some(r => r.type === 'childList' && slkUiBoundaries.has(r.target) &&
+            [...r.addedNodes, ...r.removedNodes].some(n => n.nodeType === 1)) ||
             document.getElementById('chat') !== slkObservedChat) slkBindOutsideChat();
         if (!outside.length) return;
         for (const {callback, root, options} of slkUiMutationSubscriptions) {
             const batch = outside.filter(record => {
-                if (root !== document.documentElement && record.target !== root && !root.contains(record.target)) return false;
+                if (record.target !== root && (!options.subtree || !root.contains(record.target))) return false;
                 if (record.type === 'childList') return !!options.childList;
                 if (record.type === 'characterData') return !!options.characterData;
                 return !!options.attributes && (!options.attributeFilter || options.attributeFilter.includes(record.attributeName));
@@ -1599,7 +1600,7 @@ function syncChatHead() {
         (ctx.characterId !== undefined && ctx.characterId !== null && Number(ctx.characterId) >= 0)
     ));
     const inChat = !chat.querySelector('.welcomePanel') && (hasMessages || hasActiveTarget);
-    document.body.classList.toggle('slk-in-chat', inChat);
+    if (document.body.classList.contains('slk-in-chat') !== inChat) document.body.classList.toggle('slk-in-chat', inChat);
     if (!inChat) return;
     const head = document.getElementById('slk-chat-head');
     if (!head) return;
@@ -1765,7 +1766,7 @@ function slkSyncHeaderView() {
     if (document.body.dataset.slkHeaderView !== view) {
         document.body.dataset.slkHeaderView = view;
     }
-    document.documentElement.classList.toggle('slk-status-chat', view === 'chat');
+    if (document.documentElement.classList.contains('slk-status-chat') !== (view === 'chat')) document.documentElement.classList.toggle('slk-status-chat', view === 'chat');
 }
 
 function syncSlackSurfaces() {
@@ -1791,7 +1792,9 @@ function watchChat() {
     };
     new MutationObserver(run).observe(chat, { childList: true });
     window.addEventListener('hashchange', run, { passive: true });
-    document.addEventListener('click', run, { passive: true, capture: true });
+    document.addEventListener('click', event => {
+        if (!event.target.closest?.('#chat .mes')) run();
+    }, { passive: true, capture: true });
     setTimeout(syncSlackSurfaces, 0);
     const ctx = stContext();
     const types = ctx?.eventTypes || ctx?.event_types;
@@ -1806,7 +1809,8 @@ function watchChat() {
     const form = document.getElementById('form_sheld');
     if (form && 'ResizeObserver' in window) {
         new ResizeObserver(() => {
-            document.body.style.setProperty('--slk-form-h', `${form.offsetHeight}px`);
+            const height = `${form.offsetHeight}px`;
+            if (document.body.style.getPropertyValue('--slk-form-h') !== height) document.body.style.setProperty('--slk-form-h', height);
         }).observe(form);
     }
 }
@@ -2399,7 +2403,8 @@ if (SLK_UI_SETTINGS.enabled) {
 // list.  Native modal <dialog> elements are in the browser top layer, so a
 // body/html toast cannot appear above them even with maximum z-index.
 // While a popup is open, move the existing toastr container INTO the topmost
-// dialog; when it closes return that same container to <html>.
+// dialog; when it closes return that same container to <body>, where
+// the Slack toast CSS and inherited theme variables apply.
 (function mountSlackOverlayLayer() {
     let lastToast = null;
     let queued = false;
@@ -2456,7 +2461,7 @@ if (SLK_UI_SETTINGS.enabled) {
             const dialogs = [...document.querySelectorAll('dialog.popup[open]')];
             for (const dialog of dialogs) syncChatDeleteMessage(dialog, enabled);
             const openModals = enabled ? dialogs : [];
-            const target = openModals.at(-1) || document.documentElement;
+            const target = openModals.at(-1) || document.body;
             let toast = document.getElementById('toast-container');
             // If closing a modal detached the container along with it,
             // recover the original node without discarding ongoing notices.
@@ -2487,14 +2492,13 @@ if (SLK_UI_SETTINGS.enabled) {
 
     function watch() {
         if (!document.documentElement) return;
-        const observer = new MutationObserver(changes => {
+        slkObserveOutsideChat(changes => {
             if (changes.some(change =>
                 (change.type === 'attributes' && change.attributeName === 'open') ||
                 (change.type === 'childList' && !change.target.closest?.('#chat') && (change.target.closest?.('dialog.popup[open] .popup-content') || relevant(change.addedNodes) || relevant(change.removedNodes))))) {
                 schedule();
             }
-        });
-        observer.observe(document.documentElement, {
+        }, document.documentElement, {
             subtree: true, childList: true, attributes: true, attributeFilter: ['open']
         });
         sync();
@@ -2874,16 +2878,15 @@ if (SLK_UI_SETTINGS.enabled) {
     };
     const start = () => {
         markNotices();
-        new MutationObserver(records => {
+        slkObserveOutsideChat(records => {
             for (const r of records) {
-                if (r.target.closest?.('#chat .mes')) continue;
                 const notice = r.target.closest?.('.slk-notice,#toast-container > div');
                 if (notice) pending.add(notice);
                 // Scan newly inserted DOM, and preserve text updates inside existing notices.
                 for (const n of r.addedNodes) if (n.nodeType === 1 && !n.matches('.mes')) pending.add(n);
             }
             schedule();
-        }).observe(document.documentElement, { childList: true, subtree: true });
+        }, document.documentElement, { childList: true, subtree: true });
         window.addEventListener('slk-ui-settings-changed', () => { pending.add(document); schedule(); });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
@@ -3060,6 +3063,67 @@ if (SLK_UI_SETTINGS.enabled) {
     else start();
 })();
 
+// v1.8.155 — Only observe message chrome, not the message body/token stream.
+// All three consumers share one observer per message. Disconnect on removal.
+const slkMessageChromeSubscribers = [];
+let slkMessageChromeRoot = null;
+function slkObserveMessageChrome(chat, callback) {
+    slkMessageChromeSubscribers.push(callback);
+    if (slkMessageChromeRoot === chat) return;
+    slkMessageChromeRoot = chat;
+    const entries = new Map();
+    const chrome = '.ch_name,.mesAvatarWrapper,.swipeRightBlock,.swipe_left,.timestamp';
+    const emit = records => {
+        for (const fn of slkMessageChromeSubscribers) {
+            try { fn(records); } catch (error) { console.error('[Slack UI] message chrome', error); }
+        }
+    };
+    function attach(mes) {
+        if (entries.has(mes)) return;
+        let observed = new Set();
+        const observer = new MutationObserver(records => {
+            if (!chat.contains(mes)) return;
+            if (records.some(r => r.type === 'childList' &&
+                (r.target === mes || r.target.matches?.('.mes_block')))) bind();
+            emit(records);
+        });
+        function bind() {
+            const block = mes.querySelector(':scope > .mes_block');
+            const nodes = new Set([mes]);
+            if (block) nodes.add(block);
+            for (const el of mes.children) if (el.matches(chrome)) nodes.add(el);
+            if (block) for (const el of block.children) if (el.matches(chrome)) nodes.add(el);
+            if (nodes.size === observed.size && [...nodes].every(n => observed.has(n))) return;
+            observer.disconnect();
+            observed = nodes;
+            for (const node of nodes) {
+                const shell = node === mes || node === block;
+                observer.observe(node, {childList:true, subtree:!shell, attributes:true,
+                    attributeOldValue:true, attributeFilter:['class','style','hidden'], characterData:!shell});
+            }
+        }
+        entries.set(mes, observer);
+        bind();
+    }
+    function discover(node) {
+        if (node.nodeType !== 1) return;
+        if (node.matches('.mes')) attach(node);
+        else node.querySelectorAll('.mes').forEach(attach);
+    }
+    chat.querySelectorAll('.mes').forEach(attach);
+    new MutationObserver(records => {
+        let removed = false;
+        for (const r of records) {
+            for (const n of r.addedNodes) discover(n);
+            if (r.removedNodes.length) removed = true;
+        }
+        if (removed) for (const [mes, observer] of entries) {
+            if (!chat.contains(mes)) { observer.disconnect(); entries.delete(mes); }
+        }
+        emit(records);
+    }).observe(chat, {childList:true});
+}
+
 // v1.4.57 — 채팅 날짜를 26.11.11 형태로 (원래 글자는 그대로 두고 data-slk-date로 표시)
 (function slkShortDates() {
     const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
@@ -3100,8 +3164,9 @@ if (SLK_UI_SETTINGS.enabled) {
             else if (node.nodeType === 1) el.querySelectorAll('.timestamp').forEach(x => pending.add(x));
         };
         chat.querySelectorAll('.mes .timestamp').forEach(update);
-        new MutationObserver(records => {
+        slkObserveMessageChrome(chat, records => {
             for (const r of records) {
+                if (r.type === 'attributes') continue;
                 const el = r.target.nodeType === 1 ? r.target : r.target.parentElement;
                 const stamp = el?.closest('.timestamp');
                 if (stamp) pending.add(stamp);
@@ -3114,7 +3179,7 @@ if (SLK_UI_SETTINGS.enabled) {
                 for (const el of pending) if (chat.contains(el) && el.closest('.mes')) update(el);
                 pending.clear();
             }, 80);
-        }).observe(chat, { childList:true, subtree:true, characterData:true });
+        });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
@@ -3169,6 +3234,41 @@ if (SLK_UI_SETTINGS.enabled) {
     else start();
 })();
 
+// Share content discovery between custom chat range controls and mobile button labels.
+// Only these two features need to inspect inserted message content. Other UI
+// features use the outside-chat or message-chrome observers above.
+const slkChatContentSubscribers = [];
+let slkChatContentObserver = null;
+function slkObserveChatContent(callback) {
+    slkChatContentSubscribers.push(callback);
+    if (slkChatContentObserver) return;
+    const chat = document.getElementById('chat');
+    if (!chat) {
+        const wait = () => {
+            const root = document.getElementById('chat');
+            if (!root || slkChatContentObserver) return;
+            const first = slkChatContentSubscribers.shift();
+            slkObserveChatContent(first);
+        };
+        slkObserveOutsideChat(wait, document.documentElement, {childList:true,subtree:true});
+        return;
+    }
+    slkChatContentObserver = new MutationObserver(records => {
+        const relevant = records.filter(r => {
+            if (r.type === 'characterData') return !!r.target.parentElement?.closest('.menu_button,.drawer-opener');
+            if (r.target.closest?.('slk-button-label,[data-slk-button-label]')) return false;
+            if (r.target.closest?.('.menu_button,.drawer-opener')) return true;
+            for (const node of r.addedNodes) if (node.nodeType === 1) return true;
+            return false;
+        });
+        if (!relevant.length) return;
+        for (const fn of slkChatContentSubscribers) {
+            try { fn(relevant); } catch (error) { console.error('[Slack UI] chat controls', error); }
+        }
+    });
+    slkChatContentObserver.observe(chat, {childList:true,subtree:true,characterData:true});
+}
+
 // v1.4.60 — 슬라이더 채움(파란 부분) 표시
 (function slkRangeFill() {
     const known = new Set();
@@ -3194,6 +3294,7 @@ if (SLK_UI_SETTINGS.enabled) {
                     if (!visibility.get(drawer)) continue;
                 }
             }
+            if (!includeClosed && el.closest('dialog:not([open]), [hidden], .displayNone')) continue;
             update(el);
         }
     };
@@ -3216,7 +3317,7 @@ if (SLK_UI_SETTINGS.enabled) {
         document.addEventListener('visibilitychange', () => { if (!document.hidden) all(); });
         const pending = new Set();
         let t = null;
-        new MutationObserver(records => {
+        const discover = records => {
             for (const r of records) for (const n of r.addedNodes) {
                 if (n.nodeType !== 1) continue;
                 if (n.matches('input[type="range"]')) pending.add(n);
@@ -3228,7 +3329,9 @@ if (SLK_UI_SETTINGS.enabled) {
                 for (const el of pending) if (el.isConnected) { known.add(el); update(el); }
                 pending.clear();
             }, 200);
-        }).observe(document.body, { childList: true, subtree: true });
+        };
+        slkObserveOutsideChat(discover, document.body, {childList:true,subtree:true});
+        slkObserveChatContent(discover);
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
@@ -3371,7 +3474,7 @@ if (SLK_UI_SETTINGS.enabled) {
         for (const el of direct.filter(isNative)) move(el, extra, state);
         for (const el of [...foreign, ...direct.filter(el => !isNative(el))]) {
             if (el.parentElement !== extra) move(el, extra, state);
-            el.classList.add('slk-adopted-btn', 'slk-foreign-action');
+            if (!el.classList.contains('slk-adopted-btn') || !el.classList.contains('slk-foreign-action')) el.classList.add('slk-adopted-btn', 'slk-foreign-action');
         }
         // 확장이 처음부터 extraMesButtons 안에 삽입한 경우도 마지막에 배치.
         // CSS order만 지정하고 기존 버튼 노드/리스너는 변경하지 않습니다.
@@ -3398,7 +3501,7 @@ if (SLK_UI_SETTINGS.enabled) {
         // v1.4.85 — Vertical alignment is owned by the grid CSS.
         // Do not translate the menu after the row count changes: multi-row
         // messages (and messages decorated by extensions) would jump upwards.
-        extra.style.removeProperty('--slk-actions-shift');
+        if (extra.style.getPropertyValue('--slk-actions-shift')) extra.style.removeProperty('--slk-actions-shift');
     }
 
     function start() {
@@ -3412,13 +3515,18 @@ if (SLK_UI_SETTINGS.enabled) {
         const queue = mes => { if (mes && chat.contains(mes)) pending.add(mes); };
         const flush = () => {
             timer = null;
-            const batch = [...pending]; pending.clear();
-            for (const mes of batch) if (chat.contains(mes)) sync(mes);
+            const deadline = performance.now() + 6;
+            for (const mes of pending) {
+                pending.delete(mes);
+                if (chat.contains(mes)) sync(mes);
+                if (performance.now() >= deadline) break;
+            }
+            if (pending.size) timer = setTimeout(flush, 16);
         };
         const schedule = () => { if (pending.size && timer === null) timer = setTimeout(flush, 35); };
         const all = () => { chat.querySelectorAll('.mes').forEach(queue); schedule(); };
-        chat.querySelectorAll('.mes').forEach(sync);
-        new MutationObserver(records => {
+        all();
+        slkObserveMessageChrome(chat, records => {
             for (const r of records) {
                 const el = r.target;
                 if (!(el instanceof Element)) continue;
@@ -3441,8 +3549,7 @@ if (SLK_UI_SETTINGS.enabled) {
                 }
             }
             schedule();
-        }).observe(chat, { subtree:true, childList:true, attributes:true, attributeOldValue:true,
-            attributeFilter:['style','class','hidden'] });
+        });
         document.addEventListener('click', e => {
             const mes = e.target.closest?.('#chat .extraMesButtonsHint')?.closest('.mes');
             if (!mes) return;
@@ -3555,7 +3662,7 @@ if (SLK_UI_SETTINGS.enabled) {
         if (!chat) { setTimeout(start, 500); return; }
         sync();
         const structure = '.mes, .mes_block, .swipeRightBlock, .swipe_left, .swipe_right, .swipes-counter';
-        new MutationObserver(records => {
+        slkObserveMessageChrome(chat, records => {
             const changed = new Set();
             for (const record of records) {
                 const target = record.target;
@@ -3576,7 +3683,7 @@ if (SLK_UI_SETTINGS.enabled) {
             }
             const enabled = isEnabled();
             for (const mes of changed) if (chat.contains(mes)) syncMessage(mes, enabled);
-        }).observe(chat, {childList: true, subtree: true, attributes: true, attributeFilter: ['class']});
+        });
         window.addEventListener('slk-ui-settings-changed', sync);
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
@@ -4759,12 +4866,17 @@ function slkConnectPromptManager() {
     }
     function start() {
         enqueue(document.body);
-        new MutationObserver(records => {
+        const discover = records => {
             if (!mobile.matches) return;
             for (const record of records) {
-                if (record.type === 'characterData') enqueue(record.target);
-                else {
+                if (record.type === 'characterData') {
+                    const target = record.target.parentElement;
+                    if (target?.closest('slk-button-label,[data-slk-button-label]')) continue;
+                    if (target?.closest('#chat') && !target.closest('.menu_button,.drawer-opener')) continue;
+                    enqueue(record.target);
+                } else {
                     const target = record.target;
+                    if (target.closest?.('slk-button-label,[data-slk-button-label]')) continue;
                     const inChat = target.closest?.('#chat');
                     const button = target.closest?.(inChat ? '.menu_button,.drawer-opener' : selector);
                     if (button) enqueue(button);
@@ -4773,7 +4885,9 @@ function slkConnectPromptManager() {
                     }
                 }
             }
-        }).observe(document.body, {subtree:true,childList:true,characterData:true});
+        };
+        slkObserveOutsideChat(discover, document.body, {subtree:true,childList:true,characterData:true});
+        slkObserveChatContent(discover);
         mobile.addEventListener?.('change', () => enqueue(document.body));
         window.addEventListener('slk-ui-settings-changed', () => enqueue(document.body));
     }
