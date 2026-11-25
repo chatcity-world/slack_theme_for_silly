@@ -988,7 +988,7 @@ body.slk-ui {
     }
 
     /* 최근 채팅 화면(채팅 미선택)에서는 입력창 숨김 */
-    body.slk-ui:has(#chat .welcomePanel) #form_sheld {
+    body.slk-ui.slk-has-welcome #form_sheld {
         display: none !important;
     }
 
@@ -2340,7 +2340,7 @@ body.slk-ui {
         cursor: pointer;
     }
 
-    body.slk-ui #rm_api_block .inline-drawer:has(> .inline-drawer-content[style*="block"]) > .inline-drawer-toggle {
+    body.slk-ui #rm_api_block .inline-drawer:has(> .inline-drawer-toggle .inline-drawer-icon.up) > .inline-drawer-toggle {
         border-bottom: 1px solid var(--slk-border);
     }
 
@@ -10779,7 +10779,7 @@ body.slk-ui {
         font-size: 11px !important;
     }
 
-    body.slk-ui #PersonaManagement #user_avatar_block .avatar_container_states:not(:has(.menu_button:not([style*="display: none"]))) {
+    body.slk-ui #PersonaManagement #user_avatar_block .avatar_container_states:not(:has(.menu_button:not(.slk-inl-none))) {
         display: none !important;
     }
 
@@ -12395,7 +12395,7 @@ body.slk-ui {
     }
 
     /* 3) 깊이: ST가 입력칸만 숨기므로(visibility: hidden) 칸 전체를 빼서 위치 칸이 넓게 */
-    html body.slk-ui #WorldInfo .world_entry .WIEnteryHeaderControls > .world_entry_form_control:has(> input[name="depth"][style*="visibility: hidden"]),
+    html body.slk-ui #WorldInfo .world_entry .WIEnteryHeaderControls > .world_entry_form_control:has(> input[name="depth"].slk-inl-vhidden),
     html body.slk-ui #WorldInfo .world_entry .WIEnteryHeaderControls > .world_entry_form_control:has(> input[name="depth"]:disabled) {
         display: none !important;
     }
@@ -13921,7 +13921,7 @@ body.slk-ui {
 
     /* ---- 토글 스위치 ---- */
     /* (가) 체크박스 + 옆 슬라이더 모양: 체크박스는 숨기고 슬라이더를 트랙으로 */
-    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block input[type="checkbox"]:has(+ :is([class*="slider"], [class*="track"], [class*="switch"], [class*="toggle"])) {
+    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block input[type="checkbox"].slk-x-pre-switch {
         position: absolute !important;
         width: 1px !important;
         height: 1px !important;
@@ -13945,7 +13945,7 @@ body.slk-ui {
         box-shadow: 0 1px 3px rgba(0, 0, 0, .25) !important;
     }
     /* (나) 체크박스 자체가 스위치인 경우 (role=switch 또는 class에 switch/toggle) */
-    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block input[type="checkbox"]:is([role="switch"], [class*="switch"], [class*="toggle"]):not(:has(+ :is([class*="slider"], [class*="track"]))) {
+    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block input[type="checkbox"]:is([role="switch"], [class*="switch"], [class*="toggle"]):not(.slk-x-pre-track) {
         position: relative !important;
         width: 40px !important;
         height: 24px !important;
@@ -13955,7 +13955,7 @@ body.slk-ui {
         background-image: none !important;
         transition: background .15s !important;
     }
-    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block input[type="checkbox"]:is([role="switch"], [class*="switch"], [class*="toggle"]):not(:has(+ :is([class*="slider"], [class*="track"])))::before {
+    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block input[type="checkbox"]:is([role="switch"], [class*="switch"], [class*="toggle"]):not(.slk-x-pre-track)::before {
         content: '' !important;
         display: block !important;
         position: absolute !important;
@@ -13970,18 +13970,18 @@ body.slk-ui {
         -webkit-mask: none !important;
         mask: none !important;
     }
-    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block input[type="checkbox"]:is([role="switch"], [class*="switch"], [class*="toggle"]):not(:has(+ :is([class*="slider"], [class*="track"]))):checked {
+    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block input[type="checkbox"]:is([role="switch"], [class*="switch"], [class*="toggle"]):not(.slk-x-pre-track):checked {
         background: #007A5A !important;
     }
-    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block input[type="checkbox"]:is([role="switch"], [class*="switch"], [class*="toggle"]):not(:has(+ :is([class*="slider"], [class*="track"]))):checked::before {
+    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block input[type="checkbox"]:is([role="switch"], [class*="switch"], [class*="toggle"]):not(.slk-x-pre-track):checked::before {
         transform: translateX(16px) !important;
     }
     /* (다) 트랙이 투명해서 손잡이만 보이는 경우: 스위치 라벨 자체에 트랙 */
-    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block label:is([class*="switch"], [class*="toggle"]):has(> input[type="checkbox"]) > :is(span, div, i):last-child:empty {
+    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block label.slk-x-switch-label > :is(span, div, i):last-child:empty {
         background-color: #D1D1D1 !important;
         border-radius: 999px !important;
     }
-    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block label:is([class*="switch"], [class*="toggle"]):has(> input[type="checkbox"]:checked) > :is(span, div, i):last-child:empty {
+    html body.slk-ui:not(#slk-a#slk-b) #rm_extensions_block label.slk-x-switch-label:has(> input[type="checkbox"]:checked) > :is(span, div, i):last-child:empty {
         background-color: #007A5A !important;
     }
 
@@ -14466,11 +14466,11 @@ body.slk-ui {
     
 
     /* ⋯ 펼침 또는 편집 중: 이름·날짜 등 숨김 (자리는 유지해 메시지가 안 흔들림) */
-    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"])), :has(.mes_edit_buttons[style*="flex"]), :has(#curEditTextarea)) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost) {
+    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(#curEditTextarea)) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost) {
         visibility: hidden !important;
     }
     /* ⋯ 펼침: 버튼 묶음이 이름 자리까지 오른쪽 정렬로 */
-    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))) .mes_buttons {
+    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded) .mes_buttons {
         grid-row: 1 / 3 !important;
         justify-self: end !important;
         flex-wrap: nowrap !important;
@@ -14498,7 +14498,7 @@ body.slk-ui {
    ===================================================================== */
 @media screen {
     /* 1) ⋯ 펼친 아이콘이 많으면 줄바꿈 (오른쪽 정렬 유지, 밖으로 안 밀려남) */
-    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))) .mes_buttons {
+    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded) .mes_buttons {
         width: auto !important;
         min-width: 0 !important;
         max-width: 100% !important;
@@ -14796,7 +14796,7 @@ body.slk-ui {
    ===================================================================== */
 @media screen {
     /* 1) ⋯ 펼친 아이콘: 한 줄 우선, 자리 모자랄 때만 줄바꿈 (아이콘 폭 30px로 촘촘히) */
-    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))) .mes_buttons {
+    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded) .mes_buttons {
         grid-column: 2 / -1 !important;
         justify-self: stretch !important;
         width: 100% !important;
@@ -14806,7 +14806,7 @@ body.slk-ui {
         justify-content: flex-end !important;
         gap: 0 !important;
     }
-    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))) .mes_buttons :is(.mes_button, .slk-adopted-btn, .extraMesButtons > *) {
+    html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded) .mes_buttons :is(.mes_button, .slk-adopted-btn, .extraMesButtons > *) {
         width: 30px !important;
         min-width: 30px !important;
         max-width: 30px !important;
@@ -21539,7 +21539,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
       flex:1 1 0px!important; min-height:0!important; height:auto!important; overflow:auto!important;
     }
     /* Native fallback can show the inspect pane without the adapter. */
-    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:not([data-slk-prompt-area]):has(> #completion_prompt_manager_popup_inspect[style*="display: flex"]) > #completion_prompt_manager_popup_edit,
+    html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal:not([data-slk-prompt-area]):has(> #completion_prompt_manager_popup_inspect.slk-inl-flex) > #completion_prompt_manager_popup_edit,
     html body.slk-ui > #completion_prompt_manager_popup.slk-prompt-portal[data-slk-prompt-area="inspect"] > #completion_prompt_manager_popup_edit {display:none!important;}
   }
 }
@@ -23632,20 +23632,20 @@ html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-
 /* v1.8.100 — Desktop message actions: stable header in both the native
    inline-display transition and the later unified-action state. */
 @media screen and (min-width: 1001px) {
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:not(:has(#curEditTextarea)) {
     grid-template-columns: 50px auto auto auto auto auto minmax(0, 1fr) minmax(64px, auto) !important;
   }
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded):not(:has(#curEditTextarea)) {
     grid-template-rows: auto auto !important;
   }
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost):not([hidden]):not(.displayNone) {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded):not(:has(#curEditTextarea)) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost):not([hidden]):not(.displayNone) {
     visibility: visible !important;
   }
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .name_text {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded):not(:has(#curEditTextarea)) .name_text {
     grid-column: 2 / 7 !important;
     min-width: 0 !important;
   }
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded):not(:has(#curEditTextarea)) .mes_buttons {
     grid-column: 7 / -1 !important;
     grid-row: 1 / 3 !important;
     display: flex !important;
@@ -23669,10 +23669,10 @@ html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-
   }
   /* The native handler changes display before the observer adopts the actions.
      Hide the collapsed controls immediately, not 35ms later. */
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons > :not(.extraMesButtons) {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded):not(:has(#curEditTextarea)) .mes_buttons > :not(.extraMesButtons) {
     display: none !important;
   }
-  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons:is([style*="flex"], [style*="block"]))):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons > .extraMesButtons {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c) #chat .mes:is(.slk-mes-expanded):not(:has(#curEditTextarea)) .mes_buttons > .extraMesButtons {
     display: flex !important;
     flex: 1 1 0 !important;
     flex-flow: row nowrap !important;
@@ -24513,7 +24513,7 @@ html body.slk-ui #left-nav-panel #slk-aitabs {
 
 /* v1.8.136 — group editor only, native actions and collapse states retained. */
 @media screen {
-html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k) #right-nav-panel[data-slk-view="group"]:has(#rm_group_submit:not([style*="display: none"]):not([style*="display:none"])) #rm_PinAndTabs, html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k) #right-nav-panel[data-slk-view="group"] #rm_PinAndTabs:not(:has(#rm_button_selected_ch h2:not(:empty))) {display:none!important;}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k) #right-nav-panel[data-slk-view="group"]:has(#rm_group_submit:not(.slk-inl-none)) #rm_PinAndTabs, html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k) #right-nav-panel[data-slk-view="group"] #rm_PinAndTabs:not(:has(#rm_button_selected_ch h2:not(:empty))) {display:none!important;}
 html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k) #right-nav-panel[data-slk-view="group"] #CharListButtonAndHotSwaps {min-height:40px!important;padding-bottom:0!important;margin:0!important;}
 html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k) #right-nav-panel[data-slk-view="group"] > .scrollableInner {padding-top:4px!important;}
 html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k) #right-nav-panel[data-slk-view="group"] #rm_group_chats_block {flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:0!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;width:100%!important;}
@@ -24779,14 +24779,14 @@ html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-
 html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block #tagList .tag_remove {flex:0 0 18px!important;margin:0!important;}
 html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block .form_create_bottom_buttons_block {grid-column:1/-1!important;grid-row:4!important;margin:2px 0 0!important;}
 /* Creation: name and More share the portrait column; tags use a full-width row. */
-html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not([style*="display: none"]):not([style*="display:none"])) {grid-template-columns:78px minmax(0,1fr)!important;grid-template-rows:auto auto auto auto auto!important;}
-html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not([style*="display: none"]):not([style*="display:none"])) > #name_div {grid-column:2!important;grid-row:1!important;min-width:0!important;width:100%!important;gap:2px!important;margin:0!important;padding:0!important;}
-html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not([style*="display: none"]):not([style*="display:none"])) #name_div .extension_token_counter {display:none!important;}
-html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not([style*="display: none"]):not([style*="display:none"])) #avatar_div_div {width:78px!important;height:78px!important;min-width:78px!important;max-width:78px!important;min-height:78px!important;max-height:78px!important;}
-html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not([style*="display: none"]):not([style*="display:none"])) #avatar_controls > label[for="char-management-dropdown"] {grid-row:2!important;}
-html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not([style*="display: none"]):not([style*="display:none"])) #tags_div .tag_controls {grid-column:1/-1!important;grid-row:3!important;}
-html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not([style*="display: none"]):not([style*="display:none"])) #tagList {grid-row:4!important;}
-html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not([style*="display: none"]):not([style*="display:none"])) .form_create_bottom_buttons_block {grid-row:5!important;}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not(.slk-inl-none)) {grid-template-columns:78px minmax(0,1fr)!important;grid-template-rows:auto auto auto auto auto!important;}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not(.slk-inl-none)) > #name_div {grid-column:2!important;grid-row:1!important;min-width:0!important;width:100%!important;gap:2px!important;margin:0!important;padding:0!important;}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not(.slk-inl-none)) #name_div .extension_token_counter {display:none!important;}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not(.slk-inl-none)) #avatar_div_div {width:78px!important;height:78px!important;min-width:78px!important;max-width:78px!important;min-height:78px!important;max-height:78px!important;}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not(.slk-inl-none)) #avatar_controls > label[for="char-management-dropdown"] {grid-row:2!important;}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not(.slk-inl-none)) #tags_div .tag_controls {grid-column:1/-1!important;grid-row:3!important;}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not(.slk-inl-none)) #tagList {grid-row:4!important;}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="edit"] #rm_ch_create_block #avatar-and-name-block:has(> #name_div:not(.displayNone):not([hidden]):not(.slk-inl-none)) .form_create_bottom_buttons_block {grid-row:5!important;}
 }
 @media screen and (max-width:1000px) {
 html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v) #right-nav-panel[data-slk-view="group"] > .scrollableInner {padding-bottom:calc(var(--slk-footer-h,80px) + 20px)!important;}

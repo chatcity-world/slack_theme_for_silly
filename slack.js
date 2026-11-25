@@ -1617,7 +1617,11 @@ function syncChatHead() {
         (ctx.groupId !== undefined && ctx.groupId !== null && String(ctx.groupId) !== '') ||
         (ctx.characterId !== undefined && ctx.characterId !== null && Number(ctx.characterId) >= 0)
     ));
-    const inChat = !chat.querySelector('.welcomePanel') && (hasMessages || hasActiveTarget);
+    const hasWelcome = !!chat.querySelector('.welcomePanel');
+    // v1.8.169: CSS used body:has(#chat .welcomePanel), which re-scanned the whole
+    // page on every message insertion. A plain class is checked once here.
+    if (document.body.classList.contains('slk-has-welcome') !== hasWelcome) document.body.classList.toggle('slk-has-welcome', hasWelcome);
+    const inChat = !hasWelcome && (hasMessages || hasActiveTarget);
     if (document.body.classList.contains('slk-in-chat') !== inChat) document.body.classList.toggle('slk-in-chat', inChat);
     if (!inChat) return;
     const head = document.getElementById('slk-chat-head');
@@ -5482,6 +5486,92 @@ function slkConnectPromptManager() {
             }
             roots.forEach(classify);
         }, document.documentElement, {subtree:true, childList:true, attributes:true, attributeFilter:['class']});
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
+    else start();
+})();
+
+// v1.8.169 — 채팅방 진입 속도: :has() 안의 [style*=] / [class*=] 제거용 상태 클래스.
+// 인라인 style 은 문서 어디서든 수시로 바뀌므로, :has() 안에서 style 속성을 보면
+// 브라우저가 매번 화면 전체 스타일을 다시 계산합니다(메시지 100개 기준 수 초).
+// 대신 필요한 몇 개 요소에만 slk-inl-* 클래스를 달고, CSS 는 이 클래스를 봅니다.
+(function slkInlineStateMirror() {
+    const TARGETS = [
+        '[data-tg-samplers]',
+        '#completion_prompt_manager_popup_inspect',
+        '#rm_group_submit',
+        '#name_div',
+        '#user_avatar_block .menu_button',
+        '#WorldInfo input[name="depth"]',
+        '#dialogue_del_mes',
+    ].join(',');
+    const SWITCH_NEXT = '[class*="slider"],[class*="track"],[class*="switch"],[class*="toggle"]';
+    const TRACK_NEXT = '[class*="slider"],[class*="track"]';
+    const SWITCH_LABEL = 'label:is([class*="switch"],[class*="toggle"])';
+
+    function mirror(el) {
+        const display = (el.style.display || '').trim();
+        el.classList.toggle('slk-inl-none', display === 'none');
+        el.classList.toggle('slk-inl-flex', display === 'flex');
+        el.classList.toggle('slk-inl-block', display === 'block');
+        el.classList.toggle('slk-inl-vhidden', el.style.visibility === 'hidden');
+        if (el.id === 'dialogue_del_mes') {
+            document.body?.classList.toggle('slk-del-mode', !!display && display !== 'none');
+        }
+    }
+    function tagSwitches(root) {
+        if (!root?.querySelectorAll) return;
+        const inputs = root.matches?.('input[type="checkbox"]') ? [root] : root.querySelectorAll('input[type="checkbox"]');
+        for (const input of inputs) {
+            const next = input.nextElementSibling;
+            input.classList.toggle('slk-x-pre-switch', !!next?.matches(SWITCH_NEXT));
+            input.classList.toggle('slk-x-pre-track', !!next?.matches(TRACK_NEXT));
+            const label = input.parentElement;
+            if (label?.matches(SWITCH_LABEL)) label.classList.add('slk-x-switch-label');
+        }
+    }
+    function scan(node) {
+        if (!(node instanceof Element)) return;
+        if (node.matches(TARGETS)) mirror(node);
+        node.querySelectorAll(TARGETS).forEach(mirror);
+        const ext = node.closest('#rm_extensions_block') || (node.id === 'rm_extensions_block' ? node : node.querySelector('#rm_extensions_block'));
+        if (ext) tagSwitches(node.closest('#rm_extensions_block') ? node : ext);
+    }
+
+    // SillyTavern 자체 CSS 의 두 규칙도 같은 문제가 있어, 뜻은 그대로 두고 클래스 기반으로 바꿉니다.
+    const NATIVE = [
+        [s => s.includes('.last_mes:has(> .del_checkbox[style*='),
+         'body.documentstyle.slk-del-mode #chat .last_mes .mes_text'],
+        [s => s.startsWith('#adaptive_p_block:has(') && s.includes('[style*='),
+         '#adaptive_p_block:has(.slk-inl-none[data-tg-samplers="adaptive_target"]):has(.slk-inl-none[data-tg-samplers="adaptive_decay"])'],
+    ];
+    function patchNativeRules() {
+        const walk = (rules) => {
+            for (const rule of rules) {
+                if (rule instanceof CSSStyleRule) {
+                    for (const [test, next] of NATIVE) if (test(rule.selectorText)) rule.selectorText = next;
+                } else if (rule.cssRules) walk(rule.cssRules);
+            }
+        };
+        for (const sheet of document.styleSheets) {
+            try { walk(sheet.cssRules); } catch { /* cross-origin sheet */ }
+        }
+    }
+
+    function start() {
+        if (!SLK_UI_SETTINGS.enabled) return;
+        scan(document.body);
+        patchNativeRules();
+        setTimeout(patchNativeRules, 3000);
+        slkObserveOutsideChat(records => {
+            for (const r of records) {
+                if (r.type === 'attributes') {
+                    if (r.target instanceof Element && r.target.matches(TARGETS)) mirror(r.target);
+                    continue;
+                }
+                for (const node of r.addedNodes) scan(node);
+            }
+        }, document.documentElement, {subtree:true, childList:true, attributes:true, attributeFilter:['style']});
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
     else start();

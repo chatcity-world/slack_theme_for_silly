@@ -62,10 +62,10 @@
     el.textContent = `:root { --slk-loader-icon:url(${JSON.stringify(icon)}); --slk-first-splash-icon:url(${JSON.stringify(firstIcon)}) !important; }
     @layer slk-splash-chrome {
  @media screen and (max-width:1000px) {
-    :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)), :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)) > body, html:has(dialog[open] #loader), html:has(dialog[open] #loader) > body { background:#fff!important; color-scheme:only light!important; }
-    :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader { position:fixed!important; inset:0!important; width:100%!important; height:100%!important; margin:0!important; background-color:#fff!important; color-scheme:only light!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }
-    html:has(dialog[open] #loader) dialog[open]:has(#loader) { background:#fff!important; color-scheme:only light!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }
-    html:has(dialog[open] #loader) dialog[open] #loader #load-spinner, :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner, #slk-splash-chrome-sample {
+    html.slk-splash-preloader, html.slk-splash-preloader > body, html.slk-splash-loader, html.slk-splash-loader > body { background:#fff!important; color-scheme:only light!important; }
+    html.slk-splash-preloader #preloader { position:fixed!important; inset:0!important; width:100%!important; height:100%!important; margin:0!important; background-color:#fff!important; color-scheme:only light!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }
+    html.slk-splash-loader dialog[open]:has(#loader) { background:#fff!important; color-scheme:only light!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }
+    html.slk-splash-loader dialog[open] #loader #load-spinner, html.slk-splash-preloader #preloader #load-spinner, #slk-splash-chrome-sample {
       display:block!important; position:fixed!important; inset:0 0 auto 0!important;
       width:100%!important; min-width:0!important; max-width:none!important;
       height:max(12px,env(safe-area-inset-top,0px))!important; min-height:12px!important; max-height:none!important;
@@ -76,9 +76,9 @@
       backdrop-filter:none!important; -webkit-backdrop-filter:none!important;
       overflow:hidden!important; pointer-events:none!important; z-index:2147483646!important;
     }
-    html:has(dialog[open] #loader) #loader #load-spinner::before, html:has(dialog[open] #loader) #loader #load-spinner::after,
-    :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner::before, :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner::after,
-    html:has(dialog[open] #loader) #loader #load-spinner > *, :is(html:has(> body:not(.slk-ui) #preloader:not([hidden],.hidden,.displayNone,[style*="display: none"],[style*="display:none"],[style*="visibility: hidden"],[style*="visibility:hidden"],[style*="opacity: 0;"],[style*="opacity:0;"])),html:has(#preloader > #slk-splash-chrome-sample)) #preloader #load-spinner > * {display:none!important;content:none!important;}
+    html.slk-splash-loader #loader #load-spinner::before, html.slk-splash-loader #loader #load-spinner::after,
+    html.slk-splash-preloader #preloader #load-spinner::before, html.slk-splash-preloader #preloader #load-spinner::after,
+    html.slk-splash-loader #loader #load-spinner > *, html.slk-splash-preloader #preloader #load-spinner > * {display:none!important;content:none!important;}
  }
  @media screen and (min-width:1001px) {#slk-splash-chrome-sample {display:none!important;}}
   html body #preloader {
@@ -117,6 +117,11 @@
         const modal = [...document.querySelectorAll('dialog[open]')].find(el => el.querySelector('#loader') && visible(el));
         const preloader = document.getElementById('preloader');
         const parent = enabled() && (modal || (visible(preloader) ? preloader : null));
+        // v1.8.169: classes instead of html:has(...) so message insertions do not
+        // make the browser re-scan the whole page for the splash selectors.
+        const root = document.documentElement;
+        root.classList.toggle('slk-splash-loader', !!(parent && modal));
+        root.classList.toggle('slk-splash-preloader', !!(parent && !modal));
         if (parent) {
             if (!surface) {
                 surface = document.createElement('div');
