@@ -24369,8 +24369,8 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
         position: absolute !important;
         right: -2px !important;
         bottom: -2px !important;
-        width: 18px !important;
-        height: 18px !important;
+        width: 20px !important;
+        height: 20px !important;
         box-sizing: border-box !important;
         border: 2px solid #fff !important;
         border-radius: 50% !important;
