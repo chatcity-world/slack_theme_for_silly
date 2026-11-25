@@ -2477,8 +2477,8 @@ if (SLK_UI_SETTINGS.enabled) {
                     const body = dialog.querySelector('.popup-body');
                     const content = body?.querySelector('.popup-content');
                     if (toolbar && body && content) {
-                        toolbar.classList.add('slk-manager-toolbar');
-                        body.insertBefore(toolbar, content);
+                        if (!toolbar.classList.contains('slk-manager-toolbar')) toolbar.classList.add('slk-manager-toolbar');
+                        if (toolbar.parentElement !== body || toolbar.nextElementSibling !== content) body.insertBefore(toolbar, content);
                     }
                 }
             }
@@ -2550,7 +2550,7 @@ if (SLK_UI_SETTINGS.enabled) {
         if (!overridden.has(el)) overridden.set(el, new Map());
         const original = overridden.get(el);
         if (!original.has(key)) original.set(key, [el.style.getPropertyValue(key), el.style.getPropertyPriority(key)]);
-        el.style.setProperty(key, value, 'important');
+        if (el.style.getPropertyValue(key) !== value || el.style.getPropertyPriority(key) !== 'important') el.style.setProperty(key, value, 'important');
     };
     function restore() {
         pickerObserver?.disconnect();
@@ -3138,6 +3138,44 @@ function slkObserveMessageChrome(chat, callback) {
     const chrome = '.ch_name,.mesAvatarWrapper,.swipeRightBlock,.swipe_left,.timestamp';
     const groupSize = 32;
     let batch = [], scheduled = false, cleanupQueued = false;
+    // v1.8.164: loading history must not monopolize the main thread.
+    // Keep all messages eligible (no visibility gate or HTML virtualization).
+    const waiting = new Set();
+    let attachTimer = null;
+    function scheduleAttach() {
+        if (attachTimer === null && waiting.size) attachTimer = setTimeout(drainAttach, 0);
+    }
+    function drainAttach() {
+        attachTimer = null;
+        const deadline = performance.now() + 4;
+        const added = [];
+        // Newest first: the bottom of a newly loaded chat is normally visible.
+        // Every message is processed, including history outside the viewport.
+        let count = 0;
+        for (const mes of waiting) {
+            waiting.delete(mes);
+            if (chat.contains(mes) && !entries.has(mes)) { attach(mes); added.push(mes); }
+            if (++count >= 12 || performance.now() >= deadline) break;
+        }
+        if (added.length) emit([{type:'childList', target:chat, addedNodes:added, removedNodes:[]}]);
+        if (waiting.size) attachTimer = setTimeout(drainAttach, 16);
+    }
+    function enqueueMessages(nodes) {
+        const found = [];
+        for (const node of nodes) {
+            if (node.nodeType !== 1) continue;
+            if (node.matches('.mes')) found.push(node);
+            else for (const mes of node.querySelectorAll('.mes')) found.push(mes);
+        }
+        // Place new arrivals before unprocessed history, without duplicating work.
+        if (found.length) {
+            const previous = [...waiting];
+            waiting.clear();
+            for (let i = found.length - 1; i >= 0; i--) if (!entries.has(found[i])) waiting.add(found[i]);
+            for (const mes of previous) waiting.add(mes);
+            scheduleAttach();
+        }
+    }
     const emit = records => {
         if (!records.length) return;
         for (const record of records) batch.push(record);
@@ -3152,7 +3190,7 @@ function slkObserveMessageChrome(chat, callback) {
         });
     };
     function roots(mes) {
-        const block = mes.querySelector(':scope > .mes_block');
+        const block = Array.from(mes.children).find(el => el.classList.contains('mes_block'));
         const nodes = new Map([[mes, true]]);
         if (block) nodes.set(block, true);
         for (const el of mes.children) if (el.matches(chrome)) nodes.set(el, false);
@@ -3167,11 +3205,10 @@ function slkObserveMessageChrome(chat, callback) {
         dirty.add(group);
         if (cleanupQueued) return;
         cleanupQueued = true;
-        queueMicrotask(() => {
-            cleanupQueued = false;
+        setTimeout(function rebindDirty() {
+            const deadline = performance.now() + 4;
             for (const g of dirty) {
-                // Preserve undelivered records before disconnecting. Only a group
-                // which lost a root is rebound; unrelated history is untouched.
+                dirty.delete(g);
                 const pending = g.observer.takeRecords();
                 if (pending.length) process(g, pending);
                 g.observer.disconnect();
@@ -3179,10 +3216,13 @@ function slkObserveMessageChrome(chat, callback) {
                     const entry = entries.get(mes);
                     if (entry) for (const [node, shell] of entry.nodes) observe(g, node, shell);
                 }
+                dirty.delete(g); // the current roots have just been rebound
                 if (!g.messages.size) groups.delete(g);
+                if (performance.now() >= deadline) break;
             }
-            dirty.clear();
-        });
+            if (dirty.size) setTimeout(rebindDirty, 16);
+            else cleanupQueued = false;
+        }, 0);
     }
     function refresh(mes, entry) {
         const next = roots(mes);
@@ -3226,26 +3266,25 @@ function slkObserveMessageChrome(chat, callback) {
         group.messages.add(mes);
         for (const [node, shell] of entry.nodes) observe(group, node, shell);
     }
-    function discover(node) {
-        if (node.nodeType !== 1) return;
-        if (node.matches('.mes')) attach(node);
-        else node.querySelectorAll('.mes').forEach(attach);
-    }
-    chat.querySelectorAll('.mes').forEach(attach);
+    enqueueMessages(chat.children);
     new MutationObserver(records => {
         let removed = false;
+        const added = [];
         for (const r of records) {
-            for (const n of r.addedNodes) discover(n);
+            for (const n of r.addedNodes) added.push(n);
             if (r.removedNodes.length) removed = true;
         }
-        if (removed) for (const [mes, entry] of entries) {
-            if (!chat.contains(mes)) {
-                entry.group.messages.delete(mes);
-                entries.delete(mes);
-                markDirty(entry.group);
+        if (removed) {
+            for (const mes of waiting) if (!chat.contains(mes)) waiting.delete(mes);
+            for (const [mes, entry] of entries) {
+                if (!chat.contains(mes)) {
+                    entry.group.messages.delete(mes);
+                    entries.delete(mes);
+                    markDirty(entry.group);
+                }
             }
         }
-        emit(records);
+        enqueueMessages(added);
     }).observe(chat, {childList:true});
 }
 
@@ -3288,7 +3327,6 @@ function slkObserveMessageChrome(chat, callback) {
             if (stamp) pending.add(stamp);
             else if (node.nodeType === 1) el.querySelectorAll('.timestamp').forEach(x => pending.add(x));
         };
-        chat.querySelectorAll('.mes .timestamp').forEach(update);
         slkObserveMessageChrome(chat, records => {
             for (const r of records) {
                 if (r.type === 'attributes') continue;
@@ -3299,10 +3337,15 @@ function slkObserveMessageChrome(chat, callback) {
                 for (const node of r.addedNodes) collect(node);
             }
             if (!pending.size || t) return;
-            t = setTimeout(() => {
+            t = setTimeout(function drainDates() {
                 t = null;
-                for (const el of pending) if (chat.contains(el) && el.closest('.mes')) update(el);
-                pending.clear();
+                const deadline = performance.now() + 4;
+                for (const el of pending) {
+                    pending.delete(el);
+                    if (chat.contains(el) && el.closest('.mes')) update(el);
+                    if (performance.now() >= deadline) break;
+                }
+                if (pending.size) t = setTimeout(drainDates, 16);
             }, 80);
         });
     };
@@ -3428,28 +3471,64 @@ function slkObserveChatContent(callback) {
         slkObserveOutsideChat(wait, document.documentElement, {childList:true,subtree:true});
         return;
     }
-    slkChatContentObserver = new MutationObserver(records => {
-        // v1.8.157: ordinary prose/streamed markup has no controls to decorate.
-        // Filter once before calling both consumers, retaining controls inserted
-        // by status boxes or other extensions, including nested controls.
-        const controls = 'input[type="range"],.menu_button,.drawer-opener';
-        const relevant = [];
-        for (const r of records) {
-            if (r.type === 'characterData') {
-                if (r.target.parentElement?.closest('.menu_button,.drawer-opener')) relevant.push(r);
-                continue;
+    // v1.8.164: split discovery of newly inserted markup into short tasks.
+    // Consumers receive only the actual supported controls, not the entire message.
+    const controls = 'input[type="range"],.menu_button,.drawer-opener';
+    const pendingNodes = new Set();
+    const pendingButtons = new Set();
+    let contentTimer = null;
+    function scheduleContent() {
+        if (contentTimer === null && (pendingNodes.size || pendingButtons.size)) contentTimer = setTimeout(drainContent, 0);
+    }
+    function drainContent() {
+        contentTimer = null;
+        const deadline = performance.now() + 4;
+        const found = new Set();
+        // Process the newest inserted roots first; detached nodes are discarded.
+        let count = 0;
+        for (const n of pendingNodes) {
+            pendingNodes.delete(n);
+            if (chat.contains(n)) {
+                if (n.matches(controls)) found.add(n);
+                for (const el of n.querySelectorAll(controls)) found.add(el);
             }
-            if (r.target.closest?.('slk-button-label,[data-slk-button-label]')) continue;
-            if (r.target.closest?.('.menu_button,.drawer-opener')) { relevant.push(r); continue; }
-            // Only the added nodes are inspected. Do not rescan their message.
-            const addedNodes = Array.from(r.addedNodes).filter(n => n.nodeType === 1 &&
-                (n.matches(controls) || n.querySelector(controls)));
-            if (addedNodes.length) relevant.push({type:r.type, target:r.target, addedNodes});
+            if (++count >= 12 || performance.now() >= deadline) break;
         }
-        if (!relevant.length) return;
-        for (const fn of slkChatContentSubscribers) {
-            try { fn(relevant); } catch (error) { console.error('[Slack UI] chat controls', error); }
+        for (const el of pendingButtons) {
+            pendingButtons.delete(el);
+            if (chat.contains(el)) found.add(el);
+            if (performance.now() >= deadline) break;
         }
+        if (found.size) {
+            const relevant = [{type:'childList', target:chat, addedNodes:[...found]}];
+            for (const fn of slkChatContentSubscribers) {
+                try { fn(relevant); } catch (error) { console.error('[Slack UI] chat controls', error); }
+            }
+        }
+        if (pendingNodes.size || pendingButtons.size) contentTimer = setTimeout(drainContent, 16);
+    }
+    slkChatContentObserver = new MutationObserver(records => {
+        const added = new Set();
+        for (const r of records) {
+            const el = r.target.nodeType === 1 ? r.target : r.target.parentElement;
+            if (el?.closest('slk-button-label,[data-slk-button-label]')) continue;
+            const button = el?.closest('.menu_button,.drawer-opener');
+            if (button) pendingButtons.add(button);
+            if (r.type !== 'childList') continue;
+            for (const n of r.addedNodes) if (n.nodeType === 1 && !n.matches('slk-button-label')) added.add(n);
+        }
+        // Avoid scanning nested insertions when their parent is already queued.
+        if (added.size) {
+            const previous = [...pendingNodes];
+            pendingNodes.clear();
+            for (const n of [...added].reverse()) {
+                let parent = n.parentElement;
+                while (parent && parent !== chat && !added.has(parent)) parent = parent.parentElement;
+                if (!added.has(parent)) pendingNodes.add(n);
+            }
+            for (const n of previous) if (chat.contains(n)) pendingNodes.add(n);
+        }
+        scheduleContent();
     });
     slkChatContentObserver.observe(chat, {childList:true,subtree:true,characterData:true});
 }
@@ -3702,8 +3781,12 @@ function slkObserveChatContent(callback) {
             // Closed, untouched menus already have the correct native DOM.
             // Only opened menus and previously rearranged menus need work.
             if (!mes.classList.contains('slk-mes-expanded') && !states.get(mes)?.origins.size) {
-                const extra = mes.querySelector(':scope > .mes_block > .ch_name > .mes_buttons > .extraMesButtons');
-                if (!extra || !mobile() || !isOpen(extra)) return;
+                let extra = mes;
+                for (const cls of ['mes_block','ch_name','mes_buttons','extraMesButtons']) {
+                    extra = Array.from(extra.children).find(el => el.classList.contains(cls));
+                    if (!extra) return;
+                }
+                if (!mobile() || !isOpen(extra)) return;
             }
             pending.add(mes);
         };
@@ -3719,7 +3802,6 @@ function slkObserveChatContent(callback) {
         };
         const schedule = () => { if (pending.size && timer === null) timer = setTimeout(flush, 35); };
         const all = () => { chat.querySelectorAll('.mes').forEach(queue); schedule(); };
-        all();
         slkObserveMessageChrome(chat, records => {
             for (const r of records) {
                 const el = r.target;
@@ -3827,13 +3909,15 @@ function slkObserveChatContent(callback) {
 (function slkGroupNativeSwipeControls() {
     const isEnabled = () => document.body.classList.contains('slk-ui');
     const syncMessage = (mes, enabled) => {
-        const mesBlock = mes.querySelector(':scope > .mes_block');
-        const holder = mes.querySelector(':scope > .swipeRightBlock');
+        const direct = Array.from(mes.children);
+        const mesBlock = direct.find(el => el.classList.contains('mes_block'));
+        const holder = direct.find(el => el.classList.contains('swipeRightBlock'));
         if (!mesBlock || !holder) return;
-        const left = mes.querySelector(':scope > .swipe_left') ||
-            holder.querySelector(':scope > .swipe_left');
-        const counter = holder.querySelector(':scope > .swipes-counter');
-        const right = holder.querySelector(':scope > .swipe_right');
+        const controls = Array.from(holder.children);
+        const left = direct.find(el => el.classList.contains('swipe_left')) ||
+            controls.find(el => el.classList.contains('swipe_left'));
+        const counter = controls.find(el => el.classList.contains('swipes-counter'));
+        const right = controls.find(el => el.classList.contains('swipe_right'));
         if (!left || !counter || !right) return;
 
         if (enabled) {
@@ -3856,7 +3940,6 @@ function slkObserveChatContent(callback) {
     const start = () => {
         const chat = document.getElementById('chat');
         if (!chat) { setTimeout(start, 500); return; }
-        sync();
         slkObserveMessageChrome(chat, records => {
             const changed = new Set();
             for (const record of records) {
@@ -5047,8 +5130,14 @@ function slkConnectPromptManager() {
     }
     function flush() {
         queued = false;
-        if (mobile.matches && document.body.classList.contains('slk-ui')) for (const el of pending) sync(el);
-        pending.clear();
+        if (!mobile.matches || !document.body.classList.contains('slk-ui')) { pending.clear(); return; }
+        const deadline = performance.now() + 4;
+        for (const el of pending) {
+            pending.delete(el);
+            sync(el);
+            if (performance.now() >= deadline) break;
+        }
+        if (pending.size) { queued = true; requestAnimationFrame(flush); }
     }
     function enqueue(root) {
         if (!root || !mobile.matches) return;
