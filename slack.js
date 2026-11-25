@@ -1040,7 +1040,8 @@ function setupComposer() {
         const open = pc || (focused && !keyboardDismissed && (keyboardVisible || pendingFocus));
         const content = ta.value;
         const firstLine = content.split(/\r\n|\n|\r/, 1)[0];
-        preview.textContent = firstLine + (/[\r\n]/.test(content) ? '…' : '');
+        const nextPreview = firstLine + (/[\r\n]/.test(content) ? '…' : '');
+        if (preview.textContent !== nextPreview) preview.textContent = nextPreview;
         form.classList.toggle('slk-compose-open', open);
         form.classList.toggle('slk-compose-previewing', !open && content.length > 0);
         document.body.classList.toggle('slk-composing', open && !pc);
@@ -1193,6 +1194,11 @@ function stContext() {
     }
 }
 
+function slkCloseChat() {
+    // Both header buttons use the same native close-chat action.
+    document.getElementById('option_close_chat')?.click();
+}
+
 function buildChatHead() {
     const header = document.getElementById('slk-header');
     if (!header || document.getElementById('slk-chat-head')) return;
@@ -1203,7 +1209,7 @@ function buildChatHead() {
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </button>
         <button id="slk-chat-title" type="button" title="캐릭터 정보">
-            <img class="slk-ch-av" alt="" hidden />
+            <span class="slk-ch-avatar-wrap" hidden><img class="slk-ch-av" alt="" hidden /></span>
             <span class="slk-ch-text">
                 <span class="slk-ch-name"></span>
                 <span class="slk-ch-count">${CHAT_BUBBLE_SVG}<span class="slk-ch-n">0</span></span>
@@ -1212,11 +1218,7 @@ function buildChatHead() {
     `;
     header.prepend(head);
 
-    head.querySelector('#slk-chat-back').addEventListener('click', () => {
-        // ST의 '채팅 닫기' 메뉴와 같은 동작
-        const btn = document.querySelector('#option_close_chat:not(.displayNone)') || document.querySelector('#option_close_chat');
-        btn?.click();
-    });
+    head.querySelector('#slk-chat-back').addEventListener('click', slkCloseChat);
     head.querySelector('#slk-chat-title').addEventListener('click', () => {
         if (typeof DRAWERS !== 'undefined' && DRAWERS.character) navigateSlackPanel(DRAWERS.character);
     });
@@ -1265,17 +1267,18 @@ function syncChatHead() {
     if (!head) return;
     const { name, avatar, count } = chatInfo();
     const nameEl = head.querySelector('.slk-ch-name');
-    if (nameEl.textContent !== name) nameEl.textContent = name;
     const img = head.querySelector('.slk-ch-av');
-    if (avatar) {
-        if (img.getAttribute('src') !== avatar) img.setAttribute('src', avatar);
-        if (img.hidden) img.hidden = false;
-    } else {
-        if (!img.hidden) img.hidden = true;
-    }
+    const wrap = head.querySelector('.slk-ch-avatar-wrap');
     const countEl = head.querySelector('.slk-ch-n');
     const countText = Number(count).toLocaleString();
-    if (countEl.textContent !== countText) countEl.textContent = countText;
+    let changed = false;
+    if (nameEl.textContent !== name) { nameEl.textContent = name; changed = true; }
+    if (avatar && img.getAttribute('src') !== avatar) { img.setAttribute('src', avatar); changed = true; }
+    if (img.hidden !== !avatar) { img.hidden = !avatar; changed = true; }
+    if (wrap.hidden !== !avatar) { wrap.hidden = !avatar; changed = true; }
+    if (countEl.textContent !== countText) { countEl.textContent = countText; changed = true; }
+    // Reuse the existing header sync; never scan message avatars to paint presence.
+    if (changed) window.dispatchEvent(new Event('slk-chat-head-changed'));
 }
 
 
@@ -1370,6 +1373,7 @@ function slkWatchStatusBar() {
     new MutationObserver(records => {
         let changed = false;
         for (const r of records) for (const n of [...r.addedNodes, ...r.removedNodes]) {
+            if (r.target.closest?.('#chat')) continue;
             if (n.nodeType !== 1) continue;
             const matches = n.matches(loaderSelector) ? [n] : [...n.querySelectorAll(loaderSelector)];
             if (!matches.length) continue;
@@ -1515,6 +1519,8 @@ function watchHeaderCompact() {
         const t = e.target;
         if (!(t instanceof Element) || t.matches('textarea, select, input')) return;
         if (!t.closest(SCROLL_ROOTS)) return;
+        if (t.id === 'chat' && document.body.dataset.slkHeaderView === 'chat' &&
+            document.body.classList.contains('slk-header-compact') === (t.scrollTop > 10)) return;
         // Coalesce scroll work, preserving the original active-surface filter.
         scrollTargets.add(t);
         if (scrollFrame) return;
@@ -2074,7 +2080,7 @@ if (SLK_UI_SETTINGS.enabled) {
         const observer = new MutationObserver(changes => {
             if (changes.some(change =>
                 (change.type === 'attributes' && change.attributeName === 'open') ||
-                (change.type === 'childList' && (relevant(change.addedNodes) || relevant(change.removedNodes))))) {
+                (change.type === 'childList' && !change.target.closest?.('#chat') && (relevant(change.addedNodes) || relevant(change.removedNodes))))) {
                 schedule();
             }
         });
@@ -2286,7 +2292,12 @@ if (SLK_UI_SETTINGS.enabled) {
         const $ = jq();
         if ($) $(sel).on('change.slkdd', () => sync(true));
         new MutationObserver(() => sync(true)).observe(sel, { childList: true, subtree: true, attributes: true });
-        setInterval(() => { if (wrap.offsetParent) sync(false); }, 700);
+        setInterval(() => {
+            if (document.hidden || !wrap.isConnected) return;
+            const drawer = wrap.closest('.drawer-content');
+            if (drawer && (drawer.classList.contains('slk-nav-hidden') || drawer.classList.contains('closedDrawer'))) return;
+            if (wrap.offsetParent) sync(false);
+        }, 700);
         sync(true);
         return true;
     };
@@ -2390,6 +2401,8 @@ if (SLK_UI_SETTINGS.enabled) {
         scan();
         let t = null;
         new MutationObserver(records => {
+            records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
+            if (!records.length) return;
             if (!records.some(r => r.target.closest?.('#WorldInfo') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.id === 'WorldInfo' || n.querySelector('#WorldInfo'))))) return;
             if (t) return;
             t = setTimeout(() => { t = null; scan(); }, 120);
@@ -2405,9 +2418,19 @@ if (SLK_UI_SETTINGS.enabled) {
     const SPIN = '.fa-spin, .fa-spinner, .fa-circle-notch, .fa-pulse, [class*="spinner"], [class*="loading"], [class*="loader"]';
     const isProgress = (el) => !!el.querySelector(SPIN) || /중입니다|중이에요|\.\.\.\s*$|…\s*$/.test((el.textContent || '').trim());
 
+    // A text action is not an icon-only close button. Keep the original action node/listener.
+    const markTextActions = (notice) => {
+        for (const action of notice.querySelectorAll('button, a, [role="button"], [class*="cancel"], [class*="undo"], .close')) {
+            const text = (action.textContent || '').trim().replace(/\s+/g, ' ');
+            if (/^(?:실행\s*취소|번역\s*취소|취소|undo|cancel(?: translation)?|abort|stop)$/i.test(text)) {
+                action.classList.add('slk-notice-text-action');
+            }
+        }
+    };
     // (1) 고정 위치의 작은 진행 알림 찾기 (toast-container 바깥)
     const markNotices = () => {
         if (!document.body || !document.body.classList.contains('slk-ui')) return;
+        document.querySelectorAll('.slk-notice, #toast-container > div').forEach(markTextActions);
         document.querySelectorAll(SPIN).forEach(sp => {
             if (sp.closest('#toast-container, .slk-notice, #send_form, #chat .mes, dialog, #slk-header, #slk-mobile-footer')) return;
             let el = sp.parentElement, hops = 0;
@@ -2417,6 +2440,7 @@ if (SLK_UI_SETTINGS.enabled) {
                     const r = el.getBoundingClientRect();
                     if (r.height > 0 && r.height < 180 && r.width < innerWidth && (el.textContent || '').trim().length < 240) {
                         el.classList.add('slk-notice');
+                        markTextActions(el);
                     }
                     return;
                 }
@@ -2440,7 +2464,7 @@ if (SLK_UI_SETTINGS.enabled) {
         if (!document.body || !document.body.classList.contains('slk-ui')) return;
         const toast = ev.target.closest && ev.target.closest('#toast-container > div');
         if (!toast || isProgress(toast)) return;
-        if (ev.target.closest('a, input, select, textarea') && !ev.target.closest('.toast-close-button')) return;
+        if (ev.target.closest('a, button, input, select, textarea, [role="button"], .slk-notice-text-action') && !ev.target.closest('.toast-close-button')) return;
         const $ = window.jQuery || window.$;
         if (window.toastr && $) { window.toastr.clear($(toast), { force: true }); }
         setTimeout(() => {
@@ -2484,7 +2508,7 @@ if (SLK_UI_SETTINGS.enabled) {
     const start = () => {
         scan();
         new MutationObserver(records => {
-            if (records.some(r => r.target.closest?.('#toast-container') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.id === 'toast-container' || n.querySelector('#toast-container'))))) scan();
+            if (records.some(r => !r.target.closest?.('#chat') && (r.target.closest?.('#toast-container') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.id === 'toast-container' || n.querySelector('#toast-container')))))) scan();
         }).observe(document.documentElement, { childList: true, subtree: true });
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
@@ -2494,6 +2518,7 @@ if (SLK_UI_SETTINGS.enabled) {
 // v1.4.52 — 받은 확장 설정: 토글 스위치·세그먼트 버튼을 구조로 찾아서 슬랙 모양으로
 (function slkExtensionControls() {
     const ROOT = '#rm_extensions_block';
+    const trackedSwitches = new Map();
     const shown = (el) => !!el && el.getClientRects().length > 0;
     const isHiddenInput = (el) => {
         const cs = getComputedStyle(el);
@@ -2530,7 +2555,7 @@ if (SLK_UI_SETTINGS.enabled) {
             sync();
             input.addEventListener('change', sync);
             new MutationObserver(sync).observe(input, { attributes: true, attributeFilter: ['checked'] });
-            setInterval(() => { if (sw.isConnected) sync(); }, 700);
+            trackedSwitches.set(sw, sync);
             if (!input.closest('label')) {
                 sw.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); input.click(); });
             }
@@ -2575,9 +2600,20 @@ if (SLK_UI_SETTINGS.enabled) {
     const schedule = () => { if (!t) t = setTimeout(run, 150); };
     const start = () => {
         new MutationObserver(records => {
+            records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
+            if (!records.length) return;
             if (records.some(r => !r.target.closest?.('#chat'))) schedule();
         }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
         document.addEventListener('click', schedule, true);
+        setInterval(() => {
+            for (const sw of trackedSwitches.keys()) if (!sw.isConnected) trackedSwitches.delete(sw);
+            if (document.hidden || !trackedSwitches.size) return;
+            const root = document.querySelector(ROOT);
+            const drawer = root?.closest('.drawer-content');
+            if (drawer && (drawer.classList.contains('slk-nav-hidden') || drawer.classList.contains('closedDrawer'))) return;
+            if (!shown(root)) return;
+            for (const sync of trackedSwitches.values()) sync();
+        }, 700);
         schedule();
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
@@ -2629,6 +2665,7 @@ if (SLK_UI_SETTINGS.enabled) {
                 const el = r.target.nodeType === 1 ? r.target : r.target.parentElement;
                 const stamp = el?.closest('.timestamp');
                 if (stamp) pending.add(stamp);
+                if (!stamp && el?.closest('.mes_text, .mes_reasoning_details')) continue;
                 for (const node of r.addedNodes) collect(node);
             }
             if (!pending.size || t) return;
@@ -2694,17 +2731,29 @@ if (SLK_UI_SETTINGS.enabled) {
 
 // v1.4.60 — 슬라이더 채움(파란 부분) 표시
 (function slkRangeFill() {
+    const known = new Set();
+    const last = new WeakMap();
     const update = (el) => {
+        const key = `${el.min}|${el.max}|${el.value}`;
+        const prior = last.get(el);
+        if (prior?.key === key && el.style.getPropertyValue('--slk-fill') === prior.fill) return;
         const min = parseFloat(el.min || '0'), max = parseFloat(el.max || '100'), v = parseFloat(el.value || '0');
         const pct = max > min ? Math.min(100, Math.max(0, ((v - min) / (max - min)) * 100)) : 0;
         const fill = pct + '%';
+        last.set(el, {key, fill});
         if (el.style.getPropertyValue('--slk-fill') !== fill) el.style.setProperty('--slk-fill', fill);
     };
-    const all = () => document.querySelectorAll('input[type="range"]').forEach(update);
+    const all = () => {
+        for (const el of known) {
+            if (!el.isConnected) known.delete(el);
+            else update(el);
+        }
+    };
     document.addEventListener('input', (e) => { if (e.target?.type === 'range') update(e.target); }, true);
     document.addEventListener('change', (e) => { if (e.target?.type === 'range') update(e.target); }, true);
     // ST가 코드로 값을 바꾸는 경우(프리셋 불러오기 등)도 반영
     const start = () => {
+        document.querySelectorAll('input[type="range"]').forEach(el => known.add(el));
         all();
         setInterval(() => { if (!document.hidden) all(); }, 1500);
         document.addEventListener('visibilitychange', () => { if (!document.hidden) all(); });
@@ -2719,7 +2768,7 @@ if (SLK_UI_SETTINGS.enabled) {
             if (!pending.size || t) return;
             t = setTimeout(() => {
                 t = null;
-                for (const el of pending) if (el.isConnected) update(el);
+                for (const el of pending) if (el.isConnected) { known.add(el); update(el); }
                 pending.clear();
             }, 200);
         }).observe(document.body, { childList: true, subtree: true });
@@ -2818,26 +2867,15 @@ if (SLK_UI_SETTINGS.enabled) {
     // Remember the actual two header track heights while the ⋯ menu is closed.
     // The visible message title/timestamp vary by message, so a hardcoded
     // header height would make some menus jump when expanded.
-    const rowsPending = new Set();
     function rememberClosedHeaderRows(mes) {
-        if (mes.classList.contains('slk-mes-expanded')) return null;
+        if (mes.classList.contains('slk-mes-expanded')) return;
         const computed = getComputedStyle(mes).gridTemplateRows;
         const tracks = [...computed.matchAll(/(?:^|\s)(\d+(?:\.\d+)?)px(?=\s|$)/g)]
             .slice(0, 2).map(match => match[1] + 'px');
-        if (tracks.length !== 2) return null;
-        return tracks.join(' ');
-    }
-    function flushHeaderRows() {
-        // Read every affected grid before writing any custom property, to avoid
-        // synchronous style/layout invalidation between individual messages.
-        const measured = [];
-        for (const mes of rowsPending) {
-            if (!mes.isConnected) continue;
-            const value = rememberClosedHeaderRows(mes);
-            if (value && mes.style.getPropertyValue('--slk-actions-closed-rows') !== value) measured.push([mes,value]);
-        }
-        rowsPending.clear();
-        for (const [mes,value] of measured) mes.style.setProperty('--slk-actions-closed-rows', value);
+        if (tracks.length !== 2) return;
+        const value = tracks.join(' ');
+        if (mes.style.getPropertyValue('--slk-actions-closed-rows') !== value)
+            mes.style.setProperty('--slk-actions-closed-rows', value);
     }
     function sync(mes) {
         const box = mes.querySelector(':scope > .mes_block > .ch_name > .mes_buttons');
@@ -2855,7 +2893,6 @@ if (SLK_UI_SETTINGS.enabled) {
             }
             if (mes.classList.contains('slk-mes-expanded')) mes.classList.remove('slk-mes-expanded');
             if (mes.hasAttribute('data-slk-actions-flow')) mes.removeAttribute('data-slk-actions-flow');
-            rowsPending.add(mes);
             return;
         }
         states.set(mes, state);
@@ -2918,12 +2955,10 @@ if (SLK_UI_SETTINGS.enabled) {
             timer = null;
             const batch = [...pending]; pending.clear();
             for (const mes of batch) if (chat.contains(mes)) sync(mes);
-            flushHeaderRows();
         };
         const schedule = () => { if (pending.size && timer === null) timer = setTimeout(flush, 35); };
         const all = () => { chat.querySelectorAll('.mes').forEach(queue); schedule(); };
         chat.querySelectorAll('.mes').forEach(sync);
-        flushHeaderRows();
         new MutationObserver(records => {
             for (const r of records) {
                 const el = r.target;
@@ -2947,6 +2982,12 @@ if (SLK_UI_SETTINGS.enabled) {
         document.addEventListener('click', e => {
             const mes = e.target.closest?.('#chat .extraMesButtonsHint')?.closest('.mes');
             if (!mes) return;
+            // PC uses natural auto rows. Mobile needs the closed header height
+            // only when its own action menu is about to be expanded.
+            if (window.innerWidth <= 1000 && mobile()) {
+                const extra = mes.querySelector('.mes_buttons > .extraMesButtons');
+                if (extra && !isOpen(extra)) rememberClosedHeaderRows(mes);
+            }
             setTimeout(() => { queue(mes); schedule(); }, 0);
             setTimeout(() => { queue(mes); schedule(); }, 90);
         }, true);
@@ -2957,7 +2998,12 @@ if (SLK_UI_SETTINGS.enabled) {
             const next = document.body.classList.contains('expandMessageActions');
             if (next !== expanded) { expanded = next; all(); }
         }).observe(document.body, {attributes:true,attributeFilter:['class']});
-        window.addEventListener('resize', all, {passive:true});
+        let lastWidth = window.innerWidth;
+        window.addEventListener('resize', () => {
+            if (window.innerWidth === lastWidth) return;
+            lastWidth = window.innerWidth;
+            all();
+        }, {passive:true});
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
@@ -3241,7 +3287,8 @@ if (SLK_UI_SETTINGS.enabled) {
             if (!contextHeader) {
                 contextHeader = document.createElement('div');
                 contextHeader.id = 'slk-pc-channel-heading';
-                contextHeader.innerHTML = `<span class="slk-pc-channel-symbol">#</span><strong id="slk-pc-channel-title">최근 채팅</strong>`;
+                contextHeader.innerHTML = `<button id="slk-pc-chat-back" type="button" title="채팅 닫기" aria-label="채팅 닫기" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><span class="slk-pc-channel-symbol">#</span><span class="slk-ch-avatar-wrap" hidden><img class="slk-pc-ch-av" alt="" /></span><strong id="slk-pc-channel-title">최근 채팅</strong><span class="slk-pc-ch-count" hidden>${CHAT_BUBBLE_SVG}<span class="slk-pc-ch-n">0</span></span>`;
+                contextHeader.querySelector('#slk-pc-chat-back').addEventListener('click', slkCloseChat);
                 document.body.append(contextHeader);
             }
             contextTitle = contextHeader.querySelector('#slk-pc-channel-title');
@@ -3251,9 +3298,24 @@ if (SLK_UI_SETTINGS.enabled) {
     function syncContext() {
         if (!isDesktop()) return;
         const inChat = document.body.classList.contains('slk-in-chat');
-        const text = inChat ? (document.getElementById('slk-chat-title')?.querySelector('.slk-ch-name')?.textContent || chatInfo().name || '채팅') : '최근 채팅';
-        if (contextTitle && contextTitle.textContent !== text) contextTitle.textContent = text;
-        if (contextHeader) contextHeader.classList.toggle('slk-pc-is-chat', inChat);
+        if (!contextHeader || !contextTitle) return;
+        const mobile = document.getElementById('slk-chat-title');
+        const mobileImg = mobile?.querySelector('.slk-ch-av');
+        const text = inChat ? (mobile?.querySelector('.slk-ch-name')?.textContent || '채팅') : '최근 채팅';
+        if (contextTitle.textContent !== text) contextTitle.textContent = text;
+        contextHeader.classList.toggle('slk-pc-is-chat', inChat);
+        const back = contextHeader.querySelector('#slk-pc-chat-back');
+        const wrap = contextHeader.querySelector('.slk-ch-avatar-wrap');
+        const image = wrap.querySelector('img');
+        const count = contextHeader.querySelector('.slk-pc-ch-count');
+        const number = count.querySelector('.slk-pc-ch-n');
+        const avatar = inChat && mobileImg && !mobileImg.hidden ? mobileImg.getAttribute('src') : '';
+        if (avatar && image.getAttribute('src') !== avatar) image.setAttribute('src', avatar);
+        if (wrap.hidden !== !avatar) wrap.hidden = !avatar;
+        if (back.hidden !== !inChat) back.hidden = !inChat;
+        if (count.hidden !== !inChat) count.hidden = !inChat;
+        const value = mobile?.querySelector('.slk-ch-n')?.textContent || '0';
+        if (inChat && number.textContent !== value) number.textContent = value;
     }
 
     // Desktop selection is authoritative. Native ST outside-click handlers can
@@ -3398,8 +3460,7 @@ if (SLK_UI_SETTINGS.enabled) {
         }
     };
     new MutationObserver(triggerRefresh).observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    document.getElementById('slk-chat-head') &&
-        new MutationObserver(triggerRefresh).observe(document.getElementById('slk-chat-head'), { subtree: true, childList: true, characterData: true });
+    window.addEventListener('slk-chat-head-changed', triggerRefresh);
 })();
 
 
@@ -4061,7 +4122,7 @@ function slkConnectPromptManager() {
         // Retain discovery for late renders/replacements, without observing
         // unrelated attribute changes or re-running layout for other panels.
         const rootObserver = new MutationObserver(records => {
-            if (!records.some(record => [...record.addedNodes, ...record.removedNodes].some(node =>
+            if (!records.some(record => !record.target.closest?.('#chat') && [...record.addedNodes, ...record.removedNodes].some(node =>
                 node.nodeType === 1 && (node.id === popupId || node.querySelector?.('#' + popupId))))) return;
             const found = document.getElementById(popupId);
             if (found) observePopup(found);
@@ -4311,6 +4372,8 @@ function slkConnectPromptManager() {
     function start() {
         scan();
         new MutationObserver(records => {
+            records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
+            if (!records.length) return;
             if (records.some(r => r.target.closest?.('.extensions_toolbar') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.matches?.('dialog.popup,.extensions_info,.extensions_toolbar') || n.querySelector?.('.extensions_toolbar'))))) schedule();
         }).observe(document.documentElement, {childList:true, subtree:true});
         // Optional native account setting and translated labels; no dependency
@@ -4396,6 +4459,8 @@ function slkConnectPromptManager() {
     function start() {
         sync();
         new MutationObserver(records => {
+            records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
+            if (!records.length) return;
             if (records.some(r => r.target.closest?.('#persona_pagination_container,#rm_print_characters_pagination') || [...r.addedNodes].some(n => n.nodeType === 1 && (n.matches?.('#persona_pagination_container,#rm_print_characters_pagination') || n.querySelector?.('#persona_pagination_container,#rm_print_characters_pagination'))))) schedule();
         }).observe(document.body, {subtree:true,childList:true});
         mq.addEventListener?.('change',schedule);
@@ -4451,6 +4516,8 @@ function slkConnectPromptManager() {
     function start() {
         sync();
         new MutationObserver(records => {
+            records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
+            if (!records.length) return;
             if (records.some(r => relevant(r.target) || [...r.addedNodes].some(relevant))) schedule();
         }).observe(document.body, {subtree:true,childList:true,characterData:true});
         document.addEventListener('change', e => { if (e.target.id === 'world_editor_select') schedule(); });
@@ -4496,6 +4563,8 @@ function slkConnectPromptManager() {
     function start() {
         sync();
         new MutationObserver(records=>{
+            records = records.filter(r => !r.target.closest?.('#chat') && !r.target.parentElement?.closest('#chat'));
+            if (!records.length) return;
             if (records.some(r=>r.target === document.body || r.target.closest?.('#right-nav-panel') || [...r.addedNodes].some(n=>n.nodeType===1 && (n.id==='right-nav-panel'||n.querySelector?.('#right-nav-panel'))))) schedule();
         }).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-slk-view','class']});
         window.addEventListener('slk-ui-settings-changed',schedule);

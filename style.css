@@ -11078,7 +11078,7 @@ body.slk-ui {
 
     /* Keep the page light without painting an extra opaque composer strip.
        The iOS form accessory bar itself is browser/system UI. */
-    html:has(body.slk-ui.slk-composing) {
+    html:has(> body.slk-ui.slk-composing) {
         background-color: #FFFFFF !important;
         color-scheme: light;
     }
@@ -11700,12 +11700,12 @@ body.slk-ui {
 /* Notices are appended by toastr, sometimes outside <body>. 
    Match through <html> instead of assuming #toast-container is a body descendant. */
 @media screen {
-    html:has(body.slk-ui) #toast-container {
+    html:has(> body.slk-ui) #toast-container {
         max-width: calc(100vw - 24px) !important;
         z-index: 2147483647 !important;
     }
-    html:has(body.slk-ui) #toast-container > :is(.toast, div.toast, .toast-info, .toast-success, .toast-warning, .toast-error),
-    html:has(body.slk-ui) #toast-container > div {
+    html:has(> body.slk-ui) #toast-container > :is(.toast, div.toast, .toast-info, .toast-success, .toast-warning, .toast-error),
+    html:has(> body.slk-ui) #toast-container > div {
         position: relative !important;
         box-sizing: border-box !important;
         max-width: min(370px, calc(100vw - 28px)) !important;
@@ -11722,12 +11722,12 @@ body.slk-ui {
         box-shadow: 0 6px 24px rgba(0,0,0,.12) !important;
         text-shadow: none !important;
     }
-    html:has(body.slk-ui) #toast-container :is(.toast-title, .toast-message) {
+    html:has(> body.slk-ui) #toast-container :is(.toast-title, .toast-message) {
         color: #1D1C1D !important;
         text-shadow: none !important;
         font: 500 13px/1.5 var(--slk-font, sans-serif) !important;
     }
-    html:has(body.slk-ui) #toast-container .toast-close-button {
+    html:has(> body.slk-ui) #toast-container .toast-close-button {
         position: absolute !important;
         top: 8px !important;
         right: 9px !important;
@@ -11739,7 +11739,7 @@ body.slk-ui {
         box-shadow: none !important;
         opacity: 1 !important;
     }
-    html:has(body.slk-ui) #toast-container .toast-progress {
+    html:has(> body.slk-ui) #toast-container .toast-progress {
         border-radius: 0 0 13px 13px !important;
         background-color: #4A154B !important;
     }
@@ -11803,7 +11803,7 @@ body.slk-ui {
     }
 
     /* Strong, centered Slack notifications. All toasts, including translation. */
-    html:has(body.slk-ui) #toast-container {
+    html:has(> body.slk-ui) #toast-container {
         position: fixed !important;
         top: 46% !important;
         left: 50% !important;
@@ -11816,7 +11816,7 @@ body.slk-ui {
         pointer-events: none !important;
         margin: 0 !important;
     }
-    html:has(body.slk-ui) #toast-container > :is(div.toast, .toast, .toast-info, .toast-success, .toast-warning, .toast-error) {
+    html:has(> body.slk-ui) #toast-container > :is(div.toast, .toast, .toast-info, .toast-success, .toast-warning, .toast-error) {
         box-sizing: border-box !important;
         width: 100% !important;
         max-width: 100% !important;
@@ -11832,14 +11832,14 @@ body.slk-ui {
         text-align: center !important;
         pointer-events: auto !important;
     }
-    html:has(body.slk-ui) #toast-container :is(.toast-message,.toast-title) {
+    html:has(> body.slk-ui) #toast-container :is(.toast-message,.toast-title) {
         color: #1D1C1D !important;
         font-size: 15px !important;
         line-height: 1.45 !important;
         font-weight: 650 !important;
         text-align: center !important;
     }
-    html:has(body.slk-ui) #toast-container .toast-close-button {
+    html:has(> body.slk-ui) #toast-container .toast-close-button {
         top: 12px !important;
         right: 12px !important;
     }
@@ -12004,7 +12004,7 @@ body.slk-ui {
 
     /* Native modal dialogs live in the top layer. JS places the existing
        toast container inside the frontmost modal while it is open. */
-    html:has(body.slk-ui) dialog.popup[open] > #toast-container {
+    html:has(> body.slk-ui) dialog.popup[open] > #toast-container {
         position: fixed !important;
         z-index: 2147483647 !important;
         inset: auto !important;
@@ -13154,8 +13154,8 @@ body.slk-ui {
     /* --- 탭바 선택 시 파란 포커스 테두리 제거 --- */
     html body.slk-ui #slk-mobile-footer *:focus,
     html body.slk-ui #slk-mobile-footer *:focus-visible,
-    html:has(body.slk-ui) #slk-mobile-footer *:focus,
-    html:has(body.slk-ui) #slk-mobile-footer *:focus-visible {
+    html:has(> body.slk-ui) #slk-mobile-footer *:focus,
+    html:has(> body.slk-ui) #slk-mobile-footer *:focus-visible {
         outline: none !important;
         box-shadow: none !important;
     }
@@ -13395,8 +13395,8 @@ body.slk-ui {
 
     /* ================= 알림(토스트) ================= */
     /* 여러 개가 쌓여도 위로 잘려 나가지 않게: 헤더 바로 아래에서 아래로 쌓임 */
-    html:has(body.slk-ui) body #toast-container,
-    html:has(body.slk-ui) #toast-container {
+    html:has(> body.slk-ui) body #toast-container,
+    html:has(> body.slk-ui) #toast-container {
         position: fixed !important;
         inset: auto !important;
         top: calc(env(safe-area-inset-top, 0px) + 72px) !important;
@@ -13411,11 +13411,11 @@ body.slk-ui {
         z-index: 2147483647 !important;
         pointer-events: none !important;
     }
-    html:has(body.slk-ui) #toast-container > div {
+    html:has(> body.slk-ui) #toast-container > div {
         width: 100% !important;
         margin: 0 0 8px !important;
     }
-    html:has(body.slk-ui) dialog.popup[open] > #toast-container {
+    html:has(> body.slk-ui) dialog.popup[open] > #toast-container {
         top: calc(env(safe-area-inset-top, 0px) + 24px) !important;
         transform: translateX(-50%) !important;
     }
@@ -13597,8 +13597,8 @@ body.slk-ui {
    왼쪽 색 아이콘(정보·성공·경고·오류) + 굵은 제목 + 본문 + 닫기
    ===================================================================== */
 @media screen {
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div,
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast {
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div,
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast {
         position: relative !important;
         box-sizing: border-box !important;
         width: 100% !important;
@@ -13622,12 +13622,12 @@ body.slk-ui {
         overflow: hidden !important;
         cursor: default !important;
     }
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div:hover {
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div:hover {
         box-shadow: 0 8px 24px rgba(0, 0, 0, .22) !important;
     }
 
     /* 왼쪽 아이콘 동그라미 */
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div::before {
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div::before {
         content: '' !important;
         position: absolute !important;
         left: 14px !important;
@@ -13637,7 +13637,7 @@ body.slk-ui {
         border-radius: 50% !important;
         background: #1D9BD1 !important;
     }
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div::after {
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div::after {
         content: '' !important;
         position: absolute !important;
         left: 18px !important;
@@ -13649,14 +13649,14 @@ body.slk-ui {
         mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%2011v7%22/%3E%3Cpath%20d%3D%22M12%206.5h.01%22/%3E%3C/svg%3E") center / contain no-repeat !important;
         border: 0 !important;
     }
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-success::before { background: #2BAC76 !important; }
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-success::after { -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22/%3E%3C/svg%3E") !important; mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22/%3E%3C/svg%3E") !important; }
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-warning::before { background: #ECB22E !important; }
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-warning::after { -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%209v4%22/%3E%3Cpath%20d%3D%22M12%2017h.01%22/%3E%3Cpath%20d%3D%22M10.3%203.9%201.8%2018a2%202%200%200%200%201.7%203h17a2%202%200%200%200%201.7-3L13.7%203.9a2%202%200%200%200-3.4%200z%22/%3E%3C/svg%3E") !important; mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%209v4%22/%3E%3Cpath%20d%3D%22M12%2017h.01%22/%3E%3Cpath%20d%3D%22M10.3%203.9%201.8%2018a2%202%200%200%200%201.7%203h17a2%202%200%200%200%201.7-3L13.7%203.9a2%202%200%200%200-3.4%200z%22/%3E%3C/svg%3E") !important; background-color: #1D1C1D !important; }
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-error::before { background: #E01E5A !important; }
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-error::after { -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M18%206%206%2018%22/%3E%3Cpath%20d%3D%22m6%206%2012%2012%22/%3E%3C/svg%3E") !important; mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M18%206%206%2018%22/%3E%3Cpath%20d%3D%22m6%206%2012%2012%22/%3E%3C/svg%3E") !important; }
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-success::before { background: #2BAC76 !important; }
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-success::after { -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22/%3E%3C/svg%3E") !important; mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22/%3E%3C/svg%3E") !important; }
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-warning::before { background: #ECB22E !important; }
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-warning::after { -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%209v4%22/%3E%3Cpath%20d%3D%22M12%2017h.01%22/%3E%3Cpath%20d%3D%22M10.3%203.9%201.8%2018a2%202%200%200%200%201.7%203h17a2%202%200%200%200%201.7-3L13.7%203.9a2%202%200%200%200-3.4%200z%22/%3E%3C/svg%3E") !important; mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%209v4%22/%3E%3Cpath%20d%3D%22M12%2017h.01%22/%3E%3Cpath%20d%3D%22M10.3%203.9%201.8%2018a2%202%200%200%200%201.7%203h17a2%202%200%200%200%201.7-3L13.7%203.9a2%202%200%200%200-3.4%200z%22/%3E%3C/svg%3E") !important; background-color: #1D1C1D !important; }
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-error::before { background: #E01E5A !important; }
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > .toast-error::after { -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M18%206%206%2018%22/%3E%3Cpath%20d%3D%22m6%206%2012%2012%22/%3E%3C/svg%3E") !important; mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M18%206%206%2018%22/%3E%3Cpath%20d%3D%22m6%206%2012%2012%22/%3E%3C/svg%3E") !important; }
 
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-title {
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-title {
         display: block !important;
         margin: 0 0 2px !important;
         padding: 0 !important;
@@ -13667,7 +13667,7 @@ body.slk-ui {
         text-align: left !important;
         text-shadow: none !important;
     }
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-message {
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-message {
         display: block !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -13680,7 +13680,7 @@ body.slk-ui {
         overflow-wrap: anywhere !important;
     }
     /* 제목 없이 본문만 있을 때는 본문을 흰색 굵게 */
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div:not(:has(.toast-title)) .toast-message {
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container > div:not(:has(.toast-title)) .toast-message {
         color: #FFFFFF !important;
         -webkit-text-fill-color: #FFFFFF !important;
         font-weight: 600 !important;
@@ -13688,14 +13688,14 @@ body.slk-ui {
         line-height: 20px !important;
         padding-top: 1px !important;
     }
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-message a,
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-message label {
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-message a,
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-message label {
         color: #FFFFFF !important;
         text-decoration: underline !important;
     }
 
     /* 닫기 버튼 */
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-close-button {
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-close-button {
         position: absolute !important;
         top: 10px !important;
         right: 10px !important;
@@ -13714,7 +13714,7 @@ body.slk-ui {
         box-shadow: none !important;
         opacity: 1 !important;
     }
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-close-button::before {
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-close-button::before {
         content: '' !important;
         position: absolute !important;
         inset: 5px !important;
@@ -13724,7 +13724,7 @@ body.slk-ui {
     }
 
     /* 진행 막대: 아래 얇은 선 */
-    html:has(body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-progress {
+    html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .toast-progress {
         position: absolute !important;
         left: 0 !important;
         bottom: 0 !important;
@@ -13762,7 +13762,7 @@ body.slk-ui {
         box-shadow: none !important;
     }
     /* 일반 알림은 누를 수 있다는 표시 */
-    html:has(body.slk-ui) #toast-container > div { cursor: pointer !important; }
+    html:has(> body.slk-ui) #toast-container > div { cursor: pointer !important; }
 }
 
 /* 1.4.48: 페르소나 Connections 버튼(기본값/캐릭터/채팅) = 같은 너비로 한 줄 꽉, 아이콘·글자 겹침 수정
@@ -14510,11 +14510,11 @@ body.slk-ui {
     
 
     /* ⋯ 펼침 또는 편집 중: 이름·날짜 등 숨김 (자리는 유지해 메시지가 안 흔들림) */
-    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"]), :has(.mes_edit_buttons[style*="flex"]), :has(#curEditTextarea)) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost) {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"]), :has(.mes_edit_buttons[style*="flex"]), :has(#curEditTextarea)) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost) {
         visibility: hidden !important;
     }
     /* ⋯ 펼침: 버튼 묶음이 이름 자리까지 오른쪽 정렬로 */
-    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])) .mes_buttons {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])) .mes_buttons {
         grid-column: 2 / -1 !important;
         grid-row: 1 / 3 !important;
         justify-self: end !important;
@@ -14544,7 +14544,7 @@ body.slk-ui {
    ===================================================================== */
 @media screen {
     /* 1) ⋯ 펼친 아이콘이 많으면 줄바꿈 (오른쪽 정렬 유지, 밖으로 안 밀려남) */
-    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])) .mes_buttons {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])) .mes_buttons {
         justify-self: stretch !important;
         width: auto !important;
         min-width: 0 !important;
@@ -14846,7 +14846,7 @@ body.slk-ui {
    ===================================================================== */
 @media screen {
     /* 1) ⋯ 펼친 아이콘: 한 줄 우선, 자리 모자랄 때만 줄바꿈 (아이콘 폭 30px로 촘촘히) */
-    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])) .mes_buttons {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])) .mes_buttons {
         grid-column: 2 / -1 !important;
         justify-self: stretch !important;
         width: 100% !important;
@@ -14856,7 +14856,7 @@ body.slk-ui {
         justify-content: flex-end !important;
         gap: 0 !important;
     }
-    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])) .mes_buttons :is(.mes_button, .slk-adopted-btn, .extraMesButtons > *) {
+    html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(:has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])) .mes_buttons :is(.mes_button, .slk-adopted-btn, .extraMesButtons > *) {
         width: 30px !important;
         min-width: 30px !important;
         max-width: 30px !important;
@@ -16534,7 +16534,7 @@ body.slk-ui {
    ==================================================================== */
 @media screen {
     /* Keep the iPhone safe-area/status strip in the same chat canvas color. */
-    html:has(body.slk-ui.slk-in-chat:is(.slk-ui)) {
+    html:has(> body.slk-ui.slk-in-chat:is(.slk-ui)) {
         background-color: #FFFFFF !important;
     }
     
@@ -18114,9 +18114,9 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
     html body.slk-ui.slk-pc.slk-pc-panel-open {
         --pc-main-left: calc(var(--pc-sidebar-edge) + var(--pc-panel));
     }
-    html:has(body.slk-ui.slk-pc) { background: #4F0D4C !important; }
+    html:has(> body.slk-ui.slk-pc) { background: #4F0D4C !important; }
     html body.slk-ui.slk-pc :is(#bg1, #bg_custom) { display: none !important; }
-    html:has(body.slk-ui.slk-pc) #slk-mobile-footer,
+    html:has(> body.slk-ui.slk-pc) #slk-mobile-footer,
     html body.slk-ui.slk-pc #slk-settings-menu,
     html body.slk-ui.slk-pc #top-bar,
     html body.slk-ui.slk-pc #top-settings-holder > .drawer > .drawer-toggle {
@@ -18480,7 +18480,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
         padding-top: 12px !important;
     }
     /* 알림: 위 막대 바로 아래 오른쪽 */
-    html:has(body.slk-ui.slk-pc) #toast-container {
+    html:has(> body.slk-ui.slk-pc) #toast-container {
         top: calc(44px + 12px) !important;
         left: auto !important;
         right: 20px !important;
@@ -19586,7 +19586,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
 /* This extension uses the native SillyTavern connection-profile popup.
    Its template has input[name="exclude"] checkboxes, not drawer checkboxes. */
 @media screen and (max-width:1000px) {
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) {
     width: min(440px, calc(100vw - 28px)) !important;
     max-width: calc(100vw - 28px) !important;
     max-height: calc(100dvh - 80px) !important;
@@ -19597,7 +19597,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     box-shadow: 0 20px 60px rgba(31, 19, 39, .20) !important;
     background: #FFFFFF !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-body {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-body {
     display: flex !important;
     flex-direction: column !important;
     min-height: 0 !important;
@@ -19606,7 +19606,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     background: #FFFFFF !important;
     box-sizing: border-box !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content {
     flex: 1 1 auto !important;
     overflow-y: auto !important;
     overscroll-behavior: contain !important;
@@ -19618,14 +19618,14 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     color: #1D1C1D !important;
     text-align: left !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content h3 {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content h3 {
     margin: 0 0 13px !important;
     padding: 0 !important;
     text-align: left !important;
     font: 700 17px/1.3 var(--slk-font,'Pretendard',sans-serif) !important;
     color: #1D1C1D !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content :is(.flex-container.flexFlowColumn.flexNoGap, .flex-container.flexFlowColumn):has(> label.checkbox_label) {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content :is(.flex-container.flexFlowColumn.flexNoGap, .flex-container.flexFlowColumn):has(> label.checkbox_label) {
     display: grid !important;
     grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important;
     gap: 7px 10px !important;
@@ -19634,7 +19634,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     margin: 0 0 24px !important;
     box-sizing: border-box !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label {
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
@@ -19650,14 +19650,14 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     color: #333033 !important;
     font: 500 13px/1.35 var(--slk-font,'Pretendard',sans-serif) !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label > span {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label > span {
     min-width: 0 !important;
     overflow-wrap: anywhere !important;
     color: #1D1C1D !important;
     font-weight: 550 !important;
   }
   /* Native input and form logic remain untouched. */
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label input[type="checkbox"] {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label input[type="checkbox"] {
     appearance: none !important;
     -webkit-appearance: none !important;
     display: inline-grid !important;
@@ -19677,12 +19677,12 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     accent-color: #4A154B !important;
     cursor: pointer !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label input[type="checkbox"]::before,
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label input[type="checkbox"]::after {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label input[type="checkbox"]::before,
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label input[type="checkbox"]::after {
     display: none !important;
     content: none !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label input[type="checkbox"]:checked {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label input[type="checkbox"]:checked {
     background-color: #4A154B !important;
     border-color: #4A154B !important;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") !important;
@@ -19690,15 +19690,15 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     background-repeat: no-repeat !important;
     background-size: 14px 14px !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label:has(input:checked) {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) label.checkbox_label:has(input:checked) {
     border-color: #DCCEE1 !important;
     background: #F7F1F8 !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) :is(.popup-inputs,.popup-input) {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) :is(.popup-inputs,.popup-input) {
     box-sizing: border-box !important;
     max-width: 100% !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-input {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-input {
     width: 100% !important;
     height: 44px !important;
     padding: 0 12px !important;
@@ -19708,7 +19708,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     color: #1D1C1D !important;
     font-size: 15px !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls {
     display: grid !important;
     flex: 0 0 auto !important;
     grid-template-columns: minmax(0,1fr) minmax(0,1.53fr) minmax(0,1fr) !important;
@@ -19720,7 +19720,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     box-sizing: border-box !important;
     background: #FFFFFF !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -19743,23 +19743,23 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     letter-spacing: -.02em !important;
     box-shadow: none !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button.popup-button-ok,
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button:has(+ .popup-button-ok) {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button.popup-button-ok,
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button:has(+ .popup-button-ok) {
     background: #4A154B !important;
     color: #FFFFFF !important;
     border-color: #4A154B !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button.popup-button-cancel {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button.popup-button-cancel {
     background: #FFFFFF !important;
     color: #1D1C1D !important;
     border-color: #D9D5DA !important;
   }
   /* Connection manager uses a custom DIV action (Save and Update), not a button.
      Give each real action an explicit grid slot to prevent overflow/reordering. */
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > .popup-button-cancel {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > .popup-button-cancel {
     grid-column: 1 !important; order: 0 !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > .popup-button-custom {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > .popup-button-custom {
     grid-column: 2 !important; order: 1 !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -19780,7 +19780,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     letter-spacing: -.03em !important;
     box-shadow: none !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button.popup-button-ok {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > button.popup-button-ok {
     grid-column: 3 !important; order: 2 !important;
     background: #FFFFFF !important;
     color: #4A154B !important;
@@ -19793,7 +19793,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
 @media screen and (max-width:1000px) {
   html.slk-status-chat,
   html.slk-status-chat body,
-  html:has(body.slk-ui.slk-in-chat) {
+  html:has(> body.slk-ui.slk-in-chat) {
     background-color: #FFFFFF !important;
   }
   html.slk-status-chat body.slk-ui.slk-in-chat #slk-header {
@@ -19860,12 +19860,12 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
 
 /* Toastr and common companion-extension toast libraries keep one Slack notice. */
 @media screen and (max-width:1000px) {
-  html:has(body.slk-ui) :is(#toast-container, .toastify-container, [data-sonner-toaster]) {
+  html:has(> body.slk-ui) :is(#toast-container, .toastify-container, [data-sonner-toaster]) {
     z-index:2147483647 !important;
   }
-  html:has(body.slk-ui) :is(.toastify, .Toastify__toast, .notyf__toast, .iziToast, [data-sonner-toast]),
-  html:has(body.slk-ui) #toast-container > .toast,
-  html:has(body.slk-ui) #toast-container > div {
+  html:has(> body.slk-ui) :is(.toastify, .Toastify__toast, .notyf__toast, .iziToast, [data-sonner-toast]),
+  html:has(> body.slk-ui) #toast-container > .toast,
+  html:has(> body.slk-ui) #toast-container > div {
     box-sizing:border-box !important;
     max-width: min(370px, calc(100vw - 28px)) !important;
     min-height:0 !important;
@@ -19877,8 +19877,8 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     box-shadow:0 8px 24px rgba(0,0,0,.22) !important;
     font:500 13px/1.45 var(--slk-font,'Pretendard',sans-serif) !important;
   }
-  html:has(body.slk-ui) :is(.toastify, .Toastify__toast, .notyf__toast, .iziToast, [data-sonner-toast]) :is(span,p,div),
-  html:has(body.slk-ui) #toast-container .toast-message {
+  html:has(> body.slk-ui) :is(.toastify, .Toastify__toast, .notyf__toast, .iziToast, [data-sonner-toast]) :is(span,p,div),
+  html:has(> body.slk-ui) #toast-container .toast-message {
     color:inherit !important;
     text-shadow:none !important;
   }
@@ -19955,7 +19955,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
   }
   html.slk-status-chat,
   html.slk-status-chat body.slk-ui,
-  html:has(body.slk-ui.slk-in-chat:not(.slk-panel-opening)) {
+  html:has(> body.slk-ui.slk-in-chat:not(.slk-panel-opening)) {
     background-color: #FFFFFF !important;
   }
   html.slk-status-chat #slk-status-surface { background: #FFFFFF !important; }
@@ -20079,7 +20079,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
 
   /* Every included setting gets its own row, with checkbox top-aligned
      to the first line of wrapped text (not centered in the whole card). */
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content :is(.flex-container.flexFlowColumn.flexNoGap, .flex-container.flexFlowColumn):has(> label.checkbox_label) {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content :is(.flex-container.flexFlowColumn.flexNoGap, .flex-container.flexFlowColumn):has(> label.checkbox_label) {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) !important;
     grid-auto-flow: row !important;
@@ -20088,7 +20088,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     margin: 0 0 22px !important;
     padding: 0 !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content label.checkbox_label {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content label.checkbox_label {
     display: grid !important;
     grid-template-columns: 20px minmax(0, 1fr) !important;
     align-items: start !important;
@@ -20102,7 +20102,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     line-height: 1.45 !important;
     box-sizing: border-box !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content label.checkbox_label > input[type="checkbox"] {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content label.checkbox_label > input[type="checkbox"] {
     grid-column: 1 !important;
     grid-row: 1 !important;
     align-self: start !important;
@@ -20110,7 +20110,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     margin-top: 2px !important;
     flex: none !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content label.checkbox_label > span {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content label.checkbox_label > span {
     grid-column: 2 !important;
     grid-row: 1 !important;
     align-self: start !important;
@@ -20121,7 +20121,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     line-height: 1.45 !important;
   }
   /* 2-button create popup: Cancel stays compact; Save fills all rest. */
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:not(:has(> .popup-button-custom)) {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:not(:has(> .popup-button-custom)) {
     display: grid !important;
     grid-template-columns: 92px minmax(0, 1fr) !important;
     gap: 10px !important;
@@ -20130,13 +20130,13 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     padding: 12px 16px calc(12px + env(safe-area-inset-bottom,0px)) !important;
     box-sizing: border-box !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:not(:has(> .popup-button-custom)) > .popup-button-cancel {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:not(:has(> .popup-button-custom)) > .popup-button-cancel {
     grid-column: 1 !important;
     min-width: 0 !important;
     width: 100% !important;
     margin: 0 !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:not(:has(> .popup-button-custom)) > .popup-button-ok {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:not(:has(> .popup-button-custom)) > .popup-button-ok {
     grid-column: 2 !important;
     min-width: 0 !important;
     width: 100% !important;
@@ -20145,7 +20145,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     border-color: #4A154B !important;
     color: #FFF !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > :is(.popup-button-cancel,.popup-button-ok,.popup-button-custom) {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls > :is(.popup-button-cancel,.popup-button-ok,.popup-button-custom) {
     height: 44px !important;
     min-height: 44px !important;
     white-space: nowrap !important;
@@ -20154,22 +20154,22 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     text-align: center !important;
   }
   /* Three-action edit popup stays fully usable and avoids label clipping. */
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:has(> .popup-button-custom) {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:has(> .popup-button-custom) {
     display: grid !important;
     grid-template-columns: 84px minmax(0, 1fr) !important;
     gap: 8px !important;
     padding: 12px 14px calc(12px + env(safe-area-inset-bottom,0px)) !important;
     box-sizing: border-box !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:has(> .popup-button-custom) > .popup-button-cancel {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:has(> .popup-button-custom) > .popup-button-cancel {
     grid-column: 1 !important; grid-row: 1 !important; order: 0 !important;
     width: 100% !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:has(> .popup-button-custom) > .popup-button-custom {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:has(> .popup-button-custom) > .popup-button-custom {
     grid-column: 2 !important; grid-row: 1 !important; order: 1 !important;
     width: 100% !important; white-space: nowrap !important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:has(> .popup-button-custom) > .popup-button-ok {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-controls:has(> .popup-button-custom) > .popup-button-ok {
     grid-column: 1/-1 !important; grid-row: 2 !important; order: 2 !important;
     width: 100% !important;
     background: #FFFFFF !important; color: #4A154B !important;
@@ -21095,13 +21095,13 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
 /* v1.8.5 FINAL — every chat shares the same white status bar and soft gradient.
    Panel/class transitions must not put the purple home-header above chat. */
 @media screen and (max-width: 1000px) {
-  html:has(body.slk-ui.slk-in-chat),
-  html:has(body.slk-ui.slk-in-chat) body,
+  html:has(> body.slk-ui.slk-in-chat),
+  html:has(> body.slk-ui.slk-in-chat) body,
   html.slk-status-chat,
   html.slk-status-chat body.slk-ui {
     background-color: #fff !important;
   }
-  html:has(body.slk-ui.slk-in-chat) body.slk-ui::before {
+  html:has(> body.slk-ui.slk-in-chat) body.slk-ui::before {
     content: "" !important;
     display: block !important;
     position: fixed !important;
@@ -21113,7 +21113,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     pointer-events: none !important;
     z-index: 4000 !important;
   }
-  html:has(body.slk-ui.slk-in-chat) #slk-status-surface {
+  html:has(> body.slk-ui.slk-in-chat) #slk-status-surface {
     display: block !important;
     background: #fff !important;
     position: fixed !important;
@@ -21838,8 +21838,8 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
   body.slk-ui[data-slk-header-view="chat"] #slk-chat-back {border-radius:50%!important;}
   body.slk-ui[data-slk-header-view="chat"] #slk-chat-title {border-radius:23px!important;}
   /* Safe-area paint follows visible surface rather than any mounted chat. */
-  html:has(body.slk-ui[data-slk-header-view="chat"]),html:has(body.slk-ui[data-slk-header-view].slk-header-compact) {background-color:#fff!important;}
-  html:has(body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact)) {background-color:#441848!important;}
+  html:has(> body.slk-ui[data-slk-header-view="chat"]),html:has(> body.slk-ui[data-slk-header-view].slk-header-compact) {background-color:#fff!important;}
+  html:has(> body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]):not(.slk-header-compact)) {background-color:#441848!important;}
   body.slk-ui[data-slk-header-view]::before {content:none!important;display:none!important;}
   /* v1.8.17: only the status-area colour sample. Never resize or restyle header buttons. */
   html[data-slk-status-color] body.slk-ui #slk-status-surface[data-slk-status-color] {
@@ -22129,14 +22129,14 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
   }
   /* Centered profile dialog already clears the device safe area; do not
      add the system bottom inset again inside the card's action row. */
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]):not(:has(.popup-button-custom)) .popup-content {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]):not(:has(.popup-button-custom)) .popup-content {
     padding-top:14px!important;
     padding-bottom:8px!important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]):not(:has(.popup-button-custom)) .popup-content > :first-child:is(h2,h3) {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]):not(:has(.popup-button-custom)) .popup-content > :first-child:is(h2,h3) {
     margin-top:0!important;
   }
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]):not(:has(.popup-button-custom)) .popup-controls {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]):not(:has(.popup-button-custom)) .popup-controls {
     margin-top:8px!important;
     padding:12px 16px 12px!important;
   }
@@ -22216,7 +22216,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
 /* === Slack UI v1.8.51: extension popup semibold + toolbar sort dropdown === */
 @media screen and (max-width:1000px) {
   /* Connection profile/include popup: lower only the bold emphasis next to checkboxes. */
-  html:has(body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content label.checkbox_label :is(strong, b) {
+  html:has(> body.slk-ui) dialog.popup:has(input[name="exclude"]) .popup-content label.checkbox_label :is(strong, b) {
     font-weight: 600 !important;
   }
 
@@ -22519,7 +22519,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
 
 /* v1.8.63 — desktop header must never inherit mobile chat fades. */
 @media screen and (min-width: 1001px) {
-  html:has(body.slk-ui.slk-pc) {
+  html:has(> body.slk-ui.slk-pc) {
     background: #4F0D4C !important;
   }
   html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #slk-header {
@@ -24078,18 +24078,18 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
 /* v1.8.89 — Desktop message actions: preserve the author and metadata.
    Mobile still replaces the author area with the expanded action strip. */
 @media screen and (min-width: 1001px) {
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) {
     grid-template-columns: 50px auto auto auto auto auto minmax(90px, 1fr) 0px !important;
     grid-template-rows: auto auto !important;
   }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost):not([hidden]):not(.displayNone) {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) :is(.name_text, .timestamp, .mesIDDisplay, .mes_timer, .tokenCounterDisplay, .mes_ghost):not([hidden]):not(.displayNone) {
     visibility: visible !important;
   }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .name_text {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .name_text {
     grid-column: 2 / 7 !important;
     min-width: 0 !important;
   }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons {
     grid-column: 7 / -1 !important;
     grid-row: 1 / 3 !important;
     display: flex !important;
@@ -24108,7 +24108,7 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
     padding: 0 0 0 8px !important;
     overflow: visible !important;
   }
-  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(.extraMesButtons[style*="flex"]), :has(.extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons > .extraMesButtons {
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) #chat .mes:is(.slk-mes-expanded, :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="flex"]), :has(> :where(.mes_block) > :where(.ch_name) > :where(.mes_buttons) > .extraMesButtons[style*="block"])):not(:has(#curEditTextarea, .mes_edit_buttons[style*="flex"])) .mes_buttons > .extraMesButtons {
     display: flex !important;
     flex: 1 1 auto !important;
     flex-flow: row wrap !important;
@@ -24219,4 +24219,80 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
   html body.slk-ui:not(.slk-pc) #user-settings-block [name="userSettingsRowOne"] #UI-language-block {
     grid-column:1 / -1!important; grid-row:2!important;
   }
+}
+
+
+/* v1.8.99 — translation notice actions, native message-delete controls, chat-only header presence. */
+@media screen {
+  /* Text actions must never inherit the 24px icon-only close button dimensions. */
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) .slk-notice {
+    max-width:min(480px,calc(100vw - 24px))!important; overflow:visible!important;
+    flex-wrap:wrap!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) .slk-notice > div:not(:empty),
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) .slk-notice > div:not(:empty) > div:not(:empty) {
+    flex-wrap:wrap!important; min-width:0!important; max-width:100%!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) .slk-notice .slk-notice-text-action,
+  html:has(> body.slk-ui):not(#slk-a):not(#slk-b):not(#slk-c) #toast-container .slk-notice-text-action {
+    display:inline-flex!important; position:static!important; flex:0 0 auto!important;
+    align-items:center!important; justify-content:center!important; box-sizing:border-box!important;
+    width:auto!important; min-width:max-content!important; max-width:none!important;
+    height:auto!important; min-height:28px!important; max-height:none!important;
+    padding:3px 8px!important; margin:0!important; border:0!important; border-radius:6px!important;
+    background:rgba(255,255,255,.12)!important; color:#fff!important; -webkit-text-fill-color:#fff!important;
+    font:600 12px/20px var(--slk-font, sans-serif)!important;
+    white-space:nowrap!important; word-break:keep-all!important; overflow-wrap:normal!important;
+    writing-mode:horizontal-tb!important; transform:none!important; text-decoration:none!important;
+  }
+  html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c) .slk-notice .slk-notice-text-action * {
+    font:inherit!important; white-space:nowrap!important; word-break:keep-all!important; overflow-wrap:normal!important;
+  }
+  /* Real message-selection inputs keep native checked state, events and visibility. */
+  html body.slk-ui #chat .mes :is(input.del_checkbox[type="checkbox"], .del_checkbox input[type="checkbox"]) {
+    appearance:none!important; -webkit-appearance:none!important;
+    box-sizing:border-box!important; width:20px!important; min-width:20px!important; max-width:20px!important;
+    height:20px!important; min-height:20px!important; max-height:20px!important;
+    border:1.5px solid #A9A7A9!important; border-radius:5px!important; background:#fff!important;
+    box-shadow:none!important; outline-offset:2px!important; opacity:1!important; padding:0!important;
+    cursor:pointer!important; transform:none!important; accent-color:#1264A3!important;
+  }
+  html body.slk-ui #chat .mes :is(input.del_checkbox[type="checkbox"], .del_checkbox input[type="checkbox"])::before,
+  html body.slk-ui #chat .mes :is(input.del_checkbox[type="checkbox"], .del_checkbox input[type="checkbox"])::after {content:none!important;display:none!important;}
+  html body.slk-ui #chat .mes :is(input.del_checkbox[type="checkbox"], .del_checkbox input[type="checkbox"]):checked {
+    border-color:#1264A3!important;
+    background:#1264A3 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 4 4 10-10'/%3E%3C/svg%3E") center/15px 15px no-repeat!important;
+  }
+  html body.slk-ui #chat .mes :is(input.del_checkbox[type="checkbox"], .del_checkbox input[type="checkbox"]):focus-visible {outline:2px solid #1264A3!important;}
+  html body.slk-ui #form_sheld #dialogue_del_mes :is(.menu_button,#dialogue_del_mes_ok,#dialogue_del_mes_cancel) {
+    box-sizing:border-box!important; display:inline-flex!important; align-items:center!important; justify-content:center!important;
+    padding:0 12px!important; line-height:20px!important; text-align:center!important;
+    vertical-align:middle!important; transform:none!important;
+  }
+  html body.slk-ui #form_sheld #dialogue_del_mes :is(.menu_button,#dialogue_del_mes_ok,#dialogue_del_mes_cancel) > :is(span,i) {
+    position:static!important; margin:0!important; padding:0!important; transform:none!important; translate:none!important; line-height:20px!important;
+  }
+  /* The presence dot belongs exclusively to the two header avatar wrappers. */
+  body.slk-ui :is(#slk-chat-title,#slk-pc-channel-heading) > .slk-ch-avatar-wrap {
+    position:relative!important; display:inline-flex!important; flex:0 0 36px!important;
+    width:36px!important;height:36px!important;align-items:center!important;justify-content:center!important;overflow:visible!important;
+  }
+  body.slk-ui :is(#slk-chat-title,#slk-pc-channel-heading) > .slk-ch-avatar-wrap[hidden] {display:none!important;}
+  body.slk-ui :is(#slk-chat-title,#slk-pc-channel-heading) > .slk-ch-avatar-wrap::after {
+    content:""; position:absolute; box-sizing:border-box; width:12px;height:12px; right:-1px;bottom:-1px;
+    border-radius:50%;background:#20A271;border:2px solid #fff;pointer-events:none;
+  }
+}
+@media screen and (min-width:1001px) {
+  html body.slk-ui.slk-pc #slk-pc-channel-heading #slk-pc-chat-back {
+    appearance:none; display:grid; place-items:center; box-sizing:border-box; width:30px;height:30px;flex:0 0 30px;
+    padding:0;margin:0 2px 0 0;border:0;border-radius:8px;background:transparent;color:#616061;cursor:pointer;
+  }
+  html body.slk-ui.slk-pc #slk-pc-channel-heading #slk-pc-chat-back:hover {background:#F3F2F3;color:#1D1C1D;}
+  html body.slk-ui.slk-pc #slk-pc-channel-heading :is(#slk-pc-chat-back,.slk-pc-ch-count)[hidden] {display:none!important;}
+  html body.slk-ui.slk-pc #slk-pc-channel-heading.slk-pc-is-chat .slk-pc-channel-symbol {display:none;}
+  html body.slk-ui.slk-pc #slk-pc-channel-heading > .slk-ch-avatar-wrap {width:32px!important;height:32px!important;flex-basis:32px!important;margin-right:2px;}
+  html body.slk-ui.slk-pc #slk-pc-channel-heading .slk-pc-ch-av {width:100%;height:100%;object-fit:cover;border-radius:50%;background:#E8E8E8;}
+  html body.slk-ui.slk-pc #slk-pc-channel-title {min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  html body.slk-ui.slk-pc #slk-pc-channel-heading .slk-pc-ch-count {display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;margin-left:4px;color:#616061;font:600 12px/1.2 var(--slk-font,sans-serif);letter-spacing:normal;}
 }
