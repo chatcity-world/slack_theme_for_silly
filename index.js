@@ -137,6 +137,9 @@
         if (!document.body) return;
         const selector = '#preloader, dialog, #loader';
         const observer = new MutationObserver(records => {
+            if (document.getElementById('chat') !== observedChat || records.some(r =>
+                r.type === 'childList' && boundaries.has(r.target) &&
+                [...r.addedNodes,...r.removedNodes].some(n => n.nodeType === 1))) bind();
             if (!mq.matches && !surface?.isConnected) return;
             if (records.some(r => {
                 if (r.target.closest?.('#chat .mes')) return false;
@@ -144,7 +147,28 @@
                 return [...r.addedNodes, ...r.removedNodes].some(n => n.nodeType === 1 && !n.matches('.mes') && (n.matches(selector) || n.querySelector(selector)));
             })) schedule();
         });
-        observer.observe(document.body, {subtree:true, childList:true, attributes:true, attributeFilter:['style','class','hidden','open']});
+        // v1.8.157: splash discovery has no reason to watch message rendering.
+        let observedChat = null;
+        const boundaries = new Set();
+        const options = {childList:true, attributes:true, attributeFilter:['style','class','hidden','open']};
+        function bind() {
+            observer.disconnect();
+            boundaries.clear();
+            observedChat = document.getElementById('chat');
+            if (!observedChat || !document.body.contains(observedChat)) {
+                observer.observe(document.body, {...options, subtree:true});
+                return;
+            }
+            for (let branch = observedChat; branch && branch !== document.body; branch = branch.parentElement) {
+                const parent = branch.parentElement;
+                if (!parent) break;
+                boundaries.add(parent);
+                observer.observe(parent, {...options, subtree:false});
+                for (const sibling of parent.children) if (sibling !== branch)
+                    observer.observe(sibling, {...options, subtree:true});
+            }
+        }
+        bind();
         document.addEventListener('transitionend', e => { if (e.target.matches?.(selector)) schedule(); }, true);
         document.addEventListener('close', schedule, true);
         mq.addEventListener?.('change', schedule);

@@ -1450,7 +1450,7 @@ function setupComposer() {
     });
     ta.addEventListener('input', updateDisplay);
     viewport?.addEventListener('resize', syncHeight);
-    viewport?.addEventListener('scroll', syncHeight);
+    viewport?.addEventListener('scroll', () => { if (measure() !== lastHeight) syncHeight(); }, {passive:true});
     window.addEventListener('resize', syncHeight);
     window.addEventListener('pageshow', syncHeight);
     window.addEventListener('orientationchange', () => {
@@ -1672,7 +1672,7 @@ function slkSyncStatusBar() {
         return;
     }
     slkStatusActive = true;
-    const light = slkSplashIsVisible() || body.dataset.slkHeaderView === 'chat' || body.classList.contains('slk-header-compact');
+    const light = body.dataset.slkHeaderView === 'chat' || body.classList.contains('slk-header-compact') || slkSplashIsVisible();
     const state = light ? 'light' : 'purple';
     const desired = light ? '#FFFFFF' : '#441848';
     if (root.dataset.slkStatusColor !== state) root.dataset.slkStatusColor = state;
@@ -1773,7 +1773,7 @@ function syncSlackSurfaces() {
     syncChatHead();
     slkSyncHeaderView();
     slkSyncStatusBar();
-    dedupeWelcomePanel();
+    if (!document.body.classList.contains('slk-in-chat')) dedupeWelcomePanel();
 }
 
 function watchChat() {
@@ -2304,8 +2304,10 @@ if (SLK_UI_SETTINGS.enabled) {
         if (!footer) return;
         const expanded = document.body.classList.contains('slk-composing') ||
             !!document.getElementById('send_form')?.classList.contains('slk-compose-open');
-        footer.style.setProperty('display', expanded ? 'none' : 'flex', 'important');
-        footer.setAttribute('aria-hidden', String(expanded));
+        const display = expanded ? 'none' : 'flex';
+        if (footer.style.getPropertyValue('display') !== display || footer.style.getPropertyPriority('display') !== 'important')
+            footer.style.setProperty('display', display, 'important');
+        if (footer.getAttribute('aria-hidden') !== String(expanded)) footer.setAttribute('aria-hidden', String(expanded));
     }
 
     function mount() {
@@ -3073,10 +3075,18 @@ function slkObserveMessageChrome(chat, callback) {
     slkMessageChromeRoot = chat;
     const entries = new Map();
     const chrome = '.ch_name,.mesAvatarWrapper,.swipeRightBlock,.swipe_left,.timestamp';
+    let batch = [], scheduled = false;
     const emit = records => {
-        for (const fn of slkMessageChromeSubscribers) {
-            try { fn(records); } catch (error) { console.error('[Slack UI] message chrome', error); }
-        }
+        for (const record of records) batch.push(record);
+        if (scheduled) return;
+        scheduled = true;
+        queueMicrotask(() => {
+            scheduled = false;
+            const records = batch; batch = [];
+            for (const fn of slkMessageChromeSubscribers) {
+                try { fn(records); } catch (error) { console.error('[Slack UI] message chrome', error); }
+            }
+        });
     };
     function attach(mes) {
         if (entries.has(mes)) return;
@@ -3254,13 +3264,23 @@ function slkObserveChatContent(callback) {
         return;
     }
     slkChatContentObserver = new MutationObserver(records => {
-        const relevant = records.filter(r => {
-            if (r.type === 'characterData') return !!r.target.parentElement?.closest('.menu_button,.drawer-opener');
-            if (r.target.closest?.('slk-button-label,[data-slk-button-label]')) return false;
-            if (r.target.closest?.('.menu_button,.drawer-opener')) return true;
-            for (const node of r.addedNodes) if (node.nodeType === 1) return true;
-            return false;
-        });
+        // v1.8.157: ordinary prose/streamed markup has no controls to decorate.
+        // Filter once before calling both consumers, retaining controls inserted
+        // by status boxes or other extensions, including nested controls.
+        const controls = 'input[type="range"],.menu_button,.drawer-opener';
+        const relevant = [];
+        for (const r of records) {
+            if (r.type === 'characterData') {
+                if (r.target.parentElement?.closest('.menu_button,.drawer-opener')) relevant.push(r);
+                continue;
+            }
+            if (r.target.closest?.('slk-button-label,[data-slk-button-label]')) continue;
+            if (r.target.closest?.('.menu_button,.drawer-opener')) { relevant.push(r); continue; }
+            // Only the added nodes are inspected. Do not rescan their message.
+            const addedNodes = Array.from(r.addedNodes).filter(n => n.nodeType === 1 &&
+                (n.matches(controls) || n.querySelector(controls)));
+            if (addedNodes.length) relevant.push({type:r.type, target:r.target, addedNodes});
+        }
         if (!relevant.length) return;
         for (const fn of slkChatContentSubscribers) {
             try { fn(relevant); } catch (error) { console.error('[Slack UI] chat controls', error); }
@@ -3512,7 +3532,16 @@ function slkObserveChatContent(callback) {
         const actionScope = '.ch_name, .mesAvatarWrapper, .mes_buttons, .extraMesButtons';
         const internalClasses = new Set(['slk-mes-expanded','slk-adopted-btn','slk-foreign-action','slk-action-pencil-duplicate','slk-action-noicon']);
         const nativeClasses = value => (value || '').split(/\s+/).filter(c => c && !internalClasses.has(c)).sort().join(' ');
-        const queue = mes => { if (mes && chat.contains(mes)) pending.add(mes); };
+        const queue = mes => {
+            if (!mes || !chat.contains(mes) || pending.has(mes)) return;
+            // Closed, untouched menus already have the correct native DOM.
+            // Only opened menus and previously rearranged menus need work.
+            if (!mes.classList.contains('slk-mes-expanded') && !states.get(mes)?.origins.size) {
+                const extra = mes.querySelector(':scope > .mes_block > .ch_name > .mes_buttons > .extraMesButtons');
+                if (!extra || !mobile() || !isOpen(extra)) return;
+            }
+            pending.add(mes);
+        };
         const flush = () => {
             timer = null;
             const deadline = performance.now() + 6;
@@ -3532,6 +3561,8 @@ function slkObserveChatContent(callback) {
                 if (!(el instanceof Element)) continue;
                 const mes = el.closest('.mes');
                 if (mes) {
+                    // Token counts/timestamps are chrome but do not change actions.
+                    if (el.closest('.timestamp,.mes_timer,.tokenCounterDisplay,.mesIDDisplay')) continue;
                     // Streaming message text and status-box content do not change the action menu.
                     if (!(el === mes || el.closest(actionScope) || (r.type === 'childList' && el.matches('.mes_block')))) continue;
                     if (r.type === 'attributes') {
@@ -3661,7 +3692,6 @@ function slkObserveChatContent(callback) {
         const chat = document.getElementById('chat');
         if (!chat) { setTimeout(start, 500); return; }
         sync();
-        const structure = '.mes, .mes_block, .swipeRightBlock, .swipe_left, .swipe_right, .swipes-counter';
         slkObserveMessageChrome(chat, records => {
             const changed = new Set();
             for (const record of records) {
@@ -3669,7 +3699,15 @@ function slkObserveChatContent(callback) {
                 if (!(target instanceof Element)) continue;
                 const mes = target.closest('.mes');
                 if (record.type === 'attributes') {
-                    if (mes && target.matches(structure)) changed.add(mes);
+                    // Reordering depends on the actual children, not token-time
+                    // visibility/style mutations on swipe arrows or counters.
+                    if (mes && record.attributeName === 'class' &&
+                        (target === mes || target.matches('.swipeRightBlock,.swipe_left,.swipe_right,.swipes-counter') ||
+                         /(?:^|\s)(?:swipeRightBlock|swipe_left|swipe_right|swipes-counter)(?:\s|$)/.test(record.oldValue || ''))) {
+                        const before = (record.oldValue || '').split(/\s+/);
+                        const relevant = ['swipeRightBlock','swipe_left','swipe_right','swipes-counter','slk-swipe-inline'];
+                        if (relevant.some(c => before.includes(c) !== target.classList.contains(c))) changed.add(mes);
+                    }
                     continue;
                 }
                 // Ignore ordinary text/token streaming; only the message shell
