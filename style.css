@@ -22243,8 +22243,8 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
 html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(2) {
   grid-row:1 !important; min-width:0 !important; width:100% !important;
   height:42px !important; min-height:42px !important;
-  padding:4px 3px !important; white-space:normal !important;
-  line-height:1.2 !important;
+  padding:4px 2px !important; white-space:nowrap !important;
+  line-height:1.15 !important; font-size:12px !important; letter-spacing:-0.01em !important;
 }
 html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(1) {grid-column:1 !important;}
 html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(2) {grid-column:2 !important;}
@@ -22269,6 +22269,21 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
   opacity:0 !important; visibility:visible !important; pointer-events:auto !important;
   cursor:pointer !important; font-size:16px !important; z-index:1 !important;
   appearance:auto !important; -webkit-appearance:menulist !important;
+}
+
+@media screen and (max-width:380px) {
+  html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar.slk-native-sort-ready {
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) 40px !important;
+    gap:6px !important;
+  }
+  html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(1),
+  html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .extensions_toolbar.slk-native-sort-ready > button.menu_button:nth-child(2) {
+    font-size:11px !important;
+    padding:4px 1px !important;
+  }
+  html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .slk-native-sort {
+    width:40px !important; height:40px !important; min-width:40px !important;
+  }
 }
 html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *))) .slk-native-sort:focus-within {
   outline:2px solid #1264A3 !important; outline-offset:2px !important;
