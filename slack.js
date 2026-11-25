@@ -1548,8 +1548,59 @@ function stContext() {
     }
 }
 
+// v1.8.169 — 채팅을 불러오는(또는 닫는) 도중에 다시 나가기/들어가기를 누르지 않게 막습니다.
+// SillyTavern 이 채팅을 다 불러오기 전에 닫거나 다른 채팅을 열면, 그 사이에
+// 저장이 꼬여 채팅 파일이 비거나 새 채팅으로 바뀔 수 있습니다.
+const slkChatTransition = (() => {
+    let busyUntil = 0;
+    let startedAt = 0;
+    let lastChatChange = 0;
+    let reason = '';
+    const OPENERS = '#chat .recentChat, .recentChat, .character_select, .group_select, .select_chat_block, .select_chat_block_wrapper, #rm_print_characters_block .bogus_folder_select';
+    // 이벤트가 안 오는 경우(이미 열린 채팅을 다시 누른 경우 등)에도 영영 막히지 않게,
+    // 채팅 화면이 1.5초 동안 그대로면 끝난 것으로 봅니다.
+    const busy = () => {
+        const now = Date.now();
+        if (now >= busyUntil) return false;
+        return now - startedAt < 1500 || now - lastChatChange < 1500;
+    };
+    const start = (why, ms = 15000) => { startedAt = Date.now(); busyUntil = startedAt + ms; reason = why; };
+    const watch = () => {
+        const chat = document.getElementById('chat');
+        if (!chat) { setTimeout(watch, 500); return; }
+        new MutationObserver(() => { lastChatChange = Date.now(); }).observe(chat, { childList: true });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch, { once: true });
+    else watch();
+    // ST 가 다 그린 뒤 저장까지 마무리할 짧은 여유를 둡니다.
+    const finish = () => { if (busy()) busyUntil = Math.min(busyUntil, Date.now() + 600); };
+    const warn = () => window.toastr?.info(reason === 'close' ? '채팅을 닫는 중이에요. 잠시만요.' : '채팅을 불러오는 중이에요. 다 열린 뒤에 눌러 주세요.', '', { timeOut: 1800 });
+    document.addEventListener('click', (e) => {
+        const opener = e.target.closest?.(OPENERS);
+        if (!opener) return;
+        // 같은 클릭 안에서 버튼(핀·이름변경·삭제 등)은 건드리지 않습니다.
+        if (e.target.closest('button, .menu_button, .mes_button, .chatActions, input, select, textarea')) return;
+        if (busy()) { e.preventDefault(); e.stopImmediatePropagation(); warn(); return; }
+        start('open');
+    }, true);
+    const hook = () => {
+        const ctx = stContext();
+        const types = ctx?.eventTypes || ctx?.event_types;
+        if (!ctx?.eventSource || !types) return false;
+        for (const key of ['CHAT_CHANGED', 'CHAT_LOADED']) if (types[key]) ctx.eventSource.on(types[key], finish);
+        return true;
+    };
+    if (!hook()) {
+        let tries = 0;
+        const timer = setInterval(() => { if (hook() || ++tries > 40) clearInterval(timer); }, 500);
+    }
+    return { busy, start, warn };
+})();
+
 function slkCloseChat() {
     // Both header buttons use the same native close-chat action.
+    if (slkChatTransition.busy()) { slkChatTransition.warn(); return; }
+    slkChatTransition.start('close', 8000);
     document.getElementById('option_close_chat')?.click();
 }
 
