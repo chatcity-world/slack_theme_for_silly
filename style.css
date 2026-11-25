@@ -24999,3 +24999,73 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
     overflow:visible!important;
   }
 }
+
+/* v1.8.175 — 팝업 세로 크기 고정: 어떤 팝업이든 화면(모바일은 아래 탭바 위까지) 안에 들어오고,
+   넘치는 내용은 팝업 안에서 스크롤. 버튼 줄은 항상 보이게 아래에 붙어 있음. */
+body.slk-ui { --slk-pop-max: calc(100dvh - 48px); }
+@media screen and (max-width: 1000px) {
+  body.slk-ui { --slk-pop-max: calc(100dvh - env(safe-area-inset-top, 0px) - var(--slk-footer-h, 80px) - 28px); }
+}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v#slk-w#slk-x) dialog.popup[open]:not(:has(#loader, .cropper-container)) {
+  max-height: var(--slk-pop-max) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v#slk-w#slk-x) dialog.popup[open]:not(:has(#loader, .cropper-container)) > .popup-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v#slk-w#slk-x) dialog.popup[open]:not(:has(#loader, .cropper-container)) > .popup-body > .popup-content {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v#slk-w#slk-x) dialog.popup[open]:not(:has(#loader, .cropper-container)) > .popup-body > :is(.popup-controls, .popup-inputs, .popup-input, .popup-crop-wrap) {
+  flex: 0 0 auto !important;
+}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v#slk-w#slk-x) dialog.popup[open]:not(:has(#loader, .cropper-container)) > .popup-body > textarea.popup-input {
+  max-height: 35dvh !important;
+}
+/* 확장이 직접 만든 팝업 창 */
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v#slk-w#slk-x) .slk-modal {
+  max-height: var(--slk-pop-max) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  z-index: 2147483647 !important;
+}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v#slk-w#slk-x) .slk-modal-backdrop {
+  z-index: 2147483646 !important;
+}
+html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v#slk-w#slk-x) .slk-modal-sheet {
+  max-height: 100dvh !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  z-index: 2147483647 !important;
+}
+@media screen and (max-width: 1000px) {
+  /* 모바일: 위(상태바)와 아래 탭바 사이 공간의 가운데에 놓기 */
+  html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v#slk-w#slk-x) dialog.popup[open]:not(:has(#loader, .cropper-container)) {
+    position: fixed !important;
+    inset: calc(env(safe-area-inset-top, 0px) + 14px) 0 calc(var(--slk-footer-h, 80px) + 14px) 0 !important;
+    margin: auto !important;
+    height: fit-content !important;
+    transform: none !important;
+    translate: none !important;
+  }
+}
+@media screen and (max-width: 1000px) {
+  html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v#slk-w#slk-x) .slk-modal-backdrop > .slk-modal, html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-j#slk-k#slk-l#slk-m#slk-n#slk-o#slk-p#slk-q#slk-r#slk-s#slk-t#slk-u#slk-v#slk-w#slk-x) .slk-modal-backdrop > * > .slk-modal {
+    margin-top: calc(env(safe-area-inset-top, 0px) + 14px) !important;
+    margin-bottom: calc(var(--slk-footer-h, 80px) + 14px) !important;
+  }
+}
+:root { --slk-css-version: '1.8.175'; }
