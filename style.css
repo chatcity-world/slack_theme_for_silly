@@ -10129,8 +10129,8 @@ body.slk-ui {
     }
 
     body.slk-ui #Backgrounds .bg-header-row-1 .menu_button i::before {
-        width: 17px !important;
-        height: 17px !important;
+        width: 18px !important;
+        height: 18px !important;
     }
 
     body.slk-ui #Backgrounds .bg-header-row-2 {
@@ -22686,8 +22686,8 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
      padding-block:6px !important;
   }
   html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer.slk-pc-selected > .drawer-content.openDrawer :is(.menu_button,button):focus-visible {
-    outline:2px solid #1264A3 !important;
-     outline-offset:2px !important;
+    outline:none !important;
+     outline-offset:0 !important;
   }
   html body.slk-ui.slk-pc:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer.slk-pc-selected > .drawer-content.openDrawer :is(.inline-drawer-content,.extensions_block,#persona_controls,#ai_response_configuration) > .flex-container.flexFlowColumn {
     row-gap:var(--slk-ds-gap) !important;
@@ -22831,8 +22831,8 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
      padding-block:6px !important;
   }
   html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(.menu_button,button):focus-visible {
-    outline:2px solid #1264A3 !important;
-     outline-offset:2px !important;
+    outline:none !important;
+     outline-offset:0 !important;
   }
   html body.slk-ui:not(.slk-pc):not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e) #top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds) :is(.inline-drawer-content,.extensions_block,#persona_controls,#ai_response_configuration) > .flex-container.flexFlowColumn {
     row-gap:var(--slk-ds-gap) !important;
@@ -24158,7 +24158,7 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(.menu_button,button):not([hidden],.displayNone,.hidden,[style*="display: none"],[style*="display:none"]) { display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-height:var(--slk-pop-control)!important;height:auto!important;padding:0 10px!important;margin-top:0!important;margin-bottom:0!important;border:1px solid #DAD8DA!important;border-radius:8px!important;background:#FFF!important;color:#1D1C1D!important;box-shadow:none!important;text-shadow:none!important;white-space:normal!important;font:600 13px/1.25 var(--slk-font,sans-serif)!important;box-sizing:border-box!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .menu_button :is(i,span.menu_button_text) { transform:none!important;position:static!important;margin:0!important;color:inherit!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(.menu_button,button):hover:not(:disabled,.disabled) { background:#F5F3F5!important; }
-html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(.menu_button,button):focus-visible { outline:2px solid #1264A3!important;outline-offset:2px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(.menu_button,button):focus-visible { outline:none!important;outline-offset:0!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(input:not([type]),input[type="text"],input[type="number"],textarea,select):not(.select2-hidden-accessible) { box-sizing:border-box!important;width:100%!important;min-width:0!important;max-width:100%!important;font:400 var(--slk-pop-field)/1.45 var(--slk-font,sans-serif)!important;border:1px solid #DAD8DA!important;border-radius:8px!important;background-color:#FFF!important;color:#1D1C1D!important;box-shadow:none!important;margin:0!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) :is(input,textarea)::placeholder { color:#8A8A8A!important;opacity:1!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) textarea { min-height:76px!important;padding:8px 10px!important;resize:vertical!important; }
@@ -24177,7 +24177,7 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input[type="checkbox"]:checked { background:#4A154B url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m5%2012%204%204%2010-10%22%2F%3E%3C%2Fsvg%3E") center/14px 14px no-repeat!important;border-color:#4A154B!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input[type="radio"] { border-radius:50%!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input[type="radio"]:checked { border:5px solid #4A154B!important;background:#FFF!important; }
-html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input:is([type="checkbox"],[type="radio"]):focus-visible { outline:2px solid #1264A3!important;outline-offset:2px!important; }
+html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input:is([type="checkbox"],[type="radio"]):focus-visible { outline:none!important;outline-offset:0!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container,label:has(>input[name="regex_import_target"])) input:is([type="checkbox"],[type="radio"]):disabled { opacity:.45!important;cursor:default!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .note-link-span { display:inline-block!important;vertical-align:middle!important;width:16px!important;height:16px!important;min-width:16px!important;margin:0 2px!important;padding:0!important;font-size:0!important;color:#8A8A8A!important;background:currentColor!important;mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%2F%3E%3Cpath%20d%3D%22M9%209a3%203%200%201%201%204%203c-1%20.5-1%201.2-1%202m0%203h.01%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat!important;-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%2F%3E%3Cpath%20d%3D%22M9%209a3%203%200%201%201%204%203c-1%20.5-1%201.2-1%202m0%203h.01%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat!important;border:0!important;box-shadow:none!important; }
 html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k):not(#slk-l):not(#slk-m):not(#slk-n):not(#slk-o):not(#slk-p):not(#slk-q) dialog.popup :is(.regex_editor,.regex-debugger-container) .note-link-span::before { content:none!important;display:none!important; }
@@ -24277,7 +24277,7 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
     border-color:#1264A3!important;
     background:#1264A3 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 4 4 10-10'/%3E%3C/svg%3E") center/15px 15px no-repeat!important;
   }
-  html body.slk-ui #chat .mes :is(input.del_checkbox[type="checkbox"], .del_checkbox input[type="checkbox"]):focus-visible {outline:2px solid #1264A3!important;}
+  html body.slk-ui #chat .mes :is(input.del_checkbox[type="checkbox"], .del_checkbox input[type="checkbox"]):focus-visible {outline:none!important;}
   html body.slk-ui #form_sheld #dialogue_del_mes :is(.menu_button,#dialogue_del_mes_ok,#dialogue_del_mes_cancel) {
     box-sizing:border-box!important; display:inline-flex!important; align-items:center!important; justify-content:center!important;
     padding:0 12px!important; line-height:20px!important; text-align:center!important;
@@ -24550,4 +24550,118 @@ html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not
 }
 @media screen and (max-width:340px) {
   html body.slk-ui:not(#slk-a):not(#slk-b):not(#slk-c):not(#slk-d):not(#slk-e):not(#slk-f):not(#slk-g):not(#slk-h):not(#slk-i):not(#slk-j):not(#slk-k) #top-settings-holder > .drawer > #Backgrounds #bg-header-fixed .bg-header-row-1 {--slk-bg-action-w:30px;--slk-bg-pill-pad:2px;}
+}
+
+/* v1.8.111 — Background header icons: match preset toolbar's 18px glyphs. */
+@media screen {
+  html body.slk-ui #Backgrounds #bg-header-fixed .bg-header-row-1 > #auto_background i.fa-wand-magic {
+    --slk-ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m21.64%203.64-1.28-1.28a1.21%201.21%200%200%200-1.72%200L2.36%2018.64a1.21%201.21%200%200%200%200%201.72l1.28%201.28a1.2%201.2%200%200%200%201.72%200L21.64%205.36a1.2%201.2%200%200%200%200-1.72%22%2F%3E%3Cpath%20d%3D%22m14%207%203%203%22%2F%3E%3Cpath%20d%3D%22M5%206v4%22%2F%3E%3Cpath%20d%3D%22M19%2014v4%22%2F%3E%3Cpath%20d%3D%22M10%202v2%22%2F%3E%3Cpath%20d%3D%22M7%208H3%22%2F%3E%3Cpath%20d%3D%22M21%2016h-4%22%2F%3E%3Cpath%20d%3D%22M11%203H9%22%2F%3E%3C%2Fsvg%3E");
+  }
+}
+
+/* v1.8.112 — Background gallery: four columns by default, roomy tile actions. */
+@media screen {
+    body.slk-ui #Backgrounds :is(#bg_menu_content,#bg_custom_content),
+    body.slk-ui #Backgrounds .bg_folder_grid.bg_list {
+        grid-template-columns: repeat(var(--bg-thumb-columns, 4), minmax(0,1fr)) !important;
+        gap: 8px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+    body.slk-ui #Backgrounds :is(.bg_example,.bg_folder_tile) {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        min-height: 72px !important;
+        height: auto !important;
+    }
+    body.slk-ui #Backgrounds .bg_example {
+        aspect-ratio: 4 / 3 !important;
+    }
+    /* The folder view exposes an additional action (set cover). */
+    body.slk-ui #Backgrounds.in-folder-view .bg_example {
+        min-height: 102px !important;
+    }
+    body.slk-ui #Backgrounds :is(.bg_example,.bg_folder_tile) :is(.jg-menu,.bg_folder_tile_menu) {
+        position: absolute !important;
+        inset: 50% 3px auto !important;
+        margin: 0 auto !important;
+        width: max-content !important;
+        max-width: calc(100% - 6px) !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 4px !important;
+        padding: 3px !important;
+        border-radius: 8px !important;
+        background: rgba(0,0,0,.72) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        transform: translateY(-50%) !important;
+        z-index: 5 !important;
+    }
+    body.slk-ui #Backgrounds :is(.bg_example,.bg_folder_tile) :is(.jg-menu,.bg_folder_tile_menu) > .jg-button {
+        flex: 0 0 min(28px, calc((100% - 4px) / 2)) !important;
+        width: 28px !important;
+        min-width: 0 !important;
+        max-width: 28px !important;
+        height: 28px !important;
+        min-height: 28px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+        border-radius: 6px !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    body.slk-ui #Backgrounds :is(.bg_example,.bg_folder_tile) .jg-button::before {
+        width: 15px !important;
+        height: 15px !important;
+        margin: 0 !important;
+        flex-shrink: 0;
+    }
+    body.slk-ui #Backgrounds :is(.bg_example,.bg_folder_tile) .jg-button:is(:hover,:active) {
+        background-color: rgba(255,255,255,.18) !important;
+    }
+    body.slk-ui #Backgrounds.bg-selection-mode #bg_menu_content .bg_example .jg-menu {
+        display: none !important;
+    }
+}
+@media screen and (min-width:1001px) {
+    body.slk-ui #Backgrounds .bg_example:is(:hover,:focus-within) .BGSampleTitle,
+    body.slk-ui #Backgrounds .bg_folder_tile:is(:hover,:focus-within) .bg_folder_tile_overlay {
+        opacity: 0 !important;
+    }
+    body.slk-ui #Backgrounds.bg-selection-mode #bg_menu_content .bg_example .BGSampleTitle {
+        opacity: 1 !important;
+    }
+}
+@media screen and (max-width:1000px) {
+    body.slk-ui #Backgrounds :is(.bg_example,.bg_folder_tile).mobile-menu-open :is(.jg-menu,.bg_folder_tile_menu) {
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    body.slk-ui #Backgrounds .bg_example.mobile-menu-open .BGSampleTitle,
+    body.slk-ui #Backgrounds .bg_folder_tile.mobile-menu-open .bg_folder_tile_overlay {
+        opacity: 0 !important;
+    }
+    body.slk-ui #Backgrounds.bg-selection-mode #bg_menu_content .bg_example .BGSampleTitle {
+        opacity: 1 !important;
+    }
+}
+
+/* 1.8.113 — action focus: no persistent blue ring on click/tap.
+   Keep input focus and selection/checked indicators intact. */
+html body.slk-ui :is(button, .menu_button, [role="button"], [role="tab"], input[type="button"], input[type="submit"], input[type="reset"]):not(.bg_example,.bg_folder_tile):focus {
+    outline: none !important;
+    outline-offset: 0 !important;
+}
+html body.slk-ui :is(input[type="button"],input[type="submit"],input[type="reset"]):focus {
+    box-shadow: none !important;
+}
+/* A non-ring cue for keyboard-visible action focus. */
+html body.slk-ui :is(button,.menu_button,[role="button"],[role="tab"],input[type="button"],input[type="submit"],input[type="reset"]):not(.bg_example,.bg_folder_tile):focus-visible {
+    filter: brightness(.86);
 }

@@ -1775,6 +1775,46 @@ function setupExtensionNeutralColors() {
     setTimeout(schedule, 1600);
 }
 
+
+// v1.8.112: Initialize native background thumbnail columns to four once.
+// Keep ST's own zoom buttons and persistent preference authoritative afterwards.
+function slkInitializeBackgroundColumns() {
+    const key = 'slk-bg-four-columns-v112';
+    try { if (localStorage.getItem(key) === '1') return; } catch { /* optional persistence */ }
+    const panel = document.getElementById('Backgrounds');
+    if (!panel) return;
+    let queued = false, complete = false;
+    const sync = () => {
+        queued = false;
+        if (complete || !SLK_UI_SETTINGS.enabled || !panel.classList.contains('openDrawer')) return;
+        const read = () => Number(document.documentElement.style.getPropertyValue('--bg-thumb-columns').trim());
+        let count = read();
+        if (!Number.isInteger(count) || count < 2 || count > 8) return;
+        for (let i = 0; i < 6 && count !== 4; i++) {
+            const button = document.getElementById(count > 4 ? 'bg_thumb_zoom_in' : 'bg_thumb_zoom_out');
+            if (!button || button.disabled) break;
+            button.click();
+            const next = read();
+            if (next === count || !Number.isInteger(next) || next < 2 || next > 8) break;
+            count = next;
+        }
+        if (count === 4) {
+            complete = true;
+            observer.disconnect();
+            try { localStorage.setItem(key, '1'); } catch { /* current session still works */ }
+        }
+    };
+    const schedule = () => {
+        if (!queued && !complete && panel.classList.contains('openDrawer')) {
+            queued = true;
+            requestAnimationFrame(sync);
+        }
+    };
+    const observer = new MutationObserver(schedule);
+    observer.observe(panel, {attributes: true, attributeFilter: ['class']});
+    schedule();
+}
+
 function init() {
     // Disabled mode is deliberately a minimal settings-only loader. Never
     // inject Slack header, footer, AI tabs, icon replacements, or observers.
@@ -1806,6 +1846,7 @@ function init() {
     setupPersonaAccordion();
     watchCharView();
     setupComposer();
+    slkInitializeBackgroundColumns();
     watchChat();
     watchHeaderCompact();
     updateHeader();
