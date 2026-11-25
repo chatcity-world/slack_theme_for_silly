@@ -5871,3 +5871,47 @@ function slkConnectPromptManager() {
         }
     }, true);
 })();
+
+// v1.8.174 — 채팅방 들어갈 때/나갈 때 렉: body/html 에 걸린 :has() 를 상태 클래스로 대신합니다.
+// body 나 html 에 :has() 가 걸려 있으면, 메시지가 하나 들어올 때마다 브라우저가 화면 전체
+// (요소 2천여 개)의 스타일을 다시 계산합니다. 같은 조건을 여기서 한 번씩만 확인해
+// body/html 에 slk-hN 클래스로 달고, CSS 는 그 클래스만 봅니다.
+(function slkRootHasStates() {
+    const STATES = [["slk-h0", "body", "#user-settings-button .drawer-icon.openIcon"], ["slk-h1", "body", "#backgrounds-button .drawer-icon.openIcon"], ["slk-h2", "body", ".drawer-content.openDrawer"], ["slk-h3", "body", "#left-nav-panel.openDrawer"], ["slk-h4", "body", "#right-nav-panel.openDrawer"], ["slk-h5", "body", "#ai-config-button .drawer-icon.openIcon"], ["slk-h6", "body", "#sys-settings-button .drawer-icon.openIcon"], ["slk-h7", "body", "#advanced-formatting-button .drawer-icon.openIcon"], ["slk-h8", "body", "#WI-SP-button .drawer-icon.openIcon"], ["slk-h9", "body", "#extensions-settings-button .drawer-icon.openIcon"], ["slk-h10", "body", "#persona-management-button .drawer-icon.openIcon"], ["slk-h11", "body", "#rightNavHolder .drawer-icon.openIcon"], ["slk-h12", "body", "#top-settings-holder > .drawer .drawer-icon.openIcon"], ["slk-h13", "html", "> body.slk-ui.slk-composing"], ["slk-h14", "html", "> body.slk-ui.slk-in-chat:is(.slk-ui)"], ["slk-h15", "html", "> body.slk-ui.slk-in-chat"], ["slk-h16", "html", "> body.slk-ui.slk-in-chat:not(.slk-panel-opening)"], ["slk-h17", "body", "#completion_prompt_manager_popup.openDrawer"], ["slk-h18", "html", "> body.slk-ui[data-slk-header-view=\"chat\"]"], ["slk-h19", "html", "> body.slk-ui[data-slk-header-view].slk-header-compact"], ["slk-h20", "html", "> body.slk-ui[data-slk-header-view]:not([data-slk-header-view=\"chat\"]):not(.slk-header-compact)"], ["slk-h21", "html", "> body.slk-ui.slk-pc"], ["slk-h22", "body", "#top-settings-holder > .drawer.slk-pc-selected > .drawer-content.openDrawer .select2-container--open"], ["slk-h23", "body", "#top-settings-holder > .drawer > .drawer-content:is(#left-nav-panel,#rm_api_block,#AdvancedFormatting,#WorldInfo,#rm_extensions_block,#PersonaManagement,#right-nav-panel,#user-settings-block,#Backgrounds):not(.slk-nav-hidden) .select2-container--open"], ["slk-h24", "body", "#top-settings-holder > .drawer > .drawer-content:is(#WorldInfo,#PersonaManagement,#right-nav-panel[data-slk-view=\"edit\"]):not(.slk-nav-hidden) .select2-container--open"]];
+    let frame = 0;
+    function evaluate() {
+        frame = 0;
+        const html = document.documentElement;
+        const body = document.body;
+        if (!body) return;
+        for (const [cls, anchor, arg] of STATES) {
+            let on = false;
+            try {
+                if (anchor === 'html') {
+                    const sel = arg.trim().replace(/^>\s*/, '');
+                    on = !!html.querySelector(':scope > ' + sel);
+                } else {
+                    on = !!body.querySelector(arg.trim().startsWith('>') ? ':scope ' + arg : arg);
+                }
+            } catch { on = false; }
+            const el = anchor === 'html' ? html : body;
+            if (el.classList.contains(cls) !== on) el.classList.toggle(cls, on);
+        }
+    }
+    // 같은 순간(그리기 전)에 반영되도록 마이크로태스크에서 바로 다시 계산합니다.
+    let queued = false;
+    const schedule = () => {
+        if (queued) return;
+        queued = true;
+        queueMicrotask(() => { queued = false; evaluate(); });
+    };
+    function start() {
+        evaluate();
+        slkObserveOutsideChat(schedule, document.documentElement, {subtree:true, childList:true, attributes:true, attributeFilter:['class','data-slk-view','style','hidden','open']});
+        // body 자신의 클래스·헤더 상태 (위 감시에는 data-slk-header-view 가 없음)
+        new MutationObserver(schedule).observe(document.body, {attributes:true, attributeFilter:['class','data-slk-header-view']});
+        window.addEventListener('slk-ui-settings-changed', schedule);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
+    else start();
+})();
