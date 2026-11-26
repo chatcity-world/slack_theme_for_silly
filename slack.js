@@ -3948,7 +3948,7 @@ function slkObserveChatContent(callback) {
             });
         });
     };
-    // v1.8.183: constrain vertical overflow only, preserving the extension’s positioning.
+    // v1.8.184: measured vertical fit of open foreign windows; never rewrite horizontal positioning.
     const mobile = matchMedia('(max-width: 1000px)');
     const semantic = '.slk-modal,.popup,[role="dialog"],dialog';
     const named = `${semantic},[id*="modal" i],[class*="modal" i],[id*="popup" i],[class*="popup" i]`;
@@ -3963,32 +3963,79 @@ function slkObserveChatContent(callback) {
         const cs = getComputedStyle(el);
         return cs.display !== 'none' && cs.visibility !== 'hidden' && el.getClientRects().length > 0;
     };
+    // Save only the properties we change; restore on close/disable. Inline
+    // important is needed for extension windows with their own important sizing.
+    const overrides = new WeakMap();
+    const watched = new Set();
+    const resizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(() => {
+        if (enabled() && watched.size) schedule();
+    }) : null;
+    function watch(win) {
+        if (!resizeObserver || watched.has(win)) return;
+        watched.add(win); resizeObserver.observe(win);
+    }
+    function unwatch(win) {
+        if (watched.delete(win)) resizeObserver?.unobserve(win);
+    }
+    function setFit(win, prop, value) {
+        let props = overrides.get(win);
+        if (!props) { props = new Map(); overrides.set(win,props); }
+        const current = win.style.getPropertyValue(prop), priority = win.style.getPropertyPriority(prop);
+        const prev = props.get(prop);
+        if (!prev || current !== prev.applied || priority !== 'important') props.set(prop,{value:current,priority,applied:value});
+        else prev.applied = value;
+        if (current !== value || priority !== 'important') win.style.setProperty(prop,value,'important');
+    }
     function resetFit(win) {
+        const props = overrides.get(win);
+        if (props) for (const [prop, saved] of props) {
+            // Do not overwrite an extension's newer style assignment.
+            if (win.style.getPropertyValue(prop) !== saved.applied || win.style.getPropertyPriority(prop) !== 'important') continue;
+            if (saved.value) win.style.setProperty(prop,saved.value,saved.priority);
+            else win.style.removeProperty(prop);
+        }
+        overrides.delete(win);
         win.classList.remove('slk-foreign-fit');
-        if (win.style.getPropertyValue('--slk-foreign-height-limit')) win.style.removeProperty('--slk-foreign-height-limit');
     }
     function clear(root, data) {
         root.classList.remove('slk-foreign-overlay');
         data.win.classList.remove('slk-foreign-window');
+        unwatch(data.win);
         resetFit(data.win);
         tracked.delete(root);
     }
     function fit(win) {
-        const r = win.getBoundingClientRect();
         const v = window.visualViewport;
         const top = v?.offsetTop ?? 0, h = v?.height || innerHeight;
-        // A little breathing room at the bottom; don't alter x, width, inset,
-        // position, margin, or the extension's centering transform.
-        const bottom = top + h - 12;
-        if (h <= 24 || r.height <= 0 || r.bottom <= bottom + 1 && r.top >= top - 1) return;
-        const available = Math.floor(bottom - Math.max(top + 12, r.top));
-        if (available <= 0) return;
-        const old = parseFloat(win.style.getPropertyValue('--slk-foreign-height-limit'));
-        const limit = Math.min(available, Number.isFinite(old) ? old : Infinity);
-        if (limit < r.height - 1 || !win.classList.contains('slk-foreign-fit')) {
-            const value = `${limit}px`;
-            if (win.style.getPropertyValue('--slk-foreign-height-limit') !== value) win.style.setProperty('--slk-foreign-height-limit',value);
-            win.classList.add('slk-foreign-fit');
+        const upper = top + 12, bottom = top + h - 12;
+        let r = win.getBoundingClientRect();
+        if (h <= 24 || r.height <= 0 || (v && v.scale > 1.05)) return;
+        const existing = overrides.get(win);
+        const clipped = r.bottom > bottom + 1 || r.top < upper - 1;
+        if (!clipped && !existing) return;
+        // Use the actual visible viewport and box position, not document height.
+        // A centered tall popup may start above the viewport; allow the full
+        // available height in that case. Do not touch left/right/width/transform.
+        const available = Math.floor(bottom - Math.max(upper, Math.min(r.top, bottom - Math.min(160,h-24))));
+        const old = parseFloat(existing?.get('max-height')?.applied);
+        const limit = Math.max(1,Math.min(h-24,available,Number.isFinite(old) ? old : Infinity));
+        setFit(win,'box-sizing','border-box');
+        setFit(win,'min-height','0px');
+        setFit(win,'max-height',`${limit}px`);
+        setFit(win,'overflow-y','auto');
+        win.classList.add('slk-foreign-fit');
+        r = win.getBoundingClientRect();
+        // Only a real vertical displacement after resizing warrants moving it.
+        // Adjust top OR bottom, preserving all horizontal positioning properties.
+        const delta = r.height <= h-24 ? (r.top < upper-1 ? upper-r.top : r.bottom > bottom+1 ? bottom-r.bottom : 0) : 0;
+        if (Math.abs(delta) > 1) {
+            const cs = getComputedStyle(win);
+            if (cs.position === 'fixed' || cs.position === 'absolute' || cs.position === 'relative') {
+                const t = parseFloat(cs.top), b = parseFloat(cs.bottom);
+                if (cs.top !== 'auto' && Number.isFinite(t)) setFit(win,'top',`${t+delta}px`);
+                else if (cs.bottom !== 'auto' && Number.isFinite(b)) setFit(win,'bottom',`${b-delta}px`);
+                else if (cs.position === 'relative') setFit(win,'top',`${delta}px`);
+            }
         }
     }
     function classifyMobile(root) {
@@ -4018,7 +4065,7 @@ function slkObserveChatContent(callback) {
                 });
             if (!win && explicit) win = root;
             if (!win) return;
-        } else if (!explicit && !(r.width > innerWidth * .6 && r.height > 120 && root.querySelector(controls))) return;
+        } else if (!explicit && !(r.width > innerWidth * .6 && (r.height > 120 || root.matches(named)) && root.querySelector(controls))) return;
         if (!win.querySelector(controls) || win.matches(ignored) || win.closest(excluded)) return;
         if ([...tracked.values()].some(data => data.win === win)) return;
         // Desktop's broad theme marker forces position/width/backgrounds. Do not apply it on mobile.
@@ -4042,8 +4089,8 @@ function slkObserveChatContent(callback) {
         let open = false;
         for (const [root,data] of tracked) {
             if (!root.isConnected || !data.win.isConnected || !root.contains(data.win)) { clear(root,data); continue; }
-            if (visible(root) && visible(data.win)) { open = true; fit(data.win); }
-            else resetFit(data.win);
+            if (visible(root) && visible(data.win)) { open = true; watch(data.win); fit(data.win); }
+            else { unwatch(data.win); resetFit(data.win); }
         }
         document.documentElement.classList.toggle('slk-foreign-modal-open',open);
     }

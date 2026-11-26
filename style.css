@@ -25000,16 +25000,11 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
   }
 }
 
-/* v1.8.183 — third-party mobile windows: keep native positioning, cap height only. */
+/* v1.8.184 — mobile foreign windows; measured vertical fit is reversible in JS. */
 @media screen and (max-width:1000px) {
   html.slk-foreign-modal-open {--slk-footer-modal-display:none;}
-  html body.slk-ui .slk-foreign-overlay {z-index:2147483647!important;}
-  html body.slk-ui .slk-foreign-window {z-index:2147483647!important;}
-  html body.slk-ui .slk-foreign-window.slk-foreign-fit {
-    box-sizing:border-box!important;min-height:0!important;
-    max-height:min(var(--slk-foreign-height-limit,100dvh),calc(100dvh - 24px))!important;
-    overflow-y:auto!important;overscroll-behavior-y:contain;
-  }
+  html body.slk-ui .slk-foreign-overlay, html body.slk-ui .slk-foreign-window {z-index:2147483647!important;}
+  html body.slk-ui .slk-foreign-window.slk-foreign-fit {overscroll-behavior-y:contain;}
 }
 
 /* v1.8.177 — desktop utility rail only; no mobile or chat selectors. */
