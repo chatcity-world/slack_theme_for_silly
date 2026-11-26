@@ -3478,6 +3478,8 @@ function slkObserveMessageChrome(chat, callback) {
 // v1.4.58 — 시작(로딩) 화면을 처음부터 슬랙 모양으로.
 // 확장은 ST가 켜진 뒤에 불러와지므로, ST가 설정을 읽자마자 적용하는 '사용자 지정 CSS'에
 // 표시된 블록 하나를 자동으로 넣어 둠 (다음 실행부터 적용). Slack UI를 끄면 자동으로 뺌.
+// v1.8.205 — 이제 사용자 지정 CSS 에는 아무것도 넣지 않습니다. 시작 화면은 확장 파일(index.js)이 처리하고,
+// 예전 버전이 넣어 둔 블록은 확장이 켜질 때(Slack UI 를 꺼 둔 기기 포함) 자동으로 지웁니다.
 (function slkBootSplashCss() {
     const START = '/* ==== Slack UI 시작 화면 (자동 추가 — 지우지 마세요) ==== */';
     const END = '/* ==== /Slack UI 시작 화면 ==== */';
@@ -3523,9 +3525,10 @@ function slkObserveMessageChrome(chat, callback) {
         if (!pu || typeof pu.custom_css !== 'string') return false;
         const current = pu.custom_css;
         const base = strip(current);
-        const next = SLK_UI_SETTINGS.enabled ? (base ? base + '\n\n' : '') + buildBlock() : base;
+        // v1.8.205: 더 이상 사용자 지정 CSS 에 넣지 않음 — 예전에 넣어 둔 블록은 지우기만 함.
+        const next = base;
         if (next === current) return true;
-        setCss(pu, next, !SLK_UI_SETTINGS.enabled);
+        setCss(pu, next, true);
         ctx.saveSettingsDebounced?.();
         return true;
     };
@@ -3534,7 +3537,7 @@ function slkObserveMessageChrome(chat, callback) {
         const pu = ctx?.powerUserSettings;
         if (!pu || typeof pu.custom_css !== 'string') return false;
         const base = strip(pu.custom_css);
-        const next = enabled ? (base ? base + '\n\n' : '') + buildBlock() : base;
+        const next = base; // v1.8.205: 켜고 끌 때도 넣지 않고 지우기만
         if (next === pu.custom_css) return true;
         switching = true;
         const event = (ctx.eventTypes || ctx.event_types)?.SETTINGS_UPDATED;
@@ -3565,8 +3568,7 @@ function slkObserveMessageChrome(chat, callback) {
     const start = () => {
         let tries = 0;
         const tick = () => { if (!sync() && ++tries < 30) setTimeout(tick, 1000); };
-        if (!SLK_UI_SETTINGS.enabled) tick();
-        else setTimeout(tick, 1500);
+        tick();
         // 테마를 바꾸면 사용자 지정 CSS가 통째로 바뀌므로 그때도 다시 넣음
         document.addEventListener('change', (e) => {
             if (e.target && (e.target.id === 'themes' || e.target.id === 'customCSS')) setTimeout(sync, 800);
