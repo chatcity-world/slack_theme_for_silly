@@ -4422,7 +4422,7 @@ function slkObserveChatContent(callback) {
             if (!contextHeader) {
                 contextHeader = document.createElement('div');
                 contextHeader.id = 'slk-pc-channel-heading';
-                contextHeader.innerHTML = `<button id="slk-pc-chat-back" type="button" title="채팅 닫기" aria-label="채팅 닫기" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><span class="slk-pc-channel-symbol">#</span><span class="slk-ch-avatar-wrap" hidden><img class="slk-pc-ch-av" alt="" /></span><strong id="slk-pc-channel-title">최근 채팅</strong><span class="slk-pc-ch-count" hidden>${CHAT_BUBBLE_SVG}<span class="slk-pc-ch-n">0</span></span>`;
+                contextHeader.innerHTML = `<button id="slk-pc-chat-back" type="button" title="채팅 닫기" aria-label="채팅 닫기" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><span class="slk-pc-channel-symbol">#</span><span class="slk-ch-avatar-wrap" hidden><img class="slk-pc-ch-av" alt="" /></span><strong id="slk-pc-channel-title">Recent Chats</strong><span class="slk-pc-ch-count" hidden>${CHAT_BUBBLE_SVG}<span class="slk-pc-ch-n">0</span></span>`;
                 contextHeader.querySelector('#slk-pc-chat-back').addEventListener('click', slkCloseChat);
                 document.body.append(contextHeader);
             }
@@ -4436,7 +4436,7 @@ function slkObserveChatContent(callback) {
         if (!contextHeader || !contextTitle) return;
         const mobile = document.getElementById('slk-chat-title');
         const mobileImg = mobile?.querySelector('.slk-ch-av');
-        const text = inChat ? (mobile?.querySelector('.slk-ch-name')?.textContent || '채팅') : '최근 채팅';
+        const text = inChat ? (mobile?.querySelector('.slk-ch-name')?.textContent || '채팅') : 'Recent Chats';
         if (contextTitle.textContent !== text) contextTitle.textContent = text;
         contextHeader.classList.toggle('slk-pc-is-chat', inChat);
         const back = contextHeader.querySelector('#slk-pc-chat-back');
