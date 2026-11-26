@@ -25076,3 +25076,8 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
   html body.slk-ui #slk-header #slk-header-persona:focus-visible,html body.slk-ui #slk-header #slk-settings-btn:focus-visible {outline:2px solid currentColor!important;outline-offset:-2px!important;}
 }
 @media screen and (min-width:1001px) {#slk-header-persona {display:none!important;}}
+
+/* v1.8.191 - Mobile footer glyphs only. */
+@media screen and (max-width:1000px) {
+  html > #slk-mobile-footer > .slk-footer-tab > svg {width:24px!important;height:24px!important;}
+}
