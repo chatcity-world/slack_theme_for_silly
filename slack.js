@@ -3210,6 +3210,7 @@ function slkObserveMessageChrome(chat, callback) {
     // v1.8.164: loading history must not monopolize the main thread.
     // Keep all messages eligible (no visibility gate or HTML virtualization).
     const waiting = new Set();
+    let waitingOrder = [];
     let attachTimer = null;
     function scheduleAttach() {
         if (attachTimer === null && waiting.size) attachTimer = setTimeout(drainAttach, 0);
@@ -3221,7 +3222,8 @@ function slkObserveMessageChrome(chat, callback) {
         // Newest first: the bottom of a newly loaded chat is normally visible.
         // Every message is processed, including history outside the viewport.
         let count = 0;
-        for (const mes of waiting) {
+        while (waitingOrder.length) {
+            const mes = waitingOrder.pop();
             waiting.delete(mes);
             if (chat.contains(mes) && !entries.has(mes)) { attach(mes); added.push(mes); }
             if (++count >= 12 || performance.now() >= deadline) break;
@@ -3238,10 +3240,11 @@ function slkObserveMessageChrome(chat, callback) {
         }
         // Place new arrivals before unprocessed history, without duplicating work.
         if (found.length) {
-            const previous = [...waiting];
-            waiting.clear();
-            for (let i = found.length - 1; i >= 0; i--) if (!entries.has(found[i])) waiting.add(found[i]);
-            for (const mes of previous) waiting.add(mes);
+            for (const mes of found) {
+                if (entries.has(mes) || waiting.has(mes) || !chat.contains(mes)) continue;
+                waiting.add(mes);
+                waitingOrder.push(mes);
+            }
             scheduleAttach();
         }
     }
@@ -3345,11 +3348,25 @@ function slkObserveMessageChrome(chat, callback) {
         }
         if (removed) {
             for (const mes of waiting) if (!chat.contains(mes)) waiting.delete(mes);
+            if (waitingOrder.length !== waiting.size) waitingOrder = waitingOrder.filter(mes => waiting.has(mes));
+            if (!waiting.size && attachTimer !== null) {
+                clearTimeout(attachTimer);
+                attachTimer = null;
+            }
+            const affected = new Set();
             for (const [mes, entry] of entries) {
                 if (!chat.contains(mes)) {
                     entry.group.messages.delete(mes);
                     entries.delete(mes);
-                    markDirty(entry.group);
+                    affected.add(entry.group);
+                }
+            }
+            for (const group of affected) {
+                if (group.messages.size) markDirty(group);
+                else {
+                    group.observer.disconnect();
+                    groups.delete(group);
+                    dirty.delete(group);
                 }
             }
         }

@@ -18324,7 +18324,7 @@ html body.slk-ui #select_chat_popup #select_chat_div .select_chat_block[highligh
 @media screen and (min-width: 1001px) {
     /* 슬랙 데스크톱 입력창: 둥근 네모 테두리, 위 입력칸 + 아래 도구 줄 */
     html body.slk-ui.slk-pc #form_sheld #send_form {
-        border: 1px solid #BBBBBB !important;
+        border: 1px solid #DEDEDE !important;
         border-radius: 8px !important;
         background: #FFFFFF !important;
         box-shadow: none !important;
@@ -25080,4 +25080,20 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
 /* v1.8.191 - Mobile footer glyphs only. */
 @media screen and (max-width:1000px) {
   html > #slk-mobile-footer > .slk-footer-tab > svg {width:24px!important;height:24px!important;}
+}
+
+/* v1.8.197 — PC composer: show an inert send glyph when ST hides its native button. */
+@media screen and (min-width: 1001px) {
+    html body.slk-ui.slk-pc:not([data-generating="true"]):not([data-swiping="true"]) #form_sheld:not(.isExecutingCommandsFromChatInput) #send_form.slk-compose-open #nonQRFormItems:has(> #rightSendForm > #send_but:is(.displayNone,[hidden],[style*="display: none"],[style*="display:none"]))::before {
+        content: '' !important;
+        display: block !important;
+        order: 23;
+        flex: 0 0 36px;
+        width: 36px;
+        height: 36px;
+        background-color: #ABABAB;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3.7%203.3a.6.6%200%200%201%20.8-.7l16.3%208.8a.7.7%200%200%201%200%201.2L4.5%2021.4a.6.6%200%200%201-.8-.7L6%2012z%22%2F%3E%3Cpath%20d%3D%22M6%2012h7%22%2F%3E%3C%2Fsvg%3E") center / 20px 20px no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3.7%203.3a.6.6%200%200%201%20.8-.7l16.3%208.8a.7.7%200%200%201%200%201.2L4.5%2021.4a.6.6%200%200%201-.8-.7L6%2012z%22%2F%3E%3Cpath%20d%3D%22M6%2012h7%22%2F%3E%3C%2Fsvg%3E") center / 20px 20px no-repeat;
+        pointer-events: none;
+    }
 }
