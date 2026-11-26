@@ -25097,3 +25097,11 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
         pointer-events: none;
     }
 }
+
+/* v1.8.199 — Optical vertical alignment of the empty mobile composer only. */
+@media screen and (max-width:1000px) {
+    html body.slk-ui #form_sheld #send_form:not(.slk-compose-open) #send_textarea:placeholder-shown {
+        padding-top: 10px !important;
+        padding-bottom: 8px !important;
+    }
+}
