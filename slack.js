@@ -2382,7 +2382,7 @@ if (SLK_UI_SETTINGS.enabled) {
         if (!footer) return;
         const expanded = document.body.classList.contains('slk-composing') ||
             !!document.getElementById('send_form')?.classList.contains('slk-compose-open');
-        const display = expanded ? 'none' : 'flex';
+        const display = expanded ? 'none' : 'var(--slk-footer-modal-display, flex)';
         if (footer.style.getPropertyValue('display') !== display || footer.style.getPropertyPriority('display') !== 'important')
             footer.style.setProperty('display', display, 'important');
         if (footer.getAttribute('aria-hidden') !== String(expanded)) footer.setAttribute('aria-hidden', String(expanded));
@@ -2443,7 +2443,7 @@ if (SLK_UI_SETTINGS.enabled) {
         if (footer.parentElement !== document.documentElement) document.documentElement.appendChild(footer);
         // 모바일의 위치·표시를 인라인 !important로 고정. 외부 테마의 선택자보다 우선합니다.
         setImportant(footer, {
-            'position': 'fixed', 'display': 'flex', 'visibility': 'var(--slk-footer-modal-visibility, visible)',
+            'position': 'fixed', 'display': 'var(--slk-footer-modal-display, flex)', 'visibility': 'var(--slk-footer-modal-visibility, visible)',
             'opacity': '1', 'pointer-events': 'var(--slk-footer-modal-pointer, auto)', 'box-sizing': 'border-box',
             'left': '12px', 'right': '12px', 'width': 'auto',
             'top': 'calc(100dvh - 70px - env(safe-area-inset-bottom, 0px))',
@@ -3948,10 +3948,12 @@ function slkObserveChatContent(callback) {
             });
         });
     };
-    // v1.8.175: mobile geometry only, no DOM relocation or message observation.
+    // v1.8.181: keep third-party mobile layout; fit only genuinely clipped windows.
     const mobile = matchMedia('(max-width: 1000px)');
     const semantic = '.slk-modal,.popup,[role="dialog"],dialog';
+    const named = `${semantic},[id*="modal" i],[class*="modal" i],[id*="popup" i],[class*="popup" i]`;
     const ignored = `${OURS},#sheld,#select_chat_popup,#shadow_select_chat_popup,#loader,.slk-no-theme,[data-slk-no-theme],.zoomed_avatar,.fullscreen,.popup-fullscreen`;
+    const excluded = '#chat,.mes_text,.slk-no-theme,[data-slk-no-theme],dialog.popup,.popup:has(> .popup-body),#completion_prompt_manager_popup,#select_chat_popup';
     const controls = 'button,textarea,input,select,.menu_button,[role="button"]';
     const tracked = new Map(), pending = new Set();
     let frame = 0, t = null;
@@ -3963,46 +3965,54 @@ function slkObserveChatContent(callback) {
     };
     function clear(root, data) {
         root.classList.remove('slk-foreign-overlay');
-        data.win.classList.remove('slk-foreign-window');
+        data.win.classList.remove('slk-foreign-window','slk-foreign-fit');
         tracked.delete(root);
     }
+    function fit(win) {
+        if (win.classList.contains('slk-foreign-fit')) return;
+        const r = win.getBoundingClientRect();
+        const v = window.visualViewport;
+        const top = v?.offsetTop || 0, left = v?.offsetLeft || 0;
+        const h = v?.height || innerHeight, w = v?.width || innerWidth;
+        if (r.top < top - 1 || r.left < left - 1 || r.bottom > top + h + 1 || r.right > left + w + 1) win.classList.add('slk-foreign-fit');
+    }
     function classifyMobile(root) {
-        if (root.parentElement !== document.body || root.matches(ignored) || !visible(root)) return;
+        if (!root.isConnected || root.matches(ignored) || root.closest(excluded) || !visible(root)) return;
         const prior = tracked.get(root);
-        if (prior && prior.win.isConnected && root.contains(prior.win)) return;
+        if (prior && prior.win.isConnected && root.contains(prior.win)) { if (visible(prior.win)) fit(prior.win); return; }
         if (prior) clear(root, prior);
-        // Native modal dialogs already use the browser top layer. Never change their lifecycle.
-        if (root.matches('dialog:modal')) return;
+        if (root.matches('dialog:modal') || root.parentElement?.closest('.slk-foreign-window')) return;
         const cs = getComputedStyle(root);
         const explicit = root.matches(semantic);
-        if (cs.position !== 'fixed' && !explicit && !root.classList.contains('slk-modal-backdrop')) return;
-        if (!explicit && (parseInt(cs.zIndex, 10) || 0) < 1000 && !root.classList.contains('slk-modal-backdrop')) return;
+        const direct = root.parentElement === document.body;
+        if (cs.position !== 'fixed' && !root.matches('dialog,.slk-modal,.slk-modal-backdrop') && !(explicit && cs.position === 'absolute')) return;
+        if (!explicit && !root.classList.contains('slk-modal-backdrop') && (parseInt(cs.zIndex, 10) || 0) < 1000 && (direct || !root.matches(named))) return;
+        if (!direct && !root.matches(named) && cs.position !== 'fixed') return;
         if (root.querySelector('#chat,#send_form,#slk-header,.drawer-content,#top-settings-holder,#loader')) return;
         const r = root.getBoundingClientRect();
         const full = r.width >= innerWidth - 2 && r.height >= innerHeight - 2;
         let win = root;
         if (full || root.classList.contains('slk-modal-backdrop')) {
-            const candidates = [...root.querySelectorAll(':scope > *, :scope > * > *')];
-            win = candidates.find(c => c.matches(semantic) && !c.matches(ignored) && visible(c) && !c.matches('dialog:modal')) ||
+            const candidates = [...root.querySelectorAll(':scope > *, :scope > * > *, :scope > * > * > *')];
+            win = candidates.find(c => c.matches(semantic) && !c.matches(ignored) && !c.closest(excluded) && visible(c) && !c.matches('dialog:modal') && c.querySelector(controls)) ||
                 candidates.find(c => {
-                    if (c.matches(ignored) || !visible(c) || !c.querySelector(controls)) return false;
-                    const rr = c.getBoundingClientRect();
-                    const cc = getComputedStyle(c);
+                    if (c.matches(ignored) || c.closest(excluded) || !visible(c) || !c.querySelector(controls)) return false;
+                    const rr = c.getBoundingClientRect(), cc = getComputedStyle(c);
                     return rr.width > innerWidth * .6 && rr.height > 120 &&
                         (rr.width < r.width - 2 || rr.height < r.height - 2 || cc.position === 'absolute' || cc.position === 'fixed');
                 });
             if (!win && explicit) win = root;
             if (!win) return;
         } else if (!explicit && !(r.width > innerWidth * .6 && r.height > 120 && root.querySelector(controls))) return;
-        if (!win.querySelector(controls) || win.matches(ignored)) return;
-        if (win !== root) root.classList.add('slk-modal-backdrop','slk-foreign-overlay');
-        win.classList.add('slk-modal','slk-foreign-window');
-        win.querySelectorAll(controls).forEach(b => {
-            const label = (b.textContent || '').trim();
-            if (PRIMARY.test(label)) b.classList.add('slk-modal-primary');
-            if ((!label || /^[✕×xX✖]$/.test(label)) && (!label ? /close|xmark|times/i.test(b.className + ' ' + (b.innerHTML || '')) : true)) b.classList.add('slk-modal-close');
-        });
+        if (!win.querySelector(controls) || win.matches(ignored) || win.closest(excluded)) return;
+        if ([...tracked.values()].some(data => data.win === win)) return;
+        // Desktop's broad theme marker forces position/width/backgrounds. Do not apply it on mobile.
+        root.classList.remove('slk-modal-backdrop');
+        win.classList.remove('slk-modal');
+        if (win !== root) root.classList.add('slk-foreign-overlay');
+        win.classList.add('slk-foreign-window');
         tracked.set(root, {win});
+        fit(win);
     }
     function sync() {
         frame = 0;
@@ -4016,19 +4026,24 @@ function slkObserveChatContent(callback) {
         pending.clear();
         let open = false;
         for (const [root,data] of tracked) {
-            if (root.parentElement !== document.body || !data.win.isConnected || !root.contains(data.win)) { clear(root,data); continue; }
+            if (!root.isConnected || !data.win.isConnected || !root.contains(data.win)) { clear(root,data); continue; }
             if (visible(root) && visible(data.win)) open = true;
+            else data.win.classList.remove('slk-foreign-fit');
         }
         document.documentElement.classList.toggle('slk-foreign-modal-open',open);
     }
     function schedule() { if (!frame) frame = requestAnimationFrame(sync); }
+    function queueNode(node) {
+        if (!(node instanceof Element) || node.closest(excluded) || node.matches('#sheld,#chat,.mes,.mes_text')) return;
+        if (node.parentElement === document.body || node.matches(named) || node.style.position === 'fixed') pending.add(node);
+        // Only inspect newly inserted outside-chat subtrees. No message scan or polling.
+        for (const el of node.querySelectorAll(named)) if (!el.closest(excluded)) pending.add(el);
+    }
     function refresh() {
-        if (enabled()) for (const root of document.body.children) pending.add(root);
+        if (enabled()) for (const root of document.body.children) queueNode(root);
         schedule();
     }
     const start = () => {
-        // Existing shared outside-chat observer. Only body-level overlays and
-        // their own open/close changes are relevant, not settings/chat text.
         slkObserveOutsideChat(records => {
             if (!mobile.matches) {
                 if (records.some(r => r.target === document.body) && !t) t = setTimeout(() => { t = null; if (!mobile.matches) markDesktop(); },120);
@@ -4038,23 +4053,19 @@ function slkObserveChatContent(callback) {
             let changed = false;
             for (const r of records) {
                 const target = r.target;
-                if (!(target instanceof Element)) continue;
-                if (target === document.body && r.type === 'childList') {
-                    for (const node of r.addedNodes) if (node instanceof Element) pending.add(node);
+                if (!(target instanceof Element) || target.closest(excluded)) continue;
+                if (r.type === 'childList') {
+                    for (const node of r.addedNodes) queueNode(node);
+                    if (target !== document.body && (target.matches(named) || target.style.position === 'fixed')) pending.add(target);
                     changed = true;
-                } else if (target.parentElement === document.body && !target.matches(ignored)) {
-                    // Skip ordinary body-level containers unless this is a possible popup.
-                    if (tracked.has(target) || target.matches(semantic) || target.style.position === 'fixed' || target.classList.contains('slk-modal-backdrop') || r.type === 'attributes') {
-                        pending.add(target); changed = true;
-                    }
-                } else {
-                    const root = target.closest('.slk-foreign-overlay');
-                    const data = tracked.get(root);
-                    if (data && (target === data.win || !root.contains(data.win))) { pending.add(root); changed = true; }
-                }
+                } else if (tracked.has(target) || target.matches(named) || target.style.position === 'fixed' || target.parentElement === document.body) {
+                    // Ignore our own class-only mutations unless the open state might have changed.
+                    pending.add(target); changed = true;
+                } else if (tracked.size && [...tracked.keys()].some(root => target.contains(root))) changed = true;
             }
             if (changed) schedule();
         }, document.body, {childList:true,subtree:true,attributes:true,attributeFilter:['style','class','open','hidden']});
+        window.addEventListener('resize', () => { if (enabled() && tracked.size) { for (const root of tracked.keys()) pending.add(root); schedule(); } }, {passive:true});
         mobile.addEventListener?.('change', () => { refresh(); if (!mobile.matches) markDesktop(); });
         window.addEventListener('slk-ui-settings-changed',refresh);
         window.addEventListener('pageshow',refresh);
@@ -5719,7 +5730,7 @@ function slkConnectPromptManager() {
 // v1.8.151 — classify popup roots only on relevant outside-chat changes.
 // Reuse the existing shared observer; never inspect historical chat messages.
 (function slkFallbackPopupComponents() {
-    const rootSelector = 'dialog, .popup, .slk-modal, [role="dialog"][aria-modal="true"]';
+    const rootSelector = 'dialog, .popup, .slk-modal, .slk-foreign-window, [role="dialog"][aria-modal="true"]';
     const protectedContent = '#loader,#tag_view_list,.extensions_info,.regex_editor,.regex-debugger-container,input[name="exclude"],input[name="regex_import_target"],#extension_branch_name';
     const protectedRoot = '#chat,.mes_text,#select_chat_popup,#completion_prompt_manager_popup,.slk-no-theme,[data-slk-no-theme]';
     const marker = 'slk-fallback-popup';
