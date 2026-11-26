@@ -94,6 +94,11 @@ try { if (localStorage.getItem('slk-ui-enabled') === 'false') document.documentE
   html body #preloader::after { content: none !important; display: none !important; }
 }
     #preloader, #loader, #loader.splash-screen, dialog:has(#loader), dialog:has(#loader)::backdrop { background:#fff !important; }
+    /* v1.8.206: 사용자 지정 CSS 에서 옮겨 옴 — 로딩창(dialog)을 카드가 아닌 화면 전체 흰 바탕으로 */
+    dialog:has(#loader) { border:0 !important; outline:0 !important; box-shadow:none !important; filter:none !important; inset:0 !important; width:100vw !important; height:100dvh !important; max-width:none !important; max-height:none !important; min-width:0 !important; min-height:0 !important; position:fixed !important; padding:0 !important; margin:0 !important; border-radius:0 !important; transform:none !important; translate:none !important; overflow:hidden !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+    dialog:has(#loader) :is(.popup-body,.popup-content) { background:#fff !important; box-shadow:none !important; border:0 !important; border-radius:0 !important; width:100% !important; height:100% !important; max-width:none !important; max-height:none !important; padding:0 !important; margin:0 !important; }
+    dialog:has(#loader) .popup-controls { display:none !important; }
+    #loader, #loader.splash-screen { display:block !important; width:100% !important; height:100% !important; transform:none !important; }
     #loader { position:relative !important; }
     #loader > .splash-logo, #loader #load-spinner, #loader .splash-message, #loader::before { display:none !important; }
     #loader::after { content:"" !important; display:block !important; position:fixed !important; width:74px !important; height:74px !important; left:50vw !important; top:46.5dvh !important; transform:translate(-50%,-50%) !important; background:var(--slk-loader-icon) center/contain no-repeat !important; }
