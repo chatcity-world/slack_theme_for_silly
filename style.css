@@ -25105,4 +25105,4 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
         padding-bottom: 8px !important;
     }
 }
-:root { --slk-css-version: '1.8.202'; }
+:root { --slk-css-version: '1.8.204'; }

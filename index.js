@@ -1,3 +1,6 @@
+// v1.8.203 — Slack UI 를 끈 기기: 가능한 한 일찍 표시해서, 서버에 저장된 시작 화면 CSS 를 끔.
+try { if (localStorage.getItem('slk-ui-enabled') === 'false') document.documentElement.classList.add('slk-off'); } catch { /* noop */ }
+
 // Status bar bootstrap: entirely inside the extension, no server-file patch.
 (() => {
     const key = '__slkStatusChrome';
