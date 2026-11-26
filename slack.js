@@ -194,7 +194,6 @@ function applySlackUiSettings() {
         else document.body.style.removeProperty(`--slk-ink-${slug}`);
     }
     slkApplyHeaderImage();
-    initHeaderPersona();
     if (!SLK_UI_SETTINGS.enabled) {
         document.body.classList.remove('slk-footer-only-active');
         document.body.classList.remove('slk-managed-navigation', 'slk-no-panel');
@@ -704,7 +703,6 @@ const DRAWERS = {
     userSettings: '#user-settings-button',
     backgrounds: '#backgrounds-button',
     character: '#rightNavHolder',
-    persona: '#persona-management-button',
 };
 
 // Slack 스타일 라인 아이콘 (24px, stroke)
@@ -831,93 +829,6 @@ function navigateSlackPanel(selector) {
     }
 }
 
-
-const SLK_GEAR_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
-function slkPersonaButtonMarkup(id, title = '페르소나') {
-    return `<button id="${id}" class="slk-persona-btn" type="button" title="${title}" aria-label="${title}">
-        <span class="slk-persona-btn-avatar">
-            <img class="slk-persona-img" alt="" draggable="false" hidden>
-            <span class="slk-persona-fallback" aria-hidden="true"></span>
-            <span class="slk-persona-online" aria-hidden="true"></span>
-        </span>
-    </button>`;
-}
-let slkPersonaModule = null, slkPersonaImport = null, slkPersonaEventsBound = false, slkPersonaCurrentSrc = '', slkPersonaToken = 0;
-function slkPersonaButtons() {
-    return [...document.querySelectorAll('#slk-persona-btn, #slk-chat-persona-btn')];
-}
-function slkResolvePersonaSource() {
-    const ctx = stContext?.();
-    const selected = document.querySelector('#user_avatar_block .avatar-container.selected');
-    const id = slkPersonaModule?.user_avatar || ctx?.user_avatar || selected?.dataset.avatarId || '';
-    const sourceImage = selected?.querySelector('.avatar img');
-    const raw = id ? `User Avatars/${encodeURIComponent(id)}` : '';
-    let src = sourceImage?.getAttribute('src') || (id && (ctx?.getThumbnailUrl?.('persona', id) || raw)) || '';
-    if (/img\/user-default\.png(?:$|[?#])/.test(src)) src = '';
-    return { id, src, raw };
-}
-function slkApplyPersonaToButton(button, src) {
-    const img = button.querySelector('.slk-persona-img');
-    const fallback = button.querySelector('.slk-persona-fallback');
-    if (!img || !fallback) return;
-    img.onload = img.onerror = null;
-    if (!src) {
-        img.hidden = true;
-        img.removeAttribute('src');
-        fallback.hidden = false;
-        button.classList.remove('slk-has-persona-image');
-        return;
-    }
-    img.onload = () => {
-        img.hidden = false;
-        fallback.hidden = true;
-        button.classList.add('slk-has-persona-image');
-    };
-    img.onerror = () => {
-        img.hidden = true;
-        fallback.hidden = false;
-        button.classList.remove('slk-has-persona-image');
-    };
-    if (img.getAttribute('src') !== src) img.setAttribute('src', src);
-    else if (img.complete && img.naturalWidth) img.onload();
-    else if (img.complete) img.onerror();
-}
-function refreshHeaderPersona(force = false) {
-    const buttons = slkPersonaButtons();
-    if (!buttons.length) return;
-    const { src, raw } = slkResolvePersonaSource();
-    let next = src || '';
-    if (!force && next === slkPersonaCurrentSrc) return;
-    slkPersonaCurrentSrc = next;
-    const token = ++slkPersonaToken;
-    const bust = value => {
-        try {
-            const url = new URL(value, document.baseURI);
-            if (force && /^https?:$/.test(url.protocol)) url.searchParams.set('slk-avatar-v', String(Date.now()));
-            return url.href;
-        } catch { return value; }
-    };
-    const finalSrc = next ? bust(next) : '';
-    buttons.forEach(button => slkApplyPersonaToButton(button, finalSrc));
-    if (!finalSrc && raw) buttons.forEach(button => slkApplyPersonaToButton(button, bust(raw)));
-}
-function initHeaderPersona() {
-    const ctx = stContext?.();
-    const types = ctx?.eventTypes || ctx?.event_types;
-    if (!slkPersonaEventsBound && ctx?.eventSource && types) {
-        slkPersonaEventsBound = true;
-        for (const key of ['PERSONA_CHANGED', 'PERSONA_CREATED', 'PERSONA_UPDATED', 'PERSONA_DELETED', 'APP_READY', 'SETTINGS_LOADED', 'CHAT_CHANGED']) {
-            if (types[key]) ctx.eventSource.on(types[key], () => refreshHeaderPersona(true));
-        }
-    }
-    if (!slkPersonaImport) {
-        slkPersonaImport = import(new URL('scripts/personas.js', document.baseURI).href)
-            .then(module => { slkPersonaModule = module; refreshHeaderPersona(true); })
-            .catch(() => { slkPersonaImport = null; refreshHeaderPersona(true); });
-    }
-    refreshHeaderPersona();
-}
-
 function buildHeader() {
     if (document.getElementById('slk-header')) return;
 
@@ -932,11 +843,11 @@ function buildHeader() {
                 <span class="slk-ws-branch" hidden></span>
             </span>
         </button>
-        <div class="slk-header-actions">
-            ${slkPersonaButtonMarkup('slk-persona-btn')}
-            <button id="slk-settings-btn" type="button" title="설정" aria-label="설정">
-                ${SLK_GEAR_ICON}
+        <div id="slk-header-utilities" class="slk-header-actions">
+            <button id="slk-settings-btn" type="button" title="설정">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             </button>
+            <button id="slk-header-persona" type="button" title="페르소나 관리" aria-label="페르소나 관리" aria-pressed="false"><span class="slk-header-persona-avatar"><img alt="" draggable="false" hidden></span></button>
         </div>
     `;
 
@@ -963,17 +874,17 @@ function buildHeader() {
     SLK.header = header;
     SLK.menu = menu;
     slkApplyHeaderImage();
-    initHeaderPersona();
+    window.__slkRefreshPersonaHeader?.();
+    header.querySelector('#slk-header-persona').addEventListener('click', e => {
+        e.stopPropagation();
+        closeMenu();
+        navigateSlackPanel('#persona-management-button');
+        window.__slkRefreshPersonaHeader?.();
+    });
 
     header.querySelector('#slk-ws').addEventListener('click', () => {
         closeMenu();
         navigateSlackPanel(DRAWERS.character);
-    });
-
-    header.querySelector('#slk-persona-btn')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeMenu();
-        navigateSlackPanel(DRAWERS.persona);
     });
 
     header.querySelector('#slk-settings-btn').addEventListener('click', (e) => {
@@ -1717,10 +1628,6 @@ function buildChatHead() {
                 <span class="slk-ch-count">${CHAT_BUBBLE_SVG}<span class="slk-ch-n">0</span></span>
             </span>
         </button>
-        <div class="slk-chat-actions">
-            ${slkPersonaButtonMarkup('slk-chat-persona-btn')}
-            <button id="slk-chat-settings-btn" type="button" title="설정" aria-label="설정">${SLK_GEAR_ICON}</button>
-        </div>
     `;
     header.prepend(head);
 
@@ -1728,16 +1635,6 @@ function buildChatHead() {
     head.querySelector('#slk-chat-title').addEventListener('click', () => {
         if (typeof DRAWERS !== 'undefined' && DRAWERS.character) navigateSlackPanel(DRAWERS.character);
     });
-    head.querySelector('#slk-chat-persona-btn')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeMenu();
-        navigateSlackPanel(DRAWERS.persona);
-    });
-    head.querySelector('#slk-chat-settings-btn')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        SLK.menu?.hidden ? openMenu() : closeMenu();
-    });
-    initHeaderPersona();
 }
 
 function chatInfo() {
@@ -2468,6 +2365,9 @@ if (SLK_UI_SETTINGS.enabled) {
     function updateActive() {
         const footer = document.getElementById('slk-mobile-footer');
         if (!footer) return;
+        const persona = document.getElementById('slk-header-persona');
+        const personaOpen = navigationUsed ? desiredSelector === '#persona-management-button' : isFooterDrawerOpen(document.getElementById('persona-management-button'));
+        if (persona && persona.getAttribute('aria-pressed') !== String(personaOpen)) persona.setAttribute('aria-pressed', String(personaOpen));
         for (const btn of footer.querySelectorAll('.slk-footer-tab')) {
             const active = navigationUsed
                 ? btn.dataset.drawer === desiredSelector
@@ -2512,8 +2412,9 @@ if (SLK_UI_SETTINGS.enabled) {
             footer = document.createElement('nav');
             footer.id = 'slk-mobile-footer';
             footer.setAttribute('aria-label', '실리태번 모바일 하단 탭');
-            // 기존 7개 탭과 SVG 아이콘 재사용. 홈 탭 추가 없음.
+            // Persona uses the existing header; its native drawer stays managed.
             for (const [drawer, icon, label] of TABS) {
+                if (icon === 'persona') continue;
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'slk-footer-tab';
@@ -4704,10 +4605,13 @@ function slkObserveChatContent(callback) {
         (persona ? '<span class="slk-pc-item-icon slk-pc-persona-avatar"><img alt="" draggable="false" hidden></span>' : `<span class="slk-pc-item-icon">${icon}</span>`) +
         (utility ? '' : `<span class="slk-pc-item-label">${label}</span>`) + '</button>';
 
-    // Desktop-only, read-only persona projection. No chat traversal or new observer.
-    let personaModule, personaImport, personaEventsBound = false, personaSource = '', personaLoad = 0;
+    // Shared read-only persona projection; one visible target, no chat traversal or new observer.
+    let personaModule, personaImport, personaEventsBound = false, personaSource = '', personaLoad = 0, personaTarget = null;
     let defaultPixels;
     const pcEnabled = () => desktop.matches && SLK_UI_SETTINGS.enabled;
+    const avatarTarget = () => !SLK_UI_SETTINGS.enabled ? null : desktop.matches
+        ? sectionMenu?.querySelector('.slk-pc-persona img')
+        : document.querySelector('#slk-header-persona img');
     const sample = image => {
         const canvas = document.createElement('canvas');
         canvas.width = canvas.height = 16;
@@ -4726,9 +4630,9 @@ function slkObserveChatContent(callback) {
         return defaultPixels;
     }
     function refreshPersona(force = false, nativeImage = null) {
-        if (!pcEnabled() || !sectionMenu) return;
-        const img = sectionMenu.querySelector('.slk-pc-persona img');
+        const img = avatarTarget();
         if (!img) return;
+        if (personaTarget !== img) { personaTarget = img; personaSource = ''; force = false; }
         const selected = document.querySelector('#user_avatar_block .avatar-container.selected');
         const id = personaModule?.user_avatar || selected?.dataset.avatarId || '';
         const row = nativeImage?.closest('.avatar-container') || selected;
@@ -4741,7 +4645,7 @@ function slkObserveChatContent(callback) {
         if (!force && src === personaSource) return;
         personaSource = src;
         const token = ++personaLoad;
-        const current = () => token === personaLoad && pcEnabled();
+        const current = () => token === personaLoad && avatarTarget() === img;
         img.onload = img.onerror = null;
         if (!src) { img.hidden = true; img.removeAttribute('src'); return; }
         const bust = value => {
@@ -4779,13 +4683,13 @@ function slkObserveChatContent(callback) {
         else if (img.complete) img.onerror();
     }
     function initPersona() {
-        if (!pcEnabled()) return;
+        if (!avatarTarget()) return;
         const ctx = stContext();
         const types = ctx?.eventTypes || ctx?.event_types;
         if (!personaEventsBound && ctx?.eventSource && types) {
             personaEventsBound = true;
             for (const key of ['PERSONA_CHANGED', 'PERSONA_CREATED', 'PERSONA_UPDATED', 'PERSONA_DELETED', 'APP_READY', 'SETTINGS_LOADED', 'CHAT_CHANGED']) {
-                if (types[key]) ctx.eventSource.on(types[key], () => { if (pcEnabled()) refreshPersona(); });
+                if (types[key]) ctx.eventSource.on(types[key], () => { if (avatarTarget()) refreshPersona(key === 'PERSONA_UPDATED'); });
             }
         }
         if (!personaImport) {
@@ -4888,17 +4792,18 @@ function slkObserveChatContent(callback) {
             });
         }
         mark(nav()?.getCurrent?.() ?? null);
-        if (on) { initPersona(); document.addEventListener('load', onPersonaImageLoad, true); }
-        else { document.removeEventListener('load', onPersonaImageLoad, true); personaSource = ''; ++personaLoad; }
+        if (SLK_UI_SETTINGS.enabled) { initPersona(); document.addEventListener('load', onPersonaImageLoad, true); }
+        else { document.removeEventListener('load', onPersonaImageLoad, true); personaSource = ''; personaTarget = null; ++personaLoad; }
     }
 
     // Native avatar replacement rebuilds the persona list; listen only to image load events in that list.
     const onPersonaImageLoad = e => {
-        if (!pcEnabled() || !e.target.matches?.('#user_avatar_block .avatar-container .avatar img')) return;
+        if (!e.target.matches?.('#user_avatar_block .avatar-container .avatar img') || !avatarTarget()) return;
         const row = e.target.closest('.avatar-container');
         if (!row.classList.contains('selected') && (!personaModule?.user_avatar || row.dataset.avatarId !== personaModule.user_avatar)) return;
         refreshPersona(true, e.target);
     };
+    window.__slkRefreshPersonaHeader = initPersona;
     let lastDrawer = null;
     window.addEventListener('slk-pc-active', e => {
         mark(e.detail);
