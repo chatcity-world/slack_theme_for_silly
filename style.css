@@ -25033,20 +25033,19 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
   html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-persona.active > .slk-pc-persona-avatar {outline:none!important;}
 }
 
-/* v1.8.186 — one shared mobile header pill; two independent hit targets. */
+/* v1.8.187 — fixed mobile header pill geometry; match existing logo glass. */
 @media screen and (max-width:1000px) {
   html body.slk-ui[data-slk-header-view] #slk-header#slk-header > #slk-header-utilities {
     display:flex!important;flex:0 0 88px!important;width:88px!important;min-width:88px!important;max-width:88px!important;
-    height:44px!important;min-height:44px!important;max-height:44px!important;box-sizing:border-box!important;
-    margin:0 0 0 8px!important;padding:0 4px!important;gap:0!important;align-items:center!important;justify-content:space-between!important;
+    height:46px!important;min-height:46px!important;max-height:46px!important;box-sizing:border-box!important;
+    margin:0 0 0 8px!important;padding:0 4px!important;gap:2px!important;align-items:center!important;justify-content:center!important;
     border-radius:999px!important;overflow:visible!important;
     border:1.5px solid var(--slk-pill-border)!important;background:var(--slk-pill-bg)!important;color:#fff!important;box-shadow:none!important;
   }
   html body.slk-ui[data-slk-header-view="chat"] #slk-header#slk-header > #slk-header-utilities,
   html body.slk-ui[data-slk-header-view].slk-header-compact #slk-header#slk-header > #slk-header-utilities {
-    height:46px!important;min-height:46px!important;max-height:46px!important;
-    border:0!important;background:rgba(255,255,255,.94)!important;color:#1d1c1d!important;
-    box-shadow:0 4px 16px rgba(0,0,0,.10)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+    border:0!important;background:rgba(255,255,255,.22)!important;color:#1d1c1d!important;
+    box-shadow:0 4px 16px rgba(0,0,0,.10)!important;backdrop-filter:blur(8px) saturate(180%)!important;-webkit-backdrop-filter:blur(8px) saturate(180%)!important;
   }
   html body.slk-ui[data-slk-header-view="chat"] #slk-header#slk-header > #slk-chat-head {
     flex:1 1 0!important;width:auto!important;min-width:0!important;max-width:none!important;overflow:visible!important;
