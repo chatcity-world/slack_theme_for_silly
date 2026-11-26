@@ -232,7 +232,7 @@ body.slk-ui {
     #slk-settings-menu {
         display: block;
         position: fixed;
-        top: calc(var(--slk-top-h) + 6px);
+        top: calc(var(--slk-top-h) - 6px);
         right: 12px;
         min-width: 190px;
         padding: 6px;
@@ -21419,8 +21419,8 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
   /* The outer settings circle carries exactly the same glass as the back/logo.
      Do not paint a second opaque active/hover background over it. */
   body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-header > .slk-header-actions {
-    background:rgba(255,255,255,.22)!important;
-    backdrop-filter:blur(8px) saturate(180%)!important;-webkit-backdrop-filter:blur(8px) saturate(180%)!important;
+    background:rgba(255,255,255,.08)!important;
+    backdrop-filter:blur(5px) saturate(180%)!important;-webkit-backdrop-filter:blur(5px) saturate(180%)!important;
   }
   body.slk-ui[data-slk-header-view]:not([data-slk-header-view="chat"]).slk-header-compact #slk-header #slk-settings-btn {
     color:#1d1c1d!important;background:transparent!important;box-shadow:none!important;
@@ -23835,16 +23835,12 @@ html body.slk-ui:not(#slk-a#slk-b#slk-c#slk-d#slk-e#slk-f#slk-g#slk-h#slk-i#slk-
   html body.slk-ui #form_sheld #dialogue_del_mes :is(.menu_button,#dialogue_del_mes_ok,#dialogue_del_mes_cancel) > :is(span,i) {
     position:static!important; margin:0!important; padding:0!important; transform:none!important; translate:none!important; line-height:20px!important;
   }
-  /* The presence dot belongs exclusively to the two header avatar wrappers. */
+  /* Character header avatar sizing; presence dot reserved for persona. */
   body.slk-ui :is(#slk-chat-title,#slk-pc-channel-heading) > .slk-ch-avatar-wrap {
     position:relative!important; display:inline-flex!important; flex:0 0 36px!important;
     width:36px!important;height:36px!important;align-items:center!important;justify-content:center!important;overflow:visible!important;
   }
   body.slk-ui :is(#slk-chat-title,#slk-pc-channel-heading) > .slk-ch-avatar-wrap[hidden] {display:none!important;}
-  body.slk-ui :is(#slk-chat-title,#slk-pc-channel-heading) > .slk-ch-avatar-wrap::after {
-    content:""; position:absolute; box-sizing:border-box; width:12px;height:12px; right:-1px;bottom:-1px;
-    border-radius:50%;background:#20A271;border:2px solid #fff;pointer-events:none;
-  }
 }
 @media screen and (min-width:1001px) {
   html body.slk-ui.slk-pc #slk-pc-channel-heading #slk-pc-chat-back {
@@ -25044,8 +25040,8 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
   }
   html body.slk-ui[data-slk-header-view="chat"] #slk-header#slk-header > #slk-header-utilities,
   html body.slk-ui[data-slk-header-view].slk-header-compact #slk-header#slk-header > #slk-header-utilities {
-    border:0!important;background:rgba(255,255,255,.22)!important;color:#1d1c1d!important;
-    box-shadow:0 4px 16px rgba(0,0,0,.10)!important;backdrop-filter:blur(8px) saturate(180%)!important;-webkit-backdrop-filter:blur(8px) saturate(180%)!important;
+    border:0!important;background:rgba(255,255,255,.08)!important;color:#1d1c1d!important;
+    box-shadow:0 4px 16px rgba(0,0,0,.10)!important;backdrop-filter:blur(5px) saturate(180%)!important;-webkit-backdrop-filter:blur(5px) saturate(180%)!important;
   }
   html body.slk-ui[data-slk-header-view="chat"] #slk-header#slk-header > #slk-chat-head {
     flex:1 1 0!important;width:auto!important;min-width:0!important;max-width:none!important;overflow:visible!important;
