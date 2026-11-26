@@ -4488,10 +4488,11 @@ function slkObserveChatContent(callback) {
 // All buttons reuse the real native SillyTavern drawer content and handlers.
 (function mountSlackPcChrome() {
     const desktop = window.matchMedia('(min-width: 1001px)');
-    const ITEMS = TABS.map(([selector, icon, label]) => ({ selector, icon: ICONS[icon], label }));
+    const ITEMS = TABS.filter(([, key]) => key !== 'persona').map(([selector, icon, label]) => ({ selector, icon: ICONS[icon], label }));
     const BOTTOM = [
         { selector: DRAWERS.userSettings, icon: ICONS.userSettings, label: '설정' },
         { selector: DRAWERS.backgrounds, icon: ICONS.backgrounds, label: '배경' },
+        { selector: '#persona-management-button', icon: '', label: '페르소나 관리', persona: true },
     ];
     let brandRail = null;
     let sectionMenu = null;
@@ -4500,16 +4501,91 @@ function slkObserveChatContent(callback) {
     let trafficLights = null;
     let versionRequest = null;
     const nav = () => window.__slkDesktopRailNavigation;
-    const itemMarkup = ({ selector, icon, label }) =>
-        `<button type="button" class="slk-pc-item" data-drawer="${selector}" title="${label}" aria-label="${label}" aria-pressed="false">` +
-        `<span class="slk-pc-item-icon">${icon}</span><span class="slk-pc-item-label">${label}</span></button>`;
+    const itemMarkup = ({ selector, icon, label, persona = false }, utility = false) =>
+        `<button type="button" class="slk-pc-item${utility ? ' slk-pc-utility' : ''}${persona ? ' slk-pc-persona' : ''}" data-drawer="${selector}" title="${label}" aria-label="${label}" aria-pressed="false">` +
+        (persona ? '<span class="slk-pc-item-icon slk-pc-persona-avatar"><img alt="" draggable="false" hidden></span>' : `<span class="slk-pc-item-icon">${icon}</span>`) +
+        (utility ? '' : `<span class="slk-pc-item-label">${label}</span>`) + '</button>';
+
+    // Desktop-only, read-only persona projection. No chat traversal or new observer.
+    let personaModule, personaImport, personaEventsBound = false, personaSource = '', personaLoad = 0;
+    let defaultPixels;
+    const pcEnabled = () => desktop.matches && SLK_UI_SETTINGS.enabled;
+    const sample = image => {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 16;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 16, 16);
+        ctx.drawImage(image, 0, 0, 16, 16);
+        return ctx.getImageData(0, 0, 16, 16).data;
+    };
+    function nativeDefaultPixels() {
+        if (!defaultPixels) defaultPixels = new Promise(resolve => {
+            const image = new Image();
+            image.onload = () => { try { resolve(sample(image)); } catch { resolve(null); } };
+            image.onerror = () => resolve(null);
+            image.src = new URL('img/user-default.png', document.baseURI).href;
+        });
+        return defaultPixels;
+    }
+    function refreshPersona(force = false) {
+        if (!pcEnabled() || !sectionMenu) return;
+        const img = sectionMenu.querySelector('.slk-pc-persona img');
+        if (!img) return;
+        const selected = document.querySelector('#user_avatar_block .avatar-container.selected .avatar img');
+        const id = personaModule?.user_avatar;
+        let src = '';
+        if (typeof id === 'string' && id && !/^(?:user-default\.png|img\/user-default\.png)$/i.test(id)) {
+            // Use the native thumbnail URL when available, including when the active persona is off-page.
+            src = stContext()?.getThumbnailUrl?.('persona', id) || `User Avatars/${encodeURIComponent(id)}`;
+        } else if (!personaModule) src = selected?.getAttribute('src') || '';
+        if (src && /(?:^|\/|[?&](?:file|avatar)=)user-default\.png(?:$|[?&])/i.test(src)) src = '';
+        if (!force && src === personaSource) return;
+        personaSource = src;
+        const token = ++personaLoad;
+        img.hidden = true;
+        if (!src) { img.removeAttribute('src'); return; }
+        img.onerror = () => { if (token === personaLoad) img.hidden = true; };
+        img.onload = async () => {
+            if (token !== personaLoad || !pcEnabled()) return;
+            let isDefault = false;
+            try {
+                const ref = await nativeDefaultPixels();
+                if (token !== personaLoad || !pcEnabled()) return;
+                if (ref) {
+                    const pixels = sample(img);
+                    let diff = 0;
+                    for (let i = 0; i < pixels.length; i++) diff += Math.abs(pixels[i] - ref[i]);
+                    isDefault = diff / pixels.length < 7;
+                }
+            } catch { /* An inaccessible reference must not hide a valid avatar. */ }
+            if (token === personaLoad && pcEnabled()) img.hidden = isDefault;
+        };
+        img.src = src;
+    }
+    function initPersona() {
+        if (!pcEnabled()) return;
+        const ctx = stContext();
+        const types = ctx?.eventTypes || ctx?.event_types;
+        if (!personaEventsBound && ctx?.eventSource && types) {
+            personaEventsBound = true;
+            for (const key of ['PERSONA_CHANGED', 'PERSONA_CREATED', 'PERSONA_DELETED', 'APP_READY', 'SETTINGS_LOADED']) {
+                if (types[key]) ctx.eventSource.on(types[key], () => { if (pcEnabled()) refreshPersona(); });
+            }
+        }
+        if (!personaImport) {
+            personaImport = import(new URL('scripts/personas.js', document.baseURI).href)
+                .then(module => { personaModule = module; refreshPersona(); })
+                .catch(() => { refreshPersona(); });
+        }
+        refreshPersona();
+    }
 
     function mark(active) {
         sectionMenu?.querySelectorAll('.slk-pc-item').forEach(button => {
             const on = button.dataset.drawer === active;
             button.classList.toggle('active', on);
             button.setAttribute('aria-pressed', String(on));
-            slkSyncNavGlyph(button, on, button.querySelector('.slk-pc-item-icon'));
+            if (!button.classList.contains('slk-pc-persona')) slkSyncNavGlyph(button, on, button.querySelector('.slk-pc-item-icon'));
         });
     }
 
@@ -4530,10 +4606,10 @@ function slkObserveChatContent(callback) {
             sectionMenu.setAttribute('aria-label', 'Slack UI 설정 메뉴');
             sectionMenu.innerHTML = `
                 <div class="slk-pc-section-main" aria-label="주요 메뉴">
-                    ${ITEMS.map(itemMarkup).join('')}
+                    ${ITEMS.map(item => itemMarkup(item)).join('')}
                 </div>
                 <div class="slk-pc-section-utility" aria-label="추가 메뉴">
-                    ${BOTTOM.map(itemMarkup).join('')}
+                    ${BOTTOM.map(item => itemMarkup(item, true)).join('')}
                 </div>`;
             document.body.appendChild(sectionMenu);
             for (const type of ['touchstart', 'mousedown']) sectionMenu.addEventListener(type, e => e.stopPropagation());
@@ -4596,9 +4672,21 @@ function slkObserveChatContent(callback) {
             });
         }
         mark(nav()?.getCurrent?.() ?? null);
+        if (on) { initPersona(); document.addEventListener('load', onPersonaImageLoad, true); }
+        else { document.removeEventListener('load', onPersonaImageLoad, true); personaSource = ''; ++personaLoad; }
     }
 
-    window.addEventListener('slk-pc-active', e => mark(e.detail));
+    // Native avatar replacement rebuilds the persona list; listen only to image load events in that list.
+    const onPersonaImageLoad = e => {
+        if (!pcEnabled() || !e.target.matches?.('#user_avatar_block .avatar-container.selected .avatar img')) return;
+        refreshPersona(true);
+    };
+    let lastDrawer = null;
+    window.addEventListener('slk-pc-active', e => {
+        mark(e.detail);
+        if (pcEnabled() && (e.detail === '#persona-management-button' || lastDrawer === '#persona-management-button')) refreshPersona(true);
+        lastDrawer = e.detail;
+    });
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build, { once: true });
     else build();
     desktop.addEventListener?.('change', build);
