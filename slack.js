@@ -5950,7 +5950,7 @@ function slkConnectPromptManager() {
 // v1.8.171 — 채팅 파일 진단 기록.
 // 채팅이 다른 파일로 바뀌는(날아가는) 순간을 잡기 위해, 채팅/캐릭터 저장 요청과
 // ST 채팅 이벤트, Slack UI 버튼 클릭을 최근 400개까지 기기 안(localStorage)에만 기록합니다.
-// 서버로 보내지 않으며, 확장 설정의 '채팅 진단 기록 복사' 버튼으로만 꺼낼 수 있습니다.
+// 서버로 보내지 않으며, 필요하면 브라우저 콘솔의 slkChatLog()로 확인할 수 있습니다.
 (function slkChatDiagnostics() {
     const KEY = 'slk-chat-log';
     const MAX = 400;
@@ -6120,41 +6120,7 @@ function slkConnectPromptManager() {
     document.addEventListener('visibilitychange', () => add(document.hidden ? 'hidden' : 'visible'));
     window.addEventListener('pagehide', () => { add('pagehide'); persist(); });
 
-    // 4) 설정에 복사/지우기 버튼
-    const mountButtons = () => {
-        const content = document.getElementById('slk-extension-settings-content');
-        if (!content) return false;
-        if (content.querySelector('#slk-chat-log-copy')) return true;
-        const row = document.createElement('div');
-        row.className = 'slk-settings-row slk-chat-log-row';
-        row.innerHTML = '<label>채팅 진단 기록</label><div class="slk-preference-controls">' +
-            '<button type="button" id="slk-chat-log-copy" class="slk-preference-button">복사</button>' +
-            '<button type="button" id="slk-chat-log-clear" class="slk-preference-button">지우기</button></div>';
-        content.appendChild(row);
-        row.querySelector('#slk-chat-log-copy').addEventListener('click', async () => {
-            persist();
-            const text = JSON.stringify(log.slice(-MAX));
-            try {
-                await navigator.clipboard.writeText(text);
-                window.toastr?.success(`기록 ${Math.min(log.length, MAX)}개를 복사했어요. 그대로 붙여넣어 보내 주세요.`);
-            } catch {
-                const ta = document.createElement('textarea');
-                ta.value = text; ta.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;opacity:0';
-                document.body.appendChild(ta); ta.focus(); ta.select();
-                let ok = false; try { ok = document.execCommand('copy'); } catch { /* noop */ }
-                ta.remove();
-                if (ok) window.toastr?.success('기록을 복사했어요.');
-                else window.toastr?.error('복사를 못 했어요. 브라우저 콘솔에서 slkChatLog() 를 실행해 주세요.');
-            }
-        });
-        row.querySelector('#slk-chat-log-clear').addEventListener('click', () => {
-            log = []; persist(); add('cleared');
-            window.toastr?.info('기록을 지웠어요.');
-        });
-        return true;
-    };
-    let mountTries = 0;
-    const mountTimer = setInterval(() => { if (mountButtons() || ++mountTries > 120) clearInterval(mountTimer); }, 1000);
+
 })();
 
 // v1.8.172 — ⋯ 메뉴의 '분기'와 '체크포인트'는 새 채팅 파일을 만들고 그쪽으로 넘어갑니다.
