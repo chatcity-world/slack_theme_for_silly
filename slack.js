@@ -3931,19 +3931,12 @@ function slkObserveChatContent(callback) {
             // 화면 전체를 덮는 반투명 배경이면, 그 안의 창을 찾음
             let win = el;
             if (r.width >= innerWidth - 2 && r.height >= innerHeight - 2) {
-                // v1.8.175: 화면보다 긴 창도 찾음(예전엔 화면보다 길면 못 찾아서 탭바 뒤로 잘렸음)
-                const inner = [...el.querySelectorAll(':scope > *, :scope > * > *')].find(c => {
+                win = [...el.querySelectorAll(':scope > *, :scope > * > *')].find(c => {
                     const rr = c.getBoundingClientRect();
-                    return rr.width > innerWidth * 0.6 && rr.height > 120 && c.querySelector('button, textarea, input, .menu_button');
+                    return rr.width > innerWidth * 0.6 && rr.height > 120 && rr.height < innerHeight && c.querySelector('button, textarea, input, .menu_button');
                 });
-                if (inner) {
-                    win = inner;
-                    el.classList.add('slk-modal-backdrop');
-                } else {
-                    // 창 자체가 화면을 꽉 채우는 경우: 디자인은 그대로 두고, 탭바 위로 올리고 안에서 스크롤만
-                    if (el.querySelector('button, textarea, input, .menu_button')) el.classList.add('slk-modal-sheet');
-                    return;
-                }
+                if (!win) return;
+                el.classList.add('slk-modal-backdrop');
             } else if (!(r.width > innerWidth * 0.6 && r.height > 120 && el.querySelector('button, textarea, input, .menu_button'))) {
                 return;
             }
