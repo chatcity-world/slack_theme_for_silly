@@ -25000,17 +25000,15 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
   }
 }
 
-/* v1.8.181 — third-party mobile windows retain their own layout and colors. */
+/* v1.8.183 — third-party mobile windows: keep native positioning, cap height only. */
 @media screen and (max-width:1000px) {
   html.slk-foreign-modal-open {--slk-footer-modal-display:none;}
   html body.slk-ui .slk-foreign-overlay {z-index:2147483647!important;}
   html body.slk-ui .slk-foreign-window {z-index:2147483647!important;}
   html body.slk-ui .slk-foreign-window.slk-foreign-fit {
-    position:fixed!important;inset:calc(env(safe-area-inset-top,0px) + 12px) 12px calc(env(safe-area-inset-bottom,0px) + 12px)!important;
-    transform:none!important;translate:none!important;margin:auto!important;box-sizing:border-box!important;
-    min-height:0!important;min-width:0!important;
-    max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 24px)!important;
-    max-width:calc(100vw - 24px)!important;overflow-y:auto!important;overscroll-behavior-y:contain;
+    box-sizing:border-box!important;min-height:0!important;
+    max-height:min(var(--slk-foreign-height-limit,100dvh),calc(100dvh - 24px))!important;
+    overflow-y:auto!important;overscroll-behavior-y:contain;
   }
 }
 

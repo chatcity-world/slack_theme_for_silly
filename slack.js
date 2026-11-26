@@ -3948,7 +3948,7 @@ function slkObserveChatContent(callback) {
             });
         });
     };
-    // v1.8.181: keep third-party mobile layout; fit only genuinely clipped windows.
+    // v1.8.183: constrain vertical overflow only, preserving the extension’s positioning.
     const mobile = matchMedia('(max-width: 1000px)');
     const semantic = '.slk-modal,.popup,[role="dialog"],dialog';
     const named = `${semantic},[id*="modal" i],[class*="modal" i],[id*="popup" i],[class*="popup" i]`;
@@ -3963,18 +3963,33 @@ function slkObserveChatContent(callback) {
         const cs = getComputedStyle(el);
         return cs.display !== 'none' && cs.visibility !== 'hidden' && el.getClientRects().length > 0;
     };
+    function resetFit(win) {
+        win.classList.remove('slk-foreign-fit');
+        if (win.style.getPropertyValue('--slk-foreign-height-limit')) win.style.removeProperty('--slk-foreign-height-limit');
+    }
     function clear(root, data) {
         root.classList.remove('slk-foreign-overlay');
-        data.win.classList.remove('slk-foreign-window','slk-foreign-fit');
+        data.win.classList.remove('slk-foreign-window');
+        resetFit(data.win);
         tracked.delete(root);
     }
     function fit(win) {
-        if (win.classList.contains('slk-foreign-fit')) return;
         const r = win.getBoundingClientRect();
         const v = window.visualViewport;
-        const top = v?.offsetTop || 0, left = v?.offsetLeft || 0;
-        const h = v?.height || innerHeight, w = v?.width || innerWidth;
-        if (r.top < top - 1 || r.left < left - 1 || r.bottom > top + h + 1 || r.right > left + w + 1) win.classList.add('slk-foreign-fit');
+        const top = v?.offsetTop ?? 0, h = v?.height || innerHeight;
+        // A little breathing room at the bottom; don't alter x, width, inset,
+        // position, margin, or the extension's centering transform.
+        const bottom = top + h - 12;
+        if (h <= 24 || r.height <= 0 || r.bottom <= bottom + 1 && r.top >= top - 1) return;
+        const available = Math.floor(bottom - Math.max(top + 12, r.top));
+        if (available <= 0) return;
+        const old = parseFloat(win.style.getPropertyValue('--slk-foreign-height-limit'));
+        const limit = Math.min(available, Number.isFinite(old) ? old : Infinity);
+        if (limit < r.height - 1 || !win.classList.contains('slk-foreign-fit')) {
+            const value = `${limit}px`;
+            if (win.style.getPropertyValue('--slk-foreign-height-limit') !== value) win.style.setProperty('--slk-foreign-height-limit',value);
+            win.classList.add('slk-foreign-fit');
+        }
     }
     function classifyMobile(root) {
         if (!root.isConnected || root.matches(ignored) || root.closest(excluded) || !visible(root)) return;
@@ -3990,7 +4005,7 @@ function slkObserveChatContent(callback) {
         if (!direct && !root.matches(named) && cs.position !== 'fixed') return;
         if (root.querySelector('#chat,#send_form,#slk-header,.drawer-content,#top-settings-holder,#loader')) return;
         const r = root.getBoundingClientRect();
-        const full = r.width >= innerWidth - 2 && r.height >= innerHeight - 2;
+        const full = r.width >= innerWidth - 2 && r.height >= innerHeight - 2 && Math.abs(r.top) <= 2 && Math.abs(r.left) <= 2;
         let win = root;
         if (full || root.classList.contains('slk-modal-backdrop')) {
             const candidates = [...root.querySelectorAll(':scope > *, :scope > * > *, :scope > * > * > *')];
@@ -4027,8 +4042,8 @@ function slkObserveChatContent(callback) {
         let open = false;
         for (const [root,data] of tracked) {
             if (!root.isConnected || !data.win.isConnected || !root.contains(data.win)) { clear(root,data); continue; }
-            if (visible(root) && visible(data.win)) open = true;
-            else data.win.classList.remove('slk-foreign-fit');
+            if (visible(root) && visible(data.win)) { open = true; fit(data.win); }
+            else resetFit(data.win);
         }
         document.documentElement.classList.toggle('slk-foreign-modal-open',open);
     }
@@ -4061,11 +4076,25 @@ function slkObserveChatContent(callback) {
                 } else if (tracked.has(target) || target.matches(named) || target.style.position === 'fixed' || target.parentElement === document.body) {
                     // Ignore our own class-only mutations unless the open state might have changed.
                     pending.add(target); changed = true;
-                } else if (tracked.size && [...tracked.keys()].some(root => target.contains(root))) changed = true;
+                } else if (tracked.size && [...tracked.keys()].some(root => target.contains(root) || root.contains(target))) changed = true;
             }
             if (changed) schedule();
         }, document.body, {childList:true,subtree:true,attributes:true,attributeFilter:['style','class','open','hidden']});
-        window.addEventListener('resize', () => { if (enabled() && tracked.size) { for (const root of tracked.keys()) pending.add(root); schedule(); } }, {passive:true});
+        let viewportFrame = 0;
+        const viewportChanged = () => {
+            if (!enabled() || !tracked.size || viewportFrame) return;
+            viewportFrame = requestAnimationFrame(() => {
+                viewportFrame = 0;
+                if (!enabled()) return;
+                for (const [root,data] of tracked) {
+                    resetFit(data.win);
+                    pending.add(root);
+                }
+                schedule();
+            });
+        };
+        window.addEventListener('resize', viewportChanged, {passive:true});
+        window.visualViewport?.addEventListener('resize', viewportChanged, {passive:true});
         mobile.addEventListener?.('change', () => { refresh(); if (!mobile.matches) markDesktop(); });
         window.addEventListener('slk-ui-settings-changed',refresh);
         window.addEventListener('pageshow',refresh);
