@@ -1,3 +1,38 @@
+// v1.8.202 — 화면에 안 보일 때(웹앱이 백그라운드에 있을 때)는 Slack UI 가 아무 일도 안 하게.
+// 무음 오디오 같은 확장이 웹앱을 백그라운드에서 깨워 두면, 다른 확장/ST 가 화면을 조금씩 바꿀 때마다
+// Slack UI 감시자들도 같이 일하며 배터리를 씁니다. 숨겨져 있는 동안의 변경은 모아 두었다가
+// 다시 화면에 나올 때 한 번에 처리합니다.
+const MutationObserver = (() => {
+    const Native = window.MutationObserver;
+    const deferred = new Map(); // observer -> { callback, records }
+    const isHidden = () => document.visibilityState === 'hidden';
+    document.addEventListener('visibilitychange', () => {
+        if (isHidden() || !deferred.size) return;
+        const jobs = [...deferred.entries()];
+        deferred.clear();
+        for (const [observer, job] of jobs) {
+            const records = job.records.concat(observer.takeRecords());
+            try { job.callback(records, observer); } catch (error) { console.error('[Slack UI] deferred observer', error); }
+        }
+    });
+    return class SlkMutationObserver extends Native {
+        constructor(callback) {
+            super((records, observer) => {
+                if (isHidden()) {
+                    const job = deferred.get(observer) || { callback, records: [] };
+                    // 오래 숨겨져 있어도 메모리가 늘지 않게 최근 기록만 보관
+                    job.records.push(...records);
+                    if (job.records.length > 2000) job.records.splice(0, job.records.length - 2000);
+                    deferred.set(observer, job);
+                    return;
+                }
+                callback(records, observer);
+            });
+        }
+        disconnect() { deferred.delete(this); return super.disconnect(); }
+    };
+})();
+
 // Slack UI for SillyTavern — v0.9.2 (mobile light: header + bottom tab bar)
 
 // Settings are kept independently of SillyTavern's extension loader state.

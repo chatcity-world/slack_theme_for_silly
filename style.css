@@ -21773,7 +21773,7 @@ html body.slk-ui dialog.popup:has(.extensions_info:not(:where(.regex_editor *)))
     background-origin:padding-box!important;
     background-position:left 8px top 7px!important;
     background-size:2px 20px!important;
-    animation:slk-empty-composer-caret-blink 1s step-end infinite;
+    animation:slk-empty-composer-caret-blink 1s step-end 12; /* v1.8.201: 12초 뒤 깜빡임 멈춤(배터리) — 끝나면 커서는 계속 보임 */
    }
    @media (prefers-reduced-motion:reduce) {
     body.slk-ui.slk-composing #form_sheld #send_form.slk-compose-open #send_textarea:focus:placeholder-shown {animation:none!important;}
@@ -25105,3 +25105,4 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
         padding-bottom: 8px !important;
     }
 }
+:root { --slk-css-version: '1.8.202'; }
