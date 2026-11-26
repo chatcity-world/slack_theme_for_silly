@@ -4527,40 +4527,58 @@ function slkObserveChatContent(callback) {
         });
         return defaultPixels;
     }
-    function refreshPersona(force = false) {
+    function refreshPersona(force = false, nativeImage = null) {
         if (!pcEnabled() || !sectionMenu) return;
         const img = sectionMenu.querySelector('.slk-pc-persona img');
         if (!img) return;
-        const selected = document.querySelector('#user_avatar_block .avatar-container.selected .avatar img');
-        const id = personaModule?.user_avatar;
-        let src = '';
-        if (typeof id === 'string' && id && !/^(?:user-default\.png|img\/user-default\.png)$/i.test(id)) {
-            // Use the native thumbnail URL when available, including when the active persona is off-page.
-            src = stContext()?.getThumbnailUrl?.('persona', id) || `User Avatars/${encodeURIComponent(id)}`;
-        } else if (!personaModule) src = selected?.getAttribute('src') || '';
-        if (src && /(?:^|\/|[?&](?:file|avatar)=)user-default\.png(?:$|[?&])/i.test(src)) src = '';
+        const selected = document.querySelector('#user_avatar_block .avatar-container.selected');
+        const id = personaModule?.user_avatar || selected?.dataset.avatarId || '';
+        const row = nativeImage?.closest('.avatar-container') || selected;
+        const sourceImage = row && (!id || !row.dataset.avatarId || row.dataset.avatarId === id)
+            ? (nativeImage || row.querySelector('.avatar img')) : null;
+        // An uploaded avatar can retain the original filename, including user-default.png.
+        // Prefer ST's actual selected thumbnail; use its canonical URL off-page.
+        const raw = id ? `User Avatars/${encodeURIComponent(id)}` : '';
+        let src = sourceImage?.getAttribute('src') || (id && (stContext()?.getThumbnailUrl?.('persona', id) || raw)) || '';
         if (!force && src === personaSource) return;
         personaSource = src;
         const token = ++personaLoad;
-        img.hidden = true;
-        if (!src) { img.removeAttribute('src'); return; }
-        img.onerror = () => { if (token === personaLoad) img.hidden = true; };
-        img.onload = async () => {
-            if (token !== personaLoad || !pcEnabled()) return;
-            let isDefault = false;
+        const current = () => token === personaLoad && pcEnabled();
+        img.onload = img.onerror = null;
+        if (!src) { img.hidden = true; img.removeAttribute('src'); return; }
+        const bust = value => {
+            try {
+                const url = new URL(value, document.baseURI);
+                if (force && /^https?:$/.test(url.protocol)) url.searchParams.set('slk-avatar-v', String(Date.now()));
+                return url.href;
+            } catch { return value; }
+        };
+        const display = async () => {
+            if (!current()) return;
+            // Show a valid custom image without waiting for the default image comparison.
+            img.hidden = false;
             try {
                 const ref = await nativeDefaultPixels();
-                if (token !== personaLoad || !pcEnabled()) return;
-                if (ref) {
-                    const pixels = sample(img);
-                    let diff = 0;
-                    for (let i = 0; i < pixels.length; i++) diff += Math.abs(pixels[i] - ref[i]);
-                    isDefault = diff / pixels.length < 7;
-                }
-            } catch { /* An inaccessible reference must not hide a valid avatar. */ }
-            if (token === personaLoad && pcEnabled()) img.hidden = isDefault;
+                if (!current() || !ref) return;
+                const pixels = sample(img);
+                let diff = 0;
+                for (let i = 0; i < pixels.length; i++) diff += Math.abs(pixels[i] - ref[i]);
+                img.hidden = diff / pixels.length < 7;
+            } catch { /* Keep a successfully loaded avatar visible. */ }
         };
-        img.src = src;
+        let fallback = false;
+        img.onload = display;
+        img.onerror = () => {
+            if (!current()) return;
+            if (!fallback && raw && new URL(raw, document.baseURI).href !== new URL(src, document.baseURI).href) {
+                fallback = true; img.src = bust(raw); return;
+            }
+            img.hidden = true;
+        };
+        const next = bust(src);
+        if (img.src !== next) img.src = next;
+        else if (img.complete && img.naturalWidth) display();
+        else if (img.complete) img.onerror();
     }
     function initPersona() {
         if (!pcEnabled()) return;
@@ -4568,14 +4586,14 @@ function slkObserveChatContent(callback) {
         const types = ctx?.eventTypes || ctx?.event_types;
         if (!personaEventsBound && ctx?.eventSource && types) {
             personaEventsBound = true;
-            for (const key of ['PERSONA_CHANGED', 'PERSONA_CREATED', 'PERSONA_DELETED', 'APP_READY', 'SETTINGS_LOADED']) {
+            for (const key of ['PERSONA_CHANGED', 'PERSONA_CREATED', 'PERSONA_UPDATED', 'PERSONA_DELETED', 'APP_READY', 'SETTINGS_LOADED', 'CHAT_CHANGED']) {
                 if (types[key]) ctx.eventSource.on(types[key], () => { if (pcEnabled()) refreshPersona(); });
             }
         }
         if (!personaImport) {
             personaImport = import(new URL('scripts/personas.js', document.baseURI).href)
                 .then(module => { personaModule = module; refreshPersona(); })
-                .catch(() => { refreshPersona(); });
+                .catch(() => { personaImport = null; refreshPersona(); });
         }
         refreshPersona();
     }
@@ -4678,13 +4696,15 @@ function slkObserveChatContent(callback) {
 
     // Native avatar replacement rebuilds the persona list; listen only to image load events in that list.
     const onPersonaImageLoad = e => {
-        if (!pcEnabled() || !e.target.matches?.('#user_avatar_block .avatar-container.selected .avatar img')) return;
-        refreshPersona(true);
+        if (!pcEnabled() || !e.target.matches?.('#user_avatar_block .avatar-container .avatar img')) return;
+        const row = e.target.closest('.avatar-container');
+        if (!row.classList.contains('selected') && (!personaModule?.user_avatar || row.dataset.avatarId !== personaModule.user_avatar)) return;
+        refreshPersona(true, e.target);
     };
     let lastDrawer = null;
     window.addEventListener('slk-pc-active', e => {
         mark(e.detail);
-        if (pcEnabled() && (e.detail === '#persona-management-button' || lastDrawer === '#persona-management-button')) refreshPersona(true);
+        if (pcEnabled() && (e.detail === '#persona-management-button' || lastDrawer === '#persona-management-button')) refreshPersona();
         lastDrawer = e.detail;
     });
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build, { once: true });
