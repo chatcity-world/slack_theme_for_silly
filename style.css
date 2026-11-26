@@ -24999,3 +24999,20 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
     overflow:visible!important;
   }
 }
+
+/* v1.8.175 — mobile foreign popup geometry; existing components unchanged. */
+@media screen and (max-width:1000px) {
+  html.slk-foreign-modal-open {--slk-footer-modal-visibility:hidden;--slk-footer-modal-pointer:none;}
+  html body.slk-ui > .slk-foreign-overlay {
+    position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;
+    max-height:none!important;margin:0!important;transform:none!important;z-index:2147483645!important;
+  }
+  html body.slk-ui .slk-modal.slk-foreign-window {
+    position:fixed!important;inset:calc(env(safe-area-inset-top,0px) + 12px) 12px calc(env(safe-area-inset-bottom,0px) + 12px)!important;
+    transform:none!important;margin:auto!important;box-sizing:border-box!important;
+    height:fit-content!important;min-height:0!important;
+    max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 24px)!important;
+    max-width:calc(100vw - 24px)!important;overflow-y:auto!important;overscroll-behavior-y:contain;
+    z-index:2147483645!important;
+  }
+}
