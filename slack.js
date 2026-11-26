@@ -738,14 +738,16 @@ const SLK_ACTIVE_NAV_ICONS = {
     lorebook: slkSolidNavSvg('<path d="M2 3h6a4.8 4.8 0 0 1 3.25 1.3v16A4.9 4.9 0 0 0 8 19H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1ZM22 3h-6a4.8 4.8 0 0 0-3.25 1.3v16A4.9 4.9 0 0 1 16 19h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1Z"/>'),
     extensions: slkSolidNavSvg('<path d="M10 3.5a2 2 0 1 1 4 0V5h3a2 2 0 0 1 2 2v3h-1.5a2 2 0 1 0 0 4H19v3a2 2 0 0 1-2 2h-3v-1.5a2 2 0 1 0-4 0V19H7a2 2 0 0 1-2-2v-3h1.5a2 2 0 1 0 0-4H5V7a2 2 0 0 1 2-2h3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>'),
     persona: slkSolidNavSvg('<path fill-rule="evenodd" d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21Zm0 4.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM5.9 17.8a8.5 8.5 0 0 0 12.2 0 6.8 6.8 0 0 0-12.2 0Z"/>'),
-    character: slkSolidNavSvg('<circle cx="9" cy="8" r="4"/><path d="M1.5 20v-1a5.5 5.5 0 0 1 5.5-5.5h4A5.5 5.5 0 0 1 16.5 19v1a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1Z"/><circle cx="18.2" cy="8" r="2.8"/><path d="M16.85 14.2a4.25 4.25 0 0 1 4.15 4.2v.6a1 1 0 0 1-1 1h-2.25c.08-.24.12-.49.12-.75V19a7.2 7.2 0 0 0-1.02-4.8Z"/>'),
+    character: slkSolidNavSvg('<circle cx="9" cy="8" r="4"/><path d="M1.5 20v-1a5.5 5.5 0 0 1 5.5-5.5h4A5.5 5.5 0 0 1 16.5 19v1a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1ZM15.3 4.1a4 4 0 1 1 0 7.8 6 6 0 0 0 0-7.8ZM17 13.7a5.5 5.5 0 0 1 5.5 5.3v1a1 1 0 0 1-1 1h-3.1a3 3 0 0 0 .1-1v-1a7.5 7.5 0 0 0-1.5-5.3Z"/>'),
 };
+// Mobile selected character glyph: original front silhouette, uniform 2px rear clearance.
+const SLK_MOBILE_CHARACTER_ACTIVE = slkSolidNavSvg('<circle cx="9" cy="8" r="4"/><path d="M1.5 20v-1a5.5 5.5 0 0 1 5.5-5.5h4A5.5 5.5 0 0 1 16.5 19v1a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1Z"/><path d="M13.9855 4.6616A4 4 0 1 1 13.9855 11.3384A6 6 0 0 0 13.9855 4.6616ZM16.3066 13.7H17a5.5 5.5 0 0 1 5.5 5.3v1a1 1 0 0 1-1 1H18.3284A3 3 0 0 0 18.5 20V19A7.5 7.5 0 0 0 16.3066 13.7Z"/>');
 function slkSyncNavGlyph(button, active, host = button) {
     const key = TABS.find(([selector]) => selector === button.dataset.drawer)?.[1];
     if (!key || !SLK_ACTIVE_NAV_ICONS[key] || !host) return;
     const state = active ? 'solid' : 'line';
     if ((host.dataset.slkGlyphState || 'line') === state) return;
-    host.innerHTML = active ? SLK_ACTIVE_NAV_ICONS[key] : ICONS[key];
+    host.innerHTML = active ? (key === 'character' && button.classList.contains('slk-footer-tab') ? SLK_MOBILE_CHARACTER_ACTIVE : SLK_ACTIVE_NAV_ICONS[key]) : ICONS[key];
     host.dataset.slkGlyphState = state;
 }
 
