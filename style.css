@@ -25030,12 +25030,17 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
   }
   html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item.slk-pc-utility:not(.slk-pc-persona):is(:hover,.active) > .slk-pc-item-icon {background:rgba(255,255,255,.32)!important;}
   html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item.slk-pc-persona > .slk-pc-persona-avatar {
-    position:relative!important;width:32px!important;min-width:32px!important;max-width:32px!important;height:32px!important;min-height:32px!important;max-height:32px!important;flex:0 0 32px!important;border-radius:7px!important;overflow:visible!important;background:#EBC34E!important;
+    position:relative!important;box-sizing:border-box!important;aspect-ratio:1 / 1!important;padding:0!important;width:32px!important;min-width:32px!important;max-width:32px!important;height:32px!important;min-height:32px!important;max-height:32px!important;flex:0 0 32px!important;border-radius:7px!important;overflow:visible!important;background:#EBC34E!important;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='13' r='7' fill='%23FFF8DF'/%3E%3Cpath d='M2 36v-3a16 12 0 0 1 32 0v3Z' fill='%23FFF8DF'/%3E%3C/svg%3E")!important;
     background-size:cover!important;
   }
-  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-persona-avatar > img {width:100%!important;height:100%!important;object-fit:cover!important;border-radius:7px!important;display:block!important;}
-  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-persona-avatar > img[hidden] {display:none!important;}
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item.slk-pc-persona > .slk-pc-persona-avatar > img {
+    position:absolute!important;inset:0!important;box-sizing:border-box!important;
+    width:32px!important;height:32px!important;min-width:32px!important;max-width:32px!important;min-height:32px!important;max-height:32px!important;
+    aspect-ratio:1 / 1!important;object-fit:cover!important;object-position:center!important;
+    margin:0!important;padding:0!important;border:0!important;border-radius:7px!important;display:block!important;
+  }
+  html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-item.slk-pc-persona > .slk-pc-persona-avatar > img[hidden] {display:none!important;}
   html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-persona-avatar::after {content:"";position:absolute;box-sizing:border-box;width:10px;height:10px;right:-2px;bottom:-2px;border:2px solid #622860;border-radius:50%;background:#20A271;pointer-events:none;}
   html body.slk-ui.slk-pc #slk-pc-sidebar .slk-pc-persona.active > .slk-pc-persona-avatar {outline:none!important;}
 }
