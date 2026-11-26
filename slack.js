@@ -3948,34 +3948,15 @@ function slkObserveChatContent(callback) {
             });
         });
     };
-    // v1.8.182: fit visible third-party windows against the visual viewport.
+    // v1.8.181: keep third-party mobile layout; fit only genuinely clipped windows.
     const mobile = matchMedia('(max-width: 1000px)');
     const semantic = '.slk-modal,.popup,[role="dialog"],dialog';
-    const named = `${semantic},[id*="modal" i],[class*="modal" i],[id*="popup" i],[class*="popup" i],[id*="dialog" i],[class*="dialog" i]`;
+    const named = `${semantic},[id*="modal" i],[class*="modal" i],[id*="popup" i],[class*="popup" i]`;
     const ignored = `${OURS},#sheld,#select_chat_popup,#shadow_select_chat_popup,#loader,.slk-no-theme,[data-slk-no-theme],.zoomed_avatar,.fullscreen,.popup-fullscreen`;
     const excluded = '#chat,.mes_text,.slk-no-theme,[data-slk-no-theme],dialog.popup,.popup:has(> .popup-body),#completion_prompt_manager_popup,#select_chat_popup';
     const controls = 'button,textarea,input,select,.menu_button,[role="button"]';
     const tracked = new Map(), pending = new Set();
     let frame = 0, t = null;
-    // Observe only the size of currently visible foreign windows, never chat content.
-    const sizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(() => {
-        if (enabled() && tracked.size) schedule();
-    }) : null;
-    function watchSize(data, watch) {
-        if (data.watching === watch) return;
-        data.watching = watch;
-        if (watch) sizeObserver?.observe(data.win);
-        else sizeObserver?.unobserve(data.win);
-    }
-    function setVar(win, key, value) {
-        if (win.style.getPropertyValue(key) !== value) win.style.setProperty(key, value);
-    }
-    function resetFit(win) {
-        win.classList.remove('slk-foreign-fit','slk-foreign-scroll');
-        for (const key of ['--slk-foreign-vtop','--slk-foreign-vheight','--slk-foreign-width']) {
-            if (win.style.getPropertyValue(key)) win.style.removeProperty(key);
-        }
-    }
     const enabled = () => mobile.matches && document.body.classList.contains('slk-ui');
     const visible = el => {
         if (!el?.isConnected || el.hidden || el.matches('dialog:not([open]),.displayNone,.hidden,[aria-hidden="true"]')) return false;
@@ -3983,48 +3964,33 @@ function slkObserveChatContent(callback) {
         return cs.display !== 'none' && cs.visibility !== 'hidden' && el.getClientRects().length > 0;
     };
     function clear(root, data) {
-        watchSize(data, false);
         root.classList.remove('slk-foreign-overlay');
-        data.win.classList.remove('slk-foreign-window');
-        resetFit(data.win);
+        data.win.classList.remove('slk-foreign-window','slk-foreign-fit');
         tracked.delete(root);
     }
     function fit(win) {
+        if (win.classList.contains('slk-foreign-fit')) return;
+        const r = win.getBoundingClientRect();
         const v = window.visualViewport;
         const top = v?.offsetTop || 0, left = v?.offsetLeft || 0;
         const h = v?.height || innerHeight, w = v?.width || innerWidth;
-        if (h <= 0 || w <= 0) return;
-        const r = win.getBoundingClientRect();
-        // Keep naturally fitting windows unchanged. Recheck on size/content changes.
-        const clipped = r.top < top + 11 || r.bottom > top + h - 11 ||
-            r.height > Math.min(h - 24, h * .88) || r.left < left - 1 || r.right > left + w + 1;
-        if (!clipped && !win.classList.contains('slk-foreign-fit') &&
-            !win.classList.contains('slk-foreign-scroll') && win.scrollHeight > win.clientHeight + 2 &&
-            /^(hidden|clip)$/.test(getComputedStyle(win).overflowY)) win.classList.add('slk-foreign-scroll');
-        if (!clipped && !win.classList.contains('slk-foreign-fit')) return;
-        setVar(win, '--slk-foreign-vtop', `${Math.round(top)}px`);
-        setVar(win, '--slk-foreign-vheight', `${Math.floor(h)}px`);
-        if (!win.classList.contains('slk-foreign-fit')) {
-            setVar(win, '--slk-foreign-width', `${Math.round(r.width)}px`);
-            win.classList.add('slk-foreign-fit');
-        }
+        if (r.top < top - 1 || r.left < left - 1 || r.bottom > top + h + 1 || r.right > left + w + 1) win.classList.add('slk-foreign-fit');
     }
     function classifyMobile(root) {
         if (!root.isConnected || root.matches(ignored) || root.closest(excluded) || !visible(root)) return;
         const prior = tracked.get(root);
-        if (prior && prior.win.isConnected && root.contains(prior.win)) { return; }
+        if (prior && prior.win.isConnected && root.contains(prior.win)) { if (visible(prior.win)) fit(prior.win); return; }
         if (prior) clear(root, prior);
-        if (root.parentElement?.closest('.slk-foreign-window')) return;
+        if (root.matches('dialog:modal') || root.parentElement?.closest('.slk-foreign-window')) return;
         const cs = getComputedStyle(root);
         const explicit = root.matches(semantic);
-        const namedWindow = root.matches(named);
         const direct = root.parentElement === document.body;
         if (cs.position !== 'fixed' && !root.matches('dialog,.slk-modal,.slk-modal-backdrop') && !(explicit && cs.position === 'absolute')) return;
-        if (!explicit && !root.classList.contains('slk-modal-backdrop') && (parseInt(cs.zIndex, 10) || 0) < 1000 && !namedWindow) return;
+        if (!explicit && !root.classList.contains('slk-modal-backdrop') && (parseInt(cs.zIndex, 10) || 0) < 1000 && (direct || !root.matches(named))) return;
         if (!direct && !root.matches(named) && cs.position !== 'fixed') return;
         if (root.querySelector('#chat,#send_form,#slk-header,.drawer-content,#top-settings-holder,#loader')) return;
         const r = root.getBoundingClientRect();
-        const full = !root.matches('dialog') && r.width >= innerWidth - 2 && r.height >= innerHeight - 2 && r.top <= 2 && r.left <= 2;
+        const full = r.width >= innerWidth - 2 && r.height >= innerHeight - 2;
         let win = root;
         if (full || root.classList.contains('slk-modal-backdrop')) {
             const candidates = [...root.querySelectorAll(':scope > *, :scope > * > *, :scope > * > * > *')];
@@ -4035,7 +4001,7 @@ function slkObserveChatContent(callback) {
                     return rr.width > innerWidth * .6 && rr.height > 120 &&
                         (rr.width < r.width - 2 || rr.height < r.height - 2 || cc.position === 'absolute' || cc.position === 'fixed');
                 });
-            if (!win && (explicit || namedWindow) && root.querySelector(controls)) win = root;
+            if (!win && explicit) win = root;
             if (!win) return;
         } else if (!explicit && !(r.width > innerWidth * .6 && r.height > 120 && root.querySelector(controls))) return;
         if (!win.querySelector(controls) || win.matches(ignored) || win.closest(excluded)) return;
@@ -4045,7 +4011,8 @@ function slkObserveChatContent(callback) {
         win.classList.remove('slk-modal');
         if (win !== root) root.classList.add('slk-foreign-overlay');
         win.classList.add('slk-foreign-window');
-        tracked.set(root, {win, watching:false});
+        tracked.set(root, {win});
+        fit(win);
     }
     function sync() {
         frame = 0;
@@ -4060,14 +4027,8 @@ function slkObserveChatContent(callback) {
         let open = false;
         for (const [root,data] of tracked) {
             if (!root.isConnected || !data.win.isConnected || !root.contains(data.win)) { clear(root,data); continue; }
-            if (visible(root) && visible(data.win)) {
-                open = true;
-                watchSize(data, true);
-                fit(data.win);
-            } else {
-                watchSize(data, false);
-                resetFit(data.win);
-            }
+            if (visible(root) && visible(data.win)) open = true;
+            else data.win.classList.remove('slk-foreign-fit');
         }
         document.documentElement.classList.toggle('slk-foreign-modal-open',open);
     }
@@ -4100,14 +4061,11 @@ function slkObserveChatContent(callback) {
                 } else if (tracked.has(target) || target.matches(named) || target.style.position === 'fixed' || target.parentElement === document.body) {
                     // Ignore our own class-only mutations unless the open state might have changed.
                     pending.add(target); changed = true;
-                } else if (tracked.size && [...tracked.keys()].some(root => target.contains(root) || root.contains(target))) changed = true;
+                } else if (tracked.size && [...tracked.keys()].some(root => target.contains(root))) changed = true;
             }
             if (changed) schedule();
         }, document.body, {childList:true,subtree:true,attributes:true,attributeFilter:['style','class','open','hidden']});
-        const viewportChanged = () => { if (enabled() && tracked.size) schedule(); };
-        window.addEventListener('resize', viewportChanged, {passive:true});
-        window.visualViewport?.addEventListener('resize', viewportChanged, {passive:true});
-        window.visualViewport?.addEventListener('scroll', viewportChanged, {passive:true});
+        window.addEventListener('resize', () => { if (enabled() && tracked.size) { for (const root of tracked.keys()) pending.add(root); schedule(); } }, {passive:true});
         mobile.addEventListener?.('change', () => { refresh(); if (!mobile.matches) markDesktop(); });
         window.addEventListener('slk-ui-settings-changed',refresh);
         window.addEventListener('pageshow',refresh);

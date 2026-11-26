@@ -25000,21 +25000,18 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
   }
 }
 
-/* v1.8.182 — constrain clipped third-party windows to the visual viewport. */
+/* v1.8.181 — third-party mobile windows retain their own layout and colors. */
 @media screen and (max-width:1000px) {
   html.slk-foreign-modal-open {--slk-footer-modal-display:none;}
   html body.slk-ui .slk-foreign-overlay {z-index:2147483647!important;}
   html body.slk-ui .slk-foreign-window {z-index:2147483647!important;}
   html body.slk-ui .slk-foreign-window.slk-foreign-fit {
-    position:fixed!important;
-    inset:calc(var(--slk-foreign-vtop,0px) + env(safe-area-inset-top,0px) + 12px) 12px calc(100% - var(--slk-foreign-vtop,0px) - var(--slk-foreign-vheight,100dvh) + env(safe-area-inset-bottom,0px) + 12px) 12px!important;
+    position:fixed!important;inset:calc(env(safe-area-inset-top,0px) + 12px) 12px calc(env(safe-area-inset-bottom,0px) + 12px)!important;
     transform:none!important;translate:none!important;margin:auto!important;box-sizing:border-box!important;
     min-height:0!important;min-width:0!important;
-    max-height:min(88dvh,calc(var(--slk-foreign-vheight,100dvh) * .88),max(0px,calc(var(--slk-foreign-vheight,100dvh) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 24px)))!important;
-    width:var(--slk-foreign-width,auto)!important;
+    max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 24px)!important;
     max-width:calc(100vw - 24px)!important;overflow-y:auto!important;overscroll-behavior-y:contain;
   }
-  html body.slk-ui .slk-foreign-window.slk-foreign-scroll {overflow-y:auto!important;overscroll-behavior-y:contain;}
 }
 
 /* v1.8.177 — desktop utility rail only; no mobile or chat selectors. */
