@@ -6045,6 +6045,7 @@ function slkConnectPromptManager() {
         if (!saveTimer) saveTimer = setTimeout(persist, 400);
     };
     window.slkChatLog = () => log.slice(-MAX);
+    window.__slkDiagAdd = add;
     add('boot', { ver: SLK_UI_SETTINGS.enabled ? 'on' : 'off', ua: navigator.userAgent.slice(0, 80) });
 
     // 1) 서버로 가는 채팅/캐릭터 저장 요청
@@ -6267,47 +6268,8 @@ function slkConnectPromptManager() {
     window.addEventListener('slk-ui-settings-changed', apply);
 })();
 
-// v1.8.207 — 백그라운드 '잠자기': 웹앱이 화면에서 사라진 지 3초가 지나면 Slack UI 스타일시트를 잠시 끕니다.
-// 무음 오디오 등으로 웹앱이 백그라운드에서 깨어 있을 때, ST·다른 확장이 하는 작은 화면 갱신도
-// 1.6MB 짜리 Slack CSS 때문에 몇 배 무거워지기 때문입니다. 다시 화면에 나오면 그리기 전에 바로 켜고
-// 채팅 스크롤 위치도 그대로 되돌립니다. (3초 지연: 앱 전환 화면 캡처가 Slack 모양으로 찍히게)
-(function slkBackgroundSleep() {
-    const cssPath = new URL('./style.css', import.meta.url).pathname;
-    let timer = 0;
-    let asleep = [];
-    let saved = null;
-    const ourSheets = () => [...document.querySelectorAll('link[rel="stylesheet"]')].filter(l => {
-        try { return new URL(l.href, location.href).pathname === cssPath && !l.disabled; } catch { return false; }
-    });
-    const sleep = () => {
-        timer = 0;
-        if (document.visibilityState !== 'hidden' || !SLK_UI_SETTINGS.enabled || asleep.length) return;
-        const chat = document.getElementById('chat');
-        saved = chat ? { fromBottom: chat.scrollHeight - chat.clientHeight - chat.scrollTop, top: chat.scrollTop } : null;
-        asleep = ourSheets();
-        for (const link of asleep) link.disabled = true;
-    };
-    const wake = () => {
-        if (timer) { clearTimeout(timer); timer = 0; }
-        if (!asleep.length) return;
-        for (const link of asleep) link.disabled = false;
-        asleep = [];
-        const chat = document.getElementById('chat');
-        const pos = saved;
-        saved = null;
-        if (!chat || !pos) return;
-        // 맨 아래에 있었으면 맨 아래로, 아니면 원래 위치로 (스타일이 다시 적용된 뒤 두 번 맞춤)
-        const restore = () => { chat.scrollTop = pos.fromBottom <= 4 ? chat.scrollHeight : pos.top; };
-        restore();
-        requestAnimationFrame(() => { restore(); for (const ms of [150, 400, 800]) setTimeout(restore, ms); });
-    };
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-            if (!timer && !asleep.length) timer = setTimeout(sleep, 3000);
-        } else {
-            wake();
-        }
-    });
-    window.addEventListener('pageshow', wake);
-    window.addEventListener('focus', wake);
-})();
+// v1.8.209 — 1.8.207 의 백그라운드 '잠자기'(스타일시트 끄기)는 제거: 다시 열 때 기존 테마가 잠깐 보였음.
+// 대신 1.8.208 의 Silence Player 관리로 생성 중이 아닐 때는 웹앱이 아예 잠들게 함.
+
+// v1.8.211 — 다른 확장(Silence Player 등)의 동작은 건드리지 않음. (1.8.208~210 의 무음 자동 관리 제거)
+
