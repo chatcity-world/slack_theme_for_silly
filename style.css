@@ -25105,4 +25105,56 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
         padding-bottom: 8px !important;
     }
 }
-:root { --slk-css-version: '1.8.211'; }
+
+
+/* v1.8.212 — 확장이 알림 안에 직접 넣은 내용(버튼·아이콘 줄 등)은 배치를 건드리지 않고 색·글꼴만 */
+@media screen {
+    html:not(#slk-a#slk-b#slk-c) > body.slk-ui #toast-container .toast-message {
+        overflow-wrap: break-word !important;
+    }
+    html:not(#slk-a#slk-b#slk-c) > body.slk-ui #toast-container .toast-message :is(button, .menu_button, [role="button"]) {
+        white-space: nowrap !important;
+        word-break: keep-all !important;
+        overflow-wrap: normal !important;
+        writing-mode: horizontal-tb !important;
+        flex-shrink: 0 !important;
+        min-width: max-content !important;
+        width: auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 6px 12px !important;
+        border: 0 !important;
+        border-radius: 8px !important;
+        background: rgba(255, 255, 255, .16) !important;
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+        font: 600 13px/18px var(--slk-font, sans-serif) !important;
+        box-shadow: none !important;
+        text-decoration: none !important;
+    }
+    html > body.slk-ui .slk-foreign-toast,
+    html > body.slk-ui .slk-foreign-toast :is(span, p, div, button, b, strong) {
+        font-family: var(--slk-font, -apple-system, BlinkMacSystemFont, sans-serif) !important;
+    }
+}
+/* v1.8.213 — 알림이 떠 있을 때 입력창을 누르면(키보드가 올라오며 화면이 움직일 때) 알림이 깜빡이던 것:
+   아이폰은 떠 있는 요소의 배경 흐림(backdrop-filter)을 화면이 움직일 때마다 다시 그리며 깜빡임.
+   알림은 원래 거의 불투명(94%)이라 흐림을 빼고 불투명 배경으로 — 보이는 모습은 같음. */
+@media screen {
+    html:not(#slk-a#slk-b#slk-c) > body.slk-ui #toast-container > div,
+    html:not(#slk-a#slk-b#slk-c) > body.slk-ui #toast-container > .toast,
+    html > body.slk-ui :is(.toastify, .Toastify__toast, .notyf__toast, .iziToast, [data-sonner-toast]) {
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+        background-color: #232223 !important;
+        -webkit-backface-visibility: hidden !important;
+        backface-visibility: hidden !important;
+    }
+    html > body.slk-ui #toast-container {
+        -webkit-backface-visibility: hidden !important;
+        backface-visibility: hidden !important;
+        will-change: transform;
+    }
+}
+:root { --slk-css-version: '1.8.213'; }

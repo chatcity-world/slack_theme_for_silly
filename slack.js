@@ -32,6 +32,18 @@ const MutationObserver = (() => {
         disconnect() { deferred.delete(this); return super.disconnect(); }
     };
 })();
+// v1.8.212 — 확장이 띄우는 알림(토스트)·진행 표시줄인지: 팝업 처리(크기 조절, 탭바 숨김) 대상에서 제외
+const SLK_TOASTY = '[class*="toast" i],[id*="toast" i],[class*="snack" i],[class*="notif" i],[class*="notice" i],[role="status"],[role="alert"],[aria-live]';
+function slkLooksLikeToast(el, rect, full) {
+    if (!el || full) return false;
+    if (el.matches?.('dialog,.popup,[role="dialog"]')) return false;
+    if (el.matches?.(SLK_TOASTY) || el.closest?.(SLK_TOASTY)) return true;
+    // 입력칸이 없고 화면의 40%보다 낮은 떠 있는 상자 = 알림
+    const r = rect || el.getBoundingClientRect();
+    const hasField = !!el.querySelector?.('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),textarea,select');
+    return !hasField && r.height < innerHeight * 0.4;
+}
+
 
 // Slack UI for SillyTavern — v0.9.2 (mobile light: header + bottom tab bar)
 
@@ -4000,6 +4012,8 @@ function slkObserveChatContent(callback) {
             if (el.querySelector('#chat, #send_form, #slk-header, .drawer-content, #top-settings-holder')) return;
             if (el.tagName !== 'DIALOG' && (parseInt(cs.zIndex, 10) || 0) < 1000) return;
             const r = el.getBoundingClientRect();
+            // v1.8.212: 알림(토스트)·진행 표시는 팝업으로 꾸미지 않음
+            if (slkLooksLikeToast(el, r, r.width >= innerWidth - 2 && r.height >= innerHeight - 2)) { el.classList.add('slk-foreign-toast'); return; }
             // 화면 전체를 덮는 반투명 배경이면, 그 안의 창을 찾음
             let win = el;
             if (r.width >= innerWidth - 2 && r.height >= innerHeight - 2) {
@@ -4125,6 +4139,8 @@ function slkObserveChatContent(callback) {
         if (root.querySelector('#chat,#send_form,#slk-header,.drawer-content,#top-settings-holder,#loader')) return;
         const r = root.getBoundingClientRect();
         const full = r.width >= innerWidth - 2 && r.height >= innerHeight - 2 && Math.abs(r.top) <= 2 && Math.abs(r.left) <= 2;
+        // v1.8.212: 확장의 알림(토스트)·진행 표시는 팝업이 아님 — 크기를 건드리지 않고, 아래 탭바도 숨기지 않음
+        if (slkLooksLikeToast(root, r, full)) { root.classList.add('slk-foreign-toast'); return; }
         let win = root;
         if (full || root.classList.contains('slk-modal-backdrop')) {
             const candidates = [...root.querySelectorAll(':scope > *, :scope > * > *, :scope > * > * > *')];
