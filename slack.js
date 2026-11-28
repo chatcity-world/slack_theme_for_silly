@@ -6289,3 +6289,89 @@ function slkConnectPromptManager() {
 
 // v1.8.211 — 다른 확장(Silence Player 등)의 동작은 건드리지 않음. (1.8.208~210 의 무음 자동 관리 제거)
 
+
+// v1.8.215 — 휴대폰에서 목록(프롬프트, 월드인포 등)을 잡고 끌 때 화면이 안 내려가던 것.
+// 실리태번은 '목록 맨 끝 20px'에 손가락이 닿아야 스크롤하는데, 그 자리가 상단바·하단바 밑에 가려져 있음.
+// → 끄는 동안 손가락이 '보이는 영역'의 위/아래 가장자리 근처에 있으면 직접 스크롤해 줌. (순서 바꾸는 동작 자체는 실리태번 그대로)
+(function slkSortableAutoScroll() {
+    const EDGE = 90, MAX = 16;
+    let raf = 0, y = -1, x = 0, list = null, scroller = null, topBand = 0;
+    const isScrollable = (el) => {
+        const o = getComputedStyle(el).overflowY;
+        return (o === 'auto' || o === 'scroll' || o === 'overlay') && el.scrollHeight > el.clientHeight + 1;
+    };
+    const findScroller = (el) => {
+        for (let n = el?.parentElement; n && n !== document.body; n = n.parentElement) if (isScrollable(n)) return n;
+        return document.scrollingElement;
+    };
+    const measureTop = () => {
+        const p = document.createElement('div');
+        p.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:var(--slk-top-h,0px);visibility:hidden;pointer-events:none';
+        document.body.appendChild(p);
+        const h = p.getBoundingClientRect().height || 0;
+        p.remove();
+        return h;
+    };
+    const band = () => {
+        const r = scroller === document.scrollingElement ? {top: 0, bottom: innerHeight} : scroller.getBoundingClientRect();
+        let top = Math.max(r.top, topBand), bottom = Math.min(r.bottom, innerHeight);
+        const f = document.getElementById('slk-mobile-footer');
+        if (f && getComputedStyle(f).display !== 'none') {
+            const fr = f.getBoundingClientRect();
+            if (fr.height && fr.top < bottom) bottom = fr.top;
+        }
+        return {top, bottom};
+    };
+    const onMove = (e) => {
+        const t = e.touches ? e.touches[0] : e;
+        if (!t) return;
+        y = t.clientY; x = t.clientX;
+    };
+    const onMouse = (e) => { if (e.isTrusted) onMove(e); };
+    const tick = () => {
+        raf = 0;
+        if (!scroller) return;
+        if (y < 0) { raf = requestAnimationFrame(tick); return; }
+        const {top, bottom} = band();
+        let d = 0;
+        if (y < top + EDGE) d = -Math.ceil(MAX * Math.min(1, (top + EDGE - y) / EDGE));
+        else if (y > bottom - EDGE) d = Math.ceil(MAX * Math.min(1, (y - (bottom - EDGE)) / EDGE));
+        if (d) {
+            const before = scroller.scrollTop;
+            scroller.scrollTop = before + d;
+            if (scroller.scrollTop !== before) {
+                // 실리태번(jQuery UI)이 자리 표시를 다시 계산하도록 같은 위치로 '움직임'을 한 번 알려 줌
+                try { window.jQuery(list).sortable('refreshPositions'); } catch (_) {}
+                // 제자리면 실리태번이 '방향 없음'으로 보고 무시하므로, 스크롤 방향으로 1px 움직인 것처럼 두 번 알림
+                const s = d > 0 ? 1 : -1;
+                try {
+                    for (const yy of [y - s, y]) document.dispatchEvent(new MouseEvent('mousemove', {bubbles: true, cancelable: true, view: window, button: 0, buttons: 1, clientX: x, clientY: yy, screenX: x, screenY: yy}));
+                } catch (_) {}
+            }
+        }
+        raf = requestAnimationFrame(tick);
+    };
+    const stop = () => {
+        if (raf) cancelAnimationFrame(raf);
+        raf = 0; y = -1; list = null; scroller = null;
+        document.removeEventListener('touchmove', onMove, true);
+        document.removeEventListener('mousemove', onMouse, true);
+    };
+    function bind() {
+        const $ = window.jQuery;
+        if (!$) return setTimeout(bind, 500);
+        $(document).on('sortstart.slkAutoScroll', (e) => {
+            if (!SLK_UI_SETTINGS.enabled || innerWidth > 1000) return;
+            stop();
+            list = e.target;
+            scroller = findScroller(list);
+            topBand = measureTop();
+            document.addEventListener('touchmove', onMove, {capture: true, passive: true});
+            document.addEventListener('mousemove', onMouse, {capture: true, passive: true});
+            raf = requestAnimationFrame(tick);
+        });
+        $(document).on('sortstop.slkAutoScroll sortdeactivate.slkAutoScroll', stop);
+        document.addEventListener('touchend', () => { if (list) setTimeout(() => { if (list && !document.querySelector('.ui-sortable-helper')) stop(); }, 50); }, true);
+    }
+    bind();
+})();

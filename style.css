@@ -25373,4 +25373,4 @@ html body.slk-ui .slk-fallback-popup :is(button,.menu_button):not(:where([hidden
     html:not(#slk-a#slk-b#slk-c) > body.slk-ui #movingDivs > div:not(.zoomed_avatar) > [name$="Holder"] > .inline-drawer:first-child > .inline-drawer-header,
     html:not(#slk-a#slk-b#slk-c) > body.slk-ui #movingDivs > div:not(.zoomed_avatar) > [name$="Holder"] > :first-child .inline-drawer:first-child > .inline-drawer-header { padding-right: 44px !important; }
 }
-:root { --slk-css-version: '1.8.214'; }
+:root { --slk-css-version: '1.8.215'; }
